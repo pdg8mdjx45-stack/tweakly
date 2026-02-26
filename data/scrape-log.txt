@@ -1,0 +1,571 @@
+╔══════════════════════════════════════╗
+║  Tweakers.net Product Scraper        ║
+╚══════════════════════════════════════╝
+
+Initializing session with Tweakers...
+DPG Privacy Gate detected — extracting callbackUrl...
+  callbackUrl: https://tweakers.net/privacy-gate/store/?returnUrl=MDIyNGI5ZWZkZjk1OGY5MTUzZDZjYzNlNzk4N2U2NzFiZmUxY2MzMjUxMzg5YmQ0MDM2Z...
+Consent stored. Cookies: xAuthId=a53513f9-0343-4e2f-911b-967d74e7ebb4; authId=a53513f9-0343-4e2f-911b-967d74e7ebb4; ak_bmsc=9FAC7B56839DD059C73FF
+
+╔═ [Laptops] slug="laptops"
+  page 1 (0 so far)... 24 found, hasMore=true
+  page 2 (24 so far)... 31 found, hasMore=true
+  page 3 (55 so far)... 35 found, hasMore=true
+  page 4 (90 so far)... 36 found, hasMore=true
+  page 5 (126 so far)... 38 found, hasMore=true
+  page 6 (164 so far)... 33 found, hasMore=true
+  page 7 (197 so far)... 37 found, hasMore=true
+  page 8 (234 so far)... 28 found, hasMore=true
+  page 9 (262 so far)... 35 found, hasMore=true
+  page 10 (297 so far)... 40 found, hasMore=true
+  page 11 (337 so far)... 36 found, hasMore=true
+  page 12 (373 so far)... 37 found, hasMore=true
+  page 13 (410 so far)... 30 found, hasMore=true
+  page 14 (440 so far)... 39 found, hasMore=true
+  page 15 (479 so far)... 40 found, hasMore=true
+  page 16 (519 so far)... 32 found, hasMore=true
+  page 17 (551 so far)... 37 found, hasMore=true
+  page 18 (588 so far)... 39 found, hasMore=true
+  page 19 (627 so far)... 40 found, hasMore=true
+  page 20 (667 so far)... 40 found, hasMore=true
+  page 21 (707 so far)... 37 found, hasMore=true
+  page 22 (744 so far)... 40 found, hasMore=true
+  page 23 (784 so far)... 40 found, hasMore=true
+  page 24 (824 so far)... 40 found, hasMore=true
+  page 25 (864 so far)... 40 found, hasMore=true
+  page 26 (904 so far)... 34 found, hasMore=true
+  page 27 (938 so far)... 40 found, hasMore=true
+  page 28 (978 so far)... 31 found, hasMore=true
+  page 29 (1009 so far)... 40 found, hasMore=true
+  page 30 (1049 so far)... 40 found, hasMore=true
+  page 31 (1089 so far)... 26 found, hasMore=true
+  page 32 (1115 so far)... 40 found, hasMore=true
+  page 33 (1155 so far)... 36 found, hasMore=true
+  page 34 (1191 so far)... 40 found, hasMore=true
+  page 35 (1231 so far)... 39 found, hasMore=true
+  page 36 (1270 so far)... 40 found, hasMore=true
+  page 37 (1310 so far)... 40 found, hasMore=true
+  page 38 (1350 so far)... 40 found, hasMore=true
+  page 39 (1390 so far)... 40 found, hasMore=true
+  page 40 (1430 so far)... 40 found, hasMore=true
+  page 41 (1470 so far)... 34 found, hasMore=true
+  page 42 (1504 so far)... 33 found, hasMore=true
+  page 43 (1537 so far)... 40 found, hasMore=true
+  page 44 (1577 so far)... 40 found, hasMore=true
+  page 45 (1617 so far)... 40 found, hasMore=true
+  page 46 (1657 so far)... 21 found, hasMore=true
+  page 47 (1678 so far)... 40 found, hasMore=true
+  page 48 (1718 so far)... 40 found, hasMore=true
+  page 49 (1758 so far)... 40 found, hasMore=true
+  page 50 (1798 so far)... 37 found, hasMore=true
+  page 51 (1835 so far)... 36 found, hasMore=true
+  page 52 (1871 so far)... 29 found, hasMore=true
+  page 53 (1900 so far)... 27 found, hasMore=true
+  page 54 (1927 so far)... 36 found, hasMore=true
+  page 55 (1963 so far)... 27 found, hasMore=true
+  page 56 (1990 so far)... 37 found, hasMore=true
+  ✓ collected 2027 raw products
+  [Laptops] enriching 100/2027...
+  [Laptops] enriching 200/2027...
+  [Laptops] enriching 300/2027...
+  [Laptops] enriching 400/2027...
+  [Laptops] enriching 500/2027...
+  [Laptops] enriching 600/2027...
+  [Laptops] enriching 700/2027...
+  [Laptops] enriching 800/2027...
+  [Laptops] enriching 900/2027...
+  [Laptops] enriching 1000/2027...
+  [Laptops] enriching 1100/2027...
+  [Laptops] enriching 1200/2027...
+  [Laptops] enriching 1300/2027...
+  [Laptops] enriching 1400/2027...
+  [Laptops] enriching 1500/2027...
+  [Laptops] enriching 1600/2027...
+  [Laptops] enriching 1700/2027...
+  [Laptops] enriching 1800/2027...
+  [Laptops] enriching 1900/2027...
+  [Laptops] enriching 2000/2027...
+╚═ [Laptops] done — 2027 products
+  [checkpoint] 2027 total products saved.
+
+
+╔═ [Gaming laptops] slug="gaming-laptops"
+  page 1 (0 so far)... 0 found, hasMore=false
+  ✓ collected 0 raw products
+  ⚠ No products scraped for Gaming laptops. Tweakers may have changed their markup.
+    Run with --debug to inspect the HTML.
+  [checkpoint] 2027 total products saved.
+
+
+╔═ [Smartphones] slug="smartphones"
+  page 1 (0 so far)... 40 found, hasMore=true
+  page 2 (40 so far)... 40 found, hasMore=true
+  page 3 (80 so far)... 40 found, hasMore=true
+  page 4 (120 so far)... 40 found, hasMore=true
+  page 5 (160 so far)... 40 found, hasMore=true
+  page 6 (200 so far)... 40 found, hasMore=true
+  page 7 (240 so far)... 40 found, hasMore=true
+  page 8 (280 so far)... 40 found, hasMore=true
+  page 9 (320 so far)... 40 found, hasMore=true
+  page 10 (360 so far)... 40 found, hasMore=true
+  page 11 (400 so far)... 40 found, hasMore=true
+  page 12 (440 so far)... 40 found, hasMore=true
+  page 13 (480 so far)... 40 found, hasMore=true
+  page 14 (520 so far)... 40 found, hasMore=true
+  page 15 (560 so far)... 40 found, hasMore=true
+  page 16 (600 so far)... 40 found, hasMore=true
+  page 17 (640 so far)... 40 found, hasMore=true
+  page 18 (680 so far)... 40 found, hasMore=true
+  page 19 (720 so far)... 40 found, hasMore=true
+  page 20 (760 so far)... 40 found, hasMore=true
+  page 21 (800 so far)... 40 found, hasMore=true
+  page 22 (840 so far)... 40 found, hasMore=true
+  page 23 (880 so far)... 40 found, hasMore=true
+  page 24 (920 so far)... 40 found, hasMore=true
+  page 25 (960 so far)... 40 found, hasMore=true
+  page 26 (1000 so far)... 40 found, hasMore=true
+  page 27 (1040 so far)... 40 found, hasMore=true
+  page 28 (1080 so far)... 40 found, hasMore=true
+  page 29 (1120 so far)... 40 found, hasMore=true
+  page 30 (1160 so far)... 40 found, hasMore=true
+  page 31 (1200 so far)... 40 found, hasMore=true
+  page 32 (1240 so far)... 40 found, hasMore=true
+  page 33 (1280 so far)... 40 found, hasMore=true
+  page 34 (1320 so far)... 40 found, hasMore=true
+  page 35 (1360 so far)... 40 found, hasMore=true
+  page 36 (1400 so far)... 40 found, hasMore=true
+  page 37 (1440 so far)... 40 found, hasMore=true
+  page 38 (1480 so far)... 40 found, hasMore=true
+  page 39 (1520 so far)... 40 found, hasMore=true
+  page 40 (1560 so far)... 40 found, hasMore=true
+  page 41 (1600 so far)... 40 found, hasMore=true
+  page 42 (1640 so far)... 40 found, hasMore=true
+  page 43 (1680 so far)... 40 found, hasMore=true
+  page 44 (1720 so far)... 40 found, hasMore=true
+  page 45 (1760 so far)... 40 found, hasMore=true
+  page 46 (1800 so far)... 40 found, hasMore=true
+  page 47 (1840 so far)... 40 found, hasMore=true
+  page 48 (1880 so far)... 40 found, hasMore=true
+  page 49 (1920 so far)... 40 found, hasMore=true
+  page 50 (1960 so far)... 40 found, hasMore=true
+  ✓ collected 2000 raw products
+  [Smartphones] enriching 100/2000...
+  [Smartphones] enriching 200/2000...
+  [Smartphones] enriching 300/2000...
+  [Smartphones] enriching 400/2000...
+  [Smartphones] enriching 500/2000...
+  [Smartphones] enriching 600/2000...
+  [Smartphones] enriching 700/2000...
+  [Smartphones] enriching 800/2000...
+  [Smartphones] enriching 900/2000...
+  [Smartphones] enriching 1000/2000...
+  [Smartphones] enriching 1100/2000...
+  [Smartphones] enriching 1200/2000...
+  [Smartphones] enriching 1300/2000...
+  [Smartphones] enriching 1400/2000...
+  [Smartphones] enriching 1500/2000...
+  [Smartphones] enriching 1600/2000...
+  [Smartphones] enriching 1700/2000...
+  [Smartphones] enriching 1800/2000...
+  [Smartphones] enriching 1900/2000...
+╚═ [Smartphones] done — 2000 products
+  [checkpoint] 4027 total products saved.
+
+
+╔═ [Tablets] slug="tablets"
+  page 1 (0 so far)... 27 found, hasMore=true
+  page 2 (27 so far)... 33 found, hasMore=true
+  page 3 (60 so far)... 34 found, hasMore=true
+  page 4 (94 so far)... 28 found, hasMore=true
+  page 5 (122 so far)... 30 found, hasMore=true
+  page 6 (152 so far)... 30 found, hasMore=true
+  page 7 (182 so far)... 25 found, hasMore=true
+  page 8 (207 so far)... 33 found, hasMore=true
+  page 9 (240 so far)... 33 found, hasMore=true
+  page 10 (273 so far)... 25 found, hasMore=true
+  page 11 (298 so far)... 25 found, hasMore=true
+  page 12 (323 so far)... 28 found, hasMore=true
+  page 13 (351 so far)... 40 found, hasMore=true
+  page 14 (391 so far)... 12 found, hasMore=true
+  page 15 (403 so far)... 40 found, hasMore=true
+  page 16 (443 so far)... 33 found, hasMore=true
+  page 17 (476 so far)... 5 found, hasMore=true
+  page 18 (481 so far)... 35 found, hasMore=true
+  page 19 (516 so far)... 39 found, hasMore=true
+  page 20 (555 so far)... 36 found, hasMore=true
+  page 21 (591 so far)... 6 found, hasMore=true
+  page 22 (597 so far)... 37 found, hasMore=true
+  page 23 (634 so far)... 38 found, hasMore=true
+  page 24 (672 so far)... 39 found, hasMore=true
+  page 25 (711 so far)... 23 found, hasMore=true
+  page 26 (734 so far)... 6 found, hasMore=true
+  page 27 (740 so far)... 36 found, hasMore=true
+  page 28 (776 so far)... 38 found, hasMore=true
+  page 29 (814 so far)... 38 found, hasMore=true
+  page 30 (852 so far)... 23 found, hasMore=true
+  page 31 (875 so far)... 35 found, hasMore=true
+  page 32 (910 so far)... 40 found, hasMore=true
+  page 33 (950 so far)... 25 found, hasMore=true
+  page 34 (975 so far)... 22 found, hasMore=false
+  ✓ collected 997 raw products
+  [Tablets] enriching 100/997...
+  [Tablets] enriching 200/997...
+  [Tablets] enriching 300/997...
+  [Tablets] enriching 400/997...
+  [Tablets] enriching 500/997...
+  [Tablets] enriching 600/997...
+  [Tablets] enriching 700/997...
+  [Tablets] enriching 800/997...
+  [Tablets] enriching 900/997...
+╚═ [Tablets] done — 997 products
+  [checkpoint] 5024 total products saved.
+
+
+╔═ [Desktops] slug="pcs"
+  page 1 (0 so far)... 40 found, hasMore=true
+  page 2 (40 so far)... 39 found, hasMore=true
+  page 3 (79 so far)... 40 found, hasMore=true
+  page 4 (119 so far)... 40 found, hasMore=true
+  page 5 (159 so far)... 40 found, hasMore=true
+  page 6 (199 so far)... 39 found, hasMore=true
+  page 7 (238 so far)... 39 found, hasMore=true
+  page 8 (277 so far)... 40 found, hasMore=true
+  page 9 (317 so far)... 40 found, hasMore=true
+  page 10 (357 so far)... 39 found, hasMore=true
+  page 11 (396 so far)... 40 found, hasMore=true
+  page 12 (436 so far)... 40 found, hasMore=true
+  page 13 (476 so far)... 40 found, hasMore=true
+  page 14 (516 so far)... 40 found, hasMore=true
+  page 15 (556 so far)... 39 found, hasMore=true
+  page 16 (595 so far)... 38 found, hasMore=true
+  page 17 (633 so far)... 40 found, hasMore=true
+  page 18 (673 so far)... 40 found, hasMore=true
+  page 19 (713 so far)... 40 found, hasMore=true
+  page 20 (753 so far)... 40 found, hasMore=true
+  page 21 (793 so far)... 40 found, hasMore=true
+  page 22 (833 so far)... 39 found, hasMore=true
+  page 23 (872 so far)... 40 found, hasMore=true
+  page 24 (912 so far)... 40 found, hasMore=true
+  page 25 (952 so far)... 40 found, hasMore=true
+  page 26 (992 so far)... 40 found, hasMore=true
+  page 27 (1032 so far)... 40 found, hasMore=true
+  page 28 (1072 so far)... 39 found, hasMore=true
+  page 29 (1111 so far)... 39 found, hasMore=true
+  page 30 (1150 so far)... 36 found, hasMore=true
+  page 31 (1186 so far)... 40 found, hasMore=true
+  page 32 (1226 so far)... 40 found, hasMore=true
+  page 33 (1266 so far)... 40 found, hasMore=true
+  page 34 (1306 so far)... 40 found, hasMore=true
+  page 35 (1346 so far)... 40 found, hasMore=true
+  page 36 (1386 so far)... 40 found, hasMore=true
+  page 37 (1426 so far)... 40 found, hasMore=true
+  page 38 (1466 so far)... 40 found, hasMore=true
+  page 39 (1506 so far)... 40 found, hasMore=true
+  page 40 (1546 so far)... 40 found, hasMore=true
+  page 41 (1586 so far)... 40 found, hasMore=true
+  page 42 (1626 so far)... 40 found, hasMore=true
+  page 43 (1666 so far)... 40 found, hasMore=true
+  page 44 (1706 so far)... 40 found, hasMore=true
+  page 45 (1746 so far)... 38 found, hasMore=true
+  page 46 (1784 so far)... 40 found, hasMore=true
+  page 47 (1824 so far)... 38 found, hasMore=true
+  page 48 (1862 so far)... 40 found, hasMore=true
+  page 49 (1902 so far)... 29 found, hasMore=true
+  page 50 (1931 so far)... 36 found, hasMore=false
+  ✓ collected 1967 raw products
+  [Desktops] enriching 100/1967...
+  [Desktops] enriching 200/1967...
+  [Desktops] enriching 300/1967...
+  [Desktops] enriching 400/1967...
+  [Desktops] enriching 500/1967...
+  [Desktops] enriching 600/1967...
+  [Desktops] enriching 700/1967...
+  [Desktops] enriching 800/1967...
+  [Desktops] enriching 900/1967...
+  [Desktops] enriching 1000/1967...
+  [Desktops] enriching 1100/1967...
+  [Desktops] enriching 1200/1967...
+  [Desktops] enriching 1300/1967...
+  [Desktops] enriching 1400/1967...
+  [Desktops] enriching 1500/1967...
+  [Desktops] enriching 1600/1967...
+  [Desktops] enriching 1700/1967...
+  [Desktops] enriching 1800/1967...
+  [Desktops] enriching 1900/1967...
+╚═ [Desktops] done — 1967 products
+  [checkpoint] 6991 total products saved.
+
+
+╔═ [Monitoren] slug="monitors"
+  page 1 (0 so far)... 35 found, hasMore=true
+  page 2 (35 so far)... 33 found, hasMore=true
+  page 3 (68 so far)... 35 found, hasMore=true
+  page 4 (103 so far)... 36 found, hasMore=true
+  page 5 (139 so far)... 32 found, hasMore=true
+  page 6 (171 so far)... 33 found, hasMore=true
+  page 7 (204 so far)... 32 found, hasMore=true
+  page 8 (236 so far)... 36 found, hasMore=true
+  page 9 (272 so far)... 35 found, hasMore=true
+  page 10 (307 so far)... 35 found, hasMore=true
+  page 11 (342 so far)... 37 found, hasMore=true
+  page 12 (379 so far)... 39 found, hasMore=true
+  page 13 (418 so far)... 34 found, hasMore=true
+  page 14 (452 so far)... 40 found, hasMore=true
+  page 15 (492 so far)... 35 found, hasMore=true
+  page 16 (527 so far)... 36 found, hasMore=true
+  page 17 (563 so far)... 37 found, hasMore=true
+  page 18 (600 so far)... 40 found, hasMore=true
+  page 19 (640 so far)... 32 found, hasMore=true
+  page 20 (672 so far)... 40 found, hasMore=true
+  page 21 (712 so far)... 34 found, hasMore=true
+  page 22 (746 so far)... 33 found, hasMore=true
+  page 23 (779 so far)... 40 found, hasMore=true
+  page 24 (819 so far)... 40 found, hasMore=true
+  page 25 (859 so far)... 25 found, hasMore=true
+  page 26 (884 so far)... 39 found, hasMore=true
+  page 27 (923 so far)... 40 found, hasMore=true
+  page 28 (963 so far)... 40 found, hasMore=true
+  page 29 (1003 so far)... 40 found, hasMore=true
+  page 30 (1043 so far)... 39 found, hasMore=true
+  page 31 (1082 so far)... 24 found, hasMore=true
+  page 32 (1106 so far)... 39 found, hasMore=true
+  page 33 (1145 so far)... 40 found, hasMore=true
+  page 34 (1185 so far)... 40 found, hasMore=true
+  page 35 (1225 so far)... 36 found, hasMore=true
+  page 36 (1261 so far)... 15 found, hasMore=true
+  page 37 (1276 so far)... 39 found, hasMore=true
+  page 38 (1315 so far)... 40 found, hasMore=true
+  page 39 (1355 so far)... 40 found, hasMore=true
+  page 40 (1395 so far)... 40 found, hasMore=true
+  page 41 (1435 so far)... 40 found, hasMore=true
+  page 42 (1475 so far)... 40 found, hasMore=true
+  page 43 (1515 so far)... 40 found, hasMore=true
+  page 44 (1555 so far)... 40 found, hasMore=true
+  page 45 (1595 so far)... 39 found, hasMore=true
+  page 46 (1634 so far)... 26 found, hasMore=true
+  page 47 (1660 so far)... 32 found, hasMore=true
+  page 48 (1692 so far)... rate-limited, waiting 15s...
+  page 48 (1692 so far)... 40 found, hasMore=true
+  page 49 (1732 so far)... 40 found, hasMore=true
+  page 50 (1772 so far)... rate-limited, waiting 15s...
+  page 50 (1772 so far)... 39 found, hasMore=true
+  page 51 (1811 so far)... 40 found, hasMore=true
+  page 52 (1851 so far)... 40 found, hasMore=true
+  page 53 (1891 so far)... 40 found, hasMore=true
+  page 54 (1931 so far)... 39 found, hasMore=true
+  page 55 (1970 so far)... 39 found, hasMore=true
+  ✓ collected 2009 raw products
+  [Monitoren] enriching 100/2009...
+  [Monitoren] enriching 200/2009...
+  [Monitoren] enriching 300/2009...
+  [Monitoren] enriching 400/2009...
+  [Monitoren] enriching 500/2009...
+  [Monitoren] enriching 600/2009...
+  [Monitoren] enriching 700/2009...
+  [Monitoren] enriching 800/2009...
+  [Monitoren] enriching 900/2009...
+  [Monitoren] enriching 1000/2009...
+  [Monitoren] enriching 1100/2009...
+  [Monitoren] enriching 1200/2009...
+  [Monitoren] enriching 1300/2009...
+  [Monitoren] enriching 1400/2009...
+  [Monitoren] enriching 1500/2009...
+  [Monitoren] enriching 1600/2009...
+  [Monitoren] enriching 1700/2009...
+  [Monitoren] enriching 1800/2009...
+  [Monitoren] enriching 1900/2009...
+  [Monitoren] enriching 2000/2009...
+╚═ [Monitoren] done — 2009 products
+  [checkpoint] 9000 total products saved.
+
+
+╔═ [Grafische kaarten] slug="videokaarten"
+  page 1 (0 so far)... 40 found, hasMore=true
+  page 2 (40 so far)... 40 found, hasMore=true
+  page 3 (80 so far)... 40 found, hasMore=true
+  page 4 (120 so far)... 40 found, hasMore=true
+  page 5 (160 so far)... 40 found, hasMore=true
+  page 6 (200 so far)... 40 found, hasMore=true
+  page 7 (240 so far)... 40 found, hasMore=true
+  page 8 (280 so far)... 40 found, hasMore=true
+  page 9 (320 so far)... 40 found, hasMore=true
+  page 10 (360 so far)... 40 found, hasMore=true
+  page 11 (400 so far)... 40 found, hasMore=true
+  page 12 (440 so far)... 40 found, hasMore=true
+  page 13 (480 so far)... 40 found, hasMore=true
+  page 14 (520 so far)... 40 found, hasMore=true
+  page 15 (560 so far)... 40 found, hasMore=true
+  page 16 (600 so far)... 40 found, hasMore=true
+  page 17 (640 so far)... 40 found, hasMore=true
+  page 18 (680 so far)... 40 found, hasMore=true
+  page 19 (720 so far)... 40 found, hasMore=true
+  page 20 (760 so far)... 40 found, hasMore=true
+  page 21 (800 so far)... 40 found, hasMore=true
+  page 22 (840 so far)... 40 found, hasMore=true
+  page 23 (880 so far)... 11 found, hasMore=false
+  ✓ collected 891 raw products
+  [Grafische kaarten] enriching 100/891...
+  [Grafische kaarten] enriching 200/891...
+  [Grafische kaarten] enriching 300/891...
+  [Grafische kaarten] enriching 400/891...
+  [Grafische kaarten] enriching 500/891...
+  [Grafische kaarten] enriching 600/891...
+  [Grafische kaarten] enriching 700/891...
+  [Grafische kaarten] enriching 800/891...
+╚═ [Grafische kaarten] done — 891 products
+  [checkpoint] 9891 total products saved.
+
+
+╔═ [Processors] slug="processors"
+  page 1 (0 so far)... 40 found, hasMore=true
+  page 2 (40 so far)... 40 found, hasMore=true
+  page 3 (80 so far)... 40 found, hasMore=true
+  page 4 (120 so far)... 40 found, hasMore=true
+  page 5 (160 so far)... 40 found, hasMore=true
+  page 6 (200 so far)... 40 found, hasMore=true
+  page 7 (240 so far)... 40 found, hasMore=true
+  page 8 (280 so far)... 40 found, hasMore=true
+  page 9 (320 so far)... 40 found, hasMore=true
+  page 10 (360 so far)... 40 found, hasMore=true
+  page 11 (400 so far)... 40 found, hasMore=true
+  page 12 (440 so far)... 40 found, hasMore=true
+  page 13 (480 so far)... 40 found, hasMore=true
+  page 14 (520 so far)... 40 found, hasMore=true
+  page 15 (560 so far)... 40 found, hasMore=true
+  page 16 (600 so far)... 40 found, hasMore=true
+  page 17 (640 so far)... 40 found, hasMore=true
+  page 18 (680 so far)... 40 found, hasMore=true
+  page 19 (720 so far)... 40 found, hasMore=true
+  page 20 (760 so far)... 40 found, hasMore=true
+  page 21 (800 so far)... 40 found, hasMore=true
+  page 22 (840 so far)... 40 found, hasMore=true
+  page 23 (880 so far)... 40 found, hasMore=true
+  page 24 (920 so far)... 40 found, hasMore=true
+  page 25 (960 so far)... 40 found, hasMore=true
+  page 26 (1000 so far)... 40 found, hasMore=true
+  page 27 (1040 so far)... 40 found, hasMore=true
+  page 28 (1080 so far)... 40 found, hasMore=true
+  page 29 (1120 so far)... 40 found, hasMore=true
+  page 30 (1160 so far)... 40 found, hasMore=true
+  page 31 (1200 so far)... 40 found, hasMore=true
+  page 32 (1240 so far)... 40 found, hasMore=true
+  page 33 (1280 so far)... 40 found, hasMore=true
+  page 34 (1320 so far)... 40 found, hasMore=true
+  page 35 (1360 so far)... 40 found, hasMore=true
+  page 36 (1400 so far)... 40 found, hasMore=true
+  page 37 (1440 so far)... 40 found, hasMore=true
+  page 38 (1480 so far)... 40 found, hasMore=true
+  page 39 (1520 so far)... 40 found, hasMore=true
+  page 40 (1560 so far)... 40 found, hasMore=true
+  page 41 (1600 so far)... 40 found, hasMore=true
+  page 42 (1640 so far)... 14 found, hasMore=false
+  ✓ collected 1654 raw products
+  [Processors] enriching 100/1654...
+  [Processors] enriching 200/1654...
+  [Processors] enriching 300/1654...
+  [Processors] enriching 400/1654...
+  [Processors] enriching 500/1654...
+  [Processors] enriching 600/1654...
+  [Processors] enriching 700/1654...
+  [Processors] enriching 800/1654...
+  [Processors] enriching 900/1654...
+  [Processors] enriching 1000/1654...
+  [Processors] enriching 1100/1654...
+  [Processors] enriching 1200/1654...
+  [Processors] enriching 1300/1654...
+  [Processors] enriching 1400/1654...
+  [Processors] enriching 1500/1654...
+  [Processors] enriching 1600/1654...
+╚═ [Processors] done — 1654 products
+  [checkpoint] 11545 total products saved.
+
+
+╔═ [Moederborden] slug="moederborden"
+  page 1 (0 so far)... 0 found, hasMore=false
+  ✓ collected 0 raw products
+  ⚠ No products scraped for Moederborden. Tweakers may have changed their markup.
+    Run with --debug to inspect the HTML.
+  [checkpoint] 11545 total products saved.
+
+
+╔═ [Geheugen] slug="geheugen-intern"
+  page 1 (0 so far)... 0 found, hasMore=false
+  ✓ collected 0 raw products
+  ⚠ No products scraped for Geheugen. Tweakers may have changed their markup.
+    Run with --debug to inspect the HTML.
+  [checkpoint] 11545 total products saved.
+
+
+╔═ [Opslag] slug="interne-ssds"
+  page 1 (0 so far)... 0 found, hasMore=false
+  ✓ collected 0 raw products
+  ⚠ No products scraped for Opslag. Tweakers may have changed their markup.
+    Run with --debug to inspect the HTML.
+  [checkpoint] 11545 total products saved.
+
+
+╔═ [Televisies] slug="televisies"
+  page 1 (0 so far)... 0 found, hasMore=false
+  ✓ collected 0 raw products
+  ⚠ No products scraped for Televisies. Tweakers may have changed their markup.
+    Run with --debug to inspect the HTML.
+  [checkpoint] 11545 total products saved.
+
+
+╔═ [Audio] slug="hoofdtelefoons"
+  page 1 (0 so far)... 0 found, hasMore=false
+  ✓ collected 0 raw products
+  ⚠ No products scraped for Audio. Tweakers may have changed their markup.
+    Run with --debug to inspect the HTML.
+  [checkpoint] 11545 total products saved.
+
+
+╔═ [Gameconsoles] slug="consoles"
+  page 1 (0 so far)... 0 found, hasMore=false
+  ✓ collected 0 raw products
+  ⚠ No products scraped for Gameconsoles. Tweakers may have changed their markup.
+    Run with --debug to inspect the HTML.
+  [checkpoint] 11545 total products saved.
+
+
+╔═ [Gaming] slug="gaming-headsets"
+  page 1 (0 so far)... 0 found, hasMore=false
+  ✓ collected 0 raw products
+  ⚠ No products scraped for Gaming. Tweakers may have changed their markup.
+    Run with --debug to inspect the HTML.
+  [checkpoint] 11545 total products saved.
+
+
+╔═ [Netwerk] slug="modems-en-routers"
+  page 1 (0 so far)... 0 found, hasMore=false
+  ✓ collected 0 raw products
+  ⚠ No products scraped for Netwerk. Tweakers may have changed their markup.
+    Run with --debug to inspect the HTML.
+  [checkpoint] 11545 total products saved.
+
+
+╔═ [Fotografie] slug="systeemcameras"
+  page 1 (0 so far)... 0 found, hasMore=false
+  ✓ collected 0 raw products
+  ⚠ No products scraped for Fotografie. Tweakers may have changed their markup.
+    Run with --debug to inspect the HTML.
+  [checkpoint] 11545 total products saved.
+
+
+╔═ [Huishoudelijk] slug="robotstofzuigers"
+  page 1 (0 so far)... 0 found, hasMore=false
+  ✓ collected 0 raw products
+  ⚠ No products scraped for Huishoudelijk. Tweakers may have changed their markup.
+    Run with --debug to inspect the HTML.
+  [checkpoint] 11545 total products saved.
+
+
+╔═ [Wearables] slug="smartwatches"
+  page 1 (0 so far)... 0 found, hasMore=false
+  ✓ collected 0 raw products
+  ⚠ No products scraped for Wearables. Tweakers may have changed their markup.
+    Run with --debug to inspect the HTML.
+  [checkpoint] 11545 total products saved.
+
+
+✅  Done! 11535 unique products → data/products.json

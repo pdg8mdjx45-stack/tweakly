@@ -1,0 +1,2004 @@
+[
+  {
+    "title": "Oasis",
+    "price": "$10–20",
+    "categoryName": "Ramen restaurant",
+    "address": "92-08 Rockaway Beach Blvd, Far Rockaway, NY 11693",
+    "neighborhood": "Far Rockaway",
+    "street": "92-08 Rockaway Beach Blvd",
+    "city": "Far Rockaway",
+    "postalCode": "11693",
+    "state": "New York",
+    "countryCode": "US",
+    "website": "https://www.oasisramenhouseny.com/heqs5oht/restaurant/order-online",
+    "phone": "(718) 318-3888",
+    "phoneUnformatted": "+17183183888",
+    "claimThisBusiness": false,
+    "location": {
+      "lat": 40.5864428,
+      "lng": -73.8158283
+    },
+    "totalScore": 4.7,
+    "permanentlyClosed": false,
+    "temporarilyClosed": false,
+    "placeId": "ChIJg0wl7expwokRFkfksbzlMSQ",
+    "categories": [
+      "Ramen restaurant"
+    ],
+    "fid": "0x89c269eced254c83:0x2431e5bcb1e44716",
+    "cid": "2608118257825367830",
+    "reviewsCount": 288,
+    "imagesCount": 258,
+    "imageCategories": [],
+    "scrapedAt": "2026-03-06T10:44:46.800Z",
+    "googleFoodUrl": null,
+    "hotelAds": [],
+    "openingHours": [
+      {
+        "day": "Monday",
+        "hours": "11:30 AM to 9:45 PM"
+      },
+      {
+        "day": "Tuesday",
+        "hours": "11:30 AM to 9:45 PM"
+      },
+      {
+        "day": "Wednesday",
+        "hours": "Closed"
+      },
+      {
+        "day": "Thursday",
+        "hours": "11:30 AM to 9:45 PM"
+      },
+      {
+        "day": "Friday",
+        "hours": "11:30 AM to 10:15 PM"
+      },
+      {
+        "day": "Saturday",
+        "hours": "11:30 AM to 10:15 PM"
+      },
+      {
+        "day": "Sunday",
+        "hours": "11:30 AM to 9:45 PM"
+      }
+    ],
+    "additionalOpeningHours": {
+      "Delivery": [
+        {
+          "day": "Monday",
+          "hours": "12–9 PM"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "12–9 PM"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "12–9 PM"
+        },
+        {
+          "day": "Thursday",
+          "hours": "12–9 PM"
+        },
+        {
+          "day": "Friday",
+          "hours": "12–9:30 PM"
+        },
+        {
+          "day": "Saturday",
+          "hours": "12–9:30 PM"
+        },
+        {
+          "day": "Sunday",
+          "hours": "12–9 PM"
+        }
+      ]
+    },
+    "peopleAlsoSearch": [],
+    "placesTags": [],
+    "reviewsTags": [],
+    "additionalInfo": {
+      "Service options": [
+        {
+          "Delivery": true
+        },
+        {
+          "Onsite services": true
+        },
+        {
+          "Takeout": true
+        },
+        {
+          "Dine-in": true
+        }
+      ],
+      "Highlights": [
+        {
+          "Fast service": true
+        }
+      ],
+      "Popular for": [
+        {
+          "Lunch": true
+        },
+        {
+          "Dinner": true
+        },
+        {
+          "Solo dining": true
+        }
+      ],
+      "Accessibility": [
+        {
+          "Wheelchair accessible entrance": true
+        },
+        {
+          "Wheelchair accessible seating": true
+        }
+      ],
+      "Offerings": [
+        {
+          "Alcohol": true
+        },
+        {
+          "Beer": true
+        },
+        {
+          "Comfort food": true
+        },
+        {
+          "Healthy options": true
+        },
+        {
+          "Quick bite": true
+        },
+        {
+          "Small plates": true
+        },
+        {
+          "Vegetarian options": true
+        },
+        {
+          "Wine": true
+        }
+      ],
+      "Dining options": [
+        {
+          "Lunch": true
+        },
+        {
+          "Dinner": true
+        },
+        {
+          "Dessert": true
+        },
+        {
+          "Table service": true
+        }
+      ],
+      "Amenities": [
+        {
+          "Restroom": true
+        }
+      ],
+      "Atmosphere": [
+        {
+          "Casual": true
+        },
+        {
+          "Cozy": true
+        },
+        {
+          "Trendy": true
+        }
+      ],
+      "Crowd": [
+        {
+          "Groups": true
+        },
+        {
+          "Tourists": true
+        }
+      ],
+      "Planning": [
+        {
+          "Accepts reservations": true
+        }
+      ],
+      "Payments": [
+        {
+          "Credit cards": true
+        },
+        {
+          "Debit cards": true
+        },
+        {
+          "NFC mobile payments": true
+        }
+      ],
+      "Children": [
+        {
+          "Good for kids": true
+        }
+      ]
+    },
+    "gasPrices": [],
+    "url": "https://www.google.com/maps/search/?api=1&query=Oasis&query_place_id=ChIJg0wl7expwokRFkfksbzlMSQ",
+    "searchPageUrl": "https://www.google.com/maps/search/ramen/@40.59321488768417,-73.70638644734598,13z?hl=en",
+    "searchString": "ramen",
+    "language": "en",
+    "rank": 13,
+    "isAdvertisement": false,
+    "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHVAweq9d9X9LN6Pfickt_ngmImro7MQLToPqABlaKlU9e5N6-I9OWEDNzljn2hiHZsr478Kqer1OBAYyqomqss6oPeDm97zGc_TtqHZuwi32P4ou2YAuofIwg7cg7vSSlqcwlg_a9rHKQ=w408-h446-k-no",
+    "kgmid": "/g/11f8m49yzn"
+  },
+  {
+    "title": "Magic Wok",
+    "description": "Unassuming chain restaurant for cooked-to-order Asian stir-fries & noodle dishes.",
+    "price": "$10–20",
+    "categoryName": "Chinese restaurant",
+    "address": "11-45 Beach Channel Dr, Far Rockaway, NY 11691",
+    "neighborhood": "Far Rockaway",
+    "street": "11-45 Beach Channel Dr",
+    "city": "Far Rockaway",
+    "postalCode": "11691",
+    "state": "New York",
+    "countryCode": "US",
+    "phone": "(718) 327-3570",
+    "phoneUnformatted": "+17183273570",
+    "claimThisBusiness": true,
+    "location": {
+      "lat": 40.605155,
+      "lng": -73.7556659
+    },
+    "totalScore": 4.4,
+    "permanentlyClosed": false,
+    "temporarilyClosed": false,
+    "placeId": "ChIJIX39awJmwokRJQ0rjge_CEU",
+    "categories": [
+      "Chinese restaurant"
+    ],
+    "fid": "0x89c266026bfd7d21:0x4508bf078e2b0d25",
+    "cid": "4974435827601575205",
+    "reviewsCount": 287,
+    "imagesCount": 10,
+    "imageCategories": [],
+    "scrapedAt": "2026-03-06T10:44:46.800Z",
+    "googleFoodUrl": null,
+    "hotelAds": [],
+    "openingHours": [
+      {
+        "day": "Monday",
+        "hours": "11 AM to 10 PM"
+      },
+      {
+        "day": "Tuesday",
+        "hours": "11 AM to 10 PM"
+      },
+      {
+        "day": "Wednesday",
+        "hours": "11 AM to 10 PM"
+      },
+      {
+        "day": "Thursday",
+        "hours": "11 AM to 10 PM"
+      },
+      {
+        "day": "Friday",
+        "hours": "11 AM to 11 PM"
+      },
+      {
+        "day": "Saturday",
+        "hours": "11 AM to 11 PM"
+      },
+      {
+        "day": "Sunday",
+        "hours": "11 AM to 10 PM"
+      }
+    ],
+    "peopleAlsoSearch": [],
+    "placesTags": [],
+    "reviewsTags": [],
+    "additionalInfo": {
+      "Service options": [
+        {
+          "Delivery": true
+        },
+        {
+          "Onsite services": true
+        },
+        {
+          "Takeout": true
+        },
+        {
+          "Dine-in": true
+        }
+      ],
+      "Highlights": [
+        {
+          "Serves local specialty": true
+        }
+      ],
+      "Popular for": [
+        {
+          "Lunch": true
+        },
+        {
+          "Dinner": true
+        },
+        {
+          "Solo dining": true
+        }
+      ],
+      "Accessibility": [
+        {
+          "Wheelchair accessible parking lot": false
+        },
+        {
+          "Wheelchair accessible seating": false
+        }
+      ],
+      "Offerings": [
+        {
+          "Comfort food": true
+        },
+        {
+          "Late-night food": true
+        },
+        {
+          "Quick bite": true
+        },
+        {
+          "Small plates": true
+        }
+      ],
+      "Dining options": [
+        {
+          "Lunch": true
+        },
+        {
+          "Dinner": true
+        },
+        {
+          "Table service": false
+        }
+      ],
+      "Amenities": [
+        {
+          "Restroom": false
+        }
+      ],
+      "Atmosphere": [
+        {
+          "Casual": true
+        }
+      ],
+      "Crowd": [
+        {
+          "Family-friendly": true
+        },
+        {
+          "Groups": true
+        }
+      ],
+      "Planning": [
+        {
+          "Accepts reservations": false
+        }
+      ],
+      "Payments": [
+        {
+          "Cash-only": true
+        }
+      ],
+      "Children": [
+        {
+          "Good for kids": true
+        }
+      ],
+      "Parking": [
+        {
+          "Free street parking": true
+        }
+      ]
+    },
+    "gasPrices": [],
+    "url": "https://www.google.com/maps/search/?api=1&query=Magic%20Wok&query_place_id=ChIJIX39awJmwokRJQ0rjge_CEU",
+    "searchPageUrl": "https://www.google.com/maps/search/ramen/@40.59321488768417,-73.70638644734598,13z?hl=en",
+    "searchString": "ramen",
+    "language": "en",
+    "rank": 14,
+    "isAdvertisement": false,
+    "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHVAweqUk3G7L83GxW6LC_DtcLONT14bE6muZwfCGXkWu4EqokN8lJVi0EF40bHRUbwj-Zq0FUZ0dTeunbf9_WzKKOiQtgM6jBloTbhSJL2lDCpw5UM49yGyApm_fYXpOB0TuhRVEz4F7Q=w408-h306-k-no",
+    "kgmid": "/g/1261lwcc0"
+  },
+  {
+    "title": "Rockaway Tiki Bar",
+    "price": "$$",
+    "categoryName": "Tiki bar",
+    "address": "67-20 Rockaway Beach Blvd, Arverne, NY 11692",
+    "neighborhood": "Arverne",
+    "street": "67-20 Rockaway Beach Blvd",
+    "city": "Arverne",
+    "postalCode": "11692",
+    "state": "New York",
+    "countryCode": "US",
+    "website": "http://www.rockawaytikibar.com/",
+    "phone": "(347) 619-9369",
+    "phoneUnformatted": "+13476199369",
+    "claimThisBusiness": false,
+    "location": {
+      "lat": 40.590822,
+      "lng": -73.7968142
+    },
+    "totalScore": 4.6,
+    "permanentlyClosed": false,
+    "temporarilyClosed": false,
+    "placeId": "ChIJwa5dbmBowokRvCuGq0QpYG0",
+    "categories": [
+      "Tiki bar",
+      "Poke bar",
+      "Vegetarian restaurant"
+    ],
+    "fid": "0x89c268606e5daec1:0x6d602944ab862bbc",
+    "cid": "7881344722810579900",
+    "reviewsCount": 249,
+    "reviewsDistribution": {
+      "oneStar": 6,
+      "twoStar": 4,
+      "threeStar": 14,
+      "fourStar": 42,
+      "fiveStar": 183
+    },
+    "imagesCount": 277,
+    "imageCategories": [],
+    "scrapedAt": "2026-03-06T10:44:47.959Z",
+    "googleFoodUrl": null,
+    "hotelAds": [],
+    "openingHours": [
+      {
+        "day": "Monday",
+        "hours": "Closed"
+      },
+      {
+        "day": "Tuesday",
+        "hours": "4 to 11 PM"
+      },
+      {
+        "day": "Wednesday",
+        "hours": "4 to 11 PM"
+      },
+      {
+        "day": "Thursday",
+        "hours": "4 to 11 PM"
+      },
+      {
+        "day": "Friday",
+        "hours": "4 PM to 12 AM"
+      },
+      {
+        "day": "Saturday",
+        "hours": "4 PM to 12 AM"
+      },
+      {
+        "day": "Sunday",
+        "hours": "12 to 11 PM"
+      }
+    ],
+    "peopleAlsoSearch": [],
+    "placesTags": [],
+    "reviewsTags": [],
+    "additionalInfo": {
+      "Service options": [
+        {
+          "Outdoor seating": true
+        },
+        {
+          "Delivery": true
+        },
+        {
+          "Takeout": true
+        },
+        {
+          "Dine-in": true
+        }
+      ],
+      "Highlights": [
+        {
+          "Fast service": true
+        },
+        {
+          "Great beer selection": true
+        },
+        {
+          "Great cocktails": true
+        },
+        {
+          "Karaoke": true
+        },
+        {
+          "Live music": true
+        },
+        {
+          "Live performances": true
+        }
+      ],
+      "Popular for": [
+        {
+          "Solo dining": true
+        }
+      ],
+      "Accessibility": [
+        {
+          "Wheelchair accessible entrance": true
+        },
+        {
+          "Wheelchair accessible restroom": true
+        }
+      ],
+      "Offerings": [
+        {
+          "Alcohol": true
+        },
+        {
+          "Beer": true
+        },
+        {
+          "Cocktails": true
+        },
+        {
+          "Food": true
+        },
+        {
+          "Food at bar": true
+        },
+        {
+          "Happy hour drinks": true
+        },
+        {
+          "Hard liquor": true
+        },
+        {
+          "Wine": true
+        }
+      ],
+      "Dining options": [
+        {
+          "Seating": true
+        },
+        {
+          "Table service": true
+        }
+      ],
+      "Amenities": [
+        {
+          "Restroom": true
+        }
+      ],
+      "Atmosphere": [
+        {
+          "Casual": true
+        },
+        {
+          "Cozy": true
+        },
+        {
+          "Trendy": true
+        }
+      ],
+      "Crowd": [
+        {
+          "Groups": true
+        },
+        {
+          "Tourists": true
+        }
+      ],
+      "Payments": [
+        {
+          "Credit cards": true
+        },
+        {
+          "Debit cards": true
+        },
+        {
+          "NFC mobile payments": true
+        },
+        {
+          "Credit cards": true
+        }
+      ],
+      "Children": [
+        {
+          "Good for kids": true
+        }
+      ],
+      "Parking": [
+        {
+          "Paid street parking": true
+        },
+        {
+          "Usually plenty of parking": true
+        }
+      ]
+    },
+    "gasPrices": [],
+    "url": "https://www.google.com/maps/search/?api=1&query=Rockaway%20Tiki%20Bar&query_place_id=ChIJwa5dbmBowokRvCuGq0QpYG0",
+    "searchPageUrl": "https://www.google.com/maps/search/ramen/@40.59321488768417,-73.70638644734598,13z?hl=en",
+    "searchString": "ramen",
+    "language": "en",
+    "rank": 30,
+    "isAdvertisement": false,
+    "imageUrl": "http://t3.gstatic.com/images?q=tbn:ANd9GcQFyoxFwUUZICU5__A5kmdotKLHlAYdO-sB_fV2hQb8SHa6U8BK",
+    "kgmid": "/g/11px8qqlb5"
+  },
+  {
+    "title": "Kimo's",
+    "price": "$$",
+    "categoryName": "Mediterranean restaurant",
+    "address": "92-16 Rockaway Beach Blvd, Queens, NY 11693",
+    "neighborhood": "Rockaway Beach",
+    "street": "92-16 Rockaway Beach Blvd",
+    "city": "Queens",
+    "postalCode": "11693",
+    "state": "New York",
+    "countryCode": "US",
+    "website": "https://kimoskitchen.com/",
+    "phone": "(347) 926-4384",
+    "phoneUnformatted": "+13479264384",
+    "claimThisBusiness": false,
+    "location": {
+      "lat": 40.5863456,
+      "lng": -73.8160552
+    },
+    "totalScore": 4.8,
+    "permanentlyClosed": false,
+    "temporarilyClosed": false,
+    "placeId": "ChIJAQCVGUdowokRpauTlXu2HP4",
+    "categories": [
+      "Mediterranean restaurant",
+      "Breakfast restaurant",
+      "Egyptian restaurant",
+      "Falafel restaurant",
+      "Gluten-free restaurant",
+      "Greek restaurant",
+      "Gyro restaurant",
+      "Lunch restaurant",
+      "Restaurant",
+      "Vegan restaurant"
+    ],
+    "fid": "0x89c2684719950001:0xfe1cb67b9593aba5",
+    "cid": "18310710826888309669",
+    "reviewsCount": 1169,
+    "reviewsDistribution": {
+      "oneStar": 41,
+      "twoStar": 8,
+      "threeStar": 15,
+      "fourStar": 46,
+      "fiveStar": 1059
+    },
+    "imagesCount": 540,
+    "imageCategories": [],
+    "scrapedAt": "2026-03-06T10:44:47.959Z",
+    "googleFoodUrl": null,
+    "hotelAds": [],
+    "openingHours": [
+      {
+        "day": "Monday",
+        "hours": "11:30 AM to 7:30 PM"
+      },
+      {
+        "day": "Tuesday",
+        "hours": "11:30 AM to 7:30 PM"
+      },
+      {
+        "day": "Wednesday",
+        "hours": "11:30 AM to 7:30 PM"
+      },
+      {
+        "day": "Thursday",
+        "hours": "11:30 AM to 7:30 PM"
+      },
+      {
+        "day": "Friday",
+        "hours": "11:30 AM to 8 PM"
+      },
+      {
+        "day": "Saturday",
+        "hours": "11:30 AM to 8 PM"
+      },
+      {
+        "day": "Sunday",
+        "hours": "11:30 AM to 8 PM"
+      }
+    ],
+    "additionalOpeningHours": {
+      "Delivery": [
+        {
+          "day": "Monday",
+          "hours": "12–7:30 PM"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "12–7:30 PM"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "12–7:30 PM"
+        },
+        {
+          "day": "Thursday",
+          "hours": "12–7:30 PM"
+        },
+        {
+          "day": "Friday",
+          "hours": "12–7:30 PM"
+        },
+        {
+          "day": "Saturday",
+          "hours": "12–7:30 PM"
+        },
+        {
+          "day": "Sunday",
+          "hours": "12–7:30 PM"
+        }
+      ]
+    },
+    "peopleAlsoSearch": [],
+    "placesTags": [],
+    "reviewsTags": [],
+    "additionalInfo": {
+      "Service options": [
+        {
+          "Outdoor seating": true
+        },
+        {
+          "No-contact delivery": true
+        },
+        {
+          "Delivery": true
+        },
+        {
+          "Onsite services": true
+        },
+        {
+          "Takeout": true
+        },
+        {
+          "Dine-in": true
+        }
+      ],
+      "Highlights": [
+        {
+          "Serves local specialty": true
+        }
+      ],
+      "Popular for": [
+        {
+          "Lunch": true
+        },
+        {
+          "Dinner": true
+        },
+        {
+          "Solo dining": true
+        }
+      ],
+      "Accessibility": [
+        {
+          "Wheelchair accessible entrance": true
+        },
+        {
+          "Wheelchair accessible seating": true
+        },
+        {
+          "Wheelchair accessible parking lot": false
+        }
+      ],
+      "Offerings": [
+        {
+          "Coffee": true
+        },
+        {
+          "Comfort food": true
+        },
+        {
+          "Healthy options": true
+        },
+        {
+          "Late-night food": true
+        },
+        {
+          "Organic dishes": true
+        },
+        {
+          "Quick bite": true
+        },
+        {
+          "Salad bar": true
+        },
+        {
+          "Small plates": true
+        },
+        {
+          "Vegetarian options": true
+        }
+      ],
+      "Dining options": [
+        {
+          "Lunch": true
+        },
+        {
+          "Dinner": true
+        },
+        {
+          "Catering": true
+        },
+        {
+          "Counter service": true
+        },
+        {
+          "Dessert": true
+        },
+        {
+          "Seating": true
+        }
+      ],
+      "Amenities": [
+        {
+          "Gender-neutral restroom": true
+        },
+        {
+          "Restroom": true
+        },
+        {
+          "Wi-Fi": true
+        }
+      ],
+      "Atmosphere": [
+        {
+          "Casual": true
+        },
+        {
+          "Cozy": true
+        }
+      ],
+      "Crowd": [
+        {
+          "Family-friendly": true
+        },
+        {
+          "LGBTQ+ friendly": true
+        },
+        {
+          "Tourists": true
+        },
+        {
+          "Transgender safespace": true
+        }
+      ],
+      "Payments": [
+        {
+          "Credit cards": true
+        },
+        {
+          "Debit cards": true
+        },
+        {
+          "NFC mobile payments": true
+        },
+        {
+          "Credit cards": true
+        }
+      ],
+      "Children": [
+        {
+          "Good for kids": true
+        }
+      ],
+      "Parking": [
+        {
+          "Free parking lot": true
+        },
+        {
+          "Free street parking": true
+        },
+        {
+          "Usually plenty of parking": true
+        }
+      ],
+      "Pets": [
+        {
+          "Dogs allowed outside": true
+        }
+      ]
+    },
+    "gasPrices": [],
+    "url": "https://www.google.com/maps/search/?api=1&query=Kimo's&query_place_id=ChIJAQCVGUdowokRpauTlXu2HP4",
+    "searchPageUrl": "https://www.google.com/maps/search/ramen/@40.59321488768417,-73.70638644734598,13z?hl=en",
+    "searchString": "ramen",
+    "language": "en",
+    "rank": 33,
+    "isAdvertisement": false,
+    "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHVAweozyxEZbSu-eYZtF18JHqzD9HwlxXECvJ5MWHoGPFovkmJrJRLb8NPn5LsG889ue5KDzEsBdUts0qLgoqol9myGsyYordjnRWHW3Tbo8L21EfU0_qsuoTN72Aw7iWH1jnpIYgg66A=w408-h306-k-no",
+    "kgmid": "/g/11h4cg8qld"
+  },
+  {
+    "title": "Ichiban sushi and cajun harbor",
+    "price": "$$",
+    "categoryName": "Seafood restaurant",
+    "address": "2-33 Beach 20th St, Far Rockaway, NY 11691",
+    "neighborhood": "Far Rockaway",
+    "street": "2-33 Beach 20th St",
+    "city": "Far Rockaway",
+    "postalCode": "11691",
+    "state": "New York",
+    "countryCode": "US",
+    "website": "https://www.ichibansushiandcajunharbor.com/",
+    "phone": "(347) 246-6441",
+    "phoneUnformatted": "+13472466441",
+    "claimThisBusiness": false,
+    "location": {
+      "lat": 40.5964158,
+      "lng": -73.7544625
+    },
+    "totalScore": 4.1,
+    "permanentlyClosed": false,
+    "temporarilyClosed": false,
+    "placeId": "ChIJ0XgEcNlpwokR4mebsuU2sQ0",
+    "categories": [
+      "Seafood restaurant",
+      "Cajun restaurant",
+      "Sushi restaurant"
+    ],
+    "fid": "0x89c269d9700478d1:0xdb136e5b29b67e2",
+    "cid": "986630153542789090",
+    "reviewsCount": 140,
+    "reviewsDistribution": {
+      "oneStar": 18,
+      "twoStar": 5,
+      "threeStar": 9,
+      "fourStar": 16,
+      "fiveStar": 92
+    },
+    "imagesCount": 222,
+    "imageCategories": [],
+    "scrapedAt": "2026-03-06T10:44:47.960Z",
+    "googleFoodUrl": null,
+    "hotelAds": [],
+    "openingHours": [
+      {
+        "day": "Monday",
+        "hours": "11 AM to 10 PM"
+      },
+      {
+        "day": "Tuesday",
+        "hours": "11 AM to 10 PM"
+      },
+      {
+        "day": "Wednesday",
+        "hours": "11 AM to 10 PM"
+      },
+      {
+        "day": "Thursday",
+        "hours": "11 AM to 10 PM"
+      },
+      {
+        "day": "Friday",
+        "hours": "11 AM to 10:30 PM"
+      },
+      {
+        "day": "Saturday",
+        "hours": "11 AM to 10:30 PM"
+      },
+      {
+        "day": "Sunday",
+        "hours": "11 AM to 10 PM"
+      }
+    ],
+    "peopleAlsoSearch": [],
+    "placesTags": [],
+    "reviewsTags": [],
+    "additionalInfo": {
+      "Service options": [
+        {
+          "Delivery": true
+        },
+        {
+          "Takeout": true
+        },
+        {
+          "Dine-in": true
+        }
+      ],
+      "Highlights": [
+        {
+          "Fast service": true
+        },
+        {
+          "Live music": true
+        }
+      ],
+      "Popular for": [
+        {
+          "Lunch": true
+        },
+        {
+          "Dinner": true
+        },
+        {
+          "Solo dining": true
+        }
+      ],
+      "Accessibility": [
+        {
+          "Wheelchair accessible entrance": true
+        },
+        {
+          "Wheelchair accessible seating": true
+        },
+        {
+          "Wheelchair accessible restroom": false
+        }
+      ],
+      "Offerings": [
+        {
+          "Alcohol": true
+        },
+        {
+          "Cocktails": true
+        },
+        {
+          "Comfort food": true
+        },
+        {
+          "Healthy options": true
+        },
+        {
+          "Quick bite": true
+        },
+        {
+          "Small plates": true
+        },
+        {
+          "Wine": true
+        }
+      ],
+      "Dining options": [
+        {
+          "Lunch": true
+        },
+        {
+          "Dinner": true
+        },
+        {
+          "Dessert": true
+        },
+        {
+          "Seating": true
+        },
+        {
+          "Table service": true
+        }
+      ],
+      "Amenities": [
+        {
+          "Bar onsite": true
+        },
+        {
+          "Wi-Fi": true
+        },
+        {
+          "Free Wi-Fi": true
+        }
+      ],
+      "Atmosphere": [
+        {
+          "Casual": true
+        },
+        {
+          "Trendy": true
+        }
+      ],
+      "Crowd": [
+        {
+          "Family-friendly": true
+        },
+        {
+          "LGBTQ+ friendly": true
+        },
+        {
+          "Tourists": true
+        },
+        {
+          "Transgender safespace": true
+        }
+      ],
+      "Planning": [
+        {
+          "Accepts reservations": true
+        }
+      ],
+      "Payments": [
+        {
+          "Credit cards": true
+        },
+        {
+          "Debit cards": true
+        },
+        {
+          "NFC mobile payments": true
+        }
+      ],
+      "Children": [
+        {
+          "Good for kids": true
+        }
+      ],
+      "Parking": [
+        {
+          "Free parking lot": true
+        },
+        {
+          "Free street parking": true
+        },
+        {
+          "Usually plenty of parking": true
+        }
+      ]
+    },
+    "gasPrices": [],
+    "url": "https://www.google.com/maps/search/?api=1&query=Ichiban%20sushi%20and%20cajun%20harbor&query_place_id=ChIJ0XgEcNlpwokR4mebsuU2sQ0",
+    "searchPageUrl": "https://www.google.com/maps/search/ramen/@40.59321488768417,-73.70638644734598,13z?hl=en",
+    "searchString": "ramen",
+    "language": "en",
+    "rank": 36,
+    "isAdvertisement": false,
+    "imageUrl": "http://t1.gstatic.com/images?q=tbn:ANd9GcStNOrptMijH9zQVhdS_SJ_nt6QkLlEGum9OWAGh6PfDmfqPn3b",
+    "kgmid": "/g/11nyp3gkmz"
+  },
+  {
+    "title": "Soy & Sake Asian Eats",
+    "price": null,
+    "categoryName": "Restaurant",
+    "address": "Queens, NY 11430",
+    "neighborhood": null,
+    "street": null,
+    "city": "Queens",
+    "postalCode": "11430",
+    "state": "New York",
+    "countryCode": "US",
+    "claimThisBusiness": true,
+    "location": {
+      "lat": 40.6419373,
+      "lng": -73.7918862
+    },
+    "totalScore": 1.7,
+    "permanentlyClosed": false,
+    "temporarilyClosed": false,
+    "placeId": "ChIJrTX0jktnwokR_JrxZy7NhuA",
+    "categories": [
+      "Restaurant"
+    ],
+    "fid": "0x89c2674b8ef435ad:0xe086cd2e67f19afc",
+    "cid": "16178844310571162364",
+    "reviewsCount": 221,
+    "reviewsDistribution": {
+      "oneStar": 166,
+      "twoStar": 10,
+      "threeStar": 11,
+      "fourStar": 16,
+      "fiveStar": 18
+    },
+    "imagesCount": 124,
+    "imageCategories": [],
+    "scrapedAt": "2026-03-06T10:44:47.960Z",
+    "googleFoodUrl": null,
+    "hotelAds": [],
+    "openingHours": [
+      {
+        "day": "Monday",
+        "hours": "8 AM to 1 AM"
+      },
+      {
+        "day": "Tuesday",
+        "hours": "8 AM to 1 AM"
+      },
+      {
+        "day": "Wednesday",
+        "hours": "8 AM to 1 AM"
+      },
+      {
+        "day": "Thursday",
+        "hours": "8 AM to 1 AM"
+      },
+      {
+        "day": "Friday",
+        "hours": "8 AM to 1 AM"
+      },
+      {
+        "day": "Saturday",
+        "hours": "8 AM to 1 AM"
+      },
+      {
+        "day": "Sunday",
+        "hours": "8 AM to 1 AM"
+      }
+    ],
+    "peopleAlsoSearch": [],
+    "placesTags": [],
+    "reviewsTags": [],
+    "additionalInfo": {
+      "Service options": [
+        {
+          "Delivery": true
+        },
+        {
+          "Onsite services": true
+        },
+        {
+          "Takeout": true
+        },
+        {
+          "Dine-in": true
+        }
+      ],
+      "Highlights": [
+        {
+          "Fast service": true
+        }
+      ],
+      "Popular for": [
+        {
+          "Lunch": true
+        },
+        {
+          "Dinner": true
+        },
+        {
+          "Solo dining": true
+        }
+      ],
+      "Accessibility": [
+        {
+          "Wheelchair accessible entrance": true
+        },
+        {
+          "Wheelchair accessible seating": true
+        },
+        {
+          "Wheelchair accessible parking lot": false
+        }
+      ],
+      "Offerings": [
+        {
+          "Alcohol": true
+        },
+        {
+          "Beer": true
+        },
+        {
+          "Cocktails": true
+        },
+        {
+          "Coffee": true
+        },
+        {
+          "Comfort food": true
+        },
+        {
+          "Healthy options": true
+        },
+        {
+          "Quick bite": true
+        },
+        {
+          "Small plates": true
+        },
+        {
+          "Wine": true
+        }
+      ],
+      "Dining options": [
+        {
+          "Lunch": true
+        },
+        {
+          "Dinner": true
+        },
+        {
+          "Counter service": true
+        }
+      ],
+      "Amenities": [
+        {
+          "Bar onsite": true
+        }
+      ],
+      "Atmosphere": [
+        {
+          "Casual": true
+        }
+      ],
+      "Payments": [
+        {
+          "Credit cards": true
+        },
+        {
+          "Debit cards": true
+        },
+        {
+          "NFC mobile payments": true
+        }
+      ]
+    },
+    "gasPrices": [],
+    "url": "https://www.google.com/maps/search/?api=1&query=Soy%20%26%20Sake%20Asian%20Eats&query_place_id=ChIJrTX0jktnwokR_JrxZy7NhuA",
+    "searchPageUrl": "https://www.google.com/maps/search/ramen/@40.59321488768417,-73.70638644734598,13z?hl=en",
+    "searchString": "ramen",
+    "language": "en",
+    "rank": 38,
+    "isAdvertisement": false,
+    "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHVAwepnAL115g5dqdT4uBaWUVOnMydMoc1VybZ3UfB4LSuSbYx5DSJN1F5R5MQsKUrZTS7HC4OZL7YR6G7C7tyPS346spVSdTpc-EZHuMehWGIphmvqw8xLaMyYHDwYYINc1Yp-2zs-zw=w408-h306-k-no",
+    "kgmid": "/g/11gv28lhhp"
+  },
+  {
+    "title": "Jikji Cafe",
+    "price": null,
+    "categoryName": "Restaurant",
+    "address": "JFK Terminal 1, Terminal Dr, Queens, NY 11430",
+    "neighborhood": null,
+    "street": "JFK Terminal 1, Terminal Dr",
+    "city": "Queens",
+    "postalCode": "11430",
+    "state": "New York",
+    "countryCode": "US",
+    "phone": "(718) 751-2003",
+    "phoneUnformatted": "+17187512003",
+    "claimThisBusiness": true,
+    "location": {
+      "lat": 40.6428967,
+      "lng": -73.7910987
+    },
+    "totalScore": 2,
+    "permanentlyClosed": false,
+    "temporarilyClosed": false,
+    "placeId": "ChIJ_eQYpFdmwokRSwITdWEP9EY",
+    "categories": [
+      "Restaurant"
+    ],
+    "fid": "0x89c26657a418e4fd:0x46f40f617513024b",
+    "cid": "5112728388222779979",
+    "reviewsCount": 85,
+    "reviewsDistribution": {
+      "oneStar": 53,
+      "twoStar": 6,
+      "threeStar": 8,
+      "fourStar": 6,
+      "fiveStar": 12
+    },
+    "imagesCount": 51,
+    "imageCategories": [],
+    "scrapedAt": "2026-03-06T10:44:48.984Z",
+    "googleFoodUrl": null,
+    "hotelAds": [],
+    "openingHours": [
+      {
+        "day": "Monday",
+        "hours": "8 AM to 11:30 PM"
+      },
+      {
+        "day": "Tuesday",
+        "hours": "8 AM to 11:30 PM"
+      },
+      {
+        "day": "Wednesday",
+        "hours": "8 AM to 11:30 PM"
+      },
+      {
+        "day": "Thursday",
+        "hours": "8 AM to 11:30 PM"
+      },
+      {
+        "day": "Friday",
+        "hours": "8 AM to 11:30 PM"
+      },
+      {
+        "day": "Saturday",
+        "hours": "8 AM to 11:30 PM"
+      },
+      {
+        "day": "Sunday",
+        "hours": "8 AM to 11:30 PM"
+      }
+    ],
+    "peopleAlsoSearch": [],
+    "placesTags": [],
+    "reviewsTags": [],
+    "additionalInfo": {
+      "Service options": [
+        {
+          "Onsite services": true
+        },
+        {
+          "Takeout": true
+        },
+        {
+          "Dine-in": true
+        }
+      ],
+      "Highlights": [
+        {
+          "Fast service": true
+        }
+      ],
+      "Popular for": [
+        {
+          "Breakfast": true
+        },
+        {
+          "Lunch": true
+        },
+        {
+          "Dinner": true
+        },
+        {
+          "Solo dining": true
+        }
+      ],
+      "Accessibility": [
+        {
+          "Wheelchair accessible entrance": true
+        },
+        {
+          "Wheelchair accessible parking lot": false
+        }
+      ],
+      "Offerings": [
+        {
+          "Alcohol": true
+        },
+        {
+          "Beer": true
+        },
+        {
+          "Coffee": true
+        },
+        {
+          "Comfort food": true
+        },
+        {
+          "Quick bite": true
+        },
+        {
+          "Wine": true
+        }
+      ],
+      "Dining options": [
+        {
+          "Breakfast": true
+        },
+        {
+          "Lunch": true
+        },
+        {
+          "Dinner": true
+        },
+        {
+          "Counter service": true
+        }
+      ],
+      "Atmosphere": [
+        {
+          "Casual": true
+        }
+      ],
+      "Crowd": [
+        {
+          "Tourists": true
+        }
+      ],
+      "Payments": [
+        {
+          "Credit cards": true
+        },
+        {
+          "Debit cards": true
+        },
+        {
+          "NFC mobile payments": true
+        },
+        {
+          "Credit cards": true
+        }
+      ]
+    },
+    "gasPrices": [],
+    "url": "https://www.google.com/maps/search/?api=1&query=Jikji%20Cafe&query_place_id=ChIJ_eQYpFdmwokRSwITdWEP9EY",
+    "searchPageUrl": "https://www.google.com/maps/search/ramen/@40.59321488768417,-73.70638644734598,13z?hl=en",
+    "searchString": "ramen",
+    "language": "en",
+    "rank": 46,
+    "isAdvertisement": false,
+    "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHVAwerpiGfSYZ1v2s0IXIk4hUlxAiolS7KHbz_uMpLh2JLmmj5yqonLzPbEUsCtBVrvbtn9KXfWWvsTcC8Ydz0DrAowmyYK77WR3TeQgRCO_MI5d-yQcJsL4NrtrXTfUiHbSa5ewU0kCQ=w408-h306-k-no",
+    "kgmid": "/g/1hhjbff6_"
+  },
+  {
+    "title": "Eat&Go Istanbul/ New York",
+    "description": "Quick, grab-&-go eatery for Turkish dishes such as meatballs, börek, doner, dried nuts & coffee.",
+    "price": "$$",
+    "categoryName": "Restaurant",
+    "address": "John F. Kennedy International Airport, JFK Terminal 1, JFK Access Rd, Queens, NY 11430",
+    "neighborhood": null,
+    "street": "John F. Kennedy International Airport, JFK Terminal 1, JFK Access Rd",
+    "city": "Queens",
+    "postalCode": "11430",
+    "state": "New York",
+    "countryCode": "US",
+    "website": "http://www.eatandgoistanbul.com/",
+    "phone": "(718) 751-2826",
+    "phoneUnformatted": "+17187512826",
+    "claimThisBusiness": true,
+    "location": {
+      "lat": 40.6420732,
+      "lng": -73.7921034
+    },
+    "totalScore": 2.6,
+    "permanentlyClosed": false,
+    "temporarilyClosed": false,
+    "placeId": "ChIJ_eQYpFdmwokR5gGbSAAj13k",
+    "categories": [
+      "Restaurant"
+    ],
+    "fid": "0x89c26657a418e4fd:0x79d72300489b01e6",
+    "cid": "8779524482707161574",
+    "reviewsCount": 604,
+    "reviewsDistribution": {
+      "oneStar": 262,
+      "twoStar": 47,
+      "threeStar": 76,
+      "fourStar": 80,
+      "fiveStar": 139
+    },
+    "imagesCount": 415,
+    "imageCategories": [],
+    "scrapedAt": "2026-03-06T10:44:48.985Z",
+    "googleFoodUrl": null,
+    "hotelAds": [],
+    "openingHours": [
+      {
+        "day": "Monday",
+        "hours": "9:03 AM to 3 AM"
+      },
+      {
+        "day": "Tuesday",
+        "hours": "9:03 AM to 3 AM"
+      },
+      {
+        "day": "Wednesday",
+        "hours": "9:03 AM to 3 AM"
+      },
+      {
+        "day": "Thursday",
+        "hours": "9:03 AM to 3 AM"
+      },
+      {
+        "day": "Friday",
+        "hours": "9:03 AM to 3 AM"
+      },
+      {
+        "day": "Saturday",
+        "hours": "9:03 AM to 3 AM"
+      },
+      {
+        "day": "Sunday",
+        "hours": "9:03 AM to 3 AM"
+      }
+    ],
+    "peopleAlsoSearch": [],
+    "placesTags": [],
+    "reviewsTags": [],
+    "additionalInfo": {
+      "Service options": [
+        {
+          "Onsite services": true
+        },
+        {
+          "Takeout": true
+        },
+        {
+          "Dine-in": true
+        },
+        {
+          "Delivery": false
+        }
+      ],
+      "Highlights": [
+        {
+          "Fast service": true
+        }
+      ],
+      "Popular for": [
+        {
+          "Lunch": true
+        },
+        {
+          "Dinner": true
+        },
+        {
+          "Solo dining": true
+        }
+      ],
+      "Accessibility": [
+        {
+          "Wheelchair accessible entrance": true
+        },
+        {
+          "Wheelchair accessible seating": true
+        }
+      ],
+      "Offerings": [
+        {
+          "Alcohol": true
+        },
+        {
+          "Beer": true
+        },
+        {
+          "Coffee": true
+        },
+        {
+          "Comfort food": true
+        },
+        {
+          "Halal food": true
+        },
+        {
+          "Quick bite": true
+        },
+        {
+          "Wine": true
+        }
+      ],
+      "Dining options": [
+        {
+          "Breakfast": true
+        },
+        {
+          "Lunch": true
+        },
+        {
+          "Dinner": true
+        },
+        {
+          "Counter service": true
+        },
+        {
+          "Dessert": true
+        },
+        {
+          "Table service": false
+        }
+      ],
+      "Atmosphere": [
+        {
+          "Casual": true
+        }
+      ],
+      "Crowd": [
+        {
+          "Tourists": true
+        }
+      ],
+      "Planning": [
+        {
+          "Accepts reservations": false
+        }
+      ],
+      "Payments": [
+        {
+          "Credit cards": true
+        },
+        {
+          "Debit cards": true
+        },
+        {
+          "NFC mobile payments": true
+        },
+        {
+          "Credit cards": true
+        }
+      ],
+      "Children": [
+        {
+          "Good for kids": true
+        }
+      ]
+    },
+    "gasPrices": [],
+    "url": "https://www.google.com/maps/search/?api=1&query=Eat%26Go%20Istanbul%2F%20New%20York&query_place_id=ChIJ_eQYpFdmwokR5gGbSAAj13k",
+    "searchPageUrl": "https://www.google.com/maps/search/ramen/@40.59321488768417,-73.70638644734598,13z?hl=en",
+    "searchString": "ramen",
+    "language": "en",
+    "rank": 48,
+    "isAdvertisement": false,
+    "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHVAweqE0e-YuUsBJih_AbvQQMdQt1vJh5hL70Jf8Rx-jQ7FPfx7WGBdxRErQ_09PyO_Sf7GVXHWo23SXoT6nGyToAqnfO8GqSDm-fsWsYnFT8SgqW62Df5DDmZBh-lF6s-i9bxSbC_GBg=w408-h544-k-no",
+    "kgmid": "/g/1hhjfcf0n"
+  },
+  {
+    "title": "Wok & Roll",
+    "price": null,
+    "categoryName": "Chinese restaurant",
+    "address": "John F. Kennedy International Airport, JFK Terminal 1, Terminal Dr, Jamaica, NY 11430",
+    "neighborhood": "Jamaica",
+    "street": "John F. Kennedy International Airport, JFK Terminal 1, Terminal Dr",
+    "city": "Jamaica",
+    "postalCode": "11430",
+    "state": "New York",
+    "countryCode": "US",
+    "phone": "(718) 751-1999",
+    "phoneUnformatted": "+17187511999",
+    "claimThisBusiness": true,
+    "location": {
+      "lat": 40.6431384,
+      "lng": -73.7910562
+    },
+    "totalScore": 1.9,
+    "permanentlyClosed": false,
+    "temporarilyClosed": false,
+    "placeId": "ChIJ_eQYpFdmwokRXfPLa-fqTxg",
+    "categories": [
+      "Chinese restaurant"
+    ],
+    "fid": "0x89c26657a418e4fd:0x184feae76bcbf35d",
+    "cid": "1751877059737285469",
+    "reviewsCount": 160,
+    "reviewsDistribution": {
+      "oneStar": 110,
+      "twoStar": 12,
+      "threeStar": 9,
+      "fourStar": 5,
+      "fiveStar": 24
+    },
+    "imagesCount": 98,
+    "imageCategories": [],
+    "scrapedAt": "2026-03-06T10:44:48.985Z",
+    "googleFoodUrl": null,
+    "hotelAds": [],
+    "openingHours": [
+      {
+        "day": "Monday",
+        "hours": "9 AM to 11 PM"
+      },
+      {
+        "day": "Tuesday",
+        "hours": "9 AM to 11 PM"
+      },
+      {
+        "day": "Wednesday",
+        "hours": "9 AM to 11 PM"
+      },
+      {
+        "day": "Thursday",
+        "hours": "9 AM to 11 PM"
+      },
+      {
+        "day": "Friday",
+        "hours": "9 AM to 11 PM"
+      },
+      {
+        "day": "Saturday",
+        "hours": "9 AM to 11 PM"
+      },
+      {
+        "day": "Sunday",
+        "hours": "9 AM to 11 PM"
+      }
+    ],
+    "peopleAlsoSearch": [],
+    "placesTags": [],
+    "reviewsTags": [],
+    "additionalInfo": {
+      "Service options": [
+        {
+          "Takeout": true
+        },
+        {
+          "Dine-in": true
+        }
+      ],
+      "Popular for": [
+        {
+          "Lunch": true
+        },
+        {
+          "Dinner": true
+        },
+        {
+          "Solo dining": true
+        }
+      ],
+      "Accessibility": [
+        {
+          "Wheelchair accessible entrance": true
+        }
+      ],
+      "Offerings": [
+        {
+          "Comfort food": true
+        },
+        {
+          "Quick bite": true
+        }
+      ],
+      "Dining options": [
+        {
+          "Lunch": true
+        },
+        {
+          "Dinner": true
+        },
+        {
+          "Table service": false
+        }
+      ],
+      "Atmosphere": [
+        {
+          "Casual": true
+        }
+      ],
+      "Crowd": [
+        {
+          "Tourists": true
+        }
+      ],
+      "Planning": [
+        {
+          "Accepts reservations": false
+        }
+      ],
+      "Payments": [
+        {
+          "Credit cards": true
+        },
+        {
+          "Debit cards": true
+        },
+        {
+          "NFC mobile payments": true
+        },
+        {
+          "Credit cards": true
+        }
+      ]
+    },
+    "gasPrices": [],
+    "url": "https://www.google.com/maps/search/?api=1&query=Wok%20%26%20Roll&query_place_id=ChIJ_eQYpFdmwokRXfPLa-fqTxg",
+    "searchPageUrl": "https://www.google.com/maps/search/ramen/@40.59321488768417,-73.70638644734598,13z?hl=en",
+    "searchString": "ramen",
+    "language": "en",
+    "rank": 49,
+    "isAdvertisement": false,
+    "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHVAwero-oodEunsfFwCIQvqYpsrZd-ejygRTLp7OnkZd4_B4_4eAeLVRmOsZ5i1E39qQHoGk8UuP-Q5sX-0t4PzYENgWBkvxzW-stA7IRGUikOr0ZWnykq-JZr-IRiBRMt4XHi66hiD=w408-h839-k-no",
+    "kgmid": "/g/1235g0zhs"
+  },
+  {
+    "title": "Bento Sushi",
+    "price": null,
+    "categoryName": "Sushi restaurant",
+    "address": "3-03 30th St, Queens, NY 10001",
+    "neighborhood": null,
+    "street": "3-03 30th St",
+    "city": "Queens",
+    "postalCode": "10001",
+    "state": "New York",
+    "countryCode": "US",
+    "website": "https://www.bentosushi.com/us/",
+    "claimThisBusiness": false,
+    "location": {
+      "lat": 40.6412724,
+      "lng": -73.7826692
+    },
+    "totalScore": 2.9,
+    "permanentlyClosed": false,
+    "temporarilyClosed": false,
+    "placeId": "ChIJJfKv-VxnwokRQkfSr0AuVTo",
+    "categories": [
+      "Sushi restaurant",
+      "Takeout Restaurant"
+    ],
+    "fid": "0x89c2675cf9aff225:0x3a552e40afd24742",
+    "cid": "4203316682582804290",
+    "reviewsCount": 74,
+    "reviewsDistribution": {
+      "oneStar": 26,
+      "twoStar": 7,
+      "threeStar": 12,
+      "fourStar": 10,
+      "fiveStar": 19
+    },
+    "imagesCount": 55,
+    "imageCategories": [],
+    "scrapedAt": "2026-03-06T10:44:48.985Z",
+    "googleFoodUrl": null,
+    "hotelAds": [],
+    "openingHours": [],
+    "peopleAlsoSearch": [],
+    "placesTags": [],
+    "reviewsTags": [],
+    "additionalInfo": {
+      "Service options": [
+        {
+          "Delivery": true
+        },
+        {
+          "Takeout": true
+        },
+        {
+          "Dine-in": true
+        }
+      ],
+      "Popular for": [
+        {
+          "Lunch": true
+        },
+        {
+          "Dinner": true
+        },
+        {
+          "Solo dining": true
+        }
+      ],
+      "Accessibility": [
+        {
+          "Wheelchair accessible entrance": true
+        }
+      ],
+      "Offerings": [
+        {
+          "Healthy options": true
+        },
+        {
+          "Quick bite": true
+        },
+        {
+          "Small plates": true
+        }
+      ],
+      "Dining options": [
+        {
+          "Lunch": true
+        },
+        {
+          "Dinner": true
+        }
+      ],
+      "Atmosphere": [
+        {
+          "Casual": true
+        }
+      ],
+      "Payments": [
+        {
+          "Credit cards": true
+        },
+        {
+          "Debit cards": true
+        },
+        {
+          "NFC mobile payments": true
+        }
+      ]
+    },
+    "gasPrices": [],
+    "url": "https://www.google.com/maps/search/?api=1&query=Bento%20Sushi&query_place_id=ChIJJfKv-VxnwokRQkfSr0AuVTo",
+    "searchPageUrl": "https://www.google.com/maps/search/ramen/@40.59321488768417,-73.70638644734598,13z?hl=en",
+    "searchString": "ramen",
+    "language": "en",
+    "rank": 52,
+    "isAdvertisement": false,
+    "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHVAweqXzvxCQ_0CCk1XOMnto4BB7rR2fIZj8yWDD1kkVTzvGL1xINNtT48JwpYqV0ypMlo-plPhYvcPykFLAcNgsOR4zK4cgtKrzCsxe7x1EEarWtlhf21cm0QGRXNfST_IyifFWlKWzYy-SCw=w408-h544-k-no",
+    "kgmid": "/g/11cnd9d06y"
+  }
+]

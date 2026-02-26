@@ -1,0 +1,12 @@
+{
+  "functions": {
+    "source": "functions",
+    "ignore": [
+      "node_modules",
+      ".git"
+    ]
+  },
+  "storage": {
+    "rules": "storage.rules"
+  }
+}

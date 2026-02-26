@@ -1,0 +1,10 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Product data is publicly readable (no auth needed)
+    match /products/{allPaths=**} {
+      allow read: if true;
+      allow write: if false; // Only upload via admin SDK
+    }
+  }
+}
