@@ -1,7 +1,7 @@
 # TODO: Run Microcenter Apify Scraper
 
 ## Task
-Run the Apify scraper to scrape Microcenter products using the API token: `REMOVED_SECRET`
+Run the Apify scraper to scrape Microcenter products using the API token from your `.env` file
 
 ## Steps
 - [ ] Run `npm run scrape-microcenter-apify` 

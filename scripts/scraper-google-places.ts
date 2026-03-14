@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 // Using the known Apify token from existing scripts in the project
-const API_TOKEN = 'REMOVED_SECRET';
+const API_TOKEN = process.env.APIFY_API_TOKEN || '';
 
 const apifyClient = new ApifyClient({ token: API_TOKEN });
 

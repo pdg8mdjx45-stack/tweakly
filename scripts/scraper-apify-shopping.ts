@@ -32,8 +32,7 @@ interface Product {
   specs: Record<string, string>;
 }
 
-// IMPORTANT: Replace with your actual Apify API token (the provided user token: 'REMOVED_SECRET')
-const API_TOKEN = 'REMOVED_SECRET';
+const API_TOKEN = process.env.APIFY_API_TOKEN || '';
 
 // Use a Google Shopping Scraper Actor
 // ntf/google-shopping-scraper is a reliable choice for typical Google Shopping scraping.

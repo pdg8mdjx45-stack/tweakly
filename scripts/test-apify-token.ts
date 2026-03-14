@@ -5,7 +5,7 @@
 
 import axios from 'axios';
 
-const APIFY_API_KEY = 'REMOVED_SECRET';
+const APIFY_API_KEY = process.env.APIFY_API_TOKEN || '';
 
 async function testApify() {
   console.log('=== Testing Apify Token ===\n');
