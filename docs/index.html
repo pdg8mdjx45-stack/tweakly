@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tweakly — Slimme prijsvergelijking voor elektronica</title>
+  <meta name="description" content="Tweakly vergelijkt prijzen van Nederlandse webshops voor smartphones, laptops, monitoren, componenten en meer. Vind altijd de beste deal.">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0f;
+      color: #e8e8ed;
+      min-height: 100vh;
+    }
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+      text-align: center;
+      background: radial-gradient(ellipse at top, #0d1b3e 0%, #0a0a0f 70%);
+    }
+    .logo {
+      font-size: 3.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .logo span { color: #0066FF; }
+    .tagline {
+      font-size: 1.25rem;
+      color: #8888a0;
+      margin-bottom: 2.5rem;
+      max-width: 500px;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      max-width: 700px;
+      width: 100%;
+      margin-bottom: 3rem;
+    }
+    .feature {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: left;
+    }
+    .feature-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .feature h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .feature p { font-size: 0.85rem; color: #8888a0; line-height: 1.4; }
+    .shops {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+      max-width: 600px;
+    }
+    .shop-badge {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.8rem;
+      color: #aaa;
+    }
+    .cta {
+      display: inline-block;
+      background: #0066FF;
+      color: white;
+      text-decoration: none;
+      padding: 0.85rem 2rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+    .cta:hover { background: #0052cc; }
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.8rem;
+      color: #555;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .footer a { color: #0066FF; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="logo">Tweak<span>ly</span></div>
+    <p class="tagline">Vergelijk prijzen van Nederlandse webshops voor elektronica. Vind de beste deal voor smartphones, laptops, monitoren en meer.</p>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">&#128200;</div>
+        <h3>Prijsvergelijking</h3>
+        <p>Vergelijk prijzen van 15+ Nederlandse webshops in real-time.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">&#128276;</div>
+        <h3>Prijsmeldingen</h3>
+        <p>Stel een gewenste prijs in en ontvang een melding zodra de prijs daalt.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">&#128202;</div>
+        <h3>Prijshistorie</h3>
+        <p>Bekijk hoe prijzen veranderen over tijd met interactieve grafieken.</p>
+      </div>
+    </div>
+
+    <div class="shops">
+      <span class="shop-badge">Coolblue</span>
+      <span class="shop-badge">Bol.com</span>
+      <span class="shop-badge">MediaMarkt</span>
+      <span class="shop-badge">Amazon.nl</span>
+      <span class="shop-badge">Alternate</span>
+      <span class="shop-badge">Megekko</span>
+      <span class="shop-badge">Azerty</span>
+      <span class="shop-badge">Expert</span>
+      <span class="shop-badge">BCC</span>
+    </div>
+
+    <a href="mailto:alexander.ballet@hotmail.com" class="cta">Neem contact op</a>
+  </section>
+
+  <footer class="footer">
+    &copy; 2026 Tweakly &mdash; <a href="mailto:alexander.ballet@hotmail.com">Contact</a>
+  </footer>
+</body>
+</html>
