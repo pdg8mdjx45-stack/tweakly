@@ -1,0 +1,501 @@
+{
+  "total": 25557,
+  "bySource": {
+    "icecat": 25557
+  },
+  "byCategory": {
+    "Interne harde schijven": 593,
+    "Inkjetprinters": 121,
+    "Grootformaat-printers": 104,
+    "Multifunctionele printers": 323,
+    "Transparantadapters": 8,
+    "Laptops": 10622,
+    "Thin clients": 80,
+    "Hoofdtelefoons/headsets": 778,
+    "Data-opslag-servers": 485,
+    "Fotoprinters": 38,
+    "PC-hulpprogramma's": 164,
+    "Dot matrix-printers": 8,
+    "Netwerk-switches": 225,
+    "Draadloze routers": 139,
+    "TV's": 1629,
+    "Computer monitoren": 1551,
+    "Scanners": 98,
+    "Softwarelicenties & -uitbreidingen": 2559,
+    "Laptopstandaards": 13,
+    "Webcams": 111,
+    "Video kabel adapters": 57,
+    "Laserprinters": 333,
+    "Camera lens adapters": 23,
+    "Batterijen voor camera's/camcorders": 90,
+    "Labelprinters": 89,
+    "All-in-One PC's/workstations": 710,
+    "Opslagsoftware": 209,
+    "USB grafische adapters": 5,
+    "Interfacekaarten/-adapters": 120,
+    "Game controllers/spelbesturing": 92,
+    "Digitale fotoframes": 81,
+    "CRT TV's": 57,
+    "Projectie TV's": 4,
+    "Document Management Software": 39,
+    "KVM-switches": 179,
+    "Bedrade routers": 69,
+    "Print servers": 32,
+    "Computer data switches": 1,
+    "PoE adapters & injectoren": 8,
+    "Ontwikkelsoftware": 357,
+    "UPS-batterij kabinetten": 4,
+    "Servers": 461,
+    "Stellingen/racks": 196,
+    "Ononderbroken stroomvoorziening (UPS)": 280,
+    "UPS-accessoires": 15,
+    "Schermbeschermers voor tablets": 25,
+    "Draagbare & party speakers": 49,
+    "PowerLine-netwerkadapters": 1,
+    "Tablets": 216,
+    "Smartwatches & Sport Watches": 52,
+    "POS-printers": 13,
+    "Smartphones": 781,
+    "Modems": 65,
+    "UPS-accu's": 57,
+    "Multimediasoftware": 8,
+    "Videoservers/-encoders": 3,
+    "Stekker-adapters": 8,
+    "Hospitality tv's": 1,
+    "Public Address-speakers (PA)": 1,
+    "Signaalprocessors": 4,
+    "Beveiligingssoftware": 142,
+    "Veiligheidsbehuizingen voor tablets": 81,
+    "Accessoires voor smartphones & mobiele telefoons": 44,
+    "Draadloze beeldschermadapters": 1,
+    "Inktnavullingen voor printers": 1,
+    "Printers & scanners": 6,
+    "VoIP telefoonadapters": 6,
+    "Softwareboeken & -handleidingen": 677,
+    "Communicatiesoftware": 32,
+    "Netwerksoftware": 71,
+    "Audiocassetteadapters": 1,
+    "Financiële en boekhoudsoftware": 32,
+    "Glasvezeladapters": 1,
+    "Radiofrequentie (RF) modems": 1,
+    "Kaartprinters": 2,
+    "Kindertablets": 2,
+    "IT-infrastructuursoftware": 7,
+    "Reserve-onderdelen & accessoires voor tablets": 2,
+    "Line matrixprinters": 1,
+    "Remote management adapters": 1,
+    "Educatieve software": 1,
+    "Besturingsprocessors": 1
+  },
+  "byBrand": {
+    "HP": 7918,
+    "Acer": 1469,
+    "Philips": 881,
+    "MSI": 391,
+    "QNAP": 98,
+    "Jabra": 80,
+    "Epson": 122,
+    "NETGEAR": 98,
+    "Zyxel": 55,
+    "Samsung": 1597,
+    "Fujitsu": 923,
+    "Hama": 101,
+    "AOC": 32,
+    "iiyama": 94,
+    "Trust": 87,
+    "DELL": 1462,
+    "Canon": 280,
+    "Brother": 103,
+    "Sony": 558,
+    "JVC": 128,
+    "Sandberg": 4,
+    "Magnavox": 1,
+    "Braun": 3,
+    "StarTech.com": 29,
+    "TP-Link": 45,
+    "Manhattan": 4,
+    "ATEN": 87,
+    "Zebra": 68,
+    "Dell Wyse": 20,
+    "ICY BOX": 3,
+    "LG": 529,
+    "APC": 296,
+    "Axagon": 13,
+    "Buffalo": 105,
+    "Neomounts": 10,
+    "ASUS": 1073,
+    "Lenovo": 3648,
+    "D-Link": 69,
+    "Viewsonic": 77,
+    "Lindy": 4,
+    "Seagate": 109,
+    "NEC": 114,
+    "Kurio": 3,
+    "Allied Telesis": 11,
+    "Sharp": 77,
+    "Linksys": 56,
+    "Norton": 167,
+    "BakkerElkhuizen": 2,
+    "Iomega": 45,
+    "FSP": 3,
+    "Origin Storage": 69,
+    "CoreParts": 20,
+    "NGS": 28,
+    "LevelOne": 15,
+    "Vertiv": 100,
+    "Thrustmaster": 30,
+    "Plustek": 16,
+    "TCL": 89,
+    "Haier": 6,
+    "AG Neovo": 6,
+    "Motorola": 53,
+    "Honor": 27,
+    "Alienware": 50,
+    "MEDION": 28,
+    "SHOKZ": 3,
+    "Nilox": 44,
+    "ZAGG": 5,
+    "Dynabook": 56,
+    "Kensington": 6,
+    "Ernitec": 7,
+    "GIGABYTE": 21,
+    "Celly": 18,
+    "Forza Refurbished": 396,
+    "JBL": 31,
+    "upcycle it": 144,
+    "Dahua Technology": 3,
+    "HyperX": 2,
+    "Mars Gaming": 3,
+    "i-tec": 1,
+    "OPPO": 30,
+    "Socomec": 16,
+    "Cellularline": 4,
+    "InLine": 2,
+    "Hannspree": 25,
+    "IOPLEE": 10,
+    "Legrand": 11,
+    "Amazfit": 3,
+    "Hisense": 48,
+    "SilverNet": 4,
+    "PDP": 6,
+    "Yealink": 21,
+    "Displex": 4,
+    "Trevi": 7,
+    "Turtle Beach": 13,
+    "EnGenius": 11,
+    "Emporia": 1,
+    "A2C": 1,
+    "CyberPower": 31,
+    "Conceptronic": 42,
+    "Bouncepad": 80,
+    "HP Poly": 7,
+    "ERAZER": 2,
+    "Equip": 106,
+    "GENESIS": 2,
+    "Ewent": 1,
+    "eSTUFF": 3,
+    "Teqcycle": 4,
+    "TERRA": 2,
+    "j5create": 2,
+    "Ergonomic Solutions": 1,
+    "CoolBox": 3,
+    "Grundig": 1,
+    "iggual": 2,
+    "Vultech": 3,
+    "Verbatim": 3,
+    "Konix": 2,
+    "Targus": 4,
+    "EIZO": 34,
+    "Freecom": 4,
+    "Hercules": 5,
+    "KYOCERA": 27,
+    "Siemens": 3,
+    "Ricoh": 20,
+    "Digicom": 63,
+    "BenQ": 109,
+    "Lexware": 82,
+    "FRITZ!": 18,
+    "Beko": 1,
+    "Salora": 5,
+    "EMC": 193,
+    "3M": 1,
+    "Nintendo": 4,
+    "Xerox": 3,
+    "Case Logic": 2,
+    "Hypertec": 1,
+    "Shuttle": 3,
+    "IFROGZ": 11,
+    "AudioCodes": 1,
+    "Hotpoint": 1,
+    "Ugreen": 1,
+    "2-Power": 5,
+    "Flex IT": 7,
+    "ProDVX": 2,
+    "XPG": 4
+  },
+  "quality": {
+    "withName": 25557,
+    "withBrand": 25557,
+    "withImage": 25557,
+    "withEan": 7860,
+    "withCategory": 25557,
+    "withDescription": 25557,
+    "withSpecs": 19555,
+    "complete": 7860
+  },
+  "issues": [],
+  "topBrands": [
+    {
+      "brand": "HP",
+      "count": 7918
+    },
+    {
+      "brand": "Lenovo",
+      "count": 3648
+    },
+    {
+      "brand": "Samsung",
+      "count": 1597
+    },
+    {
+      "brand": "Acer",
+      "count": 1469
+    },
+    {
+      "brand": "DELL",
+      "count": 1462
+    },
+    {
+      "brand": "ASUS",
+      "count": 1073
+    },
+    {
+      "brand": "Fujitsu",
+      "count": 923
+    },
+    {
+      "brand": "Philips",
+      "count": 881
+    },
+    {
+      "brand": "Sony",
+      "count": 558
+    },
+    {
+      "brand": "LG",
+      "count": 529
+    },
+    {
+      "brand": "Forza Refurbished",
+      "count": 396
+    },
+    {
+      "brand": "MSI",
+      "count": 391
+    },
+    {
+      "brand": "APC",
+      "count": 296
+    },
+    {
+      "brand": "Canon",
+      "count": 280
+    },
+    {
+      "brand": "EMC",
+      "count": 193
+    },
+    {
+      "brand": "Norton",
+      "count": 167
+    },
+    {
+      "brand": "upcycle it",
+      "count": 144
+    },
+    {
+      "brand": "JVC",
+      "count": 128
+    },
+    {
+      "brand": "Epson",
+      "count": 122
+    },
+    {
+      "brand": "NEC",
+      "count": 114
+    },
+    {
+      "brand": "Seagate",
+      "count": 109
+    },
+    {
+      "brand": "BenQ",
+      "count": 109
+    },
+    {
+      "brand": "Equip",
+      "count": 106
+    },
+    {
+      "brand": "Buffalo",
+      "count": 105
+    },
+    {
+      "brand": "Brother",
+      "count": 103
+    },
+    {
+      "brand": "Hama",
+      "count": 101
+    },
+    {
+      "brand": "Vertiv",
+      "count": 100
+    },
+    {
+      "brand": "QNAP",
+      "count": 98
+    },
+    {
+      "brand": "NETGEAR",
+      "count": 98
+    },
+    {
+      "brand": "iiyama",
+      "count": 94
+    }
+  ],
+  "topCategories": [
+    {
+      "category": "Laptops",
+      "count": 10622
+    },
+    {
+      "category": "Softwarelicenties & -uitbreidingen",
+      "count": 2559
+    },
+    {
+      "category": "TV's",
+      "count": 1629
+    },
+    {
+      "category": "Computer monitoren",
+      "count": 1551
+    },
+    {
+      "category": "Smartphones",
+      "count": 781
+    },
+    {
+      "category": "Hoofdtelefoons/headsets",
+      "count": 778
+    },
+    {
+      "category": "All-in-One PC's/workstations",
+      "count": 710
+    },
+    {
+      "category": "Softwareboeken & -handleidingen",
+      "count": 677
+    },
+    {
+      "category": "Interne harde schijven",
+      "count": 593
+    },
+    {
+      "category": "Data-opslag-servers",
+      "count": 485
+    },
+    {
+      "category": "Servers",
+      "count": 461
+    },
+    {
+      "category": "Ontwikkelsoftware",
+      "count": 357
+    },
+    {
+      "category": "Laserprinters",
+      "count": 333
+    },
+    {
+      "category": "Multifunctionele printers",
+      "count": 323
+    },
+    {
+      "category": "Ononderbroken stroomvoorziening (UPS)",
+      "count": 280
+    },
+    {
+      "category": "Netwerk-switches",
+      "count": 225
+    },
+    {
+      "category": "Tablets",
+      "count": 216
+    },
+    {
+      "category": "Opslagsoftware",
+      "count": 209
+    },
+    {
+      "category": "Stellingen/racks",
+      "count": 196
+    },
+    {
+      "category": "KVM-switches",
+      "count": 179
+    },
+    {
+      "category": "PC-hulpprogramma's",
+      "count": 164
+    },
+    {
+      "category": "Beveiligingssoftware",
+      "count": 142
+    },
+    {
+      "category": "Draadloze routers",
+      "count": 139
+    },
+    {
+      "category": "Inkjetprinters",
+      "count": 121
+    },
+    {
+      "category": "Interfacekaarten/-adapters",
+      "count": 120
+    },
+    {
+      "category": "Webcams",
+      "count": 111
+    },
+    {
+      "category": "Grootformaat-printers",
+      "count": 104
+    },
+    {
+      "category": "Scanners",
+      "count": 98
+    },
+    {
+      "category": "Game controllers/spelbesturing",
+      "count": 92
+    },
+    {
+      "category": "Batterijen voor camera's/camcorders",
+      "count": 90
+    }
+  ],
+  "qualityPercentages": {
+    "withName": "100.0%",
+    "withBrand": "100.0%",
+    "withImage": "100.0%",
+    "withEan": "30.8%",
+    "withCategory": "100.0%",
+    "withDescription": "100.0%",
+    "withSpecs": "76.5%",
+    "complete": "30.8%"
+  }
+}

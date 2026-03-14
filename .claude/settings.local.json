@@ -75,7 +75,10 @@
       "Bash(node -e 'var src = require\\(\"\"fs\"\"\\).readFileSync\\(\"\"constants/mock-data.ts\"\", \"\"utf8\"\"\\); var catMatches = [...src.matchAll\\(/category: \\\\x27\\([^\\\\x27]+\\)\\\\x27/g\\)].map\\(function\\(m\\){return m[1]}\\); var cats = [...new Set\\(catMatches\\)].sort\\(\\); console.log\\(\"\"Categories:\"\", cats.length\\); cats.forEach\\(function\\(c\\){console.log\\(\"\"  \"\"+c\\)}\\)')",
       "Bash(node -e 'var ts = require\\(\"\"typescript\"\"\\); var src = require\\(\"\"fs\"\"\\).readFileSync\\(\"\"constants/mock-data.ts\"\", \"\"utf8\"\"\\); var result = ts.transpileModule\\(src, { compilerOptions: { jsx: \"\"react\"\", target: \"\"esnext\"\", module: \"\"esnext\"\" } }\\); console.log\\(result.diagnostics && result.diagnostics.length > 0 ? \"\"ERRORS: \"\" + JSON.stringify\\(result.diagnostics\\) : \"\"OK - no errors\"\"\\)')",
       "Bash(node -e \"const d = require\\(''./data/categories/smartphones.json''\\); console.log\\(''Total:'', d.length\\); console.log\\(''First:'', JSON.stringify\\(d[0], null, 2\\).substring\\(0, 2000\\)\\)\")",
-      "Bash(npx tsc --noEmit constants/mock-data.ts)"
+      "Bash(npx tsc --noEmit constants/mock-data.ts)",
+      "Bash(npx expo:*)",
+      "WebFetch(domain:localhost)",
+      "Bash(curl -s http://localhost:8082)"
     ]
   }
 }

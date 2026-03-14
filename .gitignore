@@ -34,7 +34,9 @@ yarn-error.*
 .env*.local
 .env
 
-# Firebase Functions secrets
+# Firebase secrets
+*firebase*private*key*.json
+*-firebase*sdk*.json
 functions/.env
 functions/.env.*
 

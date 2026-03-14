@@ -45,7 +45,7 @@ interface Product {
 // Constants
 const BASE_URL = 'https://www.microcenter.com';
 // Using Apify proxy - more reliable than actor
-const APIFY_API_KEY = 'REMOVED_SECRET';
+const APIFY_API_KEY = process.env.APIFY_API_TOKEN || '';
 
 const CATEGORIES = [
   { appName: 'Processors', url: '/category/Processors' },

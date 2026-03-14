@@ -115,6 +115,35 @@ export const Shadow = {
   },
 } as const;
 
+export const Glass = {
+  card: {
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    // Note: backdrop-filter not supported in RN, simulate with semi-transparent bg
+  },
+  cardLight: {
+    backgroundColor: 'rgba(255,255,255,0.7)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.3)',
+  },
+  surface: {
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+  },
+  surfaceLight: {
+    backgroundColor: 'rgba(255,255,255,0.85)',
+    borderWidth: 1,
+    borderColor: 'rgba(200,200,200,0.3)',
+  },
+  accent: {
+    backgroundColor: 'rgba(136,5,23,0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(136,5,23,0.2)',
+  },
+} as const;
+
 export const Fonts = Platform.select({
   ios: {
     sans: 'system-ui',

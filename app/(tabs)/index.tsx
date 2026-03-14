@@ -1,37 +1,177 @@
 
 /**
- * Home Screen — Modern dashboard
+ * Home Screen — Visual, engaging dashboard
  */
 
 import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Link, useRouter } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { PRICE_DISCLAIMER } from '@/constants/mock-data';
-import { Colors, Palette, Radius, Shadow, Spacing } from '@/constants/theme';
+import { Colors, Glass, Palette, Radius, Shadow, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useProductImage } from '@/hooks/use-product-image';
-import { getBestDeal, getNewProducts, getPriceDrops, type Product } from '@/services/product-db';
+import { getAllProducts, getBestDeal, getNewProducts, getPriceDrops, type Product } from '@/services/product-db';
 import { useEffect, useState } from 'react';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const USER_NAME = 'Alex';
 
-const QUICK_ACTIONS = [
-  { id: 'nieuws',  label: 'Nieuws',   icon: 'newspaper'     as const, href: '/(tabs)/nieuws' },
-  { id: 'reviews', label: 'Reviews',  icon: 'star.fill'     as const, href: '/(tabs)/reviews' },
-  { id: 'prijzen', label: 'Prijzen',  icon: 'tag.fill'      as const, href: '/(tabs)/prijzen' },
+// Use MaterialIcons names directly (not SF Symbols) for categories
+const CATEGORIES = [
+  { id: 'smartphones',  label: 'Smartphones',  icon: 'smartphone'       as const, color: '#007AFF', bg: '#007AFF15' },
+  { id: 'laptops',      label: 'Laptops',       icon: 'laptop'           as const, color: '#5856D6', bg: '#5856D615' },
+  { id: 'audio',        label: 'Audio',          icon: 'headphones'       as const, color: '#FF2D55', bg: '#FF2D5515' },
+  { id: 'televisies',   label: 'TV\'s',          icon: 'tv'               as const, color: '#FF9500', bg: '#FF950015' },
+  { id: 'gaming',       label: 'Gaming',         icon: 'sports-esports'   as const, color: '#34C759', bg: '#34C75915' },
+  { id: 'wearables',    label: 'Wearables',      icon: 'watch'            as const, color: '#AF52DE', bg: '#AF52DE15' },
 ];
 
-function ProductThumb({ product, style }: { product: Product; style: any }) {
+function ProductThumb({ product, style, fallbackStyle }: { product: Product; style: any; fallbackStyle?: any }) {
   const imageUrl = useProductImage(product.name, product.imageUrl);
+  const [failed, setFailed] = useState(false);
+
+  if (failed) {
+    return (
+      <View style={[style, fallbackStyle, { alignItems: 'center', justifyContent: 'center' }]}>
+        <MaterialIcons name="shopping-bag" size={32} color="#C0C0C8" />
+        <Text style={{ fontSize: 9, color: '#A0A0A8', marginTop: 3, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>{product.brand}</Text>
+      </View>
+    );
+  }
+
   return (
     <Image
       source={{ uri: imageUrl }}
       style={style}
       contentFit="contain"
       transition={200}
+      onError={() => setFailed(true)}
     />
+  );
+}
+
+function HeroDeal({ deal, isDark, colors }: { deal: Product; isDark: boolean; colors: typeof Colors.light }) {
+  const pct = Math.round(((deal.originalPrice - deal.currentPrice) / deal.originalPrice) * 100);
+
+  return (
+    <View style={styles.heroSection}>
+      <Link href={`/product/${deal.id}`} asChild>
+        <Pressable
+          style={({ pressed }) => [
+            styles.heroCard,
+            pressed && { opacity: 0.95, transform: [{ scale: 0.985 }] },
+          ]}
+        >
+          <LinearGradient
+            colors={isDark ? ['rgba(26,10,12,0.8)', 'rgba(45,16,21,0.6)', 'rgba(26,10,12,0.8)'] : ['rgba(255,245,245,0.75)', 'rgba(255,232,234,0.6)', 'rgba(255,240,240,0.75)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.heroGradient}
+          >
+            {/* Badge row */}
+            <View style={styles.heroBadgeRow}>
+              <View style={styles.heroDealBadge}>
+                <Text style={styles.heroDealBadgeText}>DEAL VAN DE DAG</Text>
+              </View>
+              <View style={styles.heroDiscountBadge}>
+                <Text style={styles.heroDiscountText}>-{pct}%</Text>
+              </View>
+            </View>
+
+            {/* Product info — compact layout without large image gap */}
+            <View style={styles.heroContent}>
+              <View style={[styles.heroImageBox, isDark ? { backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' } : { backgroundColor: 'rgba(255,255,255,0.65)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.4)' }]}>
+                <ProductThumb product={deal} style={styles.heroImage} fallbackStyle={styles.heroImageFallback} />
+              </View>
+              <View style={styles.heroInfo}>
+                <Text style={[styles.heroBrand, { color: isDark ? '#999' : '#888' }]}>{deal.brand}</Text>
+                <Text style={[styles.heroName, { color: isDark ? '#fff' : '#111' }]} numberOfLines={2}>
+                  {deal.name}
+                </Text>
+                <View style={styles.heroPriceRow}>
+                  <Text style={[styles.heroPrice, { color: Palette.primary }]}>
+                    €{deal.currentPrice.toLocaleString('nl-NL')}
+                  </Text>
+                  <Text style={[styles.heroOriginal, { color: isDark ? '#666' : '#999' }]}>
+                    €{deal.originalPrice.toLocaleString('nl-NL')}
+                  </Text>
+                </View>
+                <Text style={[styles.heroShops, { color: isDark ? '#777' : '#999' }]}>
+                  {deal.shops.length} winkels vergelijken
+                </Text>
+              </View>
+            </View>
+
+            {/* CTA */}
+            <View style={styles.heroCta}>
+              <LinearGradient
+                colors={[Palette.primary, Palette.primaryDark]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.heroCtaGradient}
+              >
+                <Text style={styles.heroCtaText}>Bekijk deal</Text>
+                <IconSymbol size={16} name="chevron.right" color="#fff" />
+              </LinearGradient>
+            </View>
+          </LinearGradient>
+        </Pressable>
+      </Link>
+    </View>
+  );
+}
+
+function ProductCard({ product, isDark, colors, width }: { product: Product; isDark: boolean; colors: typeof Colors.light; width: number }) {
+  const pct = Math.round(((product.originalPrice - product.currentPrice) / product.originalPrice) * 100);
+  const hasDrop = product.currentPrice < product.originalPrice;
+
+  return (
+    <Link href={`/product/${product.id}`} asChild>
+      <Pressable
+        style={({ pressed }) => [
+          styles.productCard,
+          { width },
+          isDark ? Glass.card : Glass.cardLight,
+          pressed && { opacity: 0.9, transform: [{ scale: 0.97 }] },
+        ]}
+      >
+        <View style={[styles.productImageWrap, { backgroundColor: isDark ? Palette.dark3 : '#F5F5F7' }]}>
+          <ProductThumb product={product} style={styles.productImage} fallbackStyle={styles.productImageFallback} />
+          {hasDrop && (
+            <View style={styles.productBadge}>
+              <Text style={styles.productBadgeText}>-{pct}%</Text>
+            </View>
+          )}
+        </View>
+        <View style={styles.productInfo}>
+          <Text style={[styles.productBrand, { color: colors.textSecondary }]}>{product.brand}</Text>
+          <Text style={[styles.productName, { color: colors.text }]} numberOfLines={2}>
+            {product.name}
+          </Text>
+          <View style={styles.productPriceRow}>
+            <Text style={[styles.productPrice, { color: colors.text }]}>
+              €{product.currentPrice.toLocaleString('nl-NL')}
+            </Text>
+            {hasDrop && (
+              <Text style={[styles.productOriginal, { color: colors.textSecondary }]}>
+                €{product.originalPrice.toLocaleString('nl-NL')}
+              </Text>
+            )}
+          </View>
+          <View style={styles.productRatingRow}>
+            <MaterialIcons name="star" size={13} color={Palette.star} />
+            <Text style={[styles.productRating, { color: colors.textSecondary }]}>
+              {product.rating.toFixed(1)} ({product.reviewCount})
+            </Text>
+          </View>
+        </View>
+      </Pressable>
+    </Link>
   );
 }
 
@@ -44,213 +184,164 @@ export default function HomeScreen() {
   const [priceDrops, setPriceDrops] = useState<Product[]>([]);
   const [newProducts, setNewProducts] = useState<Product[]>([]);
   const [bestDeal, setBestDeal] = useState<Product | undefined>(undefined);
+  const [trendingProducts, setTrendingProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    getPriceDrops(5).then(setPriceDrops);
+    getPriceDrops(8).then(setPriceDrops);
     getNewProducts().then(setNewProducts);
     getBestDeal().then(setBestDeal);
+    getAllProducts().then(all => {
+      const sorted = [...all].sort((a, b) => b.rating - a.rating).slice(0, 10);
+      setTrendingProducts(sorted);
+    });
   }, []);
+
+  const CARD_WIDTH = SCREEN_WIDTH * 0.42;
 
   return (
     <View style={[styles.safe, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: colors.background }]}>
+      <View style={[styles.header, { backgroundColor: isDark ? 'rgba(10,10,15,0.85)' : 'rgba(242,242,247,0.92)' }]}>
         <View style={styles.headerRow}>
           <Image
-            source={require('@/assets/images/ChatGPT_Image_27_feb_2026__17_10_15-removebg-preview (2).png')}
-            style={styles.chatGptLogo}
-            resizeMode="contain"
+            source={require('@/assets/images/icon.png')}
+            style={styles.logo}
+            contentFit="contain"
           />
           <View style={styles.headerTextWrap}>
-            <Text style={[styles.welcomeText, { color: colors.text }]}>
-              Welkom terug, <Text style={{ color: Palette.primary, fontWeight: '700' }}>{USER_NAME}</Text>
-            </Text>
+            <Text style={[styles.greeting, { color: colors.textSecondary }]}>Welkom terug</Text>
+            <Text style={[styles.userName, { color: colors.text }]}>{USER_NAME}</Text>
           </View>
           <Pressable
-            onPress={() => router.push('/(tabs)/profiel')}
-            style={[styles.avatarBtn, { backgroundColor: isDark ? Palette.dark3 : Palette.grey5 }]}
+            onPress={() => router.push('/(tabs)/meldingen' as any)}
+            style={[styles.iconBtn, isDark ? Glass.card : Glass.cardLight]}
           >
-            <IconSymbol size={22} name="person.fill" color={colors.textSecondary} />
+            <IconSymbol size={20} name="bell.fill" color={colors.textSecondary} />
+          </Pressable>
+          <Pressable
+            onPress={() => router.push('/(tabs)/profiel')}
+            style={[styles.iconBtn, isDark ? Glass.card : Glass.cardLight]}
+          >
+            <IconSymbol size={20} name="person.fill" color={colors.textSecondary} />
           </Pressable>
         </View>
+
+        {/* Search bar */}
+        <Pressable
+          onPress={() => router.push('/(tabs)/zoeken' as any)}
+          style={[
+            styles.searchBar,
+            isDark ? Glass.card : Glass.surfaceLight,
+          ]}
+        >
+          <IconSymbol size={18} name="magnifyingglass" color={colors.textSecondary} />
+          <Text style={[styles.searchPlaceholder, { color: colors.textSecondary }]}>
+            Zoek producten, merken...
+          </Text>
+        </Pressable>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
 
-        {/* Quick actions */}
-        <View style={styles.quickRow}>
-          {QUICK_ACTIONS.map(action => (
-            <Link key={action.id} href={action.href as any} asChild>
-              <Pressable style={({ pressed }) => [styles.quickItem, pressed && { opacity: 0.7 }]}>
-                <View style={[styles.quickIcon, { backgroundColor: isDark ? Palette.dark3 : Palette.primarySoft }]}>
-                  <IconSymbol size={22} name={action.icon} color={Palette.primary} />
-                </View>
-                <Text style={[styles.quickLabel, { color: colors.textSecondary }]}>{action.label}</Text>
-              </Pressable>
-            </Link>
-          ))}
-        </View>
+        {/* Hero deal */}
+        {bestDeal && <HeroDeal deal={bestDeal} isDark={isDark} colors={colors} />}
 
-        {/* Spotlight deal */}
-        {bestDeal && (
-          <View style={styles.spotlightSection}>
-            <Link href={`/product/${bestDeal.id}`} asChild>
+        {/* Categories */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, styles.sectionTitleStandalone, { color: colors.text }]}>Categorieën</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.categoryScroll}
+          >
+            {CATEGORIES.map(cat => (
               <Pressable
+                key={cat.id}
+                onPress={() => router.push('/(tabs)/categorieen' as any)}
                 style={({ pressed }) => [
-                  styles.dealCard,
-                  { backgroundColor: isDark ? Palette.dark2 : Palette.white },
-                  !isDark && Shadow.lg,
-                  isDark && { borderWidth: 1, borderColor: Palette.dark4 },
-                  pressed && { opacity: 0.95, transform: [{ scale: 0.99 }] },
+                  styles.categoryChip,
+                  isDark ? Glass.card : { backgroundColor: 'rgba(255,255,255,0.6)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)' },
+                  pressed && { opacity: 0.7, transform: [{ scale: 0.96 }] },
                 ]}
               >
-                <View style={styles.dealHeader}>
-                  <View style={styles.dealLabelRow}>
-                    <View style={[styles.dealLabelDot, { backgroundColor: Palette.accent }]} />
-                    <Text style={[styles.dealLabel, { color: colors.textSecondary }]}>Deal van de dag</Text>
-                  </View>
-                  <View style={styles.dealDiscountBadge}>
-                    <Text style={styles.dealDiscountText}>
-                      -{Math.round(((bestDeal.originalPrice - bestDeal.currentPrice) / bestDeal.originalPrice) * 100)}%
-                    </Text>
-                  </View>
+                <View style={[styles.categoryIconWrap, { backgroundColor: cat.color + '22' }]}>
+                  <MaterialIcons name={cat.icon as any} size={22} color={cat.color} />
                 </View>
-
-                <View style={styles.dealBody}>
-                  <View style={[styles.dealImageWrap, { backgroundColor: isDark ? Palette.dark3 : '#F5F5F7' }]}>
-                    <ProductThumb product={bestDeal} style={styles.dealImage} />
-                  </View>
-                  <View style={styles.dealInfo}>
-                    <Text style={[styles.dealBrand, { color: colors.textSecondary }]}>{bestDeal.brand}</Text>
-                    <Text style={[styles.dealName, { color: colors.text }]} numberOfLines={2}>
-                      {bestDeal.name}
-                    </Text>
-                    <View style={styles.dealPriceRow}>
-                      <Text style={[styles.dealPrice, { color: colors.text }]}>
-                        €{bestDeal.currentPrice.toLocaleString('nl-NL')}
-                      </Text>
-                      <Text style={[styles.dealOriginal, { color: colors.textSecondary }]}>
-                        €{bestDeal.originalPrice.toLocaleString('nl-NL')}
-                      </Text>
-                    </View>
-                    <Text style={[styles.dealShops, { color: colors.textSecondary }]}>
-                      {bestDeal.shops.length} winkels beschikbaar
-                    </Text>
-                  </View>
-                </View>
-
-                <View style={[styles.dealCta, { backgroundColor: Palette.primary }]}>
-                  <Text style={styles.dealCtaText}>Bekijk deal</Text>
-                  <Text style={styles.dealCtaArrow}>→</Text>
-                </View>
+                <Text style={[styles.categoryLabel, { color: isDark ? '#ddd' : '#333' }]}>{cat.label}</Text>
               </Pressable>
-            </Link>
-          </View>
-        )}
+            ))}
+          </ScrollView>
+        </View>
 
         {/* Price drops */}
         {priceDrops.length > 0 && (
           <View style={styles.section}>
-            <View style={styles.sectionHead}>
-              <View style={styles.sectionLabelRow}>
-                <View style={[styles.sectionIndicator, { backgroundColor: Palette.accent }]} />
-                <Text style={[styles.sectionLabel, { color: colors.text }]}>Prijsdalingen</Text>
+            <View style={styles.sectionHeader}>
+              <View style={styles.sectionTitleRow}>
+                <View style={[styles.sectionDot, { backgroundColor: Palette.accent }]} />
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>Prijsdalingen</Text>
               </View>
               <Pressable onPress={() => router.push('/(tabs)/prijzen')} hitSlop={8}>
-                <Text style={[styles.sectionMore, { color: Palette.primary }]}>Bekijk alle →</Text>
+                <Text style={[styles.seeAll, { color: Palette.primary }]}>Bekijk alle</Text>
               </Pressable>
             </View>
-            <View style={[
-              styles.listCard,
-              { backgroundColor: isDark ? Palette.dark2 : Palette.white },
-              !isDark && Shadow.md,
-              isDark && { borderWidth: 1, borderColor: Palette.dark4 },
-            ]}>
-              {priceDrops.map((product, index, arr) => {
-                const pct = Math.round(((product.originalPrice - product.currentPrice) / product.originalPrice) * 100);
-                return (
-                  <Link key={product.id} href={`/product/${product.id}`} asChild>
-                    <Pressable
-                      style={({ pressed }) => [
-                        styles.listItem,
-                        index < arr.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: isDark ? Palette.dark4 : Palette.grey5 },
-                        pressed && { backgroundColor: isDark ? Palette.dark3 : Palette.grey6 },
-                      ]}
-                    >
-                      <View style={[styles.listImageWrap, { backgroundColor: isDark ? Palette.dark3 : '#F5F5F7' }]}>
-                        <ProductThumb product={product} style={styles.listImage} />
-                      </View>
-                      <View style={styles.listInfo}>
-                        <Text style={[styles.listName, { color: colors.text }]} numberOfLines={1}>
-                          {product.name}
-                        </Text>
-                        <Text style={[styles.listMeta, { color: colors.textSecondary }]} numberOfLines={1}>
-                          {product.brand} · {product.shops.length} winkels
-                        </Text>
-                      </View>
-                      <View style={styles.listPriceCol}>
-                        <Text style={[styles.listPrice, { color: colors.text }]}>
-                          €{product.currentPrice.toLocaleString('nl-NL')}
-                        </Text>
-                        <View style={styles.listPctBadge}>
-                          <Text style={styles.listPctText}>-{pct}%</Text>
-                        </View>
-                      </View>
-                    </Pressable>
-                  </Link>
-                );
-              })}
+            <FlatList
+              horizontal
+              data={priceDrops}
+              keyExtractor={item => item.id}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.horizontalList}
+              renderItem={({ item }) => (
+                <ProductCard product={item} isDark={isDark} colors={colors} width={CARD_WIDTH} />
+              )}
+            />
+          </View>
+        )}
+
+        {/* Trending / Popular */}
+        {trendingProducts.length > 0 && (
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <View style={styles.sectionTitleRow}>
+                <View style={[styles.sectionDot, { backgroundColor: '#FF9500' }]} />
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>Populair</Text>
+              </View>
+              <Pressable onPress={() => router.push('/(tabs)/prijzen')} hitSlop={8}>
+                <Text style={[styles.seeAll, { color: Palette.primary }]}>Bekijk alle</Text>
+              </Pressable>
             </View>
+            <FlatList
+              horizontal
+              data={trendingProducts}
+              keyExtractor={item => item.id}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.horizontalList}
+              renderItem={({ item }) => (
+                <ProductCard product={item} isDark={isDark} colors={colors} width={CARD_WIDTH} />
+              )}
+            />
           </View>
         )}
 
         {/* New products */}
         {newProducts.length > 0 && (
-          <View style={[styles.section, styles.lastSection]}>
-            <View style={styles.sectionHead}>
-              <View style={styles.sectionLabelRow}>
-                <View style={[styles.sectionIndicator, { backgroundColor: Palette.primary }]} />
-                <Text style={[styles.sectionLabel, { color: colors.text }]}>Nieuw</Text>
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <View style={styles.sectionTitleRow}>
+                <View style={[styles.sectionDot, { backgroundColor: Palette.primary }]} />
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>Nieuw toegevoegd</Text>
               </View>
             </View>
-            <View style={[
-              styles.listCard,
-              { backgroundColor: isDark ? Palette.dark2 : Palette.white },
-              !isDark && Shadow.md,
-              isDark && { borderWidth: 1, borderColor: Palette.dark4 },
-            ]}>
-              {newProducts.map((product, index, arr) => (
-                <Link key={product.id} href={`/product/${product.id}`} asChild>
-                  <Pressable
-                    style={({ pressed }) => [
-                      styles.listItem,
-                      index < arr.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: isDark ? Palette.dark4 : Palette.grey5 },
-                      pressed && { backgroundColor: isDark ? Palette.dark3 : Palette.grey6 },
-                    ]}
-                  >
-                    <View style={[styles.listImageWrap, { backgroundColor: isDark ? Palette.dark3 : '#F5F5F7' }]}>
-                      <ProductThumb product={product} style={styles.listImage} />
-                    </View>
-                    <View style={styles.listInfo}>
-                      <Text style={[styles.listName, { color: colors.text }]} numberOfLines={1}>
-                        {product.name}
-                      </Text>
-                      <Text style={[styles.listMeta, { color: colors.textSecondary }]} numberOfLines={1}>
-                        {product.brand} · {product.shops.length} winkels
-                      </Text>
-                    </View>
-                    <View style={styles.listPriceCol}>
-                      <Text style={[styles.listPrice, { color: colors.text }]}>
-                        €{product.currentPrice.toLocaleString('nl-NL')}
-                      </Text>
-                      <View style={[styles.listNewBadge, { backgroundColor: Palette.primary }]}>
-                        <Text style={styles.listNewText}>Nieuw</Text>
-                      </View>
-                    </View>
-                  </Pressable>
-                </Link>
-              ))}
-            </View>
+            <FlatList
+              horizontal
+              data={newProducts}
+              keyExtractor={item => item.id}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.horizontalList}
+              renderItem={({ item }) => (
+                <ProductCard product={item} isDark={isDark} colors={colors} width={CARD_WIDTH} />
+              )}
+            />
           </View>
         )}
 
@@ -267,279 +358,328 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
+  scrollContent: { paddingBottom: Spacing.xxl },
 
   // Header
   header: {
-    paddingTop: Spacing.xl + Spacing.md,
+    paddingTop: Spacing.xl + Spacing.lg,
     paddingHorizontal: Spacing.md,
-    paddingBottom: Spacing.md,
+    paddingBottom: Spacing.sm,
   },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
+    gap: Spacing.sm + 4,
+  },
+  logo: {
+    width: 56,
+    height: 56,
+    borderRadius: 16,
   },
   headerTextWrap: {
     flex: 1,
+    marginLeft: 2,
   },
-  welcomeText: {
+  greeting: {
+    fontSize: 13,
+    fontWeight: '500',
+    marginBottom: 1,
+  },
+  userName: {
     fontSize: 22,
-    fontWeight: '700',
+    fontWeight: '800',
     letterSpacing: -0.3,
   },
-  avatarBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+  iconBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  chatGptLogo: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-  },
-
-  // Quick actions
-  quickRow: {
+  searchBar: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.lg,
-  },
-  quickItem: {
     alignItems: 'center',
-    gap: Spacing.xs + 2,
+    gap: Spacing.sm + 2,
+    marginTop: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 13,
+    borderRadius: Radius.lg,
   },
-  quickIcon: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  quickLabel: {
-    fontSize: 11,
-    fontWeight: '600',
+  searchPlaceholder: {
+    fontSize: 15,
+    fontWeight: '400',
   },
 
-  // Deal card
-  spotlightSection: {
+  // Hero deal
+  heroSection: {
     paddingHorizontal: Spacing.md,
-    paddingBottom: Spacing.lg,
+    paddingTop: Spacing.md + 4,
   },
-  dealCard: {
-    borderRadius: Radius.lg,
+  heroCard: {
+    borderRadius: Radius.xl,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
-  dealHeader: {
+  heroGradient: {
+    padding: Spacing.md,
+  },
+  heroBadgeRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.sm,
+    marginBottom: Spacing.md,
   },
-  dealLabelRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  dealLabelDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  dealLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  dealDiscountBadge: {
-    backgroundColor: Palette.accentSoft,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 3,
+  heroDealBadge: {
+    backgroundColor: Palette.primary,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
     borderRadius: Radius.full,
   },
-  dealDiscountText: {
+  heroDealBadgeText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 1,
+  },
+  heroDiscountBadge: {
+    backgroundColor: 'rgba(52,199,89,0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(52,199,89,0.2)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: Radius.full,
+  },
+  heroDiscountText: {
     color: Palette.accent,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 14,
+    fontWeight: '800',
   },
-  dealBody: {
+  heroContent: {
     flexDirection: 'row',
-    paddingHorizontal: Spacing.md,
-    gap: Spacing.md,
     alignItems: 'center',
+    gap: Spacing.md,
+    marginBottom: Spacing.md,
   },
-  dealImageWrap: {
-    width: 90,
-    height: 90,
+  heroImageBox: {
+    width: 110,
+    height: 110,
     borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: Spacing.xs,
+    overflow: 'hidden',
   },
-  dealImage: {
-    width: 76,
-    height: 76,
+  heroImage: {
+    width: 90,
+    height: 90,
   },
-  dealInfo: {
+  heroImageFallback: {
+    width: 110,
+    height: 110,
+    backgroundColor: 'transparent',
+  },
+  heroInfo: {
     flex: 1,
-    gap: 2,
+    gap: 4,
   },
-  dealBrand: {
-    fontSize: 10,
-    fontWeight: '600',
+  heroBrand: {
+    fontSize: 11,
+    fontWeight: '700',
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 1,
   },
-  dealName: {
-    fontSize: 15,
-    fontWeight: '600',
-    lineHeight: 20,
+  heroName: {
+    fontSize: 17,
+    fontWeight: '700',
+    lineHeight: 22,
   },
-  dealPriceRow: {
+  heroPriceRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    gap: Spacing.xs,
-    marginTop: 2,
+    gap: Spacing.sm,
+    marginTop: 4,
   },
-  dealPrice: {
-    fontSize: 20,
-    fontWeight: '700',
-    letterSpacing: -0.3,
+  heroPrice: {
+    fontSize: 24,
+    fontWeight: '800',
+    letterSpacing: -0.5,
   },
-  dealOriginal: {
-    fontSize: 13,
+  heroOriginal: {
+    fontSize: 14,
     textDecorationLine: 'line-through',
   },
-  dealShops: {
-    fontSize: 11,
-    marginTop: 1,
+  heroShops: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginTop: 2,
   },
-  dealCta: {
+  heroCta: {
+    borderRadius: Radius.md,
+    overflow: 'hidden',
+  },
+  heroCtaGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 14,
-    marginHorizontal: Spacing.md,
-    marginTop: Spacing.md,
-    marginBottom: Spacing.md,
-    borderRadius: Radius.md,
     gap: Spacing.xs,
   },
-  dealCtaText: {
-    color: '#fff',
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  dealCtaArrow: {
+  heroCtaText: {
     color: '#fff',
     fontSize: 15,
     fontWeight: '700',
   },
 
   // Sections
-  section: { paddingBottom: Spacing.lg },
-  lastSection: { paddingBottom: Spacing.xxl },
-  sectionHead: {
+  section: {
+    paddingTop: Spacing.lg,
+  },
+  sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.md,
-    paddingBottom: Spacing.sm,
+    paddingBottom: Spacing.sm + 4,
   },
-  sectionLabelRow: {
+  sectionTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
   },
-  sectionIndicator: {
-    width: 3,
-    height: 16,
-    borderRadius: 2,
+  sectionDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.15)',
   },
-  sectionLabel: {
-    fontSize: 17,
-    fontWeight: '700',
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    letterSpacing: -0.2,
   },
-  sectionMore: {
-    fontSize: 13,
-    fontWeight: '600',
+  sectionTitleStandalone: {
+    paddingHorizontal: Spacing.md,
+    marginBottom: Spacing.sm + 2,
   },
-
-  // List card
-  listCard: {
-    marginHorizontal: Spacing.md,
-    borderRadius: Radius.lg,
-    overflow: 'hidden',
-  },
-  listItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: Spacing.sm + 2,
-    gap: Spacing.sm + 2,
-  },
-  listImageWrap: {
-    width: 48,
-    height: 48,
-    borderRadius: Radius.sm,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 4,
-  },
-  listImage: {
-    width: 40,
-    height: 40,
-  },
-  listInfo: {
-    flex: 1,
-    gap: 2,
-  },
-  listName: {
+  seeAll: {
     fontSize: 14,
     fontWeight: '600',
   },
-  listMeta: {
-    fontSize: 12,
+
+  // Category chips
+  categoryScroll: {
+    paddingHorizontal: Spacing.md,
+    gap: Spacing.sm + 2,
   },
-  listPriceCol: {
-    alignItems: 'flex-end',
+  categoryChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: Radius.lg,
+    gap: Spacing.sm + 2,
+  },
+  categoryIconWrap: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  categoryLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+
+  // Horizontal product cards
+  horizontalList: {
+    paddingHorizontal: Spacing.md,
+    gap: Spacing.sm + 4,
+  },
+  productCard: {
+    borderRadius: Radius.lg,
+    overflow: 'hidden',
+  },
+  productImageWrap: {
+    height: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderTopLeftRadius: Radius.lg,
+    borderTopRightRadius: Radius.lg,
+    position: 'relative',
+  },
+  productImage: {
+    width: '65%',
+    height: '70%',
+  },
+  productImageFallback: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'transparent',
+  },
+  productBadge: {
+    position: 'absolute',
+    top: Spacing.sm,
+    right: Spacing.sm,
+    backgroundColor: Palette.accent,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: Radius.full,
+  },
+  productBadgeText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  productInfo: {
+    padding: Spacing.sm + 2,
     gap: 3,
   },
-  listPrice: {
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  listPctBadge: {
-    backgroundColor: Palette.accentSoft,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: Radius.full,
-  },
-  listPctText: {
-    color: Palette.accent,
-    fontSize: 11,
-    fontWeight: '700',
-  },
-  listNewBadge: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: Radius.full,
-  },
-  listNewText: {
-    color: '#fff',
+  productBrand: {
     fontSize: 10,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  productName: {
+    fontSize: 13,
     fontWeight: '700',
+    lineHeight: 17,
+    minHeight: 34,
+  },
+  productPriceRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 6,
+    marginTop: 2,
+  },
+  productPrice: {
+    fontSize: 16,
+    fontWeight: '800',
+    letterSpacing: -0.3,
+  },
+  productOriginal: {
+    fontSize: 11,
+    textDecorationLine: 'line-through',
+  },
+  productRatingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    marginTop: 2,
+  },
+  productRating: {
+    fontSize: 11,
+    fontWeight: '500',
   },
 
   // Disclaimer
   disclaimerContainer: {
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.xxl,
-    paddingTop: Spacing.sm,
+    paddingTop: Spacing.lg,
   },
   disclaimerText: {
     fontSize: 11,

@@ -1,0 +1,22 @@
+{
+  "name": "tweakly-product-fetcher",
+  "version": "2.0.0",
+  "description": "Haalt tech-producten op uit Icecat Open Catalog en andere gratis databases",
+  "type": "module",
+  "scripts": {
+    "fetch": "node fetch-products.js",
+    "fetch:icecat": "node fetch-products.js --source=icecat-bulk",
+    "fetch:opf": "node fetch-products.js --source=openproductsfacts",
+    "fetch:upcitemdb": "node fetch-products.js --source=upcitemdb",
+    "fetch:bestbuy": "node fetch-products.js --source=bestbuy",
+    "fetch:all": "node fetch-products.js --source=all",
+    "fetch:reset": "node fetch-products.js --reset",
+    "serve": "node serve-products.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.0",
+    "csv-parse": "^5.5.0",
+    "fs-extra": "^11.2.0",
+    "p-limit": "^6.1.0"
+  }
+}

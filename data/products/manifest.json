@@ -1,0 +1,107 @@
+{
+  "categories": [
+    {
+      "name": "Laptops",
+      "slug": "laptops",
+      "count": 7355,
+      "sizeKB": 38114
+    },
+    {
+      "name": "Televisies",
+      "slug": "televisies",
+      "count": 1642,
+      "sizeKB": 5855
+    },
+    {
+      "name": "Monitoren",
+      "slug": "monitoren",
+      "count": 1402,
+      "sizeKB": 3709
+    },
+    {
+      "name": "Software",
+      "slug": "software",
+      "count": 937,
+      "sizeKB": 1033
+    },
+    {
+      "name": "Audio",
+      "slug": "audio",
+      "count": 777,
+      "sizeKB": 1233
+    },
+    {
+      "name": "Opslag & Servers",
+      "slug": "opslag-servers",
+      "count": 755,
+      "sizeKB": 2182
+    },
+    {
+      "name": "Componenten",
+      "slug": "componenten",
+      "count": 708,
+      "sizeKB": 1368
+    },
+    {
+      "name": "Smartphones",
+      "slug": "smartphones",
+      "count": 689,
+      "sizeKB": 3024
+    },
+    {
+      "name": "Printers",
+      "slug": "printers",
+      "count": 616,
+      "sizeKB": 1933
+    },
+    {
+      "name": "Opslag",
+      "slug": "opslag",
+      "count": 454,
+      "sizeKB": 610
+    },
+    {
+      "name": "Netwerk",
+      "slug": "netwerk",
+      "count": 446,
+      "sizeKB": 824
+    },
+    {
+      "name": "Desktops",
+      "slug": "desktops",
+      "count": 424,
+      "sizeKB": 2046
+    },
+    {
+      "name": "Accessoires",
+      "slug": "accessoires",
+      "count": 356,
+      "sizeKB": 555
+    },
+    {
+      "name": "Randapparatuur",
+      "slug": "randapparatuur",
+      "count": 184,
+      "sizeKB": 342
+    },
+    {
+      "name": "Tablets",
+      "slug": "tablets",
+      "count": 151,
+      "sizeKB": 454
+    },
+    {
+      "name": "Gaming",
+      "slug": "gaming",
+      "count": 87,
+      "sizeKB": 125
+    },
+    {
+      "name": "Wearables",
+      "slug": "wearables",
+      "count": 50,
+      "sizeKB": 137
+    }
+  ],
+  "totalProducts": 17033
+}
