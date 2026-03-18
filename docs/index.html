@@ -362,9 +362,14 @@
     .footer-social { display: flex; gap: 1rem; }
     .footer-social a { font-size: 0.82rem; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
     .footer-social a:hover { color: var(--text-secondary); }
-    .footer-legal { display: flex; gap: 1.25rem; flex-wrap: wrap; }
-    .footer-legal a { font-size: 0.8rem; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
-    .footer-legal a:hover { color: var(--text-secondary); }
+    .footer-legal { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .footer-legal a { font-size: 0.75rem; color: var(--text-muted); text-decoration: none; transition: all 0.2s; padding: 0.3rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; background: transparent; }
+    .footer-legal a:hover { color: var(--text-secondary); border-color: var(--border-hover); background: rgba(255,255,255,0.04); }
+    .legal-bar { padding: 1.5rem 2rem; background: rgba(255,255,255,0.015); border-top: 1px solid var(--border); }
+    .legal-bar-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
+    .legal-bar-label { font-size: 0.78rem; color: var(--text-muted); }
+    .legal-bar a { font-size: 0.82rem; color: var(--text-secondary); text-decoration: none; padding: 0.4rem 1rem; border: 1px solid var(--border); border-radius: 8px; background: transparent; transition: all 0.2s; }
+    .legal-bar a:hover { color: var(--text); border-color: var(--border-hover); background: rgba(255,255,255,0.06); }
 
     /* ── REVEAL ANIMATIONS ── */
     .reveal, .reveal-left, .reveal-right { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
@@ -796,6 +801,17 @@
       <a href="#" class="btn btn-secondary" id="backToTopBtn">Terug naar boven</a>
     </div>
   </section>
+
+  <!-- LEGAL LINKS BAR -->
+  <div class="legal-bar">
+    <div class="legal-bar-inner">
+      <span class="legal-bar-label">Juridisch:</span>
+      <a href="privacy.html">Privacybeleid</a>
+      <a href="cookies.html">Cookiebeleid</a>
+      <a href="voorwaarden.html">Algemene voorwaarden</a>
+      <a href="affiliate.html">Affiliate disclosure</a>
+    </div>
+  </div>
 
   <!-- FOOTER -->
   <footer>
