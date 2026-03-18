@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Algemene Voorwaarden — Tweakly</title>
+  <meta name="description" content="De algemene voorwaarden van Tweakly. Van toepassing op gebruik van de app en website.">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="canonical" href="https://tweakly.netlify.app/voorwaarden.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #880517; --primary-light: #A61D2A; --accent: #0A84FF; --green: #34C759;
+      --bg: #0A0A0F; --surface: rgba(255,255,255,0.04); --border: rgba(255,255,255,0.08);
+      --text: #E8E8ED; --text-secondary: #8888A0; --text-muted: #555566;
+    }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    nav { position: sticky; top: 0; z-index: 100; padding: 0 2rem; height: 60px; display: flex; align-items: center; justify-content: space-between; background: rgba(10,10,15,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+    .nav-brand { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .nav-brand img { width: 28px; height: 28px; border-radius: 6px; }
+    .nav-brand span { font-size: 1.05rem; font-weight: 800; color: var(--text); }
+    .nav-brand span em { font-style: normal; color: var(--primary-light); }
+    .nav-back { font-size: 0.82rem; color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; gap: 0.35rem; transition: color 0.2s; }
+    .nav-back:hover { color: var(--text); text-decoration: none; }
+
+    .page { max-width: 780px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+    .breadcrumb { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 2rem; }
+    .breadcrumb a { color: var(--text-muted); }
+    .breadcrumb a:hover { color: var(--text-secondary); }
+    .page-label { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--primary-light); margin-bottom: 0.75rem; background: rgba(136,5,23,0.1); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1px solid rgba(136,5,23,0.2); }
+    h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 800; letter-spacing: -0.025em; margin-bottom: 0.5rem; line-height: 1.2; }
+    .meta { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 2.5rem; }
+
+    .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 2.5rem; }
+    .toc h3 { font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; }
+    .toc ol { padding-left: 1.25rem; }
+    .toc li { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.3rem; }
+    .toc li a { color: var(--text-secondary); }
+    .toc li a:hover { color: var(--text); }
+
+    .section { margin-bottom: 2.5rem; }
+    .section h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem; padding-top: 0.5rem; scroll-margin-top: 80px; }
+    .section h2 .num { color: var(--primary-light); margin-right: 0.4rem; font-size: 1rem; }
+    .section p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.75rem; }
+    .section ul, .section ol { padding-left: 1.5rem; margin-bottom: 0.75rem; }
+    .section li { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 0.4rem; }
+    .section strong { color: var(--text); }
+
+    .highlight-box { background: rgba(136,5,23,0.06); border: 1px solid rgba(136,5,23,0.2); border-left: 3px solid var(--primary-light); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+    .highlight-box p { margin: 0; font-size: 0.9rem; color: var(--text-secondary); }
+
+    .affiliate-box { background: rgba(255,149,0,0.06); border: 1px solid rgba(255,149,0,0.2); border-radius: 10px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+    .affiliate-box p { font-size: 0.88rem; color: var(--text-secondary); margin: 0; }
+    .affiliate-box strong { color: #FF9500; }
+
+    .contact-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+    .contact-box h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .contact-box p { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.4rem; }
+
+    footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; }
+    .footer-links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 0.75rem; }
+    .footer-links a { font-size: 0.82rem; color: var(--text-muted); transition: color 0.2s; }
+    .footer-links a:hover { color: var(--text-secondary); text-decoration: none; }
+    .footer-copy { font-size: 0.78rem; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-brand">
+      <img src="logo.png" alt="Tweakly">
+      <span>Tweak<em>ly</em></span>
+    </a>
+    <a href="index.html" class="nav-back">&#8592; Terug naar home</a>
+  </nav>
+
+  <main class="page">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a> &rsaquo; Algemene Voorwaarden
+    </div>
+
+    <div class="page-label">&#128196; Juridisch</div>
+    <h1>Algemene Voorwaarden</h1>
+    <div class="meta">Laatste update: 18 maart 2026 &mdash; van kracht per 18 maart 2026</div>
+
+    <div class="toc">
+      <h3>Inhoudsopgave</h3>
+      <ol>
+        <li><a href="#definities">Definities</a></li>
+        <li><a href="#over-tweakly">Over Tweakly</a></li>
+        <li><a href="#toepasselijkheid">Toepasselijkheid</a></li>
+        <li><a href="#gebruik">Gebruik van de dienst</a></li>
+        <li><a href="#account">Account en beveiliging</a></li>
+        <li><a href="#prijzen-beschikbaarheid">Prijzen en beschikbaarheid</a></li>
+        <li><a href="#affiliate">Affiliate links</a></li>
+        <li><a href="#intellectueel">Intellectueel eigendom</a></li>
+        <li><a href="#aansprakelijkheid">Aansprakelijkheid</a></li>
+        <li><a href="#beëindiging">Beëindiging</a></li>
+        <li><a href="#toepasselijk-recht">Toepasselijk recht</a></li>
+        <li><a href="#contact-av">Contact</a></li>
+      </ol>
+    </div>
+
+    <div class="section" id="definities">
+      <h2><span class="num">1.</span> Definities</h2>
+      <ul>
+        <li><strong>"Tweakly"</strong> — de mobiele applicatie en website, aangeboden door Alexander Ballet</li>
+        <li><strong>"Dienst"</strong> — alle functionaliteiten van Tweakly, inclusief prijsvergelijking, nieuwsfeed, alerts en PC Builder</li>
+        <li><strong>"Gebruiker" / "u"</strong> — iedere persoon die de Dienst gebruikt</li>
+        <li><strong>"Webshop"</strong> — een externe online winkel waarnaar Tweakly verwijst</li>
+        <li><strong>"Affiliate link"</strong> — een traceerbare link waarover Tweakly een commissie kan ontvangen bij aankoop</li>
+      </ul>
+    </div>
+
+    <div class="section" id="over-tweakly">
+      <h2><span class="num">2.</span> Over Tweakly</h2>
+      <p>Tweakly is een <strong>prijsvergelijkingsdienst</strong> voor elektronica en technologieproducten. Tweakly biedt inzicht in prijzen bij verschillende Nederlandse webshops en stelt gebruikers in staat prijsalerts in te stellen.</p>
+      <p>Tweakly is een product van:<br>
+      <strong>Alexander Ballet</strong><br>
+      Amsterdam, Nederland<br>
+      <a href="mailto:alexander.ballet@hotmail.com">alexander.ballet@hotmail.com</a></p>
+    </div>
+
+    <div class="section" id="toepasselijkheid">
+      <h2><span class="num">3.</span> Toepasselijkheid</h2>
+      <p>Door Tweakly te downloaden, installeren of gebruiken, gaat u akkoord met deze algemene voorwaarden. Als u niet akkoord gaat, dient u de app niet te gebruiken.</p>
+      <p>Wij behouden ons het recht voor deze voorwaarden te wijzigen. Bij wezenlijke wijzigingen ontvangt u een melding. Voortgezet gebruik na wijziging geldt als acceptatie.</p>
+    </div>
+
+    <div class="section" id="gebruik">
+      <h2><span class="num">4.</span> Gebruik van de dienst</h2>
+      <p>U stemt ermee in de Dienst uitsluitend te gebruiken voor legale doeleinden. Het is verboden om:</p>
+      <ul>
+        <li>De app te hacken, te reverse-engineeren of te decompileren</li>
+        <li>Geautomatiseerde scripts of bots in te zetten om de dienst te misbruiken</li>
+        <li>Valse of misleidende informatie te verstrekken</li>
+        <li>De dienst te gebruiken op een wijze die andere gebruikers of Tweakly schade toebrengt</li>
+        <li>Intellectuele eigendomsrechten van derden te schenden</li>
+        <li>Spam of ongewenste communicatie te versturen</li>
+      </ul>
+    </div>
+
+    <div class="section" id="account">
+      <h2><span class="num">5.</span> Account en beveiliging</h2>
+      <p>U bent verantwoordelijk voor:</p>
+      <ul>
+        <li>De vertrouwelijkheid van uw inloggegevens</li>
+        <li>Alle activiteiten die plaatsvinden onder uw account</li>
+        <li>Het onmiddellijk melden van ongeautoriseerd gebruik via <a href="mailto:alexander.ballet@hotmail.com">alexander.ballet@hotmail.com</a></li>
+      </ul>
+      <p>Minimale leeftijd voor een account is <strong>16 jaar</strong>. Minderjarigen jonger dan 16 jaar hebben toestemming van een ouder of voogd nodig.</p>
+    </div>
+
+    <div class="section" id="prijzen-beschikbaarheid">
+      <h2><span class="num">6.</span> Prijzen en beschikbaarheid</h2>
+      <div class="highlight-box">
+        <p><strong>Disclaimer:</strong> Alle prijzen in Tweakly zijn <strong>indicatief</strong>. Tweakly scrapet geen live prijzen. Getoonde prijzen zijn gebaseerd op beschikbare datafeed-informatie en kunnen afwijken van de actuele prijs bij de webshop. Controleer altijd de prijs bij de betreffende webshop voordat u een aankoop doet.</p>
+      </div>
+      <p>Tweakly is niet verantwoordelijk voor:</p>
+      <ul>
+        <li>Onjuiste of verouderde prijsgegevens</li>
+        <li>Producten die niet meer beschikbaar zijn</li>
+        <li>Prijsverschillen tussen de app en de webshop</li>
+        <li>Technische problemen bij externe webshops</li>
+      </ul>
+    </div>
+
+    <div class="section" id="affiliate">
+      <h2><span class="num">7.</span> Affiliate links</h2>
+      <div class="affiliate-box">
+        <p><strong>Transparantieverklaring:</strong> Tweakly bevat affiliate links. Wanneer u via een dergelijke link een aankoop doet bij een aangesloten webshop, kan Tweakly een kleine commissie ontvangen. Dit heeft <strong>geen invloed op de prijs die u betaalt</strong>. Tweakly ontvangt de commissie van de webshop, niet van u.</p>
+      </div>
+      <p>Affiliate-links worden gemarkeerd met het attribuut <code>rel="sponsored"</code>. Meer informatie vindt u op onze <a href="affiliate.html">affiliate disclosure pagina</a>.</p>
+      <p>Tweakly is deelnemer aan het partnerprogramma van onder andere Daisycon. De rangschikking van producten en webshops wordt <strong>niet</strong> beïnvloed door commerciële relaties.</p>
+    </div>
+
+    <div class="section" id="intellectueel">
+      <h2><span class="num">8.</span> Intellectueel eigendom</h2>
+      <p>Alle rechten op de Tweakly-app, website, logo, ontwerp, software en content berusten bij Alexander Ballet of zijn licentiegevers. U verkrijgt een beperkt, niet-exclusief, niet-overdraagbaar recht de app te gebruiken voor persoonlijke doeleinden.</p>
+      <p>Het is niet toegestaan de inhoud van Tweakly zonder schriftelijke toestemming te reproduceren, distribueren of commercieel te exploiteren.</p>
+    </div>
+
+    <div class="section" id="aansprakelijkheid">
+      <h2><span class="num">9.</span> Aansprakelijkheid en disclaimer</h2>
+      <p>De Dienst wordt aangeboden "zoals is" en "zoals beschikbaar" zonder enige expliciete of impliciete garanties.</p>
+      <p>Voor zover toegestaan door Nederlands recht is Tweakly niet aansprakelijk voor:</p>
+      <ul>
+        <li>Directe of indirecte schade voortvloeiend uit het gebruik van de Dienst</li>
+        <li>Verlies van gegevens of winst</li>
+        <li>Onjuiste prijsinformatie of niet-beschikbaarheid van producten</li>
+        <li>Handelingen of nalatigheden van externe webshops</li>
+        <li>Tijdelijke of permanente onderbreking van de dienst</li>
+      </ul>
+      <p>De totale aansprakelijkheid van Tweakly is in alle gevallen beperkt tot maximaal <strong>&euro; 100</strong>.</p>
+    </div>
+
+    <div class="section" id="beëindiging">
+      <h2><span class="num">10.</span> Beëindiging</h2>
+      <p>U kunt uw account op elk moment verwijderen via de app-instellingen. Tweakly behoudt zich het recht voor accounts te schorsen of te verwijderen bij schending van deze voorwaarden, zonder voorafgaande kennisgeving.</p>
+    </div>
+
+    <div class="section" id="toepasselijk-recht">
+      <h2><span class="num">11.</span> Toepasselijk recht</h2>
+      <p>Op deze voorwaarden is <strong>Nederlands recht</strong> van toepassing. Eventuele geschillen worden voorgelegd aan de bevoegde rechter in Amsterdam.</p>
+      <p>Consumenten in de EU hebben ook het recht een geschil te melden bij het <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener">ODR-platform van de Europese Commissie</a>.</p>
+    </div>
+
+    <div class="section" id="contact-av">
+      <h2><span class="num">12.</span> Contact</h2>
+      <div class="contact-box">
+        <h3>Vragen over de voorwaarden?</h3>
+        <p>Alexander Ballet</p>
+        <p>Amsterdam, Nederland</p>
+        <p><a href="mailto:alexander.ballet@hotmail.com">alexander.ballet@hotmail.com</a></p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="privacy.html">Privacybeleid</a>
+      <a href="cookies.html">Cookiebeleid</a>
+      <a href="voorwaarden.html">Voorwaarden</a>
+      <a href="affiliate.html">Affiliate</a>
+    </div>
+    <div class="footer-copy">&copy; 2026 Tweakly. Alle rechten voorbehouden.</div>
+  </footer>
+
+</body>
+</html>

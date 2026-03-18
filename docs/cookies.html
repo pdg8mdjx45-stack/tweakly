@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cookiebeleid — Tweakly</title>
+  <meta name="description" content="Informatie over welke cookies Tweakly gebruikt en hoe u uw cookievoorkeuren kunt beheren.">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="canonical" href="https://tweakly.netlify.app/cookies.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #880517; --primary-light: #A61D2A; --accent: #0A84FF; --green: #34C759; --orange: #FF9500;
+      --bg: #0A0A0F; --surface: rgba(255,255,255,0.04); --border: rgba(255,255,255,0.08);
+      --text: #E8E8ED; --text-secondary: #8888A0; --text-muted: #555566;
+    }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    nav { position: sticky; top: 0; z-index: 100; padding: 0 2rem; height: 60px; display: flex; align-items: center; justify-content: space-between; background: rgba(10,10,15,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+    .nav-brand { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .nav-brand img { width: 28px; height: 28px; border-radius: 6px; }
+    .nav-brand span { font-size: 1.05rem; font-weight: 800; color: var(--text); }
+    .nav-brand span em { font-style: normal; color: var(--primary-light); }
+    .nav-back { font-size: 0.82rem; color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; gap: 0.35rem; transition: color 0.2s; }
+    .nav-back:hover { color: var(--text); text-decoration: none; }
+
+    .page { max-width: 780px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+    .breadcrumb { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 2rem; }
+    .breadcrumb a { color: var(--text-muted); }
+    .breadcrumb a:hover { color: var(--text-secondary); }
+    .page-label { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--primary-light); margin-bottom: 0.75rem; background: rgba(136,5,23,0.1); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1px solid rgba(136,5,23,0.2); }
+    h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 800; letter-spacing: -0.025em; margin-bottom: 0.5rem; line-height: 1.2; }
+    .meta { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 2.5rem; }
+
+    .section { margin-bottom: 2.5rem; }
+    .section h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem; padding-top: 0.5rem; scroll-margin-top: 80px; }
+    .section h2 .num { color: var(--primary-light); margin-right: 0.4rem; font-size: 1rem; }
+    .section p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.75rem; }
+    .section ul { padding-left: 1.5rem; margin-bottom: 0.75rem; }
+    .section li { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 0.4rem; }
+    .section strong { color: var(--text); }
+
+    .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 2.5rem; }
+    .toc h3 { font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; }
+    .toc ol { padding-left: 1.25rem; }
+    .toc li { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.3rem; }
+    .toc li a { color: var(--text-secondary); }
+    .toc li a:hover { color: var(--text); }
+
+    .cookie-types { display: flex; flex-direction: column; gap: 1rem; margin: 1.25rem 0; }
+    .cookie-type { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: start; }
+    @media (max-width: 600px) { .cookie-type { grid-template-columns: 1fr; } }
+    .cookie-type-icon { font-size: 1.6rem; line-height: 1; }
+    .cookie-type-info h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .cookie-type-info p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+    .cookie-type-info .examples { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.4rem; }
+    .cookie-status { flex-shrink: 0; }
+    .badge { display: inline-flex; padding: 0.25rem 0.65rem; border-radius: 999px; font-size: 0.72rem; font-weight: 600; white-space: nowrap; }
+    .badge-required { background: rgba(136,5,23,0.15); border: 1px solid rgba(136,5,23,0.3); color: var(--primary-light); }
+    .badge-optional { background: rgba(255,149,0,0.1); border: 1px solid rgba(255,149,0,0.25); color: var(--orange); }
+    .badge-analytics { background: rgba(10,132,255,0.1); border: 1px solid rgba(10,132,255,0.25); color: var(--accent); }
+
+    .data-table-wrap { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 1rem 0; overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 540px; }
+    .data-table th { text-align: left; padding: 0.65rem 1rem; background: rgba(255,255,255,0.04); color: var(--text-secondary); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border); }
+    .data-table td { padding: 0.65rem 1rem; color: var(--text-secondary); border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: top; line-height: 1.5; }
+    .data-table tr:last-child td { border-bottom: none; }
+
+    .consent-panel { background: rgba(136,5,23,0.05); border: 1px solid rgba(136,5,23,0.2); border-radius: 12px; padding: 1.5rem; margin: 1.25rem 0; }
+    .consent-panel h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .consent-panel p { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.75rem; }
+    .consent-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .consent-btn { padding: 0.5rem 1.1rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all 0.2s; }
+    .consent-btn-primary { background: linear-gradient(135deg, var(--primary-light), var(--primary)); color: #fff; }
+    .consent-btn-secondary { background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid var(--border); }
+
+    .contact-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+    .contact-box h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .contact-box p { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.4rem; }
+
+    footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; }
+    .footer-links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 0.75rem; }
+    .footer-links a { font-size: 0.82rem; color: var(--text-muted); transition: color 0.2s; }
+    .footer-links a:hover { color: var(--text-secondary); text-decoration: none; }
+    .footer-copy { font-size: 0.78rem; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-brand">
+      <img src="logo.png" alt="Tweakly">
+      <span>Tweak<em>ly</em></span>
+    </a>
+    <a href="index.html" class="nav-back">&#8592; Terug naar home</a>
+  </nav>
+
+  <main class="page">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a> &rsaquo; Cookiebeleid
+    </div>
+
+    <div class="page-label">&#127850; Cookies</div>
+    <h1>Cookiebeleid</h1>
+    <div class="meta">Laatste update: 18 maart 2026</div>
+
+    <div class="toc">
+      <h3>Inhoudsopgave</h3>
+      <ol>
+        <li><a href="#wat-zijn-cookies">Wat zijn cookies?</a></li>
+        <li><a href="#welke-cookies">Welke cookies gebruiken we?</a></li>
+        <li><a href="#cookie-lijst">Cookielijst</a></li>
+        <li><a href="#toestemming">Toestemming beheren</a></li>
+        <li><a href="#uitschakelen">Cookies uitschakelen</a></li>
+        <li><a href="#derden">Cookies van derden</a></li>
+        <li><a href="#contact-cookies">Contact</a></li>
+      </ol>
+    </div>
+
+    <div class="section" id="wat-zijn-cookies">
+      <h2><span class="num">1.</span> Wat zijn cookies?</h2>
+      <p>Cookies zijn kleine tekstbestanden die op uw apparaat worden geplaatst wanneer u een website of app bezoekt. Ze worden veel gebruikt om websites goed te laten werken, om website-eigenaren informatie te geven en om gebruikerservaringen te verbeteren.</p>
+      <p>In mobiele apps worden vergelijkbare technologieën gebruikt zoals <strong>local storage</strong> en <strong>AsyncStorage</strong>, die vergelijkbaar functioneren als cookies.</p>
+    </div>
+
+    <div class="section" id="welke-cookies">
+      <h2><span class="num">2.</span> Welke cookies gebruiken we?</h2>
+      <div class="cookie-types">
+
+        <div class="cookie-type">
+          <div class="cookie-type-icon">&#128274;</div>
+          <div class="cookie-type-info">
+            <h3>Noodzakelijke cookies</h3>
+            <p>Deze cookies zijn essentieel voor het functioneren van de app en website. Zonder deze cookies werken basisfuncties zoals inloggen en beveiliging niet.</p>
+            <p class="examples">Voorbeelden: sessie-ID, authenticatietoken, CSRF-bescherming</p>
+          </div>
+          <div class="cookie-status"><span class="badge badge-required">Altijd actief</span></div>
+        </div>
+
+        <div class="cookie-type">
+          <div class="cookie-type-icon">&#9881;&#65039;</div>
+          <div class="cookie-type-info">
+            <h3>Functionele cookies</h3>
+            <p>Deze cookies onthouden uw voorkeuren, zoals de thema-instelling (donker/licht), taal en filterinstellingen. Ze verbeteren uw gebruikerservaring maar zijn niet strikt noodzakelijk.</p>
+            <p class="examples">Voorbeelden: thema-voorkeur, cookietoestemming, onboarding-status</p>
+          </div>
+          <div class="cookie-status"><span class="badge badge-optional">Optioneel</span></div>
+        </div>
+
+        <div class="cookie-type">
+          <div class="cookie-type-icon">&#128202;</div>
+          <div class="cookie-type-info">
+            <h3>Analytische cookies</h3>
+            <p>Anonieme statistieken over hoe u de app en website gebruikt. Deze informatie helpt ons de dienst te verbeteren. We delen geen individuele gebruiksdata.</p>
+            <p class="examples">Voorbeelden: paginaweergaven, functieverwijzingen, sessieduur (geanonimiseerd)</p>
+          </div>
+          <div class="cookie-status"><span class="badge badge-analytics">Optioneel</span></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section" id="cookie-lijst">
+      <h2><span class="num">3.</span> Cookielijst</h2>
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Cookie / sleutel</th><th>Doel</th><th>Bewaartermijn</th><th>Type</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>sb-auth-token</code></td><td>Supabase authenticatiesessie</td><td>Sessie / 1 week</td><td>Noodzakelijk</td></tr>
+            <tr><td><code>tweakly_cookie_consent</code></td><td>Opslaan van uw cookievoorkeur</td><td>1 jaar</td><td>Noodzakelijk</td></tr>
+            <tr><td><code>@theme_mode</code></td><td>Donker/licht thema voorkeur</td><td>Permanent</td><td>Functioneel</td></tr>
+            <tr><td><code>@onboarding_done</code></td><td>Onboarding voltooiing</td><td>Permanent</td><td>Functioneel</td></tr>
+            <tr><td><code>@tour_done</code></td><td>App-tour voltooiing</td><td>Permanent</td><td>Functioneel</td></tr>
+            <tr><td><code>@bookmarks</code></td><td>Opgeslagen bladwijzers</td><td>Permanent</td><td>Functioneel</td></tr>
+            <tr><td><code>@price_alerts</code></td><td>Ingestelde prijsalerts</td><td>Permanent</td><td>Functioneel</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section" id="toestemming">
+      <h2><span class="num">4.</span> Toestemming beheren</h2>
+      <p>Bij uw eerste bezoek aan onze website vragen we om toestemming voor niet-noodzakelijke cookies via de cookiebanner. U kunt altijd uw voorkeuren aanpassen:</p>
+      <div class="consent-panel">
+        <h3>Uw cookievoorkeuren</h3>
+        <p>Kies hieronder wat u accepteert. Noodzakelijke cookies zijn altijd actief.</p>
+        <div class="consent-btns">
+          <button class="consent-btn consent-btn-secondary" onclick="localStorage.setItem('tweakly_cookie_consent','essential'); alert('Alleen noodzakelijke cookies ingesteld.')">Alleen noodzakelijk</button>
+          <button class="consent-btn consent-btn-primary" onclick="localStorage.setItem('tweakly_cookie_consent','all'); alert('Alle cookies geaccepteerd.')">Alles accepteren</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="uitschakelen">
+      <h2><span class="num">5.</span> Cookies uitschakelen</h2>
+      <p>U kunt cookies uitschakelen via uw browser- of apparaatinstellingen:</p>
+      <ul>
+        <li><strong>Chrome:</strong> Instellingen &rarr; Privacy en beveiliging &rarr; Cookies en andere sitegegevens</li>
+        <li><strong>Firefox:</strong> Instellingen &rarr; Privacy en beveiliging &rarr; Cookies en sitegegevens</li>
+        <li><strong>Safari (iOS):</strong> Instellingen &rarr; Safari &rarr; Privacy en beveiliging</li>
+        <li><strong>Android:</strong> App-instellingen &rarr; Opslag &rarr; Gegevens wissen</li>
+      </ul>
+      <p>Let op: het uitschakelen van noodzakelijke cookies kan de werking van de app beperken. U kunt zich mogelijk niet meer inloggen.</p>
+    </div>
+
+    <div class="section" id="derden">
+      <h2><span class="num">6.</span> Cookies van derden</h2>
+      <p>Tweakly maakt gebruik van de volgende externe diensten die eigen cookies kunnen plaatsen:</p>
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Dienst</th><th>Doel</th><th>Privacybeleid</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Supabase</strong></td><td>Authenticatie &amp; database</td><td><a href="https://supabase.com/privacy" target="_blank" rel="noopener">supabase.com/privacy</a></td></tr>
+            <tr><td><strong>Google Fonts</strong></td><td>Lettertypen</td><td><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com</a></td></tr>
+            <tr><td><strong>Netlify</strong></td><td>Website hosting</td><td><a href="https://www.netlify.com/privacy/" target="_blank" rel="noopener">netlify.com/privacy</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section" id="contact-cookies">
+      <h2><span class="num">7.</span> Contact</h2>
+      <div class="contact-box">
+        <h3>Vragen over cookies?</h3>
+        <p>Alexander Ballet</p>
+        <p>Amsterdam, Nederland</p>
+        <p><a href="mailto:alexander.ballet@hotmail.com">alexander.ballet@hotmail.com</a></p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="privacy.html">Privacybeleid</a>
+      <a href="cookies.html">Cookiebeleid</a>
+      <a href="voorwaarden.html">Voorwaarden</a>
+      <a href="affiliate.html">Affiliate</a>
+    </div>
+    <div class="footer-copy">&copy; 2026 Tweakly. Alle rechten voorbehouden.</div>
+  </footer>
+
+</body>
+</html>

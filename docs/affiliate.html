@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Affiliate Disclosure — Tweakly</title>
+  <meta name="description" content="Transparantie over affiliate-links en commissies bij Tweakly. Verplichte disclosure voor partners zoals Bol.com, Daisycon en Coolblue.">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="canonical" href="https://tweakly.netlify.app/affiliate.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #880517; --primary-light: #A61D2A; --accent: #0A84FF; --green: #34C759; --orange: #FF9500;
+      --bg: #0A0A0F; --surface: rgba(255,255,255,0.04); --border: rgba(255,255,255,0.08);
+      --text: #E8E8ED; --text-secondary: #8888A0; --text-muted: #555566;
+    }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code { background: rgba(255,255,255,0.06); padding: 0.1em 0.4em; border-radius: 4px; font-size: 0.9em; font-family: 'Courier New', monospace; }
+
+    nav { position: sticky; top: 0; z-index: 100; padding: 0 2rem; height: 60px; display: flex; align-items: center; justify-content: space-between; background: rgba(10,10,15,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+    .nav-brand { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .nav-brand img { width: 28px; height: 28px; border-radius: 6px; }
+    .nav-brand span { font-size: 1.05rem; font-weight: 800; color: var(--text); }
+    .nav-brand span em { font-style: normal; color: var(--primary-light); }
+    .nav-back { font-size: 0.82rem; color: var(--text-secondary); text-decoration: none; transition: color 0.2s; }
+    .nav-back:hover { color: var(--text); text-decoration: none; }
+
+    .page { max-width: 780px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+    .breadcrumb { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 2rem; }
+    .breadcrumb a { color: var(--text-muted); }
+    .breadcrumb a:hover { color: var(--text-secondary); }
+    .page-label { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #FF9500; margin-bottom: 0.75rem; background: rgba(255,149,0,0.1); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1px solid rgba(255,149,0,0.25); }
+    h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 800; letter-spacing: -0.025em; margin-bottom: 0.5rem; line-height: 1.2; }
+    .meta { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 2.5rem; }
+
+    .summary-card { background: rgba(255,149,0,0.06); border: 1px solid rgba(255,149,0,0.2); border-radius: 14px; padding: 1.75rem; margin-bottom: 2.5rem; }
+    .summary-card h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; color: #FF9500; }
+    .summary-card p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.65; margin-bottom: 0.5rem; }
+    .summary-card p:last-child { margin-bottom: 0; }
+
+    .section { margin-bottom: 2.5rem; }
+    .section h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem; padding-top: 0.5rem; }
+    .section h2 .num { color: var(--primary-light); margin-right: 0.4rem; font-size: 1rem; }
+    .section p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.75rem; }
+    .section ul { padding-left: 1.5rem; margin-bottom: 0.75rem; }
+    .section li { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 0.4rem; }
+    .section strong { color: var(--text); }
+
+    .partners-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1.25rem 0; }
+    @media (max-width: 600px) { .partners-grid { grid-template-columns: 1fr; } }
+    .partner-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+    .partner-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+    .partner-logo { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.75rem; flex-shrink: 0; }
+    .partner-name { font-size: 0.95rem; font-weight: 700; }
+    .partner-type { font-size: 0.75rem; color: var(--text-muted); }
+    .partner-desc { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; }
+
+    .principles { display: flex; flex-direction: column; gap: 0.75rem; margin: 1.25rem 0; }
+    .principle { display: flex; gap: 1rem; align-items: flex-start; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; }
+    .principle-icon { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
+    .principle-text h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .principle-text p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+
+    .data-table-wrap { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 1rem 0; overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 480px; }
+    .data-table th { text-align: left; padding: 0.65rem 1rem; background: rgba(255,255,255,0.04); color: var(--text-secondary); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border); }
+    .data-table td { padding: 0.65rem 1rem; color: var(--text-secondary); border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: top; line-height: 1.5; }
+    .data-table tr:last-child td { border-bottom: none; }
+
+    .contact-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+    .contact-box h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .contact-box p { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.4rem; }
+
+    footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; }
+    .footer-links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 0.75rem; }
+    .footer-links a { font-size: 0.82rem; color: var(--text-muted); transition: color 0.2s; }
+    .footer-links a:hover { color: var(--text-secondary); text-decoration: none; }
+    .footer-copy { font-size: 0.78rem; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-brand">
+      <img src="logo.png" alt="Tweakly">
+      <span>Tweak<em>ly</em></span>
+    </a>
+    <a href="index.html" class="nav-back">&#8592; Terug naar home</a>
+  </nav>
+
+  <main class="page">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a> &rsaquo; Affiliate Disclosure
+    </div>
+
+    <div class="page-label">&#128279; Affiliate Disclosure</div>
+    <h1>Affiliate &amp; Commerci&euml;le Transparantie</h1>
+    <div class="meta">Laatste update: 18 maart 2026</div>
+
+    <div class="summary-card">
+      <h2>&#9888;&#65039; Belangrijke mededeling</h2>
+      <p>Tweakly bevat <strong>affiliate-links</strong> naar externe webshops. Wanneer u via een dergelijke link een product aanschaft, ontvangt Tweakly mogelijk een vergoeding van de betreffende webshop.</p>
+      <p>Dit is <strong>volledig transparant</strong>: u betaalt nooit meer via een affiliate-link. De commissie wordt betaald door de webshop, niet door u. De rangschikking van producten en winkels in Tweakly is gebaseerd op prijs en kwaliteit — niet op de hoogte van commissies.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">1.</span> Wat zijn affiliate-links?</h2>
+      <p>Affiliate-links zijn speciale trackinglinks die bijhouden of een bezoeker via Tweakly een aankoop doet bij een webshop. Als dat het geval is, ontvangt Tweakly een kleine commissie (doorgaans 1–5% van het aankoopbedrag).</p>
+      <p>Dit is een gangbare manier voor prijsvergelijkingssites om hun dienst gratis aan te bieden. Zo kan Tweakly kosteloos beschikbaar blijven voor alle gebruikers.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">2.</span> Onze affiliate partners</h2>
+      <div class="partners-grid">
+        <div class="partner-card">
+          <div class="partner-header">
+            <div class="partner-logo" style="background:#0071bf;color:white">BOL</div>
+            <div>
+              <div class="partner-name">Bol.com</div>
+              <div class="partner-type">via Daisycon / direct</div>
+            </div>
+          </div>
+          <p class="partner-desc">Links naar bol.com-producten kunnen affiliate-links zijn via het Bol.com partnerprogramma of Daisycon.</p>
+        </div>
+        <div class="partner-card">
+          <div class="partner-header">
+            <div class="partner-logo" style="background:#0071ce;color:white">CB</div>
+            <div>
+              <div class="partner-name">Coolblue</div>
+              <div class="partner-type">via Daisycon</div>
+            </div>
+          </div>
+          <p class="partner-desc">Coolblue-links kunnen affiliate-links zijn via het Daisycon-netwerk.</p>
+        </div>
+        <div class="partner-card">
+          <div class="partner-header">
+            <div class="partner-logo" style="background:#e30613;color:white">MM</div>
+            <div>
+              <div class="partner-name">MediaMarkt</div>
+              <div class="partner-type">via Daisycon</div>
+            </div>
+          </div>
+          <p class="partner-desc">MediaMarkt-links kunnen affiliate-links zijn via het Daisycon-netwerk.</p>
+        </div>
+        <div class="partner-card">
+          <div class="partner-header">
+            <div class="partner-logo" style="background:#ff9900;color:#111">AMZ</div>
+            <div>
+              <div class="partner-name">Amazon.nl</div>
+              <div class="partner-type">Amazon Associates</div>
+            </div>
+          </div>
+          <p class="partner-desc">Amazon-links kunnen deel uitmaken van het Amazon Associates-programma.</p>
+        </div>
+        <div class="partner-card">
+          <div class="partner-header">
+            <div class="partner-logo" style="background:#333;color:#0f0">ALT</div>
+            <div>
+              <div class="partner-name">Alternate</div>
+              <div class="partner-type">via Daisycon / TradeTracker</div>
+            </div>
+          </div>
+          <p class="partner-desc">Links naar Alternate.nl kunnen affiliate-links zijn.</p>
+        </div>
+        <div class="partner-card">
+          <div class="partner-header">
+            <div class="partner-logo" style="background:#1a1a2e;color:#e94560">MEG</div>
+            <div>
+              <div class="partner-name">Megekko</div>
+              <div class="partner-type">via affiliate netwerk</div>
+            </div>
+          </div>
+          <p class="partner-desc">Links naar Megekko.nl kunnen affiliate-links zijn.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">3.</span> Affiliate netwerken</h2>
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Netwerk</th><th>Website</th><th>Privacybeleid</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Daisycon</strong></td><td><a href="https://www.daisycon.com" target="_blank" rel="noopener">daisycon.com</a></td><td><a href="https://www.daisycon.com/nl/privacyverklaring/" target="_blank" rel="noopener">Privacy</a></td></tr>
+            <tr><td><strong>Amazon Associates</strong></td><td><a href="https://affiliate-program.amazon.nl" target="_blank" rel="noopener">amazon.nl</a></td><td><a href="https://www.amazon.nl/gp/help/customer/display.html?nodeId=GX7NJQ4ZB8MHFRNJ" target="_blank" rel="noopener">Privacy</a></td></tr>
+            <tr><td><strong>TradeTracker</strong></td><td><a href="https://www.tradetracker.com" target="_blank" rel="noopener">tradetracker.com</a></td><td><a href="https://tradetracker.com/privacy-policy/" target="_blank" rel="noopener">Privacy</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">4.</span> Onze principes</h2>
+      <div class="principles">
+        <div class="principle">
+          <div class="principle-icon">&#9878;&#65039;</div>
+          <div class="principle-text">
+            <h3>Prijs staat altijd centraal</h3>
+            <p>De rangschikking van webshops in de prijsvergelijking is <strong>altijd gebaseerd op prijs</strong> — van laag naar hoog. De hoogte van een eventuele commissie heeft hier geen invloed op.</p>
+          </div>
+        </div>
+        <div class="principle">
+          <div class="principle-icon">&#128276;</div>
+          <div class="principle-text">
+            <h3>Transparante markering</h3>
+            <p>Affiliate-links worden in de HTML gemarkeerd met <code>rel="sponsored"</code> zodat zoekmachines en gebruikers dit kunnen identificeren.</p>
+          </div>
+        </div>
+        <div class="principle">
+          <div class="principle-icon">&#128176;</div>
+          <div class="principle-text">
+            <h3>Geen meerkosten voor u</h3>
+            <p>U betaalt nooit meer via een affiliate-link. De commissie wordt betaald door de webshop uit de marge op de verkoop.</p>
+          </div>
+        </div>
+        <div class="principle">
+          <div class="principle-icon">&#129305;</div>
+          <div class="principle-text">
+            <h3>Onafhankelijke redactie</h3>
+            <p>Productreviews en aanbevelingen in Tweakly zijn gebaseerd op redactioneel oordeel en gebruikersdata — niet op betaalde plaatsingen.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">5.</span> Wettelijke basis</h2>
+      <p>Deze disclosure is vereist door:</p>
+      <ul>
+        <li><strong>FTC Guidelines</strong> (VS) — Endorsement &amp; Testimonials Guide</li>
+        <li><strong>ACM richtlijnen</strong> (NL) — Autoriteit Consument &amp; Markt betreffende reclame-identificatie</li>
+        <li><strong>IAB Europe Transparency Framework</strong></li>
+        <li>De deelnamevoorwaarden van Daisycon, Amazon Associates en andere netwerken</li>
+      </ul>
+      <p>Tweakly voldoet aan de verplichting affiliate-links duidelijk te identificeren en hierover transparant te zijn jegens gebruikers.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">6.</span> Vragen of zorgen?</h2>
+      <div class="contact-box">
+        <h3>Contact opnemen</h3>
+        <p>Alexander Ballet</p>
+        <p>Amsterdam, Nederland</p>
+        <p><a href="mailto:alexander.ballet@hotmail.com">alexander.ballet@hotmail.com</a></p>
+        <p style="margin-top:0.75rem;font-size:0.82rem;color:var(--text-muted)">Heb je vragen over onze affiliate-relaties of een specifieke link? Neem gerust contact op.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="privacy.html">Privacybeleid</a>
+      <a href="cookies.html">Cookiebeleid</a>
+      <a href="voorwaarden.html">Voorwaarden</a>
+      <a href="affiliate.html">Affiliate</a>
+    </div>
+    <div class="footer-copy">&copy; 2026 Tweakly. Alle rechten voorbehouden.</div>
+  </footer>
+
+</body>
+</html>
