@@ -69,7 +69,7 @@ export default function AffiliateScreen() {
         <Text style={[styles.text, { color: colors.textSecondary }]}>
           Vragen over onze affiliate-relaties?{'\n'}
           {'\n'}Alexander Ballet{'\n'}
-          Amsterdam, Nederland{'\n'}
+          Zolder, België{'\n'}
           E-mail: alexander.ballet@hotmail.com
         </Text>
       </ScrollView>
