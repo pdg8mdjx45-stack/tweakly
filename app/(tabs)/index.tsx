@@ -3,19 +3,20 @@
  * Home Screen — Visual, engaging dashboard
  */
 
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Link, useRouter } from 'expo-router';
 import { Dimensions, FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { PRICE_DISCLAIMER } from '@/constants/mock-data';
-import { Colors, Glass, Palette, Radius, Shadow, Spacing } from '@/constants/theme';
+import { Colors, Glass, Palette, Radius, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useProductImage } from '@/hooks/use-product-image';
 import { getAllProducts, getBestDeal, getNewProducts, getPriceDrops, type Product } from '@/services/product-db';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useTour } from '@/hooks/use-tour';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -180,6 +181,8 @@ export default function HomeScreen() {
   const colors = Colors[colorScheme];
   const isDark = colorScheme === 'dark';
   const router = useRouter();
+  const { registerRef } = useTour();
+  const searchBarRef = useRef<View>(null);
 
   const [priceDrops, setPriceDrops] = useState<Product[]>([]);
   const [newProducts, setNewProducts] = useState<Product[]>([]);
@@ -201,33 +204,23 @@ export default function HomeScreen() {
   return (
     <View style={[styles.safe, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: isDark ? 'rgba(10,10,15,0.85)' : 'rgba(242,242,247,0.92)' }]}>
+      <View style={[styles.header, isDark ? Glass.liquid.dark : Glass.liquid.light]}>
         <View style={styles.headerRow}>
           <Image
             source={require('@/assets/images/icon.png')}
             style={styles.logo}
             contentFit="contain"
           />
+
           <View style={styles.headerTextWrap}>
             <Text style={[styles.greeting, { color: colors.textSecondary }]}>Welkom terug</Text>
             <Text style={[styles.userName, { color: colors.text }]}>{USER_NAME}</Text>
           </View>
-          <Pressable
-            onPress={() => router.push('/(tabs)/meldingen' as any)}
-            style={[styles.iconBtn, isDark ? Glass.card : Glass.cardLight]}
-          >
-            <IconSymbol size={20} name="bell.fill" color={colors.textSecondary} />
-          </Pressable>
-          <Pressable
-            onPress={() => router.push('/(tabs)/profiel')}
-            style={[styles.iconBtn, isDark ? Glass.card : Glass.cardLight]}
-          >
-            <IconSymbol size={20} name="person.fill" color={colors.textSecondary} />
-          </Pressable>
         </View>
 
         {/* Search bar */}
         <Pressable
+          ref={(r) => { searchBarRef.current = r as any; registerRef('searchBar', r as any); }}
           onPress={() => router.push('/(tabs)/zoeken' as any)}
           style={[
             styles.searchBar,
@@ -271,6 +264,29 @@ export default function HomeScreen() {
               </Pressable>
             ))}
           </ScrollView>
+          
+          {/* Smart recommendation button */}
+          <Pressable
+            onPress={() => router.push('/(tabs)/categorieen' as any)}
+            style={({ pressed }) => [
+              styles.recommendBanner,
+              { backgroundColor: Palette.primary + '15' },
+              pressed && { opacity: 0.8 },
+            ]}
+          >
+            <View style={[styles.recommendIcon, { backgroundColor: Palette.primary }]}>
+              <MaterialIcons name="auto-awesome" size={20} color="#fff" />
+            </View>
+            <View style={styles.recommendTextWrap}>
+              <Text style={[styles.recommendTitle, { color: colors.text }]}>
+                ✨ Weet je niet wat je moet kiezen?
+              </Text>
+              <Text style={[styles.recommendSub, { color: colors.textSecondary }]}>
+                Laat ons je helpen met het juiste product
+              </Text>
+            </View>
+            <MaterialIcons name="chevron-right" size={24} color={Palette.primary} />
+          </Pressable>
         </View>
 
         {/* Price drops */}
@@ -350,6 +366,25 @@ export default function HomeScreen() {
           <Text style={[styles.disclaimerText, { color: colors.textSecondary }]}>
             {PRICE_DISCLAIMER}
           </Text>
+          
+          {/* Legal links */}
+          <View style={styles.legalLinks}>
+            <Link href="/privacy" asChild>
+              <Text style={[styles.legalLink, { color: colors.textSecondary }]}>Privacy</Text>
+            </Link>
+            <Text style={[styles.legalDot, { color: colors.textSecondary }]}>•</Text>
+            <Link href="/terms" asChild>
+              <Text style={[styles.legalLink, { color: colors.textSecondary }]}>Voorwaarden</Text>
+            </Link>
+            <Text style={[styles.legalDot, { color: colors.textSecondary }]}>•</Text>
+            <Link href="/cookies" asChild>
+              <Text style={[styles.legalLink, { color: colors.textSecondary }]}>Cookies</Text>
+            </Link>
+          </View>
+          
+          <Text style={[styles.copyright, { color: colors.textSecondary }]}>
+            © 2026 Tweakly. Alle rechten voorbehouden.
+          </Text>
         </View>
       </ScrollView>
     </View>
@@ -362,9 +397,10 @@ const styles = StyleSheet.create({
 
   // Header
   header: {
-    paddingTop: Spacing.xl + Spacing.lg,
+    paddingTop: Spacing.xl + Spacing.sm,
     paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.sm,
+    borderRadius: 0,
   },
   headerRow: {
     flexDirection: 'row',
@@ -372,9 +408,8 @@ const styles = StyleSheet.create({
     gap: Spacing.sm + 4,
   },
   logo: {
-    width: 56,
-    height: 56,
-    borderRadius: 16,
+    width: 52,
+    height: 52,
   },
   headerTextWrap: {
     flex: 1,
@@ -593,6 +628,35 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
+  // Recommendation banner
+  recommendBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: Spacing.md,
+    marginTop: Spacing.md,
+    padding: Spacing.md,
+    borderRadius: Radius.md,
+    gap: Spacing.sm,
+  },
+  recommendIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  recommendTextWrap: {
+    flex: 1,
+  },
+  recommendTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  recommendSub: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+
   // Horizontal product cards
   horizontalList: {
     paddingHorizontal: Spacing.md,
@@ -680,10 +744,30 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.xxl,
     paddingTop: Spacing.lg,
+    alignItems: 'center',
+    gap: Spacing.sm,
   },
   disclaimerText: {
     fontSize: 11,
     textAlign: 'center',
     lineHeight: 16,
+  },
+  legalLinks: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginTop: Spacing.xs,
+  },
+  legalLink: {
+    fontSize: 12,
+    fontWeight: '500',
+    textDecorationLine: 'underline',
+  },
+  legalDot: {
+    fontSize: 12,
+  },
+  copyright: {
+    fontSize: 11,
+    marginTop: Spacing.xs,
   },
 });

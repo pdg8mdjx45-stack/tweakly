@@ -10,8 +10,10 @@ import { storeArticles } from '@/services/article-store';
 import { generateItemId, parseRSS } from '@/services/rss-parser';
 import type { Article, FeedCategory, ParsedRSSItem } from '@/types/rss';
 
-/** Cache duration: 10 minutes */
-const CACHE_DURATION = 10 * 60 * 1000;
+/** Cache duration: 1 minute (minimum poll interval) */
+const CACHE_DURATION = 60 * 1000;
+/** Auto-refresh interval: fetch new articles every minute */
+const REFRESH_INTERVAL = 60 * 1000;
 const FETCH_TIMEOUT_MS = 12_000;
 const ALL_CATEGORIES: FeedCategory[] = ['nieuws', 'reviews'];
 
@@ -168,6 +170,16 @@ export function useRSSFeed(category: FeedCategory): RSSFeedState {
     void fetchFeed();
   }, [fetchFeed, refreshKey]);
 
+  // Auto-refresh every minute to pick up new articles
+  useEffect(() => {
+    const interval = setInterval(() => {
+      feedCache.delete(category);
+      allFeedsCache = null;
+      void fetchFeed();
+    }, REFRESH_INTERVAL);
+    return () => clearInterval(interval);
+  }, [category, fetchFeed]);
+
   const refresh = useCallback(() => {
     feedCache.delete(category);
     allFeedsCache = null;
@@ -223,6 +235,16 @@ export function useAllFeeds(): RSSFeedState {
       cancelled = true;
     };
   }, [refreshKey]);
+
+  // Auto-refresh every minute to pick up new articles
+  useEffect(() => {
+    const interval = setInterval(() => {
+      feedCache.clear();
+      allFeedsCache = null;
+      setRefreshKey((k) => k + 1);
+    }, REFRESH_INTERVAL);
+    return () => clearInterval(interval);
+  }, []);
 
   const refresh = useCallback(() => {
     feedCache.clear();

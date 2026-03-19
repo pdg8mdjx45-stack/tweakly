@@ -16,7 +16,7 @@ interface PriceHistoryChartProps {
 
 const screenWidth = Dimensions.get('window').width;
 // Full container width for centered chart
-const chartWidth = screenWidth - Spacing.md * 2;
+const chartWidth = (screenWidth - Spacing.md * 2) * 0.85;
 
 export function PriceHistoryChart({
   data,
@@ -97,6 +97,7 @@ export function PriceHistoryChart({
     },
     // Add padding to show Y-axis labels outside the chart area
     paddingLeft: 50,
+    paddingBottom: 20,
   };
 
   // Format labels - show fewer when there are many data points
@@ -239,7 +240,7 @@ export function PriceHistoryChart({
         <LineChart
           data={chartData}
           width={chartWidth}
-          height={200}
+          height={180}
           chartConfig={chartConfig}
           bezier
           style={styles.chart}
@@ -399,7 +400,7 @@ const styles = StyleSheet.create({
   },
   chartContainer: {
     marginVertical: Spacing.sm,
-    marginLeft: -50,
+    alignSelf: 'flex-end',
   },
   chart: {
     marginVertical: 8,

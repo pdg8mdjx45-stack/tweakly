@@ -1,3 +1,4 @@
+import { BackButton } from '@/components/back-button';
 import { MOCK_CATEGORIES, type Category } from '@/constants/mock-data';
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -6,6 +7,8 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+
+import { CATEGORY_CONFIGS, type CategoryId } from '@/services/product-recommender';
 
 const CATEGORY_COLORS = [
   '#C0001B',
@@ -40,7 +43,8 @@ export default function CategorieenScreen() {
   return (
     <View style={[styles.safe, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { backgroundColor: colors.background }]}>
-        <Text style={[styles.title, { color: colors.text }]}>Categorieën</Text>
+        <BackButton color={colors.tint} />
+        <Text style={[styles.title, { color: colors.text }]}>Categorie�n</Text>
       </View>
 
       {loading && (
@@ -55,6 +59,29 @@ export default function CategorieenScreen() {
         numColumns={2}
         columnWrapperStyle={styles.row}
         contentContainerStyle={styles.grid}
+        ListHeaderComponent={
+          <Pressable
+            onPress={() => router.push('/categorie-wizard' as any)}
+            style={({ pressed }) => [
+              styles.smartCard,
+              { backgroundColor: Palette.primary + '12' },
+              pressed && { opacity: 0.8 },
+            ]}
+          >
+            <View style={[styles.smartIcon, { backgroundColor: Palette.primary }]}>
+              <MaterialIcons name="auto-awesome" size={28} color="#fff" />
+            </View>
+            <View style={styles.smartTextWrap}>
+              <Text style={[styles.smartTitle, { color: colors.text }]}>
+                ✨ Weet je niet wat je moet kiezen?
+              </Text>
+              <Text style={[styles.smartSub, { color: colors.textSecondary }]}>
+                Beantwoord een paar vragen en wij helpen je
+              </Text>
+            </View>
+            <MaterialIcons name="chevron-right" size={26} color={Palette.primary} />
+          </Pressable>
+        }
         renderItem={({ item, index }) => {
           const color = CATEGORY_COLORS[index % CATEGORY_COLORS.length];
           return (
@@ -86,11 +113,38 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.xl,
     paddingBottom: Spacing.sm,
+    gap: Spacing.xs,
   },
   title: {
     fontSize: 34,
     fontWeight: '700',
     letterSpacing: 0.35,
+  },
+  smartCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: Spacing.md,
+    borderRadius: Radius.md,
+    marginBottom: Spacing.sm,
+    gap: Spacing.sm,
+  },
+  smartIcon: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  smartTextWrap: {
+    flex: 1,
+  },
+  smartTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  smartSub: {
+    fontSize: 12,
+    marginTop: 2,
   },
   grid: {
     padding: Spacing.sm,

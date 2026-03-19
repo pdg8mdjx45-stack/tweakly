@@ -1,61 +1,154 @@
 /**
  * Profile Hook
- * Manages user profile data and settings with AsyncStorage persistence.
+ * Manages user profile data with Supabase backend + local cache.
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useState } from 'react';
+import { supabase } from '../services/supabase';
+import { User } from '@supabase/supabase-js';
 
 const STORAGE_KEY = 'tweakly-profile-v1';
 
 export interface ProfileData {
-  displayName: string;
-  email: string;
-  pushEnabled: boolean;
-  emailNotifEnabled: boolean;
-  categoryNieuws: boolean;
-  categoryReviews: boolean;
-  categoryPrijzen: boolean;
+  id: string;
+  username: string;
+  avatar_url: string;
+  display_name: string;
+  push_enabled: boolean;
+  email_notif_enabled: boolean;
+  category_nieuws: boolean;
+  category_reviews: boolean;
+  category_prijzen: boolean;
 }
 
 const DEFAULT_PROFILE: ProfileData = {
-  displayName: 'Tweakly Gebruiker',
-  email: 'gebruiker@email.nl',
-  pushEnabled: true,
-  emailNotifEnabled: false,
-  categoryNieuws: true,
-  categoryReviews: true,
-  categoryPrijzen: true,
+  id: '',
+  username: '',
+  avatar_url: '',
+  display_name: 'Tweakly Gebruiker',
+  push_enabled: true,
+  email_notif_enabled: false,
+  category_nieuws: true,
+  category_reviews: true,
+  category_prijzen: true,
 };
 
 export function useProfile() {
   const [profile, setProfile] = useState<ProfileData>(DEFAULT_PROFILE);
+  const [user, setUser] = useState<User | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
-    AsyncStorage.getItem(STORAGE_KEY)
-      .then((raw) => {
-        if (raw) {
-          const parsed = JSON.parse(raw) as Partial<ProfileData>;
-          setProfile({ ...DEFAULT_PROFILE, ...parsed });
-        }
-      })
-      .catch(console.error)
-      .finally(() => setLoaded(true));
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+      if (data.user) {
+        loadProfile(data.user.id);
+      } else {
+        loadLocalProfile();
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        loadProfile(session.user.id);
+      } else {
+        setProfile(DEFAULT_PROFILE);
+        setLoaded(true);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  useEffect(() => {
-    if (!loaded) return;
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(profile)).catch(console.error);
-  }, [profile, loaded]);
+  const loadLocalProfile = async () => {
+    try {
+      const raw = await AsyncStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        setProfile({ ...DEFAULT_PROFILE, ...parsed });
+      }
+    } catch (e) {
+      console.error('Failed to load local profile', e);
+    } finally {
+      setLoaded(true);
+    }
+  };
 
-  const updateProfile = useCallback((updates: Partial<ProfileData>) => {
-    setProfile((prev) => ({ ...prev, ...updates }));
-  }, []);
+  const loadProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
 
-  const resetProfile = useCallback(() => {
-    setProfile(DEFAULT_PROFILE);
-  }, []);
+      if (error && error.code !== 'PGRST116') {
+        console.error('Failed to load profile', error);
+        loadLocalProfile();
+        return;
+      }
 
-  return { profile, updateProfile, resetProfile, loaded };
+      if (data) {
+        setProfile(data);
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } else {
+        const newProfile = { ...DEFAULT_PROFILE, id: userId };
+        await createProfile(newProfile);
+      }
+    } catch (e) {
+      console.error('Profile load error', e);
+      loadLocalProfile();
+    } finally {
+      setLoaded(true);
+    }
+  };
+
+  const createProfile = async (profileData: ProfileData) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .insert(profileData)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Failed to create profile', error);
+        return;
+      }
+
+      setProfile(data);
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+      console.error('Create profile error', e);
+    }
+  };
+
+  const updateProfile = useCallback(async (updates: Partial<ProfileData>) => {
+    if (!user) return;
+
+    const newProfile = { ...profile, ...updates };
+    setProfile(newProfile);
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newProfile));
+
+    setSyncing(true);
+    const { error } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', user.id);
+
+    if (error) {
+      console.error('Failed to sync profile', error);
+    }
+    setSyncing(false);
+  }, [user, profile]);
+
+  const resetProfile = useCallback(async () => {
+    if (!user) return;
+    await updateProfile(DEFAULT_PROFILE);
+  }, [user, updateProfile]);
+
+  return { profile, user, updateProfile, resetProfile, loaded, syncing };
 }

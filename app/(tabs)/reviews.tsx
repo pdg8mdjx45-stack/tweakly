@@ -108,7 +108,9 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.xxl,
     paddingTop: Spacing.xs,
   },
-  articleRow: {},
+  articleRow: {
+    marginBottom: Spacing.sm,
+  },
   separator: {
     height: StyleSheet.hairlineWidth,
     marginLeft: Spacing.md + 46 + 12,

@@ -25,14 +25,17 @@ export default function TabLayout() {
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarStyle: {
-          backgroundColor: isDark ? '#0D0D12' : '#FFFFFF',
+          backgroundColor: isDark ? 'rgba(20,20,26,0.85)' : 'rgba(255,255,255,0.88)',
           borderTopWidth: StyleSheet.hairlineWidth,
-          borderTopColor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.1)',
+          borderTopColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)',
           elevation: 0,
           height: Platform.OS === 'ios' ? 88 : 72,
           paddingBottom: Platform.OS === 'ios' ? 28 : 12,
           paddingTop: 10,
-          shadowOpacity: 0,
+          shadowColor: isDark ? '#000' : 'rgba(26,58,32,0.1)',
+          shadowOffset: { width: 0, height: -6 },
+          shadowOpacity: isDark ? 0.3 : 0.12,
+          shadowRadius: 16,
         },
         tabBarLabelStyle: {
           fontSize: 10,
@@ -86,11 +89,12 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="bladwijzers"
+        name="profiel"
         options={{
-          title: 'Opgeslagen',
+          title: 'Instellingen',
+          headerShown: false,
           tabBarIcon: ({ color, focused }) => (
-            <IconSymbol size={focused ? 26 : 24} name={focused ? 'bookmark.fill' : 'bookmark'} color={color} />
+            <IconSymbol size={focused ? 26 : 24} name={focused ? 'gearshape.fill' : 'gearshape'} color={color} />
           ),
         }}
       />
@@ -98,8 +102,10 @@ export default function TabLayout() {
       {/* Hidden tabs — navigable programmatically but not in the tab bar */}
       <Tabs.Screen name="zoeken" options={{ href: null }} />
       <Tabs.Screen name="meldingen" options={{ href: null }} />
-      <Tabs.Screen name="profiel" options={{ href: null }} />
+      <Tabs.Screen name="bladwijzers" options={{ href: null }} />
       <Tabs.Screen name="categorieen" options={{ href: null }} />
+      <Tabs.Screen name="instellingen-meldingen" options={{ href: null }} />
+      <Tabs.Screen name="instellingen-categorieen" options={{ href: null }} />
     </Tabs>
   );
 }

@@ -4,13 +4,20 @@
 
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useState } from 'react';
+import Animated, {
+  FadeInDown,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { useArticleBookmark } from '@/hooks/use-bookmarks';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useReduceMotion } from '@/hooks/use-reduce-motion';
 import { formatRSSDate } from '@/hooks/use-rss-feed';
 import { storeArticle } from '@/services/article-store';
 import type { Article } from '@/types/rss';
@@ -18,6 +25,7 @@ import type { Article } from '@/types/rss';
 interface ArticleCardProps {
   article: Article;
   variant?: 'default' | 'compact' | 'featured';
+  index?: number;
 }
 
 function getCategoryColor(category: string): string {
@@ -38,11 +46,13 @@ function getCategoryBg(category: string, isDark: boolean): string {
   }
 }
 
-export const ArticleCard = memo(function ArticleCard({ article, variant = 'default' }: ArticleCardProps) {
+export const ArticleCard = memo(function ArticleCard({ article, variant = 'default', index = 0 }: ArticleCardProps) {
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
   const isDark = colorScheme === 'dark';
   const router = useRouter();
+  const { animationsEnabled } = useReduceMotion();
+  const scale = useSharedValue(1);
 
   const { bookmarked, toggleBookmark } = useArticleBookmark({
     id: article.id,
@@ -63,16 +73,40 @@ export const ArticleCard = memo(function ArticleCard({ article, variant = 'defau
     toggleBookmark();
   }, [toggleBookmark]);
 
+  const animatedPressStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handlePressIn = () => {
+    if (animationsEnabled) {
+      scale.value = withSpring(0.97, { damping: 15, stiffness: 300 });
+    }
+  };
+
+  const handlePressOut = () => {
+    if (animationsEnabled) {
+      scale.value = withSpring(1, { damping: 15, stiffness: 300 });
+    }
+  };
+
   const dateStr = formatRSSDate(article.publishedAt.toISOString());
   const catColor = getCategoryColor(article.category);
   const catBg = getCategoryBg(article.category, isDark);
   const catLetter = article.category.charAt(0).toUpperCase();
 
+  const enteringAnimation = animationsEnabled 
+    ? FadeInDown.delay(index * 30).springify().damping(15).stiffness(100)
+    : undefined;
+
   // ── DEFAULT — Revolut transaction-row ─────────────────────────────────────
   if (variant === 'default') {
     return (
+      <Animated.View entering={enteringAnimation}>
+      <Animated.View style={animatedPressStyle}>
       <Pressable
         onPress={handlePress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
         style={({ pressed }) => [
           styles.row,
           { backgroundColor: colors.surface },
@@ -113,14 +147,20 @@ export const ArticleCard = memo(function ArticleCard({ article, variant = 'defau
           />
         </Pressable>
       </Pressable>
+      </Animated.View>
+      </Animated.View>
     );
   }
 
   // ── COMPACT — minimal row ──────────────────────────────────────────────────
   if (variant === 'compact') {
     return (
+      <Animated.View entering={enteringAnimation}>
+      <Animated.View style={animatedPressStyle}>
       <Pressable
         onPress={handlePress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
         style={({ pressed }) => [
           styles.compactRow,
           { backgroundColor: colors.surface },
@@ -154,13 +194,19 @@ export const ArticleCard = memo(function ArticleCard({ article, variant = 'defau
           />
         </Pressable>
       </Pressable>
+      </Animated.View>
+      </Animated.View>
     );
   }
 
   // ── FEATURED — hero card with overlay ─────────────────────────────────────
   return (
+    <Animated.View entering={enteringAnimation}>
+    <Animated.View style={animatedPressStyle}>
     <Pressable
       onPress={handlePress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
       style={({ pressed }) => [
         styles.featured,
         { backgroundColor: isDark ? Palette.dark3 : Palette.grey5 },
@@ -196,7 +242,9 @@ export const ArticleCard = memo(function ArticleCard({ article, variant = 'defau
         </View>
         <Text style={styles.featuredDate} numberOfLines={1}>{dateStr} · {article.source}</Text>
       </View>
-    </Pressable>
+      </Pressable>
+      </Animated.View>
+      </Animated.View>
   );
 });
 

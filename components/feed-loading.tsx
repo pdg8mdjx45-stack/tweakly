@@ -59,7 +59,7 @@ export function FeedLoading({ height = 200 }: FeedLoadingProps) {
   return (
     <View style={[styles.container, { height, backgroundColor: colors.background }]}>
       <Animated.Image
-        source={require('@/assets/images/logo no text removebg.png')}
+        source={require('@/assets/images/icon.png')}
         style={[
           styles.logo,
           {

@@ -78,7 +78,23 @@
       "Bash(npx tsc --noEmit constants/mock-data.ts)",
       "Bash(npx expo:*)",
       "WebFetch(domain:localhost)",
-      "Bash(curl -s http://localhost:8082)"
+      "Bash(curl -s http://localhost:8082)",
+      "Bash(find c:Usersalexatweakly -type f -name *meldingen* -o -name *notification*)",
+      "Bash(npx supabase:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(ls c:/Users/alexa/tweakly/*.json)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh api:*)",
+      "WebFetch(domain:app.netlify.com)",
+      "Bash(for f:*)",
+      "Bash(do)",
+      "Bash(sed -i 's/\\\\.nav-brand img { width: 28px; height: 28px; border-radius: 6px; }/.nav-brand img { width: 36px; height: 36px; object-fit: contain; filter: drop-shadow\\(0 2px 6px rgba\\(136,5,23,0.3\\)\\); }/g' \"c:/Users/alexa/tweakly/docs/$f.html\")",
+      "Bash(echo \"Updated $f.html\")",
+      "Bash(done)",
+      "Bash(while read:*)",
+      "Bash(do sed:*)"
     ]
   }
 }

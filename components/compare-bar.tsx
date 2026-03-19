@@ -16,6 +16,7 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Product } from '@/constants/mock-data';
+import { IconSymbol } from './ui/icon-symbol';
 
 function CompareAvatar({ product }: { product: Product }) {
   const imageUrl = useProductImage(product.name, product.imageUrl);
@@ -55,7 +56,7 @@ export function CompareBar() {
           {count >= 2 ? 'Tik om te vergelijken' : `Nog ${2 - count} nodig`}
         </Text>
       </View>
-      <Text style={styles.arrow}>→</Text>
+      <IconSymbol name="arrow.right" size={22} color="#fff" />
     </Pressable>
   );
 }
@@ -98,10 +99,5 @@ const styles = StyleSheet.create({
   barSub: {
     color: 'rgba(255,255,255,0.8)',
     fontSize: 11,
-  },
-  arrow: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: '700',
   },
 });

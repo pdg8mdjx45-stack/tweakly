@@ -1,13 +1,17 @@
+
+import { AppTour } from '@/components/tour-overlay';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
 import { useBookmarks } from '@/hooks/use-bookmarks';
-import { useProfile } from '@/hooks/use-profile';
+import { useReduceMotion } from '@/hooks/use-reduce-motion';
 import { useThemeContext } from '@/hooks/use-theme-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
+  Image,
   Modal,
   Pressable,
   ScrollView,
@@ -17,6 +21,8 @@ import {
   TextInput,
   View,
 } from 'react-native';
+
+import { getAlerts, subscribeAlerts } from '@/services/alerts-store';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -221,13 +227,36 @@ function EditProfileModal({
 
 export default function ProfielScreen() {
   const { resolvedTheme, setThemeMode } = useThemeContext();
+  const { reduceMotion, setReduceMotion } = useReduceMotion();
   const colors = Colors[resolvedTheme];
-  const { user, signOut } = useAuth();
-  const { profile, updateProfile } = useProfile();
+  const { user, signOut, profile, profileLoading, updateProfile } = useAuth();
   const { bookmarks, clearBookmarks } = useBookmarks();
   const router = useRouter();
 
+  if (profileLoading || !profile) {
+    return (
+      <View style={[styles.safe, { backgroundColor: colors.background }]}>
+        <View style={[styles.header, { backgroundColor: colors.background }]}>
+          <Text style={[styles.pageTitle, { color: colors.text }]}>Instellingen</Text>
+        </View>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ color: colors.textSecondary }}>Laden...</Text>
+        </View>
+      </View>
+    );
+  }
+
   const [editModalVisible, setEditModalVisible] = useState(false);
+  const [alertCount, setAlertCount] = useState(0);
+  const [tourVisible, setTourVisible] = useState(false);
+  const [introHidden, setIntroHidden] = useState(false);
+
+  useEffect(() => {
+    getAlerts().then(a => setAlertCount(a.length));
+    return subscribeAlerts(() => {
+      getAlerts().then(a => setAlertCount(a.length));
+    });
+  }, []);
 
   const handleDarkModeToggle = useCallback(
     (value: boolean) => {
@@ -236,9 +265,30 @@ export default function ProfielScreen() {
     [setThemeMode],
   );
 
+  useEffect(() => {
+    const checkFirstVisit = async () => {
+      try {
+        const [tourDone, introDone] = await Promise.all([
+          AsyncStorage.getItem('@tour_done'),
+          AsyncStorage.getItem('@intro_done'),
+        ]);
+        if (!tourDone) setTourVisible(true);
+        if (introDone) setIntroHidden(true);
+      } catch (e) {
+        setTourVisible(true);
+      }
+    };
+    checkFirstVisit();
+  }, []);
+
+  const handleTourDismiss = useCallback(async () => {
+    await AsyncStorage.setItem('@tour_done', '1');
+    setTourVisible(false);
+  }, []);
+
   const handleSaveProfile = useCallback(
     (name: string, email: string) => {
-      updateProfile({ displayName: name, email });
+      updateProfile({ displayName: name });
       setEditModalVisible(false);
     },
     [updateProfile],
@@ -270,22 +320,70 @@ export default function ProfielScreen() {
     );
   }, [signOut]);
 
-  const initials = getInitials(profile.displayName);
+  const initials = getInitials(profile?.displayName || '');
   const isDark = resolvedTheme === 'dark';
+  const categoryCount = [profile?.categoryNieuws, profile?.categoryReviews, profile?.categoryPrijzen].filter(Boolean).length;
+  const notifTypesCount = [profile?.notifPrijzen, profile?.notifNieuws, profile?.notifReviews].filter(Boolean).length;
 
   return (
     <View style={[styles.safe, { backgroundColor: colors.background }]}>
       {/* Page header */}
       <View style={[styles.header, { backgroundColor: colors.background }]}>
-        <Text style={[styles.pageTitle, { color: colors.text }]}>Profiel</Text>
+        <Text style={[styles.pageTitle, { color: colors.text }]}>Instellingen</Text>
       </View>
 
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
+        {/* ── Account card ── */}
+        <Pressable
+          onPress={() => setEditModalVisible(true)}
+          style={({ pressed }) => [
+            styles.accountCard,
+            { backgroundColor: Palette.primary },
+            pressed && { opacity: 0.9 },
+          ]}
+        >
+          <View style={styles.accountAvatarWrap}>
+            <View style={styles.accountAvatar}>
+              <Text style={styles.accountAvatarText}>{initials}</Text>
+            </View>
+          </View>
+          <View style={styles.accountInfo}>
+            <Text style={styles.accountName}>{profile?.displayName}</Text>
+            <Text style={styles.accountEmail}>{user?.email}</Text>
+          </View>
+          <View style={styles.editBadge}>
+            <IconSymbol name="pencil" size={13} color="rgba(255,255,255,0.8)" />
+            <Text style={styles.editBadgeText}>Bewerk</Text>
+          </View>
+        </Pressable>
+
+        {/* ── Stats row ── */}
+        <View style={[styles.statsRow, { backgroundColor: colors.surface }]}>
+          <View style={styles.statItem}>
+            <Text style={[styles.statValue, { color: colors.text }]}>{bookmarks.length}</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Bladwijzers</Text>
+          </View>
+          <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+          <View style={styles.statItem}>
+            <Text style={[styles.statValue, { color: colors.text }]}>
+              {[profile?.categoryNieuws, profile?.categoryReviews, profile?.categoryPrijzen].filter(Boolean).length}
+            </Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Categorieën</Text>
+          </View>
+          <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+          <View style={styles.statItem}>
+            <Text style={[styles.statValue, { color: profile?.pushEnabled ? Palette.primary : colors.textSecondary }]}>
+              {profile?.pushEnabled ? 'AAN' : 'UIT'}
+            </Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Meldingen</Text>
+          </View>
+        </View>
+
         {/* ── Onboarding / Intro ── */}
-        <View style={styles.section}>
+        {!introHidden && <View style={styles.section}>
           <View style={[styles.introCard, { backgroundColor: isDark ? Palette.dark3 : '#F0F4FF' }]}>
             <View style={styles.introHeader}>
               <Text style={[styles.introEmoji]}>👋</Text>
@@ -309,7 +407,11 @@ export default function ProfielScreen() {
               </View>
             </View>
             <Pressable
-              onPress={() => router.push('/(tabs)/prijzen' as any)}
+              onPress={async () => {
+                await AsyncStorage.setItem('@intro_done', '1');
+                setIntroHidden(true);
+                router.push('/(tabs)/prijzen' as any);
+              }}
               style={({ pressed }) => [
                 styles.introButton,
                 { backgroundColor: Palette.primary },
@@ -319,7 +421,7 @@ export default function ProfielScreen() {
               <Text style={styles.introButtonText}>Ontdek nu →</Text>
             </Pressable>
           </View>
-        </View>
+        </View>}
 
         {/* ── Quick Tips ── */}
         <View style={styles.section}>
@@ -360,52 +462,6 @@ export default function ProfielScreen() {
               </View>
             </View>
           </Group>
-        </View>
-
-        {/* ── Account card ── */}
-        <Pressable
-          onPress={() => setEditModalVisible(true)}
-          style={({ pressed }) => [
-            styles.accountCard,
-            { backgroundColor: Palette.primary },
-            pressed && { opacity: 0.9 },
-          ]}
-        >
-          <View style={styles.accountAvatarWrap}>
-            <View style={styles.accountAvatar}>
-              <Text style={styles.accountAvatarText}>{initials}</Text>
-            </View>
-          </View>
-          <View style={styles.accountInfo}>
-            <Text style={styles.accountName}>{profile.displayName}</Text>
-            <Text style={styles.accountEmail}>{user?.email ?? profile.email}</Text>
-          </View>
-          <View style={styles.editBadge}>
-            <IconSymbol name="pencil" size={13} color="rgba(255,255,255,0.8)" />
-            <Text style={styles.editBadgeText}>Bewerk</Text>
-          </View>
-        </Pressable>
-
-        {/* ── Stats row ── */}
-        <View style={[styles.statsRow, { backgroundColor: colors.surface }]}>
-          <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: colors.text }]}>{bookmarks.length}</Text>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Bladwijzers</Text>
-          </View>
-          <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-          <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: colors.text }]}>
-              {[profile.categoryNieuws, profile.categoryReviews, profile.categoryPrijzen].filter(Boolean).length}
-            </Text>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Categorieën</Text>
-          </View>
-          <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-          <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: profile.pushEnabled ? Palette.primary : colors.textSecondary }]}>
-              {profile.pushEnabled ? 'AAN' : 'UIT'}
-            </Text>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Meldingen</Text>
-          </View>
         </View>
 
         {/* ── Opgeslagen artikelen ── */}
@@ -459,61 +515,25 @@ export default function ProfielScreen() {
           )}
         </View>
 
-        {/* ── Meldingen ── */}
+        {/* -- Voorkeuren -- */}
         <View style={styles.section}>
-          <SectionLabel label="MELDINGEN" colors={colors} />
+          <SectionLabel label="VOORKEUREN" colors={colors} />
           <Group colors={colors}>
-            <ToggleRow
+            <NavRow
               icon="bell.fill"
-              label="Push-notificaties"
-              description="Ontvang meldingen op je telefoon"
-              value={profile.pushEnabled}
-              onChange={(v) => updateProfile({ pushEnabled: v })}
+              iconColor={Palette.accent}
+              label="Meldingen"
+              sub={`Push ${profile?.pushEnabled ? 'aan' : 'uit'} - Email ${profile?.emailNotifEnabled ? 'aan' : 'uit'} - ${notifTypesCount} type${notifTypesCount !== 1 ? 's' : ''}`}
+              onPress={() => router.push('/(tabs)/instellingen-meldingen' as any)}
               colors={colors}
             />
             <Divider colors={colors} />
-            <ToggleRow
-              icon="envelope"
-              iconColor={Palette.blue}
-              label="E-mailmeldingen"
-              description="Ontvang meldingen per e-mail"
-              value={profile.emailNotifEnabled}
-              onChange={(v) => updateProfile({ emailNotifEnabled: v })}
-              colors={colors}
-            />
-          </Group>
-        </View>
-
-        {/* ── Categorieën ── */}
-        <View style={styles.section}>
-          <SectionLabel label="CATEGORIEËN" colors={colors} />
-          <Group colors={colors}>
-            <ToggleRow
-              icon="newspaper"
-              label="Nieuws"
-              description="Laatste tech- en IT-nieuws"
-              value={profile.categoryNieuws}
-              onChange={(v) => updateProfile({ categoryNieuws: v })}
-              colors={colors}
-            />
-            <Divider colors={colors} />
-            <ToggleRow
-              icon="star.fill"
-              iconColor="#F59E0B"
-              label="Reviews"
-              description="Productreviews en tests"
-              value={profile.categoryReviews}
-              onChange={(v) => updateProfile({ categoryReviews: v })}
-              colors={colors}
-            />
-            <Divider colors={colors} />
-            <ToggleRow
-              icon="tag.fill"
-              iconColor="#10B981"
-              label="Prijswatch"
-              description="Prijsdalingen en aanbiedingen"
-              value={profile.categoryPrijzen}
-              onChange={(v) => updateProfile({ categoryPrijzen: v })}
+            <NavRow
+              icon="square.grid.2x2"
+              iconColor={Palette.primary}
+              label="Categorieen"
+              sub={`${categoryCount} actief`}
+              onPress={() => router.push('/(tabs)/instellingen-categorieen' as any)}
               colors={colors}
             />
           </Group>
@@ -531,6 +551,49 @@ export default function ProfielScreen() {
               onChange={handleDarkModeToggle}
               colors={colors}
             />
+            <Divider colors={colors} />
+            <ToggleRow
+              icon="figure.walk"
+              iconColor={Palette.blue}
+              label="Animaties"
+              description="Schakel visuele effecten uit"
+              value={!reduceMotion}
+              onChange={(v) => setReduceMotion(!v)}
+              colors={colors}
+            />
+          </Group>
+        </View>
+
+        {/* ── Instellingen ── */}
+        <View style={styles.section}>
+          <SectionLabel label="INSTELLINGEN" colors={colors} />
+          <Group colors={colors}>
+            <NavRow
+              icon="bell.badge"
+              iconColor={Palette.accent}
+              label="Prijsalerts"
+              sub={alertCount > 0 ? `${alertCount} actief${alertCount !== 1 ? 'e' : ''}` : 'Geen actieve alerts'}
+              onPress={() => router.push('/(tabs)/meldingen' as any)}
+              colors={colors}
+            />
+            <Divider colors={colors} />
+            <NavRow
+              icon="questionmark.circle"
+              iconColor="#5856D6"
+              label="App-tour"
+              onPress={() => setTourVisible(true)}
+              colors={colors}
+            />
+            <Divider colors={colors} />
+            <NavRow
+              icon="arrow.counterclockwise"
+              label="Onboarding opnieuw bekijken"
+              onPress={async () => {
+                await AsyncStorage.removeItem('@onboarding_done');
+                router.replace('/(auth)/onboarding' as any);
+              }}
+              colors={colors}
+            />
           </Group>
         </View>
 
@@ -541,7 +604,7 @@ export default function ProfielScreen() {
             <NavRow
               icon="person.crop.circle"
               label="Profiel bewerken"
-              sub={user?.email ?? profile.email}
+              sub={user?.email}
               onPress={() => setEditModalVisible(true)}
               colors={colors}
             />
@@ -568,14 +631,20 @@ export default function ProfielScreen() {
 
         {/* ── About ── */}
         <View style={[styles.aboutSection, { borderTopColor: colors.border }]}>
-          <Text style={[styles.aboutAppName, { color: colors.tint }]}>tweakly</Text>
+          <Image source={require('@/assets/images/icon.png')} style={styles.aboutLogoImg} resizeMode="contain" />
           <Text style={[styles.aboutVersion, { color: colors.textSecondary }]}>Versie 1.0.0</Text>
           <View style={styles.aboutLinks}>
-            <Text style={[styles.aboutLink, { color: colors.tint }]}>Privacy</Text>
+            <Pressable onPress={() => router.push('/privacy' as any)}>
+              <Text style={[styles.aboutLink, { color: colors.tint }]}>Privacy</Text>
+            </Pressable>
             <Text style={[styles.aboutDivider, { color: colors.border }]}>·</Text>
-            <Text style={[styles.aboutLink, { color: colors.tint }]}>Voorwaarden</Text>
+            <Pressable onPress={() => router.push('/terms' as any)}>
+              <Text style={[styles.aboutLink, { color: colors.tint }]}>Voorwaarden</Text>
+            </Pressable>
             <Text style={[styles.aboutDivider, { color: colors.border }]}>·</Text>
-            <Text style={[styles.aboutLink, { color: colors.tint }]}>Contact</Text>
+            <Pressable onPress={() => router.push('/cookies' as any)}>
+              <Text style={[styles.aboutLink, { color: colors.tint }]}>Cookies</Text>
+            </Pressable>
           </View>
           <Text style={[styles.aboutCopy, { color: colors.textSecondary }]}>
             © 2026 Tweakly
@@ -586,12 +655,20 @@ export default function ProfielScreen() {
       {/* ── Edit Profile Modal ── */}
       <EditProfileModal
         visible={editModalVisible}
-        name={profile.displayName}
-        email={profile.email}
+        name={profile?.displayName}
+        email={user?.email ?? ''}
         onSave={handleSaveProfile}
         onClose={() => setEditModalVisible(false)}
         colors={colors}
       />
+
+      {/* ── App Tour Overlay ── */}
+      {tourVisible && (
+        <AppTour
+          onDismiss={handleTourDismiss}
+          onNavigate={(route: string) => router.push(route as any)}
+        />
+      )}
     </View>
   );
 }
@@ -603,7 +680,7 @@ const styles = StyleSheet.create({
 
   header: {
     paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.xl,
+    paddingTop: Spacing.xl + Spacing.sm,
     paddingBottom: Spacing.sm,
   },
   pageTitle: {
@@ -857,7 +934,7 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.lg,
     borderTopWidth: StyleSheet.hairlineWidth,
   },
-  aboutAppName: { fontSize: 20, fontWeight: '700', letterSpacing: 0.35 },
+  aboutLogoImg: { width: 48, height: 48 },
   aboutVersion: { fontSize: 13 },
   aboutLinks: {
     flexDirection: 'row',

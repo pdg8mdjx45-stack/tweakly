@@ -42,6 +42,7 @@ export function parseRSS(xml: string): ParsedRSSItem[] {
 function processItem(item: any): ParsedRSSItem {
   const title = extractText(item.title);
   const description = extractText(item.description);
+  const contentEncoded = extractText(item['content:encoded']);
   const link = extractLink(item.link);
   const pubDate = typeof item.pubDate === 'string' ? item.pubDate : '';
 
@@ -54,7 +55,12 @@ function processItem(item: any): ParsedRSSItem {
     imageUrl = media['@_url'] ?? null;
   }
 
-  // 2. enclosure tag (image/* MIME type)
+  // 2. media:thumbnail
+  if (!imageUrl && item['media:thumbnail']) {
+    imageUrl = item['media:thumbnail']['@_url'] ?? null;
+  }
+
+  // 3. enclosure tag (image/* MIME type)
   if (!imageUrl && item.enclosure) {
     const mime: string = item.enclosure['@_type'] ?? '';
     if (mime.startsWith('image')) {
@@ -62,9 +68,15 @@ function processItem(item: any): ParsedRSSItem {
     }
   }
 
-  // 3. First <img> src in description HTML
+  // 4. First <img> src in description HTML
   if (!imageUrl && description) {
     const m = description.match(/<img[^>]+src="([^"]+)"/i);
+    if (m) imageUrl = m[1];
+  }
+
+  // 5. First <img> src in content:encoded
+  if (!imageUrl && contentEncoded) {
+    const m = contentEncoded.match(/<img[^>]+src="([^"]+)"/i);
     if (m) imageUrl = m[1];
   }
 
@@ -87,7 +99,7 @@ function processItem(item: any): ParsedRSSItem {
     link,
     pubDate: pubDate || new Date().toISOString(),
     imageUrl,
-    content: description ?? '',
+    content: contentEncoded || (description ?? ''),
     categories,
     author: author.trim(),
   };

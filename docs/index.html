@@ -6,13 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tweakly — Slimme prijsvergelijking voor elektronica</title>
   <meta name="description" content="Tweakly vergelijkt prijzen van Nederlandse webshops voor smartphones, laptops, monitoren, componenten en meer. Vind altijd de beste deal.">
-  <meta name="theme-color" content="#880517">
+  <meta name="theme-color" content="#1A3A20">
   <meta name="robots" content="index, follow">
   <meta property="og:title" content="Tweakly — Slimme prijsvergelijking voor elektronica">
   <meta property="og:description" content="Vergelijk prijzen bij Coolblue, Bol.com, MediaMarkt en meer. Download de gratis app.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="logo.png">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23880517'/><text x='16' y='22' font-family='Arial' font-size='16' font-weight='900' fill='white' text-anchor='middle'>T</text></svg>" type="image/svg+xml">
+  <link rel="icon" href="logo.png" type="image/png">
   <link rel="canonical" href="https://tweakly.netlify.app/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -20,9 +20,9 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --primary: #880517;
-      --primary-light: #A61D2A;
-      --primary-dark: #6B0411;
+      --primary: #1A3A20;
+      --primary-light: #2D5A35;
+      --primary-dark: #0F2414;
       --accent: #0A84FF;
       --green: #34C759;
       --orange: #FF9500;
@@ -52,27 +52,22 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── LOGO SVG ── */
-    .logo-svg {
+    /* ── LOGO ── */
+    .logo-img {
       width: 36px; height: 36px;
-      border-radius: 9px;
-      display: flex; align-items: center; justify-content: center;
-      background: linear-gradient(135deg, #A61D2A, #880517);
-      box-shadow: 0 4px 16px rgba(136,5,23,0.4), inset 0 1px 0 rgba(255,255,255,0.12);
+      object-fit: contain;
       flex-shrink: 0;
+      filter: drop-shadow(0 2px 8px rgba(26,58,32,0.35));
     }
-    .logo-svg svg { width: 22px; height: 22px; }
 
-    .logo-svg-lg {
+    .logo-img-lg {
       width: 96px; height: 96px;
-      border-radius: 26px;
-      display: flex; align-items: center; justify-content: center;
-      background: linear-gradient(135deg, #A61D2A, #880517);
-      box-shadow: 0 20px 60px rgba(136,5,23,0.5), inset 0 1px 0 rgba(255,255,255,0.15);
+      object-fit: contain;
       margin: 0 auto 2.5rem;
+      display: block;
       animation: floatLogo 6s ease-in-out infinite;
+      filter: drop-shadow(0 12px 32px rgba(26,58,32,0.5));
     }
-    .logo-svg-lg svg { width: 60px; height: 60px; }
     @keyframes floatLogo {
       0%, 100% { transform: translateY(0) rotate(-1deg); }
       50% { transform: translateY(-12px) rotate(1deg); }
@@ -117,9 +112,9 @@
     }
     .cookie-btn-accept {
       background: linear-gradient(135deg, var(--primary-light), var(--primary));
-      color: #fff; box-shadow: 0 2px 12px rgba(136,5,23,0.3);
+      color: #fff; box-shadow: 0 2px 12px rgba(26,58,32,0.3);
     }
-    .cookie-btn-accept:hover { transform: translateY(-1px); box-shadow: 0 4px 18px rgba(136,5,23,0.4); }
+    .cookie-btn-accept:hover { transform: translateY(-1px); box-shadow: 0 4px 18px rgba(26,58,32,0.4); }
     .cookie-btn-essential {
       background: rgba(255,255,255,0.07); color: var(--text); border: 1px solid var(--border);
     }
@@ -154,10 +149,10 @@
       color: white !important; padding: 0.45rem 1.1rem !important;
       border-radius: 8px !important; font-weight: 600 !important;
       font-size: 0.85rem !important; transition: all 0.2s !important;
-      box-shadow: 0 4px 16px rgba(136,5,23,0.3), inset 0 1px 0 rgba(255,255,255,0.1) !important;
+      box-shadow: 0 4px 16px rgba(26,58,32,0.3), inset 0 1px 0 rgba(255,255,255,0.1) !important;
       border: none !important;
     }
-    .nav-cta:hover { transform: translateY(-1px) !important; box-shadow: 0 6px 20px rgba(136,5,23,0.45) !important; background: linear-gradient(135deg, #c42035, var(--primary-light)) !important; }
+    .nav-cta:hover { transform: translateY(-1px) !important; box-shadow: 0 6px 20px rgba(26,58,32,0.45) !important; background: linear-gradient(135deg, #2D5A35, var(--primary-light)) !important; }
     .nav-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
     .nav-toggle span { width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.3s; }
     .nav-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
@@ -186,15 +181,15 @@
       border-radius: inherit; pointer-events: none;
     }
     .btn-primary {
-      background: linear-gradient(135deg, #c42035, var(--primary-light), var(--primary));
+      background: linear-gradient(135deg, #2D5A35, var(--primary-light), var(--primary));
       background-size: 200% 200%;
       color: white;
-      box-shadow: 0 4px 24px rgba(136,5,23,0.4), inset 0 1px 0 rgba(255,255,255,0.12);
-      border: 1px solid rgba(166,29,42,0.3);
+      box-shadow: 0 4px 24px rgba(26,58,32,0.4), inset 0 1px 0 rgba(255,255,255,0.12);
+      border: 1px solid rgba(26,58,32,0.3);
     }
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 36px rgba(136,5,23,0.55), inset 0 1px 0 rgba(255,255,255,0.18);
+      box-shadow: 0 8px 36px rgba(26,58,32,0.55), inset 0 1px 0 rgba(255,255,255,0.18);
       background-position: right center;
     }
     .btn-primary:active { transform: translateY(0); }
@@ -224,7 +219,7 @@
     }
     .hero-bg { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
     .hero-bg .orb { position: absolute; border-radius: 50%; filter: blur(90px); }
-    .hero-bg .orb-1 { width: 800px; height: 800px; background: radial-gradient(circle, rgba(200,30,60,0.8), var(--primary)); top: -30%; left: 20%; opacity: 0.18; animation: orbFloat1 14s ease-in-out infinite; }
+    .hero-bg .orb-1 { width: 800px; height: 800px; background: radial-gradient(circle, rgba(26,58,32,0.8), var(--primary)); top: -30%; left: 20%; opacity: 0.18; animation: orbFloat1 14s ease-in-out infinite; }
     .hero-bg .orb-2 { width: 550px; height: 550px; background: radial-gradient(circle, #1E90FF, var(--accent)); top: 30%; right: -18%; opacity: 0.12; animation: orbFloat2 17s ease-in-out infinite; }
     .hero-bg .orb-3 { width: 450px; height: 450px; background: radial-gradient(circle, #D946EF, #AF52DE); bottom: 0%; left: -12%; opacity: 0.08; animation: orbFloat3 20s ease-in-out infinite; }
     .hero-bg .orb-4 { width: 300px; height: 300px; background: radial-gradient(circle, var(--green), #059669); top: 65%; right: 22%; opacity: 0.07; filter: blur(100px); animation: orbFloat2 22s ease-in-out infinite reverse; }
@@ -241,11 +236,11 @@
     .hero > * { position: relative; z-index: 1; }
     .hero-badge {
       display: inline-flex; align-items: center; gap: 0.5rem;
-      background: rgba(136,5,23,0.12); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(136,5,23,0.25); border-radius: 999px;
-      padding: 0.45rem 1.2rem; font-size: 0.78rem; color: #ff7080;
+      background: rgba(26,58,32,0.12); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(26,58,32,0.25); border-radius: 999px;
+      padding: 0.45rem 1.2rem; font-size: 0.78rem; color: #6BCB7A;
       font-weight: 600; margin-bottom: 1.75rem; letter-spacing: 0.02em;
-      box-shadow: 0 4px 20px rgba(136,5,23,0.15), inset 0 1px 0 rgba(255,255,255,0.05);
+      box-shadow: 0 4px 20px rgba(26,58,32,0.15), inset 0 1px 0 rgba(255,255,255,0.05);
     }
     .hero-badge .dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s ease-in-out infinite; box-shadow: 0 0 10px rgba(52,199,89,0.5); }
     @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.75); } }
@@ -254,7 +249,7 @@
       line-height: 1.08; margin-bottom: 1.5rem; letter-spacing: -0.035em; max-width: 800px;
     }
     .hero h1 .gradient {
-      background: linear-gradient(135deg, #ff6080 10%, #cc2244 50%, var(--primary) 90%);
+      background: linear-gradient(135deg, #6BCB7A 10%, #1A5C28 50%, var(--primary) 90%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text; display: inline-block;
     }
@@ -364,7 +359,7 @@
     }
     .stat { text-align: center; padding: 2rem 1rem; position: relative; }
     .stat:not(:last-child)::after { content: ''; position: absolute; right: 0; top: 25%; height: 50%; width: 1px; background: var(--border); }
-    .stat-number { font-size: 2.1rem; font-weight: 900; letter-spacing: -0.03em; background: linear-gradient(135deg, #ff6080, #cc2244); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .stat-number { font-size: 2.1rem; font-weight: 900; letter-spacing: -0.03em; background: linear-gradient(135deg, #6BCB7A, #1A5C28); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .stat-label { font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.3rem; font-weight: 500; }
     @media (max-width: 600px) { .stats-bar { grid-template-columns: repeat(2, 1fr); border-radius: 14px; } }
 
@@ -374,10 +369,10 @@
     .section-label {
       display: inline-flex; align-items: center; gap: 0.4rem;
       font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em;
-      color: #ff7080; margin-bottom: 0.85rem;
-      background: rgba(136,5,23,0.1); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      color: #6BCB7A; margin-bottom: 0.85rem;
+      background: rgba(26,58,32,0.1); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
       padding: 0.35rem 0.9rem; border-radius: 6px;
-      border: 1px solid rgba(136,5,23,0.2);
+      border: 1px solid rgba(26,58,32,0.2);
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
     }
     .section-title { font-size: clamp(1.9rem, 4vw, 2.7rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.8rem; line-height: 1.12; }
@@ -426,10 +421,10 @@
       font-size: 0.8rem; color: white; text-decoration: none;
       padding: 0.35rem 0.85rem; border-radius: 7px;
       background: linear-gradient(135deg, var(--primary-light), var(--primary));
-      box-shadow: 0 2px 10px rgba(136,5,23,0.3);
+      box-shadow: 0 2px 10px rgba(26,58,32,0.3);
       transition: all 0.2s; font-weight: 600;
     }
-    .price-link:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(136,5,23,0.45); }
+    .price-link:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(26,58,32,0.45); }
     .affiliate-badge { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.7rem; color: var(--text-muted); margin-top: 0.75rem; padding: 0.2rem 0.6rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; }
 
     /* ── HOW IT WORKS ── */
@@ -440,11 +435,11 @@
     .step { text-align: center; padding: 2rem 1.5rem; }
     .step-num {
       width: 56px; height: 56px; border-radius: 18px;
-      background: linear-gradient(135deg, #c42035, var(--primary-light), var(--primary));
+      background: linear-gradient(135deg, #2D5A35, var(--primary-light), var(--primary));
       color: white; font-size: 1.35rem; font-weight: 800;
       display: flex; align-items: center; justify-content: center;
       margin: 0 auto 1.35rem;
-      box-shadow: 0 8px 28px rgba(136,5,23,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+      box-shadow: 0 8px 28px rgba(26,58,32,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
       position: relative; z-index: 1;
     }
     .step h3 { font-size: 1.08rem; font-weight: 700; margin-bottom: 0.55rem; }
@@ -515,7 +510,7 @@
       background: linear-gradient(135deg, var(--primary-light), var(--primary));
       color: white; display: flex; align-items: center; justify-content: center;
       font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(136,5,23,0.3);
+      box-shadow: 0 4px 12px rgba(26,58,32,0.3);
     }
     .author-name { font-size: 0.9rem; font-weight: 700; }
     .author-role { font-size: 0.78rem; color: var(--text-muted); }
@@ -540,9 +535,9 @@
       color: white; border: none; border-radius: 9px; padding: 0.8rem 1.4rem;
       font-weight: 700; font-size: 0.88rem; cursor: pointer; font-family: inherit;
       transition: all 0.2s; white-space: nowrap;
-      box-shadow: 0 4px 16px rgba(136,5,23,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+      box-shadow: 0 4px 16px rgba(26,58,32,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
     }
-    .newsletter-form button:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(136,5,23,0.45); }
+    .newsletter-form button:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(26,58,32,0.45); }
     .newsletter-note { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.85rem; }
 
     /* ── CTA ── */
@@ -581,7 +576,7 @@
     .chart-change { font-size: 0.8rem; color: var(--green); }
     .chart-period { display: flex; gap: 0.35rem; margin-bottom: 1rem; }
     .chart-period button { padding: 0.3rem 0.75rem; border-radius: 7px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); font-size: 0.78rem; cursor: pointer; font-family: inherit; transition: all 0.2s; }
-    .chart-period button.active, .chart-period button:hover { background: rgba(136,5,23,0.15); color: #ff7080; border-color: rgba(136,5,23,0.35); }
+    .chart-period button.active, .chart-period button:hover { background: rgba(26,58,32,0.15); color: #6BCB7A; border-color: rgba(26,58,32,0.35); }
     .chart-svg { width: 100%; height: 130px; }
 
     /* ── MODAL ── */
@@ -643,13 +638,7 @@
   <!-- NAV -->
   <nav id="mainNav">
     <a href="#" class="nav-brand">
-      <div class="logo-svg">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity="0.95"/>
-          <path d="M2 17l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
-          <path d="M2 12l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </div>
+      <img src="logo.png" alt="Tweakly logo" class="logo-img">
       <span class="nav-brand-text">Tweak<em>ly</em></span>
     </a>
     <ul class="nav-links" id="navLinks">
@@ -676,13 +665,7 @@
     </div>
 
     <!-- Logo groot -->
-    <div class="logo-svg-lg">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity="0.95"/>
-        <path d="M2 17l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.65"/>
-        <path d="M2 12l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-    </div>
+    <img src="logo.png" alt="Tweakly" class="logo-img-lg">
 
     <div class="hero-badge">
       <div class="dot"></div>
@@ -931,14 +914,14 @@
           <svg class="chart-svg" viewBox="0 0 400 130" preserveAspectRatio="none">
             <defs>
               <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#880517" stop-opacity="0.3"/>
-                <stop offset="100%" stop-color="#880517" stop-opacity="0"/>
+                <stop offset="0%" stop-color="#1A3A20" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="#1A3A20" stop-opacity="0"/>
               </linearGradient>
             </defs>
-            <path d="M0,70 C30,64 60,88 90,76 C120,64 150,44 180,50 C210,56 240,72 270,60 C300,48 330,32 360,22 C375,17 390,20 400,16" stroke="#A61D2A" stroke-width="2.5" fill="none"/>
+            <path d="M0,70 C30,64 60,88 90,76 C120,64 150,44 180,50 C210,56 240,72 270,60 C300,48 330,32 360,22 C375,17 390,20 400,16" stroke="#2D5A35" stroke-width="2.5" fill="none"/>
             <path d="M0,70 C30,64 60,88 90,76 C120,64 150,44 180,50 C210,56 240,72 270,60 C300,48 330,32 360,22 C375,17 390,20 400,16 L400,130 L0,130 Z" fill="url(#chartGrad)"/>
-            <circle cx="400" cy="16" r="5" fill="#A61D2A"/>
-            <circle cx="400" cy="16" r="9" fill="#A61D2A" opacity="0.25"/>
+            <circle cx="400" cy="16" r="5" fill="#2D5A35"/>
+            <circle cx="400" cy="16" r="9" fill="#2D5A35" opacity="0.25"/>
           </svg>
         </div>
       </div>
@@ -1119,13 +1102,7 @@
     <div class="footer-grid">
       <div class="footer-brand">
         <a href="#" class="nav-brand" style="text-decoration:none">
-          <div class="logo-svg">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity="0.95"/>
-              <path d="M2 17l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.65"/>
-              <path d="M2 12l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </div>
+          <img src="logo.png" alt="Tweakly logo" class="logo-img">
           <span class="nav-brand-text">Tweak<em>ly</em></span>
         </a>
         <p>De slimste prijsvergelijking voor elektronica in Nederland. Vergelijk, volg en bespaar.</p>

@@ -2,10 +2,19 @@ import type { Product, ProductVariant } from '@/constants/mock-data';
 import { Colors, Palette, Radius, Shadow, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useProductImage } from '@/hooks/use-product-image';
+import { useReduceMotion } from '@/hooks/use-reduce-motion';
 import { isInCompare, subscribeCompare, toggleCompare } from '@/services/compare-store';
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
+import Animated, {
+  FadeInDown,
+  FadeInUp,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 function PriceChange({ current, original }: { current: number; original: number }) {
@@ -92,15 +101,18 @@ function getShortDescription(product: Product): string {
   return highlights.join(' · ');
 }
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
   const isDark = colorScheme === 'dark';
+  const { animationsEnabled } = useReduceMotion();
   const [inCompare, setInCompare] = useState(() => isInCompare(product.id));
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
     product.variants && product.variants.length > 0 ? product.variants[0] : null
   );
   const productImage = useProductImage(product.name, product.imageUrl);
+  
+  const scale = useSharedValue(1);
 
   // Use selected variant's price and shops if available
   const currentPrice = selectedVariant?.price ?? product.currentPrice;
@@ -114,19 +126,43 @@ export function ProductCard({ product }: { product: Product }) {
   const isPriceDown = currentPrice < product.originalPrice;
   const description = getShortDescription(product);
 
+  const animatedPressStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: animationsEnabled ? 1 : undefined,
+  }));
+
+  const handlePressIn = () => {
+    if (animationsEnabled) {
+      scale.value = withSpring(0.97, { damping: 15, stiffness: 300 });
+    }
+  };
+
+  const handlePressOut = () => {
+    if (animationsEnabled) {
+      scale.value = withSpring(1, { damping: 15, stiffness: 300 });
+    }
+  };
+
+  const enteringAnimation = animationsEnabled 
+    ? FadeInDown.delay(index * 50).springify().damping(15).stiffness(100)
+    : undefined;
+
   return (
     <Link href={`/product/${product.id}`} asChild>
-      <Pressable style={({ pressed }) => [
-        styles.card,
-        {
-          backgroundColor: colors.surface,
-          borderColor: isDark ? colors.border : 'transparent',
-          borderWidth: isDark ? 1 : 0,
-        },
-        !isDark && Shadow.md,
-        pressed && { opacity: 0.92, transform: [{ scale: 0.98 }] },
-      ]}>
-        {/* Image Section */}
+      <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut}>
+        <Animated.View entering={enteringAnimation}>
+        <Animated.View 
+          style={[
+            animatedPressStyle,
+            styles.card,
+            {
+              backgroundColor: colors.surface,
+              borderColor: isDark ? colors.border : 'transparent',
+              borderWidth: isDark ? 1 : 0,
+            },
+            !isDark && Shadow.md,
+          ]}>
+          {/* Image Section */}
         <View style={[styles.imageWrapper, { backgroundColor: isDark ? Palette.dark3 : '#F5F5F7' }]}>
           <Image
             source={{ uri: currentImage }}
@@ -220,6 +256,8 @@ export function ProductCard({ product }: { product: Product }) {
             <Text style={styles.ctaText}>Bekijk product</Text>
           </View>
         </View>
+        </Animated.View>
+        </Animated.View>
       </Pressable>
     </Link>
   );

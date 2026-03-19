@@ -18,6 +18,7 @@ import {
   View,
 } from 'react-native';
 
+import { BackButton } from '@/components/back-button';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { type Bookmark, useBookmarks } from '@/hooks/use-bookmarks';
@@ -70,11 +71,7 @@ function BookmarkCard({ bookmark, onRemove }: { bookmark: Bookmark; onRemove: ()
     >
       {bookmark.imageUrl ? (
         <Image source={{ uri: bookmark.imageUrl }} style={styles.cardImage} contentFit="cover" transition={200} />
-      ) : (
-        <View style={[styles.cardImage, styles.placeholder]}>
-          <Text style={styles.placeholderText}>T</Text>
-        </View>
-      )}
+      ) : null}
       <View style={styles.cardContent}>
         <View style={styles.cardMeta}>
           <View style={[styles.pill, { backgroundColor: catColor + '20' }]}>
@@ -167,12 +164,15 @@ export default function BladwijzersScreen() {
     <View style={[styles.safe, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.background }]}>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Bladwijzers</Text>
-        {bookmarks.length > 0 && (
-          <Pressable onPress={handleMoreOptions} hitSlop={12}>
-            <IconSymbol name="ellipsis" size={24} color={colors.text} />
-          </Pressable>
-        )}
+        <BackButton color={colors.tint} />
+        <View style={styles.headerRow}>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Bladwijzers</Text>
+          {bookmarks.length > 0 && (
+            <Pressable onPress={handleMoreOptions} hitSlop={12}>
+              <IconSymbol name="ellipsis" size={24} color={colors.text} />
+            </Pressable>
+          )}
+        </View>
       </View>
 
       {/* Count badge */}
@@ -206,12 +206,15 @@ const styles = StyleSheet.create({
   safe: { flex: 1 },
 
   header: {
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.xl + Spacing.sm,
+    paddingBottom: Spacing.sm,
+    gap: Spacing.xs,
+  },
+  headerRow: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.xl,
-    paddingBottom: Spacing.sm,
   },
   headerTitle: { fontSize: 34, fontWeight: '700', letterSpacing: 0.35 },
   clearAll: { fontSize: 15, fontWeight: '500', paddingBottom: 4 },
@@ -239,12 +242,6 @@ const styles = StyleSheet.create({
   },
   pressed: { opacity: 0.8 },
   cardImage: { width: '100%', height: 160 },
-  placeholder: {
-    backgroundColor: Palette.grey5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  placeholderText: { fontSize: 48, fontWeight: '700', color: Palette.grey3 },
   cardContent: { padding: Spacing.md, gap: Spacing.xs },
   cardMeta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   pill: { paddingHorizontal: Spacing.sm, paddingVertical: 3, borderRadius: Radius.full },

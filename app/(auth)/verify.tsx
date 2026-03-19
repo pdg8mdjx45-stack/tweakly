@@ -71,6 +71,9 @@ export default function VerifyScreen() {
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
+      <Pressable onPress={() => router.back()} hitSlop={12} style={styles.backBtn}>
+        <Text style={[styles.backArrow, { color: colors.text }]}>‹</Text>
+      </Pressable>
       <View style={styles.content}>
         {/* Status icon */}
         <View style={[styles.iconWrap, { backgroundColor: iconColor }]}>
@@ -192,6 +195,8 @@ export default function VerifyScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
+  backBtn: { position: 'absolute', left: 16, top: 50, zIndex: 10 },
+  backArrow: { fontSize: 32, fontWeight: '300' },
   content: {
     flex: 1,
     alignItems: 'center',

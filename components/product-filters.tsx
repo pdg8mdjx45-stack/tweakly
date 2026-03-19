@@ -6,6 +6,7 @@
 
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import {
   BADGE_FILTERS,
   SORT_OPTIONS,
@@ -38,36 +39,36 @@ if (
 // ─── Category Options ─────────────────────────────────────────────────────────
 
 const CATEGORY_OPTIONS = [
-  { id: 'all', name: 'Alle categorieën', emoji: '🛒' },
-  { id: 'Smartphones', name: 'Smartphones', emoji: '📱' },
-  { id: 'Tablets', name: 'Tablets', emoji: '📲' },
-  { id: 'Laptops', name: 'Laptops', emoji: '💻' },
-  { id: 'Desktops', name: 'Desktops', emoji: '🖥️' },
-  { id: 'Monitoren', name: 'Monitoren', emoji: '🖥️' },
-  { id: 'Televisies', name: 'Televisies', emoji: '📺' },
-  { id: 'Audio', name: 'Audio', emoji: '🎧' },
-  { id: 'Gameconsoles', name: 'Gameconsoles', emoji: '🎮' },
-  { id: 'Gaming', name: 'Gaming', emoji: '🕹️' },
-  { id: 'Netwerk', name: 'Netwerk', emoji: '📡' },
-  { id: 'Fotografie', name: 'Fotografie', emoji: '📷' },
-  { id: 'Huishoudelijk', name: 'Huishoudelijk', emoji: '🏠' },
-  { id: 'Wearables', name: 'Wearables', emoji: '⌚' },
-  { id: 'Grafische kaarten', name: 'Grafische kaarten', emoji: '🎴' },
-  { id: 'Processors', name: 'Processors', emoji: '⚡' },
-  { id: 'Moederborden', name: 'Moederborden', emoji: '🔧' },
-  { id: 'Geheugen', name: 'Geheugen', emoji: '🧩' },
-  { id: 'Opslag (SSD)', name: 'Opslag (SSD)', emoji: '💾' },
-  { id: 'Opslag (HDD)', name: 'Opslag (HDD)', emoji: '💿' },
-  { id: 'Voedingen', name: 'Voedingen', emoji: '🔌' },
-  { id: 'Computerbehuizingen', name: 'Behuizingen', emoji: '📦' },
-  { id: 'CPU-koelers', name: 'CPU-koelers', emoji: '❄️' },
-  { id: 'Ventilatoren', name: 'Ventilatoren', emoji: '🌀' },
-  { id: 'Toetsenborden', name: 'Toetsenborden', emoji: '⌨️' },
-  { id: 'Muizen', name: 'Muizen', emoji: '🖱️' },
-  { id: 'Webcams', name: 'Webcams', emoji: '📹' },
-  { id: 'Luidsprekers', name: 'Luidsprekers', emoji: '🔊' },
-  { id: 'Printers', name: 'Printers', emoji: '🖨️' },
-  { id: 'Kabels & Adapters', name: 'Kabels & Adapters', emoji: '🔗' },
+  { id: 'all', name: 'Alle categorieën', icon: 'square.grid.2x2' },
+  { id: 'Smartphones', name: 'Smartphones', icon: 'smartphone' },
+  { id: 'Tablets', name: 'Tablets', icon: 'tablet' },
+  { id: 'Laptops', name: 'Laptops', icon: 'laptop' },
+  { id: 'Desktops', name: 'Desktops', icon: 'computer' },
+  { id: 'Monitoren', name: 'Monitoren', icon: 'monitor' },
+  { id: 'Televisies', name: 'Televisies', icon: 'tv' },
+  { id: 'Audio', name: 'Audio', icon: 'headphones' },
+  { id: 'Gameconsoles', name: 'Gameconsoles', icon: 'sports-esports' },
+  { id: 'Gaming', name: 'Gaming', icon: 'sports-esports' },
+  { id: 'Netwerk', name: 'Netwerk', icon: 'wifi' },
+  { id: 'Fotografie', name: 'Fotografie', icon: 'camera-alt' },
+  { id: 'Huishoudelijk', name: 'Huishoudelijk', icon: 'home' },
+  { id: 'Wearables', name: 'Wearables', icon: 'watch' },
+  { id: 'Grafische kaarten', name: 'Grafische kaarten', icon: 'memory' },
+  { id: 'Processors', name: 'Processors', icon: 'memory' },
+  { id: 'Moederborden', name: 'Moederborden', icon: 'memory' },
+  { id: 'Geheugen', name: 'Geheugen', icon: 'memory' },
+  { id: 'Opslag (SSD)', name: 'Opslag (SSD)', icon: 'storage' },
+  { id: 'Opslag (HDD)', name: 'Opslag (HDD)', icon: 'storage' },
+  { id: 'Voedingen', name: 'Voedingen', icon: 'bolt' },
+  { id: 'Computerbehuizingen', name: 'Behuizingen', icon: 'inventory-2' },
+  { id: 'CPU-koelers', name: 'CPU-koelers', icon: 'ac-unit' },
+  { id: 'Ventilatoren', name: 'Ventilatoren', icon: 'air' },
+  { id: 'Toetsenborden', name: 'Toetsenborden', icon: 'keyboard' },
+  { id: 'Muizen', name: 'Muizen', icon: 'mouse' },
+  { id: 'Webcams', name: 'Webcams', icon: 'videocam' },
+  { id: 'Luidsprekers', name: 'Luidsprekers', icon: 'speaker' },
+  { id: 'Printers', name: 'Printers', icon: 'print' },
+  { id: 'Kabels & Adapters', name: 'Kabels & Adapters', icon: 'cable' },
 ];
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -198,11 +199,11 @@ function CategoryDropdown({
         style={[styles.dropdownButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
         onPress={() => setModalVisible(true)}
       >
-        <Text style={styles.dropdownEmoji}>{selectedOption.emoji}</Text>
+        <IconSymbol name={selectedOption.icon} size={20} color={Palette.primary} />
         <Text style={[styles.dropdownText, { color: colors.text }]}>
           {selectedOption.name}
         </Text>
-        <Text style={[styles.dropdownArrow, { color: colors.textSecondary }]}>▼</Text>
+        <IconSymbol name="chevron.down" size={14} color={colors.textSecondary} />
       </Pressable>
 
       {/* Modal Picker */}
@@ -254,7 +255,7 @@ function CategoryDropdown({
                   ]}
                   onPress={() => handleSelect(category.id)}
                 >
-                  <Text style={styles.modalOptionEmoji}>{category.emoji}</Text>
+                  <IconSymbol name={category.icon} size={22} color={Palette.primary} />
                   <Text 
                     style={[
                       styles.modalOptionText, 
@@ -265,7 +266,7 @@ function CategoryDropdown({
                     {category.name}
                   </Text>
                   {selectedCategory === category.id && (
-                    <Text style={[styles.modalCheck, { color: Palette.primary }]}>✓</Text>
+                    <IconSymbol name="checkmark.circle" size={20} color={Palette.primary} />
                   )}
                 </Pressable>
               ))}
@@ -428,7 +429,7 @@ export function ProductFilters({
           ]}
           onPress={toggleExpanded}
         >
-          <Text style={styles.filterIcon}>⚙️</Text>
+          <IconSymbol name="slider.horizontal.3" size={14} color={expanded || hasPendingChanges ? '#fff' : Palette.primary} />
           <Text
             style={[
               styles.filterToggleText,
@@ -594,9 +595,6 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
     gap: 4,
   },
-  filterIcon: {
-    fontSize: 12,
-  },
   filterToggleText: {
     fontSize: 12,
     fontWeight: '600',
@@ -710,16 +708,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     gap: Spacing.sm,
   },
-  dropdownEmoji: {
-    fontSize: 18,
-  },
   dropdownText: {
     flex: 1,
     fontSize: 15,
     fontWeight: '500',
-  },
-  dropdownArrow: {
-    fontSize: 10,
   },
 
   // Modal styles
@@ -783,16 +775,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     gap: Spacing.sm,
   },
-  modalOptionEmoji: {
-    fontSize: 20,
-  },
   modalOptionText: {
     flex: 1,
     fontSize: 16,
-  },
-  modalCheck: {
-    fontSize: 18,
-    fontWeight: '700',
   },
 });
 

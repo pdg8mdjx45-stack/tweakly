@@ -39,8 +39,8 @@ export function LoadingScreen({ onReady }: Props) {
 
   return (
     <Animated.View style={[styles.container, { opacity: containerOpacity }]}>
-      <StatusBar barStyle="dark-content" />
-      {/* Tweakers Logo - large, centered */}
+      <StatusBar barStyle="light-content" backgroundColor="#0A0A0F" />
+      {/* Tweakly Logo - large, centered */}
       <Animated.View
         style={{
           opacity: shieldOpacity,
@@ -61,7 +61,7 @@ export function LoadingScreen({ onReady }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#0A0A0F',
     justifyContent: 'center',
     alignItems: 'center',
   },

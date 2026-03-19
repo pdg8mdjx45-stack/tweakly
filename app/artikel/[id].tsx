@@ -116,11 +116,7 @@ export default function ArtikelScreen() {
             contentFit="cover"
             transition={300}
           />
-        ) : (
-          <View style={[styles.heroImage, styles.heroPlaceholder]}>
-            <Text style={styles.heroPlaceholderText}>T</Text>
-          </View>
-        )}
+        ) : null}
 
         <View style={styles.body}>
           {/* Category + date row */}
@@ -207,12 +203,6 @@ const styles = StyleSheet.create({
 
   // Hero
   heroImage: { width: '100%', height: 260 },
-  heroPlaceholder: {
-    backgroundColor: Palette.grey5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  heroPlaceholderText: { fontSize: 64, fontWeight: '700', color: Palette.grey3 },
 
   // Body
   body: { padding: Spacing.md, gap: Spacing.md },

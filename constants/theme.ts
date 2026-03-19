@@ -1,18 +1,18 @@
 import { Platform } from 'react-native';
 
-// Modern, clean UI with Tweakers bordeaux brand color
+// Modern, clean UI with Tweakly dark green brand color
 export const Palette = {
-  // Primary brand: Tweakers bordeaux rood
-  primary: '#880517',
-  primaryDark: '#6B0411',
-  primaryLight: '#A61D2A',
-  primarySoft: '#88051714', // 8% opacity for subtle backgrounds
+  // Primary brand: Tweakly donkergroen
+  primary: '#1A3A20',
+  primaryDark: '#0F2414',
+  primaryLight: '#2D5A35',
+  primarySoft: '#1A3A2014', // 8% opacity for subtle backgrounds
 
   // Secondary: clean blue for interactive elements
   secondary: '#0A84FF',
 
-  // Interactive blue — primary UI tint
-  blue: '#880517',
+  // Interactive tint — primary UI tint
+  blue: '#1A3A20',
 
   // Functionele kleuren (price-related)
   accent: '#34C759',       // Green — price drop / positive
@@ -120,7 +120,6 @@ export const Glass = {
     backgroundColor: 'rgba(255,255,255,0.06)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
-    // Note: backdrop-filter not supported in RN, simulate with semi-transparent bg
   },
   cardLight: {
     backgroundColor: 'rgba(255,255,255,0.7)',
@@ -138,9 +137,91 @@ export const Glass = {
     borderColor: 'rgba(200,200,200,0.3)',
   },
   accent: {
-    backgroundColor: 'rgba(136,5,23,0.12)',
+    backgroundColor: 'rgba(26,58,32,0.12)',
     borderWidth: 1,
-    borderColor: 'rgba(136,5,23,0.2)',
+    borderColor: 'rgba(26,58,32,0.2)',
+  },
+  liquid: {
+    light: {
+      backgroundColor: 'rgba(255,255,255,0.45)',
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.7)',
+      shadowColor: 'rgba(26,58,32,0.08)',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 1,
+      shadowRadius: 16,
+      elevation: 3,
+    },
+    dark: {
+      backgroundColor: 'rgba(30,30,38,0.65)',
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.08)',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.35,
+      shadowRadius: 24,
+      elevation: 8,
+    },
+  },
+  glassmorphic: {
+    light: {
+      backgroundColor: 'rgba(255,255,255,0.25)',
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.4)',
+      backdropFilter: 'blur(20px)',
+    },
+    dark: {
+      backgroundColor: 'rgba(20,20,26,0.6)',
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.06)',
+      backdropFilter: 'blur(20px)',
+    },
+  },
+  header: {
+    light: {
+      backgroundColor: 'rgba(255,255,255,0.8)',
+      borderBottomWidth: 1,
+      borderBottomColor: 'rgba(0,0,0,0.06)',
+    },
+    dark: {
+      backgroundColor: 'rgba(10,10,15,0.75)',
+      borderBottomWidth: 1,
+      borderBottomColor: 'rgba(255,255,255,0.05)',
+    },
+  },
+  tabBar: {
+    light: {
+      backgroundColor: 'rgba(255,255,255,0.85)',
+      borderTopWidth: 1,
+      borderTopColor: 'rgba(0,0,0,0.08)',
+      shadowColor: 'rgba(0,0,0,0.1)',
+      shadowOffset: { width: 0, height: -4 },
+      shadowOpacity: 0.08,
+      shadowRadius: 12,
+      elevation: 10,
+    },
+    dark: {
+      backgroundColor: 'rgba(20,20,26,0.8)',
+      borderTopWidth: 1,
+      borderTopColor: 'rgba(255,255,255,0.05)',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: -8 },
+      shadowOpacity: 0.25,
+      shadowRadius: 16,
+      elevation: 10,
+    },
+  },
+  modal: {
+    light: {
+      backgroundColor: 'rgba(255,255,255,0.95)',
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.5)',
+    },
+    dark: {
+      backgroundColor: 'rgba(25,25,32,0.92)',
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.08)',
+    },
   },
 } as const;
 

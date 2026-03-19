@@ -10,8 +10,6 @@ import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { Platform } from 'react-native';
 
-// ─── Configuration ──────────────────────────────────────────────────────────
-
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -22,12 +20,15 @@ Notifications.setNotificationHandler({
   }),
 });
 
-// ─── Permission handling ────────────────────────────────────────────────────
-
 let _permissionGranted: boolean | null = null;
 
 export async function requestPermissions(): Promise<boolean> {
   if (_permissionGranted !== null) return _permissionGranted;
+
+  if (Platform.OS === 'web') {
+    _permissionGranted = false;
+    return false;
+  }
 
   const { status: existing } = await Notifications.getPermissionsAsync();
   if (existing === 'granted') {
@@ -46,19 +47,33 @@ export async function requestPermissions(): Promise<boolean> {
       lightColor: '#0066FF',
       sound: 'default',
     });
+    
+    await Notifications.setNotificationChannelAsync('nieuws', {
+      name: 'Nieuws & Reviews',
+      importance: Notifications.AndroidImportance.DEFAULT,
+      sound: 'default',
+    });
   }
 
   return _permissionGranted;
 }
 
-// ─── Send notification ──────────────────────────────────────────────────────
+export interface NotificationSettings {
+  enabled?: boolean;
+  notifPrijzen?: boolean;
+  notifNieuws?: boolean;
+  notifReviews?: boolean;
+}
 
 export async function sendPriceDropNotification(
   productName: string,
   oldPrice: number,
   newPrice: number,
   productId: string,
+  settings?: NotificationSettings,
 ): Promise<void> {
+  if (settings?.enabled === false || settings?.notifPrijzen === false) return;
+  
   const hasPermission = await requestPermissions();
   if (!hasPermission) return;
 
@@ -73,11 +88,35 @@ export async function sendPriceDropNotification(
       sound: 'default',
       ...(Platform.OS === 'android' && { channelId: 'price-drops' }),
     },
-    trigger: null, // Send immediately
+    trigger: null,
   });
 }
 
-// ─── Notification response handler (tap on notification) ────────────────────
+export async function sendNewsNotification(
+  title: string,
+  description: string,
+  articleId: string,
+  category: 'nieuws' | 'reviews' = 'nieuws',
+  settings?: NotificationSettings,
+): Promise<void> {
+  if (settings?.enabled === false) return;
+  if (category === 'nieuws' && settings?.notifNieuws === false) return;
+  if (category === 'reviews' && settings?.notifReviews === false) return;
+
+  const hasPermission = await requestPermissions();
+  if (!hasPermission) return;
+
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title,
+      body: description.substring(0, 120) + (description.length > 120 ? '...' : ''),
+      data: { articleId, type: 'news' },
+      sound: 'default',
+      ...(Platform.OS === 'android' && { channelId: 'nieuws' }),
+    },
+    trigger: null,
+  });
+}
 
 let _handlerRegistered = false;
 
@@ -85,11 +124,12 @@ export function setupNotificationHandler(): void {
   if (_handlerRegistered) return;
   _handlerRegistered = true;
 
-  // Handle notification tap when app is in foreground or background
   Notifications.addNotificationResponseReceivedListener(response => {
     const data = response.notification.request.content.data;
     if (data?.productId && data?.type === 'price-drop') {
       router.push(`/product/${data.productId}`);
+    } else if (data?.articleId && data?.type === 'news') {
+      router.push(`/artikel/${data.articleId}`);
     }
   });
 }

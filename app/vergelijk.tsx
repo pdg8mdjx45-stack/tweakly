@@ -3,6 +3,7 @@
  */
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import type { Product } from '@/constants/mock-data';
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useProductImage } from '@/hooks/use-product-image';
@@ -22,7 +23,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import type { Product } from '@/constants/mock-data';
 
 function ProductThumb({
   product,
@@ -474,7 +474,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.xl + Spacing.sm,
+paddingTop: Spacing.xl * 2 + Spacing.sm,
     paddingBottom: Spacing.sm,
   },
   backButton: { flexDirection: 'row', alignItems: 'center', gap: 2, minWidth: 70 },

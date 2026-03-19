@@ -2,11 +2,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { authErrorMessage, useAuth } from '@/hooks/use-auth';
 import { useThemeContext } from '@/hooks/use-theme-context';
-import { useRouter } from 'expo-router';
-import * as WebBrowser from 'expo-web-browser';
+import { Link, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -64,7 +64,10 @@ export default function InloggenScreen() {
       >
         {/* Logo / header */}
         <View style={styles.header}>
-          <Text style={[styles.logo, { color: Palette.primary }]}>tweakly</Text>
+          <Pressable onPress={() => router.back()} hitSlop={12} style={styles.backBtn}>
+            <Text style={[styles.backArrow, { color: colors.text }]}>‹</Text>
+          </Pressable>
+          <Image source={require('@/assets/images/icon.png')} style={styles.logoImg} resizeMode="contain" />
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
             Log in op je account
           </Text>
@@ -178,19 +181,17 @@ export default function InloggenScreen() {
           <View style={styles.legalLinks}>
             <Text style={[styles.legalText, { color: colors.textSecondary }]}>
               Door in te loggen ga je akkoord met onze{' '}
-              <Text
-                style={[styles.legalLink, { color: Palette.primary }]}
-                onPress={() => WebBrowser.openBrowserAsync('https://tweakly.nl/voorwaarden')}
-              >
-                Algemene Voorwaarden
-              </Text>{' '}
+              <Link href="/terms" asChild>
+                <Text style={[styles.legalLink, { color: Palette.primary }]}>
+                  Algemene Voorwaarden
+                </Text>
+              </Link>{' '}
               en{' '}
-              <Text
-                style={[styles.legalLink, { color: Palette.primary }]}
-                onPress={() => WebBrowser.openBrowserAsync('https://tweakly.nl/privacy')}
-              >
-                Privacybeleid
-              </Text>
+              <Link href="/privacy" asChild>
+                <Text style={[styles.legalLink, { color: Palette.primary }]}>
+                  Privacybeleid
+                </Text>
+              </Link>
               .
             </Text>
           </View>
@@ -211,7 +212,9 @@ const styles = StyleSheet.create({
   },
 
   header: { alignItems: 'center', gap: Spacing.sm },
-  logo: { fontSize: 40, fontWeight: '800', letterSpacing: -0.5 },
+  backBtn: { position: 'absolute', left: 0, top: 30, zIndex: 10 },
+  backArrow: { fontSize: 32, fontWeight: '300' },
+  logoImg: { width: 80, height: 80 },
   subtitle: { fontSize: 16 },
 
   form: { gap: Spacing.md },

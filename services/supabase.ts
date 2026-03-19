@@ -5,8 +5,11 @@
  * Stap 2: Ga naar Settings → API en kopieer de Project URL en anon key hieronder.
  * Stap 3: Ga naar Authentication → Providers → Email en zet "Confirm email" aan.
  * Stap 4: Ga naar Authentication → URL Configuration en stel in:
- *   - Site URL: tweakly://
- *   - Allowed Redirect URLs: tweakly://*
+ *   - Site URL: https://69b5c43d9a840fdba43db8e2--tweakly.netlify.app
+ *   - Allowed Redirect URLs: 
+ *     tweakly://*
+ *     https://69b5c43d9a840fdba43db8e2--tweakly.netlify.app/*
+ *     https://localhost:8081/*
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -35,6 +38,5 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: !isWeb || isBrowser,
     persistSession: !isWeb || isBrowser,
     detectSessionInUrl: isBrowser,
-    flowType: 'pkce',
   },
 });

@@ -4,6 +4,7 @@ import { Fragment, useCallback, useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 
+import { BackButton } from '@/components/back-button';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { MOCK_PRODUCTS } from '@/constants/mock-data';
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
@@ -153,7 +154,10 @@ export default function MeldingenScreen() {
     return (
       <View style={[styles.safe, { backgroundColor: colors.background }]}>
         <View style={[styles.header, { backgroundColor: colors.background }]}>
-          <Text style={[styles.title, { color: colors.text }]}>Prijsalerts</Text>
+          <BackButton color={colors.tint} />
+          <View style={styles.headerRow}>
+            <Text style={[styles.title, { color: colors.text }]}>Prijsalerts</Text>
+          </View>
         </View>
         <View style={styles.emptyFull}>
           <IconSymbol name="bell.badge.fill" size={56} color={colors.border} />
@@ -174,10 +178,13 @@ export default function MeldingenScreen() {
   return (
     <View style={[styles.safe, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { backgroundColor: colors.background }]}>
-        <Text style={[styles.title, { color: colors.text }]}>Prijsalerts</Text>
-        <Text style={[styles.headerCount, { color: colors.textSecondary }]}>
-          {alerts.length} alert{alerts.length !== 1 ? 's' : ''}
-        </Text>
+        <BackButton color={colors.tint} />
+        <View style={styles.headerRow}>
+          <Text style={[styles.title, { color: colors.text }]}>Prijsalerts</Text>
+          <Text style={[styles.headerCount, { color: colors.textSecondary }]}>
+            {alerts.length} alert{alerts.length !== 1 ? 's' : ''}
+          </Text>
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -211,12 +218,15 @@ const styles = StyleSheet.create({
   safe: { flex: 1 },
 
   header: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.xl + Spacing.sm,
     paddingBottom: Spacing.sm,
+    gap: Spacing.xs,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
   },
   title: {
     fontSize: 34,

@@ -11,6 +11,7 @@ import { Colors, Palette, Radius, Shadow, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useProductFilters } from '@/hooks/use-product-filters';
 import { type Product } from '@/services/product-db';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import {
@@ -22,38 +23,64 @@ import {
   View,
 } from 'react-native';
 
-// Categories
+const CATEGORY_COLORS: Record<string, { bg: string; color: string }> = {
+  Smartphones:          { bg: '#007AFF15', color: '#007AFF' },
+  Tablets:              { bg: '#5856D615', color: '#5856D6' },
+  Laptops:              { bg: '#5856D615', color: '#5856D6' },
+  Desktops:            { bg: '#2C2C2E15', color: '#2C2C2E' },
+  Monitoren:            { bg: '#FF950015', color: '#FF9500' },
+  Televisies:           { bg: '#FF950015', color: '#FF9500' },
+  Audio:                { bg: '#FF2D5515', color: '#FF2D55' },
+  Gameconsoles:         { bg: '#34C75915', color: '#34C759' },
+  Gaming:               { bg: '#34C75915', color: '#34C759' },
+  Netwerk:              { bg: '#007AFF15', color: '#007AFF' },
+  Fotografie:           { bg: '#AF52DE15', color: '#AF52DE' },
+  Huishoudelijk:        { bg: '#FF950015', color: '#FF9500' },
+  Wearables:            { bg: '#AF52DE15', color: '#AF52DE' },
+  'Grafische kaarten':  { bg: '#34C75915', color: '#34C759' },
+  Processors:           { bg: '#FF2D5515', color: '#FF2D55' },
+  Moerborden:           { bg: '#5856D615', color: '#5856D6' },
+  Geheugen:             { bg: '#FF2D5515', color: '#FF2D55' },
+  'Opslag (SSD)':       { bg: '#34C75915', color: '#34C759' },
+  'Opslag (HDD)':       { bg: '#34C75915', color: '#34C759' },
+  Voedingen:            { bg: '#FF950015', color: '#FF9500' },
+  Computerbehuizingen:  { bg: '#6C6C7015', color: '#6C6C70' },
+  'CPU-koelers':        { bg: '#007AFF15', color: '#007AFF' },
+  Ventilatoren:         { bg: '#007AFF15', color: '#007AFF' },
+  Toetsenborden:        { bg: '#2C2C2E15', color: '#2C2C2E' },
+  Muizen:               { bg: '#2C2C2E15', color: '#2C2C2E' },
+  Webcams:              { bg: '#AF52DE15', color: '#AF52DE' },
+  Luidsprekers:         { bg: '#FF2D5515', color: '#FF2D55' },
+};
+
 const PRICE_CATEGORIES = [
-  { id: 'Smartphones',          name: 'Smartphones',          emoji: '📱', subtitle: "GSM's & meer" },
-  { id: 'Tablets',              name: 'Tablets',              emoji: '📲', subtitle: 'iPad & Android' },
-  { id: 'Laptops',              name: 'Laptops',              emoji: '💻', subtitle: 'Werk & studie' },
-  { id: 'Desktops',             name: 'Desktops',             emoji: '🖥️', subtitle: 'PC & workstation' },
-  { id: 'Monitoren',            name: 'Monitoren',            emoji: '🖥️', subtitle: 'Gaming & kantoor' },
-  { id: 'Televisies',           name: 'Televisies',           emoji: '📺', subtitle: 'OLED & QLED' },
-  { id: 'Audio',                name: 'Audio',                emoji: '🎧', subtitle: 'Koptelefoons & oordopjes' },
-  { id: 'Gameconsoles',         name: 'Gameconsoles',         emoji: '🎮', subtitle: 'PS5, Xbox & Switch' },
-  { id: 'Gaming',               name: 'Gaming',               emoji: '🕹️', subtitle: 'Headsets & accessoires' },
-  { id: 'Netwerk',              name: 'Netwerk',              emoji: '📡', subtitle: 'Routers & mesh' },
-  { id: 'Fotografie',           name: 'Fotografie',           emoji: '📷', subtitle: "Camera's & lenzen" },
-  { id: 'Huishoudelijk',        name: 'Huishoudelijk',        emoji: '🏠', subtitle: 'Stofzuigers & meer' },
-  { id: 'Wearables',            name: 'Wearables',            emoji: '⌚', subtitle: 'Smartwatches & trackers' },
-  { id: 'Grafische kaarten',    name: 'Grafische kaarten',    emoji: '🎴', subtitle: "GPU's" },
-  { id: 'Processors',           name: 'Processors',           emoji: '⚡', subtitle: "CPU's" },
-  { id: 'Moederborden',         name: 'Moederborden',         emoji: '🔧', subtitle: 'ATX, mATX & ITX' },
-  { id: 'Geheugen',             name: 'Geheugen',             emoji: '🧩', subtitle: 'DDR4 & DDR5 RAM' },
-  { id: 'Opslag (SSD)',         name: 'Opslag (SSD)',         emoji: '💾', subtitle: 'NVMe & SATA' },
-  { id: 'Opslag (HDD)',         name: 'Opslag (HDD)',         emoji: '💿', subtitle: 'NAS & desktop' },
-  { id: 'Voedingen',            name: 'Voedingen',            emoji: '🔌', subtitle: 'PSU & voeding' },
-  { id: 'Computerbehuizingen',  name: 'Behuizingen',          emoji: '📦', subtitle: 'Cases & towers' },
-  { id: 'CPU-koelers',          name: 'CPU-koelers',          emoji: '❄️', subtitle: 'Lucht & AIO' },
-  { id: 'Ventilatoren',         name: 'Ventilatoren',         emoji: '🌀', subtitle: 'Case fans' },
-  { id: 'Toetsenborden',        name: 'Toetsenborden',        emoji: '⌨️', subtitle: 'Mechanisch & meer' },
-  { id: 'Muizen',               name: 'Muizen',               emoji: '🖱️', subtitle: 'Gaming & kantoor' },
-  { id: 'Webcams',              name: 'Webcams',              emoji: '📹', subtitle: 'Streaming & videobellen' },
-  { id: 'Luidsprekers',         name: 'Luidsprekers',         emoji: '🔊', subtitle: 'Speakers & soundbars' },
-  { id: 'Printers',             name: 'Printers',             emoji: '🖨️', subtitle: 'Inkjet & laser' },
-  { id: 'Kabels & Adapters',    name: 'Kabels & Adapters',    emoji: '🔗', subtitle: 'USB, HDMI & meer' },
-  { id: 'all',                  name: 'Bekijk alles',         emoji: '🛒', subtitle: 'Alle producten' },
+  { id: 'Smartphones',          name: 'Smartphones',          icon: 'smartphone',        subtitle: "GSM's & meer" },
+  { id: 'Tablets',              name: 'Tablets',              icon: 'tablet-mac',        subtitle: 'iPad & Android' },
+  { id: 'Laptops',              name: 'Laptops',              icon: 'laptop',           subtitle: 'Werk & studie' },
+  { id: 'Desktops',             name: 'Desktops',             icon: 'desktop-windows',  subtitle: 'PC & workstation' },
+  { id: 'Monitoren',            name: 'Monitoren',            icon: 'monitor',          subtitle: 'Gaming & kantoor' },
+  { id: 'Televisies',           name: 'Televisies',           icon: 'tv',               subtitle: 'OLED & QLED' },
+  { id: 'Audio',                name: 'Audio',                icon: 'headphones',       subtitle: 'Koptelefoons & oordopjes' },
+  { id: 'Gameconsoles',         name: 'Gameconsoles',         icon: 'gamepad',          subtitle: 'PS5, Xbox & Switch' },
+  { id: 'Gaming',               name: 'Gaming',               icon: 'sports-esports',  subtitle: 'Headsets & accessoires' },
+  { id: 'Netwerk',              name: 'Netwerk',              icon: 'router',           subtitle: 'Routers & mesh' },
+  { id: 'Fotografie',           name: 'Fotografie',           icon: 'photo-camera',    subtitle: "Camera's & lenzen" },
+  { id: 'Huishoudelijk',        name: 'Huishoudelijk',        icon: 'home',             subtitle: 'Stofzuigers & meer' },
+  { id: 'Wearables',            name: 'Wearables',            icon: 'watch',            subtitle: 'Smartwatches & trackers' },
+  { id: 'Grafische kaarten',    name: 'Grafische kaarten',    icon: 'memory',          subtitle: "GPU's" },
+  { id: 'Processors',           name: 'Processors',           icon: 'developer-board',  subtitle: "CPU's" },
+  { id: 'Moerborden',           name: 'Moerborden',           icon: 'developer-board',  subtitle: 'ATX, mATX & ITX' },
+  { id: 'Geheugen',             name: 'Geheugen',             icon: 'memory',           subtitle: 'DDR4 & DDR5 RAM' },
+  { id: 'Opslag (SSD)',         name: 'Opslag (SSD)',         icon: 'sd-storage',       subtitle: 'NVMe & SATA' },
+  { id: 'Opslag (HDD)',         name: 'Opslag (HDD)',         icon: 'album',            subtitle: 'NAS & desktop' },
+  { id: 'Voedingen',            name: 'Voedingen',            icon: 'power',            subtitle: 'PSU & voeding' },
+  { id: 'Computerbehuizingen',  name: 'Behuizingen',          icon: 'desktop-windows',  subtitle: 'Cases & towers' },
+  { id: 'CPU-koelers',          name: 'CPU-koelers',          icon: 'ac-unit',          subtitle: 'Lucht & AIO' },
+  { id: 'Ventilatoren',         name: 'Ventilatoren',         icon: 'air',              subtitle: 'Case fans' },
+  { id: 'Toetsenborden',        name: 'Toetsenborden',        icon: 'keyboard',         subtitle: 'Mechanisch & meer' },
+  { id: 'Muizen',               name: 'Muizen',               icon: 'mouse',            subtitle: 'Gaming & kantoor' },
+  { id: 'Webcams',              name: 'Webcams',              icon: 'videocam',         subtitle: 'Streaming & videobellen' },
+  { id: 'Luidsprekers',         name: 'Luidsprekers',         icon: 'speaker',          subtitle: 'Speakers & soundbars' },
 ] as const;
 
 type CategoryId = (typeof PRICE_CATEGORIES)[number]['id'];
@@ -79,7 +106,9 @@ function CategoryGrid({
       contentContainerStyle={styles.categoryGrid}
       columnWrapperStyle={styles.categoryRow}
       showsVerticalScrollIndicator={false}
-      renderItem={({ item }) => (
+      renderItem={({ item }) => {
+          const catColors = CATEGORY_COLORS[item.id] || { bg: Palette.primary + '15', color: Palette.primary };
+          return (
         <Pressable
           style={({ pressed }) => [
             styles.categoryCard,
@@ -93,7 +122,9 @@ function CategoryGrid({
           ]}
           onPress={() => onSelect(item.id as CategoryId)}
         >
-          <Text style={styles.categoryEmoji}>{item.emoji}</Text>
+          <View style={[styles.iconContainer, { backgroundColor: catColors.bg }]}>
+            <MaterialIcons name={item.icon as any} size={28} color={catColors.color} />
+          </View>
           <Text style={[styles.categoryName, { color: colors.text }]} numberOfLines={2}>
             {item.name}
           </Text>
@@ -101,7 +132,8 @@ function CategoryGrid({
             {item.subtitle}
           </Text>
         </Pressable>
-      )}
+          );
+        }}
     />
   );
 }
@@ -327,7 +359,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
 
   pageHeader: {
-    paddingTop: Spacing.xl + Spacing.md,
+    paddingTop: Spacing.xl + Spacing.sm,
     paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.sm,
     gap: 4,
@@ -357,9 +389,13 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md + 2,
     gap: Spacing.xs + 1,
   },
-  categoryEmoji: {
-    fontSize: 30,
-    marginBottom: 4,
+  iconContainer: {
+    width: 52,
+    height: 52,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 6,
   },
   categoryName: {
     fontSize: 15,

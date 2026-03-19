@@ -6,6 +6,7 @@ import { FirebaseError } from 'firebase/app';
 import { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -102,7 +103,7 @@ export default function TelefoonScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[styles.logo, { color: Palette.primary }]}>tweakly</Text>
+          <Image source={require('@/assets/images/icon.png')} style={styles.logoImg} resizeMode="contain" />
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
             {step === 'phone' ? 'Inloggen met telefoonnummer' : 'Voer verificatiecode in'}
           </Text>
@@ -226,7 +227,7 @@ const styles = StyleSheet.create({
   },
 
   header: { alignItems: 'center', gap: Spacing.sm },
-  logo: { fontSize: 40, fontWeight: '800', letterSpacing: -0.5 },
+  logoImg: { width: 80, height: 80 },
   subtitle: { fontSize: 16 },
 
   form: { gap: Spacing.md },

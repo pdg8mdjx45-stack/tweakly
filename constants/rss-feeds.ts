@@ -5,18 +5,18 @@
 
 import type { FeedCategory } from '@/types/rss';
 
-/** Main RSS feed sources — Tweakers via FeedBurner */
+/** Main RSS feed sources — Tweakers direct feeds */
 export const NEWS_FEEDS = {
   nieuws: {
     id: 'nieuws',
     name: 'Tweakers Nieuws',
-    url: 'https://feeds.feedburner.com/tweakers/nieuws',
+    url: 'https://tweakers.net/feeds/nieuws.xml',
     icon: 'newspaper',
   },
   reviews: {
     id: 'reviews',
     name: 'Tweakers Reviews',
-    url: 'https://feeds.feedburner.com/tweakers/reviews',
+    url: 'https://tweakers.net/feeds/reviews.xml',
     icon: 'star',
   },
 } as const;

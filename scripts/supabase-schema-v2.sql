@@ -253,6 +253,55 @@ CREATE INDEX IF NOT EXISTS idx_price_alerts_active ON price_alerts (is_triggered
   WHERE is_triggered = false;
 
 -- ============================================================================
+-- PROFILES — User profiles linked to auth.users
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS profiles (
+  id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  username text,
+  avatar_url text,
+  display_name text,
+  age integer,
+  push_enabled boolean DEFAULT true,
+  email_notif_enabled boolean DEFAULT false,
+  category_nieuws boolean DEFAULT true,
+  category_reviews boolean DEFAULT true,
+  category_prijzen boolean DEFAULT true,
+  notif_prijzen boolean DEFAULT true,
+  notif_nieuws boolean DEFAULT true,
+  notif_reviews boolean DEFAULT true,
+  updated_at timestamp with time zone DEFAULT NOW()
+);
+
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "profiles_select_own" ON profiles FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "profiles_update_own" ON profiles FOR UPDATE USING (auth.uid() = id);
+CREATE POLICY "profiles_insert_own" ON profiles FOR INSERT WITH CHECK (auth.uid() = id);
+CREATE POLICY "profiles_delete_own" ON profiles FOR DELETE USING (auth.uid() = id);
+
+-- ============================================================================
+-- VERIFICATION CODES — Email verification codes
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS verification_codes (
+  id SERIAL PRIMARY KEY,
+  email TEXT NOT NULL,
+  code TEXT NOT NULL,
+  type TEXT NOT NULL CHECK (type IN ('verify', 'reset')),
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_verification_codes_email ON verification_codes (email);
+CREATE INDEX IF NOT EXISTS idx_verification_codes_code ON verification_codes (code);
+
+ALTER TABLE verification_codes ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "verification_codes_all" ON verification_codes FOR ALL 
+  USING (auth.role() = 'service_role' OR auth.jwt() ->> 'role' = 'service_role');
+
+-- ============================================================================
 -- 12. ROW LEVEL SECURITY
 -- ============================================================================
 -- Alle tabellen: lezen voor iedereen, schrijven alleen via service role

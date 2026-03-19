@@ -9,7 +9,7 @@ import { SearchBar } from '@/components/search-bar';
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { getAllProducts, searchProducts, type Product } from '@/services/product-db';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -33,6 +33,7 @@ export default function ZoekenScreen() {
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
   const params = useLocalSearchParams<{ q?: string }>();
+  const router = useRouter();
 
   const [query, setQuery] = useState(params.q ?? '');
   const [sortBy, setSortBy] = useState('Relevantie');
@@ -80,7 +81,7 @@ export default function ZoekenScreen() {
 
   return (
     <View style={[styles.safe, { backgroundColor: colors.background }]}>
-      <ProfileHeader title="Zoeken" />
+      <ProfileHeader title="Zoeken" showBackButton onBackPress={() => router.back()} />
       
       <View style={[styles.searchHeader, { backgroundColor: colors.background }]}>
         <SearchBar

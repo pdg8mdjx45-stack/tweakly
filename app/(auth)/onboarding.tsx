@@ -9,7 +9,6 @@ import {
   Image,
   Platform,
   Pressable,
-  SafeAreaView,
   StyleSheet,
   Text,
   View,
@@ -65,6 +64,22 @@ const SLIDES: Slide[] = [
     title: 'Prijsalerts',
     subtitle: 'Stel een doelprijs in en ontvang direct een melding zodra de prijs daalt',
   },
+  {
+    id: '5',
+    type: 'icon',
+    icon: 'hardware-chip-outline',
+    accentColor: '#FF9500',
+    title: 'PC Samenstellen',
+    subtitle: 'Stel je eigen pc samen met onze handige builder en vind de beste onderdelen',
+  },
+  {
+    id: '6',
+    type: 'icon',
+    icon: 'bulb-outline',
+    accentColor: '#AF52DE',
+    title: 'Kies voor mij',
+    subtitle: 'Weet je niet wat je moet kiezen? Laat ons een persoonlijke aanbeveling doen',
+  },
 ];
 
 export default function OnboardingScreen() {
@@ -103,14 +118,14 @@ export default function OnboardingScreen() {
   const isLast = activeIndex === SLIDES.length - 1;
 
   const renderSlide = ({ item }: { item: Slide }) => (
-    <View style={[styles.slide, { width }]}>
+    <View style={[styles.slide, { width }]}> 
       {/* Illustration */}
       <View style={styles.illustrationArea}>
         <View style={[styles.outerCircle, { backgroundColor: item.accentColor + '18' }]}>
           <View style={[styles.innerCircle, { backgroundColor: item.accentColor + '28' }]}>
             {item.type === 'logo' ? (
               <Image
-                source={require('@/assets/images/logo no text removebg.png')}
+                source={require('@/assets/images/icon.png')}
                 style={styles.logoImage}
                 resizeMode="contain"
               />
@@ -130,10 +145,10 @@ export default function OnboardingScreen() {
   );
 
   return (
-    <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
+    <View style={[styles.root, { backgroundColor: colors.background }]}>
       {/* Skip button */}
       <View style={styles.topBar}>
-        <Text style={[styles.brand, { color: Palette.primary }]}>tweakly</Text>
+        <Image source={require('@/assets/images/icon.png')} style={styles.brandImg} resizeMode="contain" />
         {!isLast && (
           <Pressable
             onPress={handleFinish}
@@ -213,7 +228,7 @@ export default function OnboardingScreen() {
         </Pressable>
 
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -230,10 +245,9 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'android' ? Spacing.lg : Spacing.sm,
     paddingBottom: Spacing.sm,
   },
-  brand: {
-    fontSize: 22,
-    fontWeight: '800',
-    letterSpacing: -0.5,
+  brandImg: {
+    width: 44,
+    height: 44,
   },
   skipBtn: { paddingVertical: Spacing.xs, paddingHorizontal: Spacing.sm },
   skipText: { fontSize: 15, fontWeight: '500' },

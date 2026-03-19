@@ -7,16 +7,17 @@ import { useProductImage } from '@/hooks/use-product-image';
 import { addToCompare, isInCompare, subscribeCompare } from '@/services/compare-store';
 import { fetchIcecatByEAN, type IcecatProduct } from '@/services/icecat-api';
 import { getProductById, type Product } from '@/services/product-db';
+import { addAlert, getAlerts, type PriceAlert } from '@/services/alerts-store';
 import {
   findTweakersProductCached,
-  type TweakersShopOffer,
   type TweakersPriceHistory,
   type TweakersProductInfo,
+  type TweakersShopOffer,
 } from '@/services/tweakers-pricewatch';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
 import * as WebBrowser from 'expo-web-browser';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Modal,
@@ -25,6 +26,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 
@@ -82,6 +84,9 @@ export default function ProductScreen() {
   const [tweakersLoading, setTweakersLoading] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [variantModalVisible, setVariantModalVisible] = useState(false);
+  const [alertModalVisible, setAlertModalVisible] = useState(false);
+  const [targetPrice, setTargetPrice] = useState('');
+  const [existingAlert, setExistingAlert] = useState<PriceAlert | null>(null);
 
   const bestImageUrl = selectedVariant?.imageUrl || tweakersInfo?.imageUrl || icecatData?.imageUrl || product?.imageUrl || '';
   const productImage = useProductImage(product?.name ?? '', bestImageUrl);
@@ -110,6 +115,17 @@ export default function ProductScreen() {
         });
       }
       setLoading(false);
+    });
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+    getAlerts().then(alerts => {
+      const alert = alerts.find(a => a.productId === id);
+      if (alert) {
+        setExistingAlert(alert);
+        setTargetPrice(alert.targetPrice.toString());
+      }
     });
   }, [id]);
 
@@ -343,15 +359,26 @@ export default function ProductScreen() {
           !isDark && Shadow.md,
           isDark && { borderWidth: 1, borderColor: colors.border },
         ]}>
-          <View style={styles.priceMain}>
-            <Text style={[styles.currentPrice, { color: colors.text }]}>
-              €{displayPrice.toLocaleString('nl-NL')}
-            </Text>
-            {priceDropPct > 0 && (
-              <View style={styles.discountBadge}>
-                <Text style={styles.discountText}>-{priceDropPct}%</Text>
-              </View>
-            )}
+          <View style={styles.priceHeaderRow}>
+            <View style={styles.priceMain}>
+              <Text style={[styles.currentPrice, { color: colors.text }]}>
+                €{displayPrice.toLocaleString('nl-NL')}
+              </Text>
+              {priceDropPct > 0 && (
+                <View style={styles.discountBadge}>
+                  <Text style={styles.discountText}>-{priceDropPct}%</Text>
+                </View>
+              )}
+            </View>
+            <Pressable
+              onPress={() => setAlertModalVisible(true)}
+              style={[styles.alertButton, { backgroundColor: existingAlert ? Palette.accent : colors.tint }]}
+            >
+              <IconSymbol name={existingAlert ? 'bell.fill' : 'bell'} size={16} color="#fff" />
+              <Text style={styles.alertButtonText}>
+                {existingAlert ? 'Alert actief' : 'Prijsalert'}
+              </Text>
+            </Pressable>
           </View>
           {displayPrice < product.originalPrice && (
             <Text style={[styles.originalPrice, { color: colors.textSecondary }]}>
@@ -576,6 +603,88 @@ export default function ProductScreen() {
           )}
         </View>
       </ScrollView>
+
+      {/* Price Alert Modal */}
+      <Modal
+        visible={alertModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setAlertModalVisible(false)}
+      >
+        <View style={[styles.safe, { backgroundColor: colors.background }]}>
+          <View style={[styles.variantModalHeader, { borderBottomColor: colors.border }]}>
+            <Pressable onPress={() => setAlertModalVisible(false)}>
+              <Text style={[styles.variantModalClose, { color: colors.text }]}>✕</Text>
+            </Pressable>
+            <Text style={[styles.variantModalTitle, { color: colors.text }]}>
+              {existingAlert ? 'Prijsalert bewerken' : 'Prijsalert instellen'}
+            </Text>
+            <Pressable
+              onPress={async () => {
+                const price = parseFloat(targetPrice.replace(',', '.'));
+                if (isNaN(price) || price <= 0) {
+                  return;
+                }
+                if (product) {
+                  await addAlert({
+                    productId: product.id,
+                    productName: product.name,
+                    targetPrice: price,
+                    currentPrice: displayPrice,
+                  });
+                  const alerts = await getAlerts();
+                  const alert = alerts.find(a => a.productId === product.id);
+                  if (alert) setExistingAlert(alert);
+                }
+                setAlertModalVisible(false);
+              }}
+            >
+              <Text style={{ color: Palette.primary, fontSize: 17, fontWeight: '600' }}>Opslaan</Text>
+            </Pressable>
+          </View>
+          <View style={{ padding: Spacing.md, gap: Spacing.md }}>
+            <View style={{ gap: Spacing.xs }}>
+              <Text style={[styles.specKey, { color: colors.textSecondary }]}>Huidige prijs</Text>
+              <Text style={[styles.currentPrice, { color: colors.text }]}>
+                €{displayPrice.toLocaleString('nl-NL')}
+              </Text>
+            </View>
+            <View style={{ gap: Spacing.xs }}>
+              <Text style={[styles.specKey, { color: colors.textSecondary }]}>Doelprijs</Text>
+              <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <Text style={{ fontSize: 24, fontWeight: '600', color: colors.text }}>€</Text>
+                <TextInput
+                  style={[styles.input, { color: colors.text }]}
+                  value={targetPrice}
+                  onChangeText={setTargetPrice}
+                  placeholder="0,00"
+                  placeholderTextColor={colors.textSecondary}
+                  keyboardType="decimal-pad"
+                />
+              </View>
+              <Text style={[styles.priceNote, { color: colors.textSecondary }]}>
+                Je ontvangt een melding wanneer de prijs onder deze waarde daalt.
+              </Text>
+            </View>
+            {existingAlert && (
+              <Pressable
+                onPress={async () => {
+                  const { removeAlert } = await import('@/services/alerts-store');
+                  await removeAlert(existingAlert.id);
+                  setExistingAlert(null);
+                  setTargetPrice('');
+                  setAlertModalVisible(false);
+                }}
+                style={{ paddingVertical: Spacing.sm }}
+              >
+                <Text style={{ color: Palette.danger, fontSize: 16, textAlign: 'center' }}>
+                  Alert verwijderen
+                </Text>
+              </Pressable>
+            )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -589,7 +698,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.xxl,
+paddingTop: Spacing.xxl + Spacing.xl,
     paddingBottom: Spacing.sm,
   },
   backButton: {
@@ -684,6 +793,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
+  },
+  priceHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  alertButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs + 2,
+    borderRadius: Radius.full,
+  },
+  alertButtonText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '600',
   },
   currentPrice: {
     fontSize: 32,
@@ -1015,5 +1142,20 @@ const styles = StyleSheet.create({
   backLink: {
     fontSize: 16,
     fontWeight: '500',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: Radius.md,
+    borderWidth: 1,
+    gap: Spacing.xs,
+  },
+  input: {
+    flex: 1,
+    fontSize: 24,
+    fontWeight: '600',
+    padding: 0,
   },
 });

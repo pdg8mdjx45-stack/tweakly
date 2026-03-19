@@ -14,7 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { TweaklyLogo } from './tweakly-logo';
+import { TweaklyLogo, TweaklyShield } from './tweakly-logo';
 import { IconSymbol } from './ui/icon-symbol';
 
 interface ProfileHeaderProps {
@@ -30,8 +30,8 @@ export function ProfileHeader({ showBackButton, onBackPress, title }: ProfileHea
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const menuItems = [
-    { id: 'account', label: 'Account', icon: 'person.fill' },
-    { id: 'notifications', label: 'Meldingen', icon: 'bell.fill' },
+    { id: 'account', label: 'Account', icon: 'person.crop.circle' },
+    { id: 'notifications', label: 'Meldingen', icon: 'bell.badge' },
     { id: 'bookmarks', label: 'Opgeslagen', icon: 'bookmark.fill' },
     { id: 'settings', label: 'Instellingen', icon: 'gearshape.fill' },
     { id: 'divider1', label: '', icon: '' },
@@ -47,7 +47,7 @@ export function ProfileHeader({ showBackButton, onBackPress, title }: ProfileHea
           </Pressable>
         ) : (
           <View style={styles.logoContainer}>
-            <TweaklyLogo height={28} />
+            <TweaklyShield size={34} />
           </View>
         )}
 

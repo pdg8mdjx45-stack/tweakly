@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -25,6 +26,7 @@ export default function RegistrerenScreen() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -46,9 +48,11 @@ export default function RegistrerenScreen() {
     try {
       await signUp(email.trim(), password);
       router.replace({ pathname: '/(auth)/verificatie', params: { email: email.trim() } });
-    } catch (e) {
-      const code = (e as { code?: string })?.code ?? '';
-      setError(authErrorMessage(code));
+    } catch (e: any) {
+      const code = e?.code ?? '';
+      const message = e?.message ?? 'Er is een fout opgetreden';
+      console.log('Signup error:', e);
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -66,7 +70,10 @@ export default function RegistrerenScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[styles.logo, { color: Palette.primary }]}>tweakly</Text>
+          <Pressable onPress={() => router.back()} hitSlop={12} style={styles.backBtn}>
+            <Text style={[styles.backArrow, { color: colors.text }]}>‹</Text>
+          </Pressable>
+          <Image source={require('@/assets/images/icon.png')} style={styles.logoImg} resizeMode="contain" />
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
             Maak een nieuw account aan
           </Text>
@@ -122,18 +129,23 @@ export default function RegistrerenScreen() {
             <Text style={[styles.label, { color: colors.textSecondary }]}>WACHTWOORD BEVESTIGEN</Text>
             <Pressable style={[styles.inputWrap, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <TextInput
-                style={[styles.input, { color: colors.text }]}
+                style={[styles.input, styles.inputFlex, { color: colors.text }]}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 placeholder="Herhaal je wachtwoord"
                 placeholderTextColor={colors.textSecondary}
-                secureTextEntry={!showPassword}
+                secureTextEntry={!showConfirmPassword}
                 autoCapitalize="none"
                 autoCorrect={false}
                 autoComplete="new-password"
                 returnKeyType="done"
                 onSubmitEditing={handleRegister}
               />
+              <Pressable onPress={() => setShowConfirmPassword((v) => !v)} hitSlop={8} style={styles.eyeBtn}>
+                <Text style={[styles.eyeText, { color: colors.textSecondary }]}>
+                  {showConfirmPassword ? 'Verberg' : 'Toon'}
+                </Text>
+              </Pressable>
             </Pressable>
           </View>
 
@@ -200,7 +212,9 @@ const styles = StyleSheet.create({
   },
 
   header: { alignItems: 'center', gap: Spacing.sm },
-  logo: { fontSize: 40, fontWeight: '800', letterSpacing: -0.5 },
+  backBtn: { position: 'absolute', left: 0, top: 30, zIndex: 10 },
+  backArrow: { fontSize: 32, fontWeight: '300' },
+  logoImg: { width: 80, height: 80 },
   subtitle: { fontSize: 16 },
 
   form: { gap: Spacing.md },
