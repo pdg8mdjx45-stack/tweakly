@@ -4,6 +4,7 @@ import { PRICE_DISCLAIMER, type ProductVariant } from '@/constants/mock-data';
 import { Colors, Palette, Radius, Shadow, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useProductImage } from '@/hooks/use-product-image';
+import { buildOutboundUrl, getCheapestShop, getShopMeta, sortShopsByPrice } from '@/services/affiliate-links';
 import { addToCompare, isInCompare, subscribeCompare } from '@/services/compare-store';
 import { fetchIcecatByEAN, type IcecatProduct } from '@/services/icecat-api';
 import { getProductById, type Product } from '@/services/product-db';
@@ -183,6 +184,9 @@ export default function ProductScreen() {
 
   // Use variant-specific shops if a variant is selected and has shops
   const variantShops = selectedVariant?.shops;
+  const curatedShops = variantShops || product.shops;
+  const cheapestCurated = getCheapestShop(curatedShops);
+
   const displayShops = validOffers.length > 0 && !selectedVariant
     ? validOffers.map(o => ({
         name: o.shopName,
@@ -193,7 +197,7 @@ export default function ProductScreen() {
         isVerified: isDirectProductUrl(o.url),
         linkStatus: getLinkStatusLabel(o.url),
       }))
-    : (variantShops || product.shops).map(s => ({
+    : sortShopsByPrice(curatedShops).map(s => ({
         ...s,
         shipping: 0,
         isVerified: s.verified ?? isDirectProductUrl(s.url),
@@ -462,9 +466,40 @@ export default function ProductScreen() {
                   </Text>
                 </View>
               )}
+              {/* Hero CTA: goedkoopste aanbieder (alleen bij indicatieve prijzen) */}
+              {validOffers.length === 0 && !selectedVariant && cheapestCurated && (() => {
+                const meta = getShopMeta(cheapestCurated);
+                const outUrl = buildOutboundUrl(cheapestCurated);
+                const ctaBg = meta?.brandColor ?? Palette.primary;
+                return (
+                  <Pressable
+                    style={[styles.heroCta, { backgroundColor: ctaBg }]}
+                    onPress={() => WebBrowser.openBrowserAsync(outUrl, { toolbarColor: ctaBg })}
+                  >
+                    <View style={[styles.heroLogoBox, { backgroundColor: meta?.logoBackground ?? (isDark ? Palette.dark3 : Palette.grey6) }]}>
+                      <Text style={[styles.heroLogoText, { color: meta?.logoTextColor ?? '#fff' }]}>
+                        {cheapestCurated.logo}
+                      </Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.heroCtaLabel}>Beste prijs bij</Text>
+                      <Text style={styles.heroCtaShop}>{cheapestCurated.name}</Text>
+                    </View>
+                    <View style={{ alignItems: 'flex-end' }}>
+                      <Text style={styles.heroCtaPrice}>
+                        €{cheapestCurated.price.toLocaleString('nl-NL')}
+                      </Text>
+                      <Text style={styles.heroCtaCta}>Bekijk aanbieding →</Text>
+                    </View>
+                  </Pressable>
+                );
+              })()}
+
               <View style={styles.shopList}>
                 {displayShops.map((shop, index, arr) => {
-                  const shopUrl = cleanUrl(shop.url);
+                  const shopUrl = validOffers.length > 0
+                    ? cleanUrl(shop.url)
+                    : buildOutboundUrl(shop);
                   const linkLabel = shop.linkStatus;
                   return (
                     <View key={`${shop.name}-${index}`}>
@@ -506,6 +541,7 @@ export default function ProductScreen() {
                           onPress={() => shopUrl && shopUrl !== '#' && WebBrowser.openBrowserAsync(shopUrl, { toolbarColor: Palette.primary })}>
                           <Text style={styles.shopButtonText}>Bekijk</Text>
                         </Pressable>
+
                       </View>
                       {index < arr.length - 1 && (
                         <View style={[styles.shopSep, { backgroundColor: isDark ? Palette.dark4 : Palette.grey5 }]} />
@@ -950,6 +986,46 @@ paddingTop: Spacing.xxl + Spacing.xl,
     color: '#fff',
     fontSize: 13,
     fontWeight: '700',
+  },
+
+  // Hero CTA (goedkoopste aanbieder)
+  heroCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    padding: Spacing.md,
+    borderRadius: Radius.md,
+    marginBottom: Spacing.sm,
+  },
+  heroLogoBox: {
+    width: 44,
+    height: 44,
+    borderRadius: Radius.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroLogoText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  heroCtaLabel: {
+    color: 'rgba(255,255,255,0.75)',
+    fontSize: 11,
+  },
+  heroCtaShop: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  heroCtaPrice: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  heroCtaCta: {
+    color: 'rgba(255,255,255,0.85)',
+    fontSize: 12,
+    marginTop: 2,
   },
 
   // Google Shopping
