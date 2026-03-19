@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Over ons — Tweakly</title>
+  <meta name="description" content="Tweakly is een Nederlandse prijsvergelijkingsapp voor elektronica, ontwikkeld door Alexander Ballet vanuit Amsterdam.">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="canonical" href="https://tweakly.netlify.app/over-ons.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #1A3A20; --primary-light: #2D5A35; --accent: #0A84FF; --green: #34C759; --orange: #FF9500;
+      --bg: #0A0A0F; --surface: rgba(255,255,255,0.04); --border: rgba(255,255,255,0.08);
+      --text: #E8E8ED; --text-secondary: #8888A0; --text-muted: #555566;
+    }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    nav { position: sticky; top: 0; z-index: 100; padding: 0 2rem; height: 60px; display: flex; align-items: center; justify-content: space-between; background: rgba(10,10,15,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+    .nav-brand { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .nav-brand img { width: 36px; height: 36px; object-fit: contain; filter: drop-shadow(0 2px 6px rgba(26,58,32,0.3)); }
+    .nav-brand span { font-size: 1.05rem; font-weight: 800; color: var(--text); }
+    .nav-brand span em { font-style: normal; color: var(--primary-light); }
+    .nav-back { font-size: 0.82rem; color: var(--text-secondary); text-decoration: none; transition: color 0.2s; }
+    .nav-back:hover { color: var(--text); text-decoration: none; }
+
+    .page { max-width: 780px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+    .breadcrumb { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 2rem; }
+    .breadcrumb a { color: var(--text-muted); }
+    .breadcrumb a:hover { color: var(--text-secondary); }
+    .page-label { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--primary-light); margin-bottom: 0.75rem; background: rgba(26,58,32,0.1); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1px solid rgba(26,58,32,0.25); }
+    h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 800; letter-spacing: -0.025em; margin-bottom: 0.5rem; line-height: 1.2; }
+    .meta { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 2.5rem; }
+
+    .founder-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; margin-bottom: 2.5rem; display: flex; gap: 1.5rem; align-items: flex-start; flex-wrap: wrap; }
+    .founder-avatar { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-light), var(--primary)); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 800; flex-shrink: 0; box-shadow: 0 4px 20px rgba(26,58,32,0.4); }
+    .founder-info h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.25rem; }
+    .founder-info .founder-role { font-size: 0.85rem; color: var(--primary-light); font-weight: 600; margin-bottom: 0.75rem; }
+    .founder-info p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.65; }
+    .founder-contact { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.3rem; }
+    .founder-contact a, .founder-contact span { font-size: 0.85rem; color: var(--text-secondary); }
+    .founder-contact a:hover { color: var(--text); text-decoration: underline; }
+
+    .section { margin-bottom: 2.5rem; }
+    .section h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem; padding-top: 0.5rem; }
+    .section h2 .num { color: var(--primary-light); margin-right: 0.4rem; font-size: 1rem; }
+    .section p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.75rem; }
+    .section ul { padding-left: 1.5rem; margin-bottom: 0.75rem; }
+    .section li { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 0.4rem; }
+    .section strong { color: var(--text); }
+
+    .values-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1.25rem 0; }
+    @media (max-width: 560px) { .values-grid { grid-template-columns: 1fr; } }
+    .value-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+    .value-icon { font-size: 1.5rem; margin-bottom: 0.6rem; display: block; }
+    .value-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.35rem; }
+    .value-card p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 0; }
+
+    .status-banner { background: rgba(10,132,255,0.06); border: 1px solid rgba(10,132,255,0.2); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 2rem; }
+    .status-banner h3 { font-size: 0.95rem; font-weight: 700; color: var(--accent); margin-bottom: 0.4rem; }
+    .status-banner p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; margin: 0; }
+
+    .contact-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+    .contact-box h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .contact-box p { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.4rem; }
+
+    footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; }
+    .footer-links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 0.75rem; }
+    .footer-links a { font-size: 0.82rem; color: var(--text-muted); transition: color 0.2s; }
+    .footer-links a:hover { color: var(--text-secondary); text-decoration: none; }
+    .footer-copy { font-size: 0.78rem; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-brand">
+      <img src="logo.png" alt="Tweakly">
+      <span>Tweak<em>ly</em></span>
+    </a>
+    <a href="index.html" class="nav-back">&#8592; Terug naar home</a>
+  </nav>
+
+  <main class="page">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a> &rsaquo; Over ons
+    </div>
+
+    <div class="page-label">&#128467; Over ons</div>
+    <h1>Over Tweakly</h1>
+    <div class="meta">Opgericht: 2025 &mdash; Amsterdam, Nederland</div>
+
+    <div class="status-banner">
+      <h3>&#128679; Status: in actieve ontwikkeling</h3>
+      <p>Tweakly is momenteel in bèta-fase. De app is nog niet beschikbaar in de officiële App Store of Google Play. Wil je vroegtijdig toegang? <a href="contact.html">Neem contact op</a> of meld je aan voor de bèta.</p>
+    </div>
+
+    <!-- Founder card -->
+    <div class="founder-card">
+      <div class="founder-avatar">AB</div>
+      <div class="founder-info">
+        <h2>Alexander Ballet</h2>
+        <div class="founder-role">Oprichter &amp; Ontwikkelaar</div>
+        <p>Tweakly is een persoonlijk project van Alexander Ballet, een Nederlandse software-ontwikkelaar gevestigd in Amsterdam. Als tech-enthousiasteling en regelmatige koper van elektronica was er een duidelijke behoefte aan een eenvoudige, eerlijke prijsvergelijkingsapp voor de Nederlandse markt.</p>
+        <div class="founder-contact">
+          <a href="mailto:alexander.ballet@hotmail.com">alexander.ballet@hotmail.com</a>
+          <span>Amsterdam, Nederland</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">1.</span> Wat is Tweakly?</h2>
+      <p>Tweakly is een mobiele prijsvergelijkingsapp voor elektronica, gericht op de Nederlandse markt. De app vergelijkt prijzen bij populaire webshops zoals Coolblue, Bol.com, MediaMarkt, Amazon.nl, Alternate en meer.</p>
+      <p>Tweakly is geïnspireerd op de functionaliteiten van bekende Nederlandse tech-sites, maar met een moderne mobiele ervaring als uitgangspunt. De focus ligt op:</p>
+      <ul>
+        <li>Eerlijke prijsvergelijking (gesorteerd op prijs, niet op commissie)</li>
+        <li>Prijsgeschiedenis en -trends per product</li>
+        <li>Prijsalerts via pushnotificaties</li>
+        <li>Technisch nieuws via RSS-feeds van Tweakers.net</li>
+        <li>Productreviews en specificaties</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">2.</span> Onze waarden</h2>
+      <div class="values-grid">
+        <div class="value-card">
+          <span class="value-icon">&#9878;&#65039;</span>
+          <h3>Eerlijkheid</h3>
+          <p>Winkels worden altijd gesorteerd op prijs. Commissiehoogte heeft geen invloed op rangschikking.</p>
+        </div>
+        <div class="value-card">
+          <span class="value-icon">&#128279;</span>
+          <h3>Transparantie</h3>
+          <p>Affiliate-links worden duidelijk gemarkeerd. We zijn open over hoe we inkomsten genereren.</p>
+        </div>
+        <div class="value-card">
+          <span class="value-icon">&#128176;</span>
+          <h3>Geen meerkosten</h3>
+          <p>U betaalt nooit meer via een affiliate-link. De commissie wordt door de webshop betaald.</p>
+        </div>
+        <div class="value-card">
+          <span class="value-icon">&#128274;</span>
+          <h3>Privacy</h3>
+          <p>We verzamelen minimale data en volgen de AVG-richtlijnen. Geen verkoop van gebruikersdata.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">3.</span> Technologie</h2>
+      <p>Tweakly is gebouwd met moderne technologie:</p>
+      <ul>
+        <li><strong>App:</strong> React Native met Expo SDK 54 (iOS &amp; Android)</li>
+        <li><strong>Backend:</strong> Supabase (PostgreSQL, Auth, Storage)</li>
+        <li><strong>Hosting:</strong> Expo Application Services (EAS)</li>
+        <li><strong>Website:</strong> Statische HTML, gehost op Netlify</li>
+        <li><strong>Productdata:</strong> Icecat Open Catalog voor specs en afbeeldingen</li>
+        <li><strong>Nieuwsfeeds:</strong> Tweakers.net RSS via FeedBurner</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">4.</span> Affiliate-relaties</h2>
+      <p>Tweakly bevat affiliate-links naar externe webshops. Wanneer u via Tweakly een aankoop doet, kan Tweakly een kleine commissie ontvangen van de betreffende webshop. Dit heeft geen invloed op de prijs die u betaalt.</p>
+      <p>Lees onze volledige <a href="affiliate.html">Affiliate Disclosure</a> voor meer informatie over onze partners en principes.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">5.</span> Contact</h2>
+      <div class="contact-box">
+        <h3>Neem contact op</h3>
+        <p><strong>Alexander Ballet</strong></p>
+        <p>Amsterdam, Nederland</p>
+        <p><a href="mailto:alexander.ballet@hotmail.com">alexander.ballet@hotmail.com</a></p>
+        <p style="margin-top:0.75rem;font-size:0.82rem;color:var(--text-muted)">Voor vragen over de app, samenwerking, bèta-toegang of affiliate-relaties.</p>
+        <p style="margin-top:0.5rem"><a href="contact.html">&#8594; Ga naar de contactpagina</a></p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="privacy.html">Privacybeleid</a>
+      <a href="cookies.html">Cookiebeleid</a>
+      <a href="voorwaarden.html">Voorwaarden</a>
+      <a href="affiliate.html">Affiliate</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="footer-copy">&copy; 2026 Tweakly &mdash; Alexander Ballet, Amsterdam</div>
+  </footer>
+
+</body>
+</html>

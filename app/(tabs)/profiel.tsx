@@ -645,6 +645,10 @@ export default function ProfielScreen() {
             <Pressable onPress={() => router.push('/cookies' as any)}>
               <Text style={[styles.aboutLink, { color: colors.tint }]}>Cookies</Text>
             </Pressable>
+            <Text style={[styles.aboutDivider, { color: colors.border }]}>·</Text>
+            <Pressable onPress={() => router.push('/affiliate' as any)}>
+              <Text style={[styles.aboutLink, { color: colors.tint }]}>Affiliate</Text>
+            </Pressable>
           </View>
           <Text style={[styles.aboutCopy, { color: colors.textSecondary }]}>
             © 2026 Tweakly

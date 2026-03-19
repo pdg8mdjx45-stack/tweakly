@@ -12,6 +12,7 @@ import { Dimensions, FlatList, Pressable, ScrollView, StyleSheet, Text, View } f
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { PRICE_DISCLAIMER } from '@/constants/mock-data';
 import { Colors, Glass, Palette, Radius, Spacing } from '@/constants/theme';
+import { useAuth } from '@/hooks/use-auth';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useProductImage } from '@/hooks/use-product-image';
 import { getAllProducts, getBestDeal, getNewProducts, getPriceDrops, type Product } from '@/services/product-db';
@@ -19,8 +20,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useTour } from '@/hooks/use-tour';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
-const USER_NAME = 'Alex';
 
 // Use MaterialIcons names directly (not SF Symbols) for categories
 const CATEGORIES = [
@@ -69,7 +68,7 @@ function HeroDeal({ deal, isDark, colors }: { deal: Product; isDark: boolean; co
           ]}
         >
           <LinearGradient
-            colors={isDark ? ['rgba(26,10,12,0.8)', 'rgba(45,16,21,0.6)', 'rgba(26,10,12,0.8)'] : ['rgba(255,245,245,0.75)', 'rgba(255,232,234,0.6)', 'rgba(255,240,240,0.75)']}
+            colors={isDark ? ['rgba(10,26,12,0.8)', 'rgba(16,45,21,0.6)', 'rgba(10,26,12,0.8)'] : ['rgba(245,255,247,0.75)', 'rgba(232,255,237,0.6)', 'rgba(240,255,243,0.75)']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.heroGradient}
@@ -182,7 +181,9 @@ export default function HomeScreen() {
   const isDark = colorScheme === 'dark';
   const router = useRouter();
   const { registerRef } = useTour();
+  const { profile } = useAuth();
   const searchBarRef = useRef<View>(null);
+  const userName = profile?.displayName?.split(' ')[0] || 'Tweakly';
 
   const [priceDrops, setPriceDrops] = useState<Product[]>([]);
   const [newProducts, setNewProducts] = useState<Product[]>([]);
@@ -214,7 +215,7 @@ export default function HomeScreen() {
 
           <View style={styles.headerTextWrap}>
             <Text style={[styles.greeting, { color: colors.textSecondary }]}>Welkom terug</Text>
-            <Text style={[styles.userName, { color: colors.text }]}>{USER_NAME}</Text>
+            <Text style={[styles.userName, { color: colors.text }]}>{userName}</Text>
           </View>
         </View>
 
@@ -379,6 +380,10 @@ export default function HomeScreen() {
             <Text style={[styles.legalDot, { color: colors.textSecondary }]}>•</Text>
             <Link href="/cookies" asChild>
               <Text style={[styles.legalLink, { color: colors.textSecondary }]}>Cookies</Text>
+            </Link>
+            <Text style={[styles.legalDot, { color: colors.textSecondary }]}>•</Text>
+            <Link href="/affiliate" asChild>
+              <Text style={[styles.legalLink, { color: colors.textSecondary }]}>Affiliate</Text>
             </Link>
           </View>
           
