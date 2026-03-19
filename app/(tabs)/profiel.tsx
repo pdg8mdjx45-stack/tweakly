@@ -631,7 +631,7 @@ export default function ProfielScreen() {
 
         {/* ── About ── */}
         <View style={[styles.aboutSection, { borderTopColor: colors.border }]}>
-          <Image source={require('@/assets/images/icon.png')} style={styles.aboutLogoImg} resizeMode="contain" />
+          <Image source={require('@/assets/images/logo-display.png')} style={styles.aboutLogoImg} resizeMode="contain" />
           <Text style={[styles.aboutVersion, { color: colors.textSecondary }]}>Versie 1.0.0</Text>
           <View style={styles.aboutLinks}>
             <Pressable onPress={() => router.push('/privacy' as any)}>

@@ -207,7 +207,7 @@ export default function HomeScreen() {
       <View style={[styles.header, isDark ? Glass.liquid.dark : Glass.liquid.light]}>
         <View style={styles.headerRow}>
           <Image
-            source={require('@/assets/images/icon.png')}
+            source={require('@/assets/images/logo-display.png')}
             style={styles.logo}
             contentFit="contain"
           />

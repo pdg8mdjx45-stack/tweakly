@@ -103,7 +103,7 @@ export default function TelefoonScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Image source={require('@/assets/images/icon.png')} style={styles.logoImg} resizeMode="contain" />
+          <Image source={require('@/assets/images/logo-display.png')} style={styles.logoImg} resizeMode="contain" />
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
             {step === 'phone' ? 'Inloggen met telefoonnummer' : 'Voer verificatiecode in'}
           </Text>

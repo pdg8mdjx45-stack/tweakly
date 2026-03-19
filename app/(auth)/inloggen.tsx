@@ -67,7 +67,7 @@ export default function InloggenScreen() {
           <Pressable onPress={() => router.back()} hitSlop={12} style={styles.backBtn}>
             <Text style={[styles.backArrow, { color: colors.text }]}>‹</Text>
           </Pressable>
-          <Image source={require('@/assets/images/icon.png')} style={styles.logoImg} resizeMode="contain" />
+          <Image source={require('@/assets/images/logo-display.png')} style={styles.logoImg} resizeMode="contain" />
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
             Log in op je account
           </Text>

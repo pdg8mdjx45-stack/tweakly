@@ -2,7 +2,7 @@ import { Palette } from '@/constants/theme';
 import React from 'react';
 import { Image, ImageRequireSource, Text, View } from 'react-native';
 
-const LOGO_SOURCE: ImageRequireSource = require('@/assets/images/icon.png');
+const LOGO_SOURCE: ImageRequireSource = require('@/assets/images/logo-display.png');
 
 // Full logo with shield + "Tweakly" text (for use where space allows)
 interface LogoImageProps {

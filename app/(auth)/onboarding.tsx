@@ -125,7 +125,7 @@ export default function OnboardingScreen() {
           <View style={[styles.innerCircle, { backgroundColor: item.accentColor + '28' }]}>
             {item.type === 'logo' ? (
               <Image
-                source={require('@/assets/images/icon.png')}
+                source={require('@/assets/images/logo-display.png')}
                 style={styles.logoImage}
                 resizeMode="contain"
               />
@@ -148,7 +148,7 @@ export default function OnboardingScreen() {
     <View style={[styles.root, { backgroundColor: colors.background }]}>
       {/* Skip button */}
       <View style={styles.topBar}>
-        <Image source={require('@/assets/images/icon.png')} style={styles.brandImg} resizeMode="contain" />
+        <Image source={require('@/assets/images/logo-display.png')} style={styles.brandImg} resizeMode="contain" />
         {!isLast && (
           <Pressable
             onPress={handleFinish}

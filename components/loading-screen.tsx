@@ -49,7 +49,7 @@ export function LoadingScreen({ onReady }: Props) {
         }}
       >
         <Image
-          source={require('@/assets/images/icon.png')}
+          source={require('@/assets/images/logo-display.png')}
           style={styles.logo}
           resizeMode="contain"
         />
