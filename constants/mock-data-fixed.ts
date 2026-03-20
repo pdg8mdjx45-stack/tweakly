@@ -30,8 +30,6 @@ function shopSearchUrl(shopName: string, productName: string): string {
       return `https://www.amazon.nl/s?k=${q}`;
     case 'Azerty':
       return `https://www.azerty.nl/zoekresultaten/?q=${q}`;
-    case 'BCC':
-      return `https://www.bcc.nl/zoeken/?q=${q}`;
     case 'Alternate':
       return `https://www.alternate.nl/listing.xhtml?q=${q}`;
     case 'Wehkamp':
@@ -40,6 +38,8 @@ function shopSearchUrl(shopName: string, productName: string): string {
       return `https://www.apple.com/nl/shop/buy-${productName.toLowerCase().includes('watch') ? 'watch' : productName.toLowerCase().includes('macbook') ? 'mac/macbook-pro' : 'iphone'}`;
     case 'Samsung':
       return `https://www.samsung.com/nl/search/?searchvalue=${q}`;
+    case 'HP':
+      return `https://www.hp.com/nl-nl/shop/SearchDisplay?searchTerm=${q}`;
     default:
       return `https://www.google.com/search?q=${q}+kopen`;
   }
@@ -188,7 +188,7 @@ export const MOCK_PRODUCTS: Product[] = [
     shops: [
       { name: 'MediaMarkt', price: 1149, url: shopSearchUrl('MediaMarkt', 'LG OLED C4 55'), logo: 'MM' },
       { name: 'Coolblue', price: 1199, url: shopSearchUrl('Coolblue', 'LG OLED C4 55'), logo: 'CB' },
-      { name: 'BCC', price: 1179, url: shopSearchUrl('BCC', 'LG OLED C4 55'), logo: 'BCC' },
+      { name: 'Amazon', price: 1179, url: shopSearchUrl('Amazon', 'LG OLED C4 55'), logo: 'AMZ' },
     ],
     specs: {
       'Scherm': '55" OLED evo',

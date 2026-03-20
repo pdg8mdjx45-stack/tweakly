@@ -166,10 +166,9 @@ const SHOP_SLUG_MAP: Record<string, string> = {
   'Azerty': 'azerty',
   'Paradigit': 'paradigit',
   'Conrad': 'conrad',
-  'Expert': 'expert',
-  'BCC': 'bcc',
   'Apple Store': 'apple-store',
-  'Samsung Shop': 'samsung-shop',
+  'Samsung': 'samsung',
+  'HP': 'hp',
 };
 
 async function main() {

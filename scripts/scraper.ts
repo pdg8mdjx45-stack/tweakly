@@ -114,11 +114,11 @@ const KNOWN_SHOPS = [
   { name: 'Coolblue', logo: 'CB' },
   { name: 'Bol.com', logo: 'BOL' },
   { name: 'MediaMarkt', logo: 'MM' },
-  { name: 'BCC', logo: 'BCC' },
   { name: 'Amazon.nl', logo: 'AMZ' },
   { name: 'Alternate', logo: 'ALT' },
   { name: 'Paradigit', logo: 'PAR' },
-  { name: 'Expert', logo: 'EXP' },
+  { name: 'Samsung', logo: 'SAM' },
+  { name: 'HP', logo: 'HP' },
   { name: 'Scan', logo: 'SCN' },
   { name: 'Informatique', logo: 'INF' },
 ];
