@@ -251,7 +251,10 @@
     .hero h1 .gradient {
       background: linear-gradient(135deg, #6BCB7A 10%, #1A5C28 50%, var(--primary) 90%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text; display: inline-block;
+      background-clip: text;
+      display: block;
+      min-height: 1.15em;
+      white-space: nowrap;
     }
     .hero-sub { font-size: 1.18rem; color: var(--text-secondary); max-width: 530px; line-height: 1.7; margin-bottom: 2.75rem; }
     .hero-buttons { display: flex; gap: 0.85rem; flex-wrap: wrap; justify-content: center; }
@@ -632,13 +635,14 @@
     /* ── TYPEWRITER CURSOR ── */
     .hero h1 .gradient::after {
       content: '|';
-      display: inline-block;
-      margin-left: 2px;
+      display: inline;
+      margin-left: 1px;
       animation: blink 0.75s step-end infinite;
       -webkit-text-fill-color: #6BCB7A;
-      opacity: 0.7;
+      opacity: 0.8;
+      font-weight: 300;
     }
-    @keyframes blink { 0%, 100% { opacity: 0.7; } 50% { opacity: 0; } }
+    @keyframes blink { 0%, 100% { opacity: 0.8; } 50% { opacity: 0; } }
 
     /* ── REVEAL ANIMATIONS ── */
     .reveal, .reveal-left, .reveal-right { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
@@ -718,8 +722,9 @@
     </div>
 
     <h1>
-      Vind altijd de<br>
-      <span class="gradient">beste prijs</span> voor jouw tech
+      Vind altijd de
+      <span class="gradient">beste prijs</span>
+      voor jouw tech
     </h1>
 
     <p class="hero-sub">
