@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wachtwoord instellen — Tweakly</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #1A3A20;
+      --primary-light: #2D5A35;
+      --accent: #6BCB7A;
+      --red: #FF3B30;
+      --bg: #0A0A0F;
+      --surface: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --text: #E8E8ED;
+      --text-secondary: #8888A0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      padding: 0 2rem; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-brand { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .nav-brand img { width: 32px; height: 32px; object-fit: contain; }
+    .nav-brand span { font-size: 1rem; font-weight: 800; color: var(--text); }
+    .nav-brand span em { font-style: normal; color: var(--primary-light); }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.45);
+    }
+
+    .logo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .logo-wrap img { width: 56px; height: 56px; object-fit: contain; }
+    .card-title { font-size: 1.5rem; font-weight: 800; text-align: center; letter-spacing: -0.02em; }
+    .card-sub { font-size: 0.88rem; color: var(--text-secondary); text-align: center; margin-top: 0.25rem; line-height: 1.5; }
+
+    .form { display: flex; flex-direction: column; gap: 1rem; margin-top: 0.5rem; }
+
+    label { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); margin-bottom: 0.4rem; }
+
+    .input-wrap {
+      position: relative;
+    }
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      padding: 0.85rem 3rem 0.85rem 1rem;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: var(--primary-light); }
+
+    .toggle-pw {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 1rem;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .strength-bar {
+      height: 3px;
+      border-radius: 99px;
+      background: var(--border);
+      overflow: hidden;
+      margin-top: 0.4rem;
+    }
+    .strength-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.3s, background 0.3s;
+      width: 0%;
+    }
+    .strength-label { font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.3rem; }
+
+    .hint { font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.2rem; }
+
+    .btn {
+      width: 100%;
+      padding: 0.95rem;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s, opacity 0.2s;
+      margin-top: 0.5rem;
+    }
+    .btn:hover { background: var(--primary-light); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .alert {
+      display: none;
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+    .alert.error { background: rgba(255,59,48,0.1); border: 1px solid rgba(255,59,48,0.25); color: #FF6B6B; }
+    .alert.success { background: rgba(107,203,122,0.1); border: 1px solid rgba(107,203,122,0.25); color: var(--accent); }
+    .alert.show { display: block; }
+
+    .success-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      text-align: center;
+    }
+    .success-state.show { display: flex; }
+    .success-icon {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: rgba(107,203,122,0.12);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+    }
+    .success-state h2 { font-size: 1.3rem; font-weight: 800; }
+    .success-state p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
+    .success-state .btn { max-width: 280px; }
+
+    .loading-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      text-align: center;
+      padding: 1rem 0;
+    }
+    .loading-state.show { display: flex; }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary-light);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      text-align: center;
+    }
+    .error-state.show { display: flex; }
+    .error-icon { font-size: 3rem; }
+    .error-state h2 { font-size: 1.2rem; font-weight: 700; }
+    .error-state p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      text-align: center;
+    }
+    .footer-links { display: flex; gap: 1.25rem; justify-content: center; flex-wrap: wrap; margin-bottom: 0.5rem; }
+    .footer-links a { font-size: 0.8rem; color: var(--text-secondary); text-decoration: none; }
+    .footer-links a:hover { color: var(--text); }
+    .footer-copy { font-size: 0.75rem; color: #555566; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-brand">
+      <img src="logo.png" alt="Tweakly">
+      <span>Tweak<em>ly</em></span>
+    </a>
+  </nav>
+
+  <main>
+    <div class="card">
+
+      <!-- Loading state while exchanging token -->
+      <div class="loading-state show" id="loadingState">
+        <div class="spinner"></div>
+        <p style="color: var(--text-secondary); font-size: 0.9rem;">Link controleren…</p>
+      </div>
+
+      <!-- Error state (invalid/expired link) -->
+      <div class="error-state" id="errorState">
+        <div class="error-icon">⚠️</div>
+        <h2>Link ongeldig of verlopen</h2>
+        <p>Deze resetlink is verlopen of al gebruikt. Vraag een nieuwe aan via de app.</p>
+        <a href="index.html" class="btn" style="max-width: 260px; display:inline-block; text-align:center; text-decoration:none;">
+          Terug naar home
+        </a>
+      </div>
+
+      <!-- Password reset form -->
+      <div class="form" id="formState" style="display: none;">
+        <div class="logo-wrap">
+          <img src="logo.png" alt="Tweakly">
+          <div>
+            <div class="card-title">Nieuw wachtwoord</div>
+            <div class="card-sub">Kies een sterk wachtwoord voor je Tweakly-account.</div>
+          </div>
+        </div>
+
+        <div class="alert error" id="alertError"></div>
+
+        <div>
+          <label for="pw1">Nieuw wachtwoord</label>
+          <div class="input-wrap">
+            <input type="password" id="pw1" placeholder="Minimaal 8 tekens" autocomplete="new-password">
+            <button class="toggle-pw" type="button" onclick="togglePw('pw1', this)" aria-label="Wachtwoord tonen">👁</button>
+          </div>
+          <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+          <div class="strength-label" id="strengthLabel"></div>
+        </div>
+
+        <div>
+          <label for="pw2">Herhaal wachtwoord</label>
+          <div class="input-wrap">
+            <input type="password" id="pw2" placeholder="Zelfde wachtwoord" autocomplete="new-password">
+            <button class="toggle-pw" type="button" onclick="togglePw('pw2', this)" aria-label="Wachtwoord tonen">👁</button>
+          </div>
+          <div class="hint" id="matchHint"></div>
+        </div>
+
+        <button class="btn" id="submitBtn" onclick="handleSubmit()" disabled>Wachtwoord opslaan</button>
+      </div>
+
+      <!-- Success state -->
+      <div class="success-state" id="successState">
+        <div class="success-icon">✓</div>
+        <h2>Wachtwoord gewijzigd!</h2>
+        <p>Je wachtwoord is succesvol ingesteld. Open de Tweakly-app om in te loggen met je nieuwe wachtwoord.</p>
+        <a href="index.html" class="btn" style="text-decoration:none; text-align:center;">
+          Terug naar home
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-links">
+      <a href="privacy.html">Privacy</a>
+      <a href="voorwaarden.html">Voorwaarden</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="footer-copy">© 2026 Tweakly</div>
+  </footer>
+
+  <!-- Supabase JS via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script>
+    const SUPABASE_URL = 'https://glnpdfbnyijdzvulzbfv.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsbnBkZmJueWlqZHp2dWx6YmZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTU4MzUsImV4cCI6MjA4Nzg3MTgzNX0.az-ko5O8XY0wrKwqqssE_Xwowy1o0aof5Rsj5H-ThDM';
+
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ── Parse URL fragment for Supabase tokens ──────────────────────────────
+    // Supabase sends: #access_token=...&refresh_token=...&type=recovery
+    // It can also send a PKCE code as ?code=...
+    function parseHashParams() {
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
+      return {
+        accessToken: params.get('access_token'),
+        refreshToken: params.get('refresh_token'),
+        type: params.get('type'),
+      };
+    }
+
+    function parseSearchParams() {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        code: params.get('code'),
+        type: params.get('type'),
+      };
+    }
+
+    function show(id) {
+      ['loadingState','errorState','formState','successState'].forEach(s => {
+        const el = document.getElementById(s);
+        if (el) el.style.display = (s === id) ? (s === 'formState' ? 'flex' : 'flex') : 'none';
+      });
+    }
+
+    async function init() {
+      const hash = parseHashParams();
+      const search = parseSearchParams();
+
+      // Case 1: PKCE code flow (?code=...&type=recovery)
+      if (search.code) {
+        const { error } = await sb.auth.exchangeCodeForSession(search.code);
+        if (error) { show('errorState'); return; }
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) { show('errorState'); return; }
+        show('formState');
+        return;
+      }
+
+      // Case 2: Implicit token in hash (#access_token=...&type=recovery)
+      if (hash.accessToken && hash.type === 'recovery') {
+        const { error } = await sb.auth.setSession({
+          access_token: hash.accessToken,
+          refresh_token: hash.refreshToken || '',
+        });
+        if (error) { show('errorState'); return; }
+        show('formState');
+        return;
+      }
+
+      // No valid token found
+      show('errorState');
+    }
+
+    // ── Password strength ───────────────────────────────────────────────────
+    const pw1El = document.getElementById('pw1');
+    const pw2El = document.getElementById('pw2');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function getStrength(pw) {
+      if (!pw) return { score: 0, label: '', color: '' };
+      let score = 0;
+      if (pw.length >= 8) score++;
+      if (pw.length >= 12) score++;
+      if (/[A-Z]/.test(pw)) score++;
+      if (/[0-9]/.test(pw)) score++;
+      if (/[^A-Za-z0-9]/.test(pw)) score++;
+      if (score <= 1) return { score, label: 'Zwak', color: '#FF3B30', pct: 20 };
+      if (score <= 2) return { score, label: 'Matig', color: '#FF9500', pct: 45 };
+      if (score <= 3) return { score, label: 'Goed', color: '#FFB800', pct: 70 };
+      return { score, label: 'Sterk', color: '#34C759', pct: 100 };
+    }
+
+    function updateUI() {
+      const pw1 = pw1El.value;
+      const pw2 = pw2El.value;
+      const s = getStrength(pw1);
+      const fill = document.getElementById('strengthFill');
+      const lbl = document.getElementById('strengthLabel');
+      const matchHint = document.getElementById('matchHint');
+
+      fill.style.width = s.pct ? s.pct + '%' : '0%';
+      fill.style.background = s.color || '';
+      lbl.textContent = s.label;
+      lbl.style.color = s.color || 'var(--text-secondary)';
+
+      if (pw2) {
+        if (pw1 === pw2) {
+          matchHint.textContent = '✓ Wachtwoorden komen overeen';
+          matchHint.style.color = '#34C759';
+        } else {
+          matchHint.textContent = '✗ Wachtwoorden komen niet overeen';
+          matchHint.style.color = '#FF3B30';
+        }
+      } else {
+        matchHint.textContent = '';
+      }
+
+      submitBtn.disabled = !(pw1.length >= 8 && pw1 === pw2);
+    }
+
+    pw1El.addEventListener('input', updateUI);
+    pw2El.addEventListener('input', updateUI);
+
+    // ── Submit ──────────────────────────────────────────────────────────────
+    async function handleSubmit() {
+      const pw = pw1El.value;
+      if (pw.length < 8) return;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Opslaan…';
+
+      const alertEl = document.getElementById('alertError');
+      alertEl.classList.remove('show');
+
+      const { error } = await sb.auth.updateUser({ password: pw });
+
+      if (error) {
+        alertEl.textContent = 'Kon het wachtwoord niet opslaan. Probeer het opnieuw of vraag een nieuwe resetlink aan.';
+        alertEl.classList.add('show');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Wachtwoord opslaan';
+        return;
+      }
+
+      // Sign out after reset so the user logs in fresh in the app
+      await sb.auth.signOut();
+      show('successState');
+    }
+
+    // ── Visibility toggle ───────────────────────────────────────────────────
+    function togglePw(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        btn.textContent = '👁';
+      }
+    }
+
+    // Kick off
+    init();
+  </script>
+</body>
+</html>

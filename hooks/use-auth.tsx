@@ -284,7 +284,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const resetPassword = async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://tweakly.netlify.app/reset-wachtwoord.html',
+    });
     if (error) throw error;
   };
 

@@ -9,20 +9,23 @@ import { useThemeContext } from '@/hooks/use-theme-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
+import { LiquidSwitch } from '@/components/liquid-switch';
 import {
   Alert,
   Image,
+  Linking,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
-  Switch,
   Text,
   TextInput,
   View,
 } from 'react-native';
 
 import { getAlerts, subscribeAlerts } from '@/services/alerts-store';
+import { supabase } from '@/services/supabase';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -43,9 +46,12 @@ function SectionLabel({ label, colors }: { label: string; colors: (typeof Colors
   );
 }
 
-function Group({ children, colors }: { children: React.ReactNode; colors: (typeof Colors)['light'] }) {
+function Group({ children, isDark }: { children: React.ReactNode; isDark: boolean }) {
   return (
-    <View style={[styles.group, { backgroundColor: colors.surface }]}>{children}</View>
+    <View style={[styles.group, isDark ? styles.groupDark : styles.groupLight]}>
+      <View style={[styles.groupSpecular, isDark ? styles.groupSpecularDark : styles.groupSpecularLight]} />
+      {children}
+    </View>
   );
 }
 
@@ -61,6 +67,9 @@ function ToggleRow({
   value,
   onChange,
   colors,
+  isDark,
+  disabled,
+  badge,
 }: {
   icon: string;
   iconColor?: string;
@@ -69,9 +78,12 @@ function ToggleRow({
   value: boolean;
   onChange: (v: boolean) => void;
   colors: (typeof Colors)['light'];
+  isDark: boolean;
+  disabled?: boolean;
+  badge?: string;
 }) {
   return (
-    <View style={styles.toggleRow}>
+    <View style={[styles.toggleRow, disabled && { opacity: 0.5 }]}>
       <View style={[styles.iconWrap, { backgroundColor: iconColor ?? Palette.primary }]}>
         <IconSymbol name={icon as any} size={16} color="#fff" />
       </View>
@@ -81,12 +93,12 @@ function ToggleRow({
           <Text style={[styles.rowDesc, { color: colors.textSecondary }]}>{description}</Text>
         )}
       </View>
-      <Switch
-        value={value}
-        onValueChange={onChange}
-        trackColor={{ false: '#E5E5EA', true: Palette.primary + '80' }}
-        thumbColor={value ? Palette.primary : '#f4f3f4'}
-      />
+      {badge && (
+        <View style={[styles.badge, { backgroundColor: Palette.accent }]}>
+          <Text style={styles.badgeText}>{badge}</Text>
+        </View>
+      )}
+      <LiquidSwitch value={value} onChange={disabled ? () => {} : onChange} isDark={isDark} />
     </View>
   );
 }
@@ -99,6 +111,8 @@ function NavRow({
   onPress,
   danger,
   colors,
+  badge,
+  rightText,
 }: {
   icon: string;
   iconColor?: string;
@@ -107,6 +121,8 @@ function NavRow({
   onPress: () => void;
   danger?: boolean;
   colors: (typeof Colors)['light'];
+  badge?: number;
+  rightText?: string;
 }) {
   return (
     <Pressable
@@ -120,8 +136,60 @@ function NavRow({
         <Text style={[styles.rowLabel, { color: danger ? Palette.danger : colors.text }]}>{label}</Text>
         {sub && <Text style={[styles.rowDesc, { color: colors.textSecondary }]}>{sub}</Text>}
       </View>
+      {badge !== undefined && badge > 0 && (
+        <View style={styles.badgeRed}>
+          <Text style={styles.badgeRedText}>{badge > 99 ? '99+' : badge}</Text>
+        </View>
+      )}
+      {rightText && (
+        <Text style={[styles.rightText, { color: colors.textSecondary }]}>{rightText}</Text>
+      )}
       <IconSymbol name="chevron.right" size={14} color={colors.border} />
     </Pressable>
+  );
+}
+
+// ─── Theme Picker ─────────────────────────────────────────────────────────────
+
+type ThemeMode = 'light' | 'dark' | 'system';
+
+function ThemeRow({
+  themeMode,
+  setThemeMode,
+  colors,
+  isDark,
+}: {
+  themeMode: ThemeMode;
+  setThemeMode: (m: ThemeMode) => void;
+  colors: (typeof Colors)['light'];
+  isDark: boolean;
+}) {
+  const options: { key: ThemeMode; label: string; icon: string }[] = [
+    { key: 'light', label: 'Licht', icon: 'sun.max.fill' },
+    { key: 'dark', label: 'Donker', icon: 'moon.fill' },
+    { key: 'system', label: 'Systeem', icon: 'circle.lefthalf.filled' },
+  ];
+
+  return (
+    <>
+      {options.map((opt, idx) => (
+        <View key={opt.key}>
+          {idx > 0 && <Divider colors={colors} />}
+          <Pressable
+            onPress={() => setThemeMode(opt.key)}
+            style={({ pressed }) => [styles.navRow, pressed && { backgroundColor: colors.background }]}
+          >
+            <View style={[styles.iconWrap, { backgroundColor: opt.key === 'dark' ? '#5856D6' : opt.key === 'light' ? '#FF9500' : Palette.primary }]}>
+              <IconSymbol name={opt.icon as any} size={16} color="#fff" />
+            </View>
+            <Text style={[styles.rowLabel, { color: colors.text }]}>{opt.label}</Text>
+            {themeMode === opt.key && (
+              <IconSymbol name="checkmark" size={16} color={Palette.primary} />
+            )}
+          </Pressable>
+        </View>
+      ))}
+    </>
   );
 }
 
@@ -134,21 +202,21 @@ function EditProfileModal({
   onSave,
   onClose,
   colors,
+  isDark,
 }: {
   visible: boolean;
   name: string;
   email: string;
-  onSave: (name: string, email: string) => void;
+  onSave: (name: string) => void;
   onClose: () => void;
   colors: (typeof Colors)['light'];
+  isDark: boolean;
 }) {
   const [draftName, setDraftName] = useState(name);
-  const [draftEmail, setDraftEmail] = useState(email);
 
   const handleOpen = useCallback(() => {
     setDraftName(name);
-    setDraftEmail(email);
-  }, [name, email]);
+  }, [name]);
 
   return (
     <Modal
@@ -159,7 +227,6 @@ function EditProfileModal({
       onShow={handleOpen}
     >
       <View style={[styles.modalRoot, { backgroundColor: colors.background }]}>
-        {/* Modal header */}
         <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
           <Pressable onPress={onClose} hitSlop={12}>
             <Text style={[styles.modalCancel, { color: Palette.blue }]}>Annuleer</Text>
@@ -167,7 +234,7 @@ function EditProfileModal({
           <Text style={[styles.modalTitle, { color: colors.text }]}>Profiel bewerken</Text>
           <Pressable
             onPress={() => {
-              if (draftName.trim()) onSave(draftName.trim(), draftEmail.trim());
+              if (draftName.trim()) onSave(draftName.trim());
             }}
             hitSlop={12}
           >
@@ -176,7 +243,6 @@ function EditProfileModal({
         </View>
 
         <ScrollView contentContainerStyle={styles.modalContent}>
-          {/* Avatar preview */}
           <View style={styles.modalAvatarWrap}>
             <View style={[styles.modalAvatar, { backgroundColor: Palette.primary }]}>
               <Text style={styles.modalAvatarText}>{getInitials(draftName || 'T')}</Text>
@@ -188,9 +254,10 @@ function EditProfileModal({
 
           <View style={styles.section}>
             <SectionLabel label="NAAM" colors={colors} />
-            <View style={[styles.group, { backgroundColor: colors.surface }]}>
+            <View style={[styles.group, isDark ? styles.groupDark : styles.groupLight]}>
+              <View style={[styles.groupSpecular, isDark ? styles.groupSpecularDark : styles.groupSpecularLight]} />
               <TextInput
-                style={[styles.input, { color: colors.text, borderBottomColor: colors.border }]}
+                style={[styles.input, { color: colors.text }]}
                 value={draftName}
                 onChangeText={setDraftName}
                 placeholder="Jouw naam"
@@ -203,18 +270,14 @@ function EditProfileModal({
 
           <View style={styles.section}>
             <SectionLabel label="E-MAILADRES" colors={colors} />
-            <View style={[styles.group, { backgroundColor: colors.surface }]}>
-              <TextInput
-                style={[styles.input, { color: colors.text }]}
-                value={draftEmail}
-                onChangeText={setDraftEmail}
-                placeholder="jouw@email.nl"
-                placeholderTextColor={colors.textSecondary}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                maxLength={80}
-              />
+            <View style={[styles.group, isDark ? styles.groupDark : styles.groupLight]}>
+              <View style={[styles.groupSpecular, isDark ? styles.groupSpecularDark : styles.groupSpecularLight]} />
+              <View style={[styles.input, styles.inputDisabled]}>
+                <Text style={[styles.inputDisabledText, { color: colors.textSecondary }]}>{email}</Text>
+                <Text style={[styles.inputDisabledNote, { color: colors.textSecondary }]}>
+                  E-mail kan niet worden gewijzigd
+                </Text>
+              </View>
             </View>
           </View>
         </ScrollView>
@@ -226,30 +289,46 @@ function EditProfileModal({
 // ─── Main Screen ─────────────────────────────────────────────────────────────
 
 export default function ProfielScreen() {
-  const { resolvedTheme, setThemeMode } = useThemeContext();
+  const { resolvedTheme, themeMode, setThemeMode } = useThemeContext();
   const { reduceMotion, setReduceMotion } = useReduceMotion();
   const colors = Colors[resolvedTheme];
   const { user, signOut, profile, profileLoading, updateProfile } = useAuth();
   const { bookmarks, clearBookmarks } = useBookmarks();
   const router = useRouter();
-
-  if (profileLoading || !profile) {
-    return (
-      <View style={[styles.safe, { backgroundColor: colors.background }]}>
-        <View style={[styles.header, { backgroundColor: colors.background }]}>
-          <Text style={[styles.pageTitle, { color: colors.text }]}>Instellingen</Text>
-        </View>
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ color: colors.textSecondary }}>Laden...</Text>
-        </View>
-      </View>
-    );
-  }
+  const isDark = resolvedTheme === 'dark';
 
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [alertCount, setAlertCount] = useState(0);
   const [tourVisible, setTourVisible] = useState(false);
   const [introHidden, setIntroHidden] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
+
+  // Local toggle states backed by profile (optimistic UI)
+  const [pushEnabled, setPushEnabled] = useState(profile?.pushEnabled ?? true);
+  const [emailNotif, setEmailNotif] = useState(profile?.emailNotifEnabled ?? false);
+  const [notifPrijzen, setNotifPrijzen] = useState(profile?.notifPrijzen ?? true);
+  const [notifNieuws, setNotifNieuws] = useState(profile?.notifNieuws ?? true);
+  const [notifReviews, setNotifReviews] = useState(profile?.notifReviews ?? true);
+  const [catNieuws, setCatNieuws] = useState(profile?.categoryNieuws ?? true);
+  const [catReviews, setCatReviews] = useState(profile?.categoryReviews ?? true);
+  const [catPrijzen, setCatPrijzen] = useState(profile?.categoryPrijzen ?? true);
+
+  // Sync local state when profile loads
+  useEffect(() => {
+    if (!profile) return;
+    setPushEnabled(profile.pushEnabled);
+    setEmailNotif(profile.emailNotifEnabled);
+    setNotifPrijzen(profile.notifPrijzen);
+    setNotifNieuws(profile.notifNieuws);
+    setNotifReviews(profile.notifReviews);
+    setCatNieuws(profile.categoryNieuws);
+    setCatReviews(profile.categoryReviews);
+    setCatPrijzen(profile.categoryPrijzen);
+  }, [profile]);
+
+  const save = useCallback((patch: Parameters<typeof updateProfile>[0]) => {
+    updateProfile(patch);
+  }, [updateProfile]);
 
   useEffect(() => {
     getAlerts().then(a => setAlertCount(a.length));
@@ -257,13 +336,6 @@ export default function ProfielScreen() {
       getAlerts().then(a => setAlertCount(a.length));
     });
   }, []);
-
-  const handleDarkModeToggle = useCallback(
-    (value: boolean) => {
-      setThemeMode(value ? 'dark' : 'light');
-    },
-    [setThemeMode],
-  );
 
   useEffect(() => {
     const checkFirstVisit = async () => {
@@ -287,7 +359,7 @@ export default function ProfielScreen() {
   }, []);
 
   const handleSaveProfile = useCallback(
-    (name: string, email: string) => {
+    (name: string) => {
       updateProfile({ displayName: name });
       setEditModalVisible(false);
     },
@@ -305,6 +377,62 @@ export default function ProfielScreen() {
     );
   }, [clearBookmarks]);
 
+  const handleClearAlerts = useCallback(() => {
+    Alert.alert(
+      'Alle alerts wissen',
+      'Wil je alle prijsalerts verwijderen?',
+      [
+        { text: 'Annuleer', style: 'cancel' },
+        {
+          text: 'Verwijder',
+          style: 'destructive',
+          onPress: async () => {
+            await AsyncStorage.removeItem('@price_alerts');
+            setAlertCount(0);
+          },
+        },
+      ],
+    );
+  }, []);
+
+  const handleDeleteAccount = useCallback(() => {
+    Alert.alert(
+      'Account verwijderen',
+      'Weet je zeker dat je je account permanent wilt verwijderen? Dit kan niet ongedaan worden gemaakt.',
+      [
+        { text: 'Annuleer', style: 'cancel' },
+        {
+          text: 'Verwijder account',
+          style: 'destructive',
+          onPress: () => {
+            Alert.alert(
+              'Laatste bevestiging',
+              'Al je gegevens worden permanent verwijderd.',
+              [
+                { text: 'Annuleer', style: 'cancel' },
+                {
+                  text: 'Ja, verwijder',
+                  style: 'destructive',
+                  onPress: async () => {
+                    setDeletingAccount(true);
+                    try {
+                      await supabase.rpc('delete_user');
+                      await signOut();
+                    } catch (e) {
+                      Alert.alert('Fout', 'Kon account niet verwijderen. Neem contact op met support.');
+                    } finally {
+                      setDeletingAccount(false);
+                    }
+                  },
+                },
+              ],
+            );
+          },
+        },
+      ],
+    );
+  }, [signOut]);
+
   const handleLogout = useCallback(() => {
     Alert.alert(
       'Uitloggen',
@@ -320,10 +448,43 @@ export default function ProfielScreen() {
     );
   }, [signOut]);
 
+  const handleChangePassword = useCallback(() => {
+    Alert.alert(
+      'Wachtwoord wijzigen',
+      'We sturen een e-mail met een link om je wachtwoord te wijzigen.',
+      [
+        { text: 'Annuleer', style: 'cancel' },
+        {
+          text: 'Stuur e-mail',
+          onPress: async () => {
+            if (user?.email) {
+              await supabase.auth.resetPasswordForEmail(user.email, {
+                redirectTo: 'https://tweakly.netlify.app/reset-wachtwoord.html',
+              });
+              Alert.alert('Verstuurd', 'Controleer je e-mail voor de resetlink.');
+            }
+          },
+        },
+      ],
+    );
+  }, [user]);
+
+  if (profileLoading || !profile) {
+    return (
+      <View style={[styles.safe, { backgroundColor: colors.background }]}>
+        <View style={[styles.header, { backgroundColor: colors.background }]}>
+          <Text style={[styles.pageTitle, { color: colors.text }]}>Instellingen</Text>
+        </View>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ color: colors.textSecondary }}>Laden...</Text>
+        </View>
+      </View>
+    );
+  }
+
   const initials = getInitials(profile?.displayName || '');
-  const isDark = resolvedTheme === 'dark';
-  const categoryCount = [profile?.categoryNieuws, profile?.categoryReviews, profile?.categoryPrijzen].filter(Boolean).length;
-  const notifTypesCount = [profile?.notifPrijzen, profile?.notifNieuws, profile?.notifReviews].filter(Boolean).length;
+  const notifTypesCount = [notifPrijzen, notifNieuws, notifReviews].filter(Boolean).length;
+  const categoryCount = [catNieuws, catReviews, catPrijzen].filter(Boolean).length;
 
   return (
     <View style={[styles.safe, { backgroundColor: colors.background }]}>
@@ -336,294 +497,353 @@ export default function ProfielScreen() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {/* ── Account card ── */}
+
+        {/* ── PROFIEL CARD (Apple-style) ── */}
         <Pressable
           onPress={() => setEditModalVisible(true)}
           style={({ pressed }) => [
-            styles.accountCard,
-            { backgroundColor: Palette.primary },
-            pressed && { opacity: 0.9 },
+            styles.profileCard,
+            isDark ? styles.groupDark : styles.groupLight,
+            pressed && { opacity: 0.88 },
           ]}
         >
-          <View style={styles.accountAvatarWrap}>
-            <View style={styles.accountAvatar}>
-              <Text style={styles.accountAvatarText}>{initials}</Text>
-            </View>
+          <View style={[styles.groupSpecular, isDark ? styles.groupSpecularDark : styles.groupSpecularLight]} />
+          <View style={[styles.profileAvatar, { backgroundColor: Palette.primary }]}>
+            <Text style={styles.profileAvatarText}>{initials}</Text>
           </View>
-          <View style={styles.accountInfo}>
-            <Text style={styles.accountName}>{profile?.displayName}</Text>
-            <Text style={styles.accountEmail}>{user?.email}</Text>
+          <View style={styles.profileInfo}>
+            <Text style={[styles.profileName, { color: colors.text }]}>{profile?.displayName}</Text>
+            <Text style={[styles.profileEmail, { color: colors.textSecondary }]}>{user?.email}</Text>
+            <Text style={[styles.profileSub, { color: colors.tint }]}>Tweakly account</Text>
           </View>
-          <View style={styles.editBadge}>
-            <IconSymbol name="pencil" size={13} color="rgba(255,255,255,0.8)" />
-            <Text style={styles.editBadgeText}>Bewerk</Text>
-          </View>
+          <IconSymbol name="chevron.right" size={14} color={colors.border} />
         </Pressable>
 
-        {/* ── Stats row ── */}
-        <View style={[styles.statsRow, { backgroundColor: colors.surface }]}>
-          <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: colors.text }]}>{bookmarks.length}</Text>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Bladwijzers</Text>
-          </View>
-          <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-          <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: colors.text }]}>
-              {[profile?.categoryNieuws, profile?.categoryReviews, profile?.categoryPrijzen].filter(Boolean).length}
-            </Text>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Categorieën</Text>
-          </View>
-          <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-          <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: profile?.pushEnabled ? Palette.primary : colors.textSecondary }]}>
-              {profile?.pushEnabled ? 'AAN' : 'UIT'}
-            </Text>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Meldingen</Text>
-          </View>
-        </View>
-
-        {/* ── Onboarding / Intro ── */}
-        {!introHidden && <View style={styles.section}>
-          <View style={[styles.introCard, { backgroundColor: isDark ? Palette.dark3 : '#F0F4FF' }]}>
-            <View style={styles.introHeader}>
-              <Text style={[styles.introEmoji]}>👋</Text>
-              <Text style={[styles.introTitle, { color: colors.text }]}>Welkom bij Tweakly!</Text>
-            </View>
-            <Text style={[styles.introDesc, { color: colors.textSecondary }]}>
-              Jouw persoonlijke gids voor tech nieuws, productreviews en de beste prijzen.
-            </Text>
-            <View style={styles.introFeatures}>
-              <View style={styles.introFeature}>
-                <IconSymbol name="newspaper" size={14} color={Palette.primary} />
-                <Text style={[styles.introFeatureText, { color: colors.text }]}>Nieuws</Text>
-              </View>
-              <View style={styles.introFeature}>
-                <IconSymbol name="star.fill" size={14} color="#F59E0B" />
-                <Text style={[styles.introFeatureText, { color: colors.text }]}>Reviews</Text>
-              </View>
-              <View style={styles.introFeature}>
-                <IconSymbol name="tag.fill" size={14} color="#10B981" />
-                <Text style={[styles.introFeatureText, { color: colors.text }]}>Prijzen</Text>
-              </View>
-            </View>
-            <Pressable
-              onPress={async () => {
-                await AsyncStorage.setItem('@intro_done', '1');
-                setIntroHidden(true);
-                router.push('/(tabs)/prijzen' as any);
-              }}
-              style={({ pressed }) => [
-                styles.introButton,
-                { backgroundColor: Palette.primary },
-                pressed && { opacity: 0.85 },
-              ]}
-            >
-              <Text style={styles.introButtonText}>Ontdek nu →</Text>
-            </Pressable>
-          </View>
-        </View>}
-
-        {/* ── Quick Tips ── */}
+        {/* ── MELDINGEN ── */}
         <View style={styles.section}>
-          <View style={styles.sectionHeaderRow}>
-            <SectionLabel label="TIPS VOOR BEGINNERS" colors={colors} />
-          </View>
-          <Group colors={colors}>
-            {/* Tip 1 */}
-            <View style={styles.tipRow}>
-              <View style={[styles.iconWrap, { backgroundColor: Palette.primary }]}>
-                <IconSymbol name="bookmark.fill" size={14} color="#fff" />
-              </View>
-              <View style={styles.tipContent}>
-                <Text style={[styles.tipTitle, { color: colors.text }]}>Sla artikelen op</Text>
-                <Text style={[styles.tipDesc, { color: colors.textSecondary }]}>Bewaar interessante artikelen om later te lezen</Text>
-              </View>
-            </View>
-            <Divider colors={colors} />
-            {/* Tip 2 */}
-            <View style={styles.tipRow}>
-              <View style={[styles.iconWrap, { backgroundColor: Palette.accent }]}>
-                <IconSymbol name="bell.fill" size={14} color="#fff" />
-              </View>
-              <View style={styles.tipContent}>
-                <Text style={[styles.tipTitle, { color: colors.text }]}>Krijg meldingen</Text>
-                <Text style={[styles.tipDesc, { color: colors.textSecondary }]}>Blijf op de hoogte van het laatste nieuws</Text>
-              </View>
-            </View>
-            <Divider colors={colors} />
-            {/* Tip 3 */}
-            <View style={styles.tipRow}>
-              <View style={[styles.iconWrap, { backgroundColor: '#10B981' }]}>
-                <IconSymbol name="chart.line.uptrend.xyaxis" size={14} color="#fff" />
-              </View>
-              <View style={styles.tipContent}>
-                <Text style={[styles.tipTitle, { color: colors.text }]}>Vergelijk prijzen</Text>
-                <Text style={[styles.tipDesc, { color: colors.textSecondary }]}>Vind de beste deals en prijsdalingen</Text>
-              </View>
-            </View>
-          </Group>
-        </View>
-
-        {/* ── Opgeslagen artikelen ── */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeaderRow}>
-            <SectionLabel label="OPGESLAGEN ARTIKELEN" colors={colors} />
-            {bookmarks.length > 0 && (
-              <Pressable onPress={() => router.push('/(tabs)/bladwijzers' as any)} hitSlop={8}>
-                <Text style={[styles.sectionLink, { color: colors.tint }]}>
-                  Bekijk alle ({bookmarks.length})
-                </Text>
-              </Pressable>
-            )}
-          </View>
-
-          {bookmarks.length === 0 ? (
-            <Group colors={colors}>
-              <View style={styles.emptyRow}>
-                <IconSymbol name="bookmark" size={20} color={colors.tabIconDefault} />
-                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-                  Nog geen bladwijzers opgeslagen
-                </Text>
-              </View>
-            </Group>
-          ) : (
-            <Group colors={colors}>
-              {bookmarks.slice(0, 3).map((bm, idx, arr) => (
-                <View key={bm.id}>
-                  <Pressable
-                    onPress={() => router.push(`/artikel/${bm.id}` as any)}
-                    style={({ pressed }) => [
-                      styles.bookmarkRow,
-                      pressed && { backgroundColor: colors.background },
-                    ]}
-                  >
-                    <View style={[styles.bookmarkDot, { backgroundColor: Palette.primary }]} />
-                    <View style={styles.bookmarkInfo}>
-                      <Text style={[styles.bookmarkTitle, { color: colors.text }]} numberOfLines={1}>
-                        {bm.title}
-                      </Text>
-                      <Text style={[styles.bookmarkCat, { color: colors.textSecondary }]}>
-                        {bm.category} · {new Date(bm.savedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}
-                      </Text>
-                    </View>
-                    <IconSymbol name="chevron.right" size={13} color={colors.border} />
-                  </Pressable>
-                  {idx < Math.min(bookmarks.length, 3) - 1 && <Divider colors={colors} />}
-                </View>
-              ))}
-            </Group>
-          )}
-        </View>
-
-        {/* -- Voorkeuren -- */}
-        <View style={styles.section}>
-          <SectionLabel label="VOORKEUREN" colors={colors} />
-          <Group colors={colors}>
-            <NavRow
+          <SectionLabel label="MELDINGEN" colors={colors} />
+          <Group isDark={isDark}>
+            <ToggleRow
               icon="bell.fill"
-              iconColor={Palette.accent}
-              label="Meldingen"
-              sub={`Push ${profile?.pushEnabled ? 'aan' : 'uit'} - Email ${profile?.emailNotifEnabled ? 'aan' : 'uit'} - ${notifTypesCount} type${notifTypesCount !== 1 ? 's' : ''}`}
-              onPress={() => router.push('/(tabs)/instellingen-meldingen' as any)}
+              iconColor="#FF3B30"
+              label="Push-meldingen"
+              description="Ontvang meldingen op je apparaat"
+              value={pushEnabled}
+              onChange={(v) => { setPushEnabled(v); save({ pushEnabled: v }); }}
               colors={colors}
+              isDark={isDark}
             />
             <Divider colors={colors} />
-            <NavRow
-              icon="square.grid.2x2"
-              iconColor={Palette.primary}
-              label="Categorieen"
-              sub={`${categoryCount} actief`}
-              onPress={() => router.push('/(tabs)/instellingen-categorieen' as any)}
+            <ToggleRow
+              icon="envelope.fill"
+              iconColor="#0A84FF"
+              label="E-mailmeldingen"
+              description="Ontvang updates via e-mail"
+              value={emailNotif}
+              onChange={(v) => { setEmailNotif(v); save({ emailNotifEnabled: v }); }}
               colors={colors}
+              isDark={isDark}
+            />
+            <Divider colors={colors} />
+            <ToggleRow
+              icon="tag.fill"
+              iconColor="#FF9500"
+              label="Prijsalerts"
+              description="Melding bij prijsdaling"
+              value={notifPrijzen}
+              onChange={(v) => { setNotifPrijzen(v); save({ notifPrijzen: v }); }}
+              colors={colors}
+              isDark={isDark}
+              badge={alertCount > 0 ? String(alertCount) : undefined}
+            />
+            <Divider colors={colors} />
+            <ToggleRow
+              icon="newspaper.fill"
+              iconColor={Palette.primary}
+              label="Nieuws-meldingen"
+              value={notifNieuws}
+              onChange={(v) => { setNotifNieuws(v); save({ notifNieuws: v }); }}
+              colors={colors}
+              isDark={isDark}
+            />
+            <Divider colors={colors} />
+            <ToggleRow
+              icon="star.fill"
+              iconColor="#FFB800"
+              label="Review-meldingen"
+              value={notifReviews}
+              onChange={(v) => { setNotifReviews(v); save({ notifReviews: v }); }}
+              colors={colors}
+              isDark={isDark}
             />
           </Group>
         </View>
 
-        {/* ── App ── */}
+        {/* ── CATEGORIEËN ── */}
         <View style={styles.section}>
-          <SectionLabel label="APP" colors={colors} />
-          <Group colors={colors}>
+          <SectionLabel label="CATEGORIEËN" colors={colors} />
+          <Group isDark={isDark}>
             <ToggleRow
-              icon="moon"
-              iconColor={isDark ? '#5856D6' : Palette.dark5}
-              label="Donkere modus"
-              value={isDark}
-              onChange={handleDarkModeToggle}
+              icon="newspaper"
+              iconColor={Palette.primary}
+              label="Nieuws"
+              description="Tech-nieuws en persberichten"
+              value={catNieuws}
+              onChange={(v) => { setCatNieuws(v); save({ categoryNieuws: v }); }}
               colors={colors}
+              isDark={isDark}
             />
             <Divider colors={colors} />
             <ToggleRow
-              icon="figure.walk"
-              iconColor={Palette.blue}
+              icon="star.circle.fill"
+              iconColor="#FFB800"
+              label="Reviews"
+              description="Productreviews en tests"
+              value={catReviews}
+              onChange={(v) => { setCatReviews(v); save({ categoryReviews: v }); }}
+              colors={colors}
+              isDark={isDark}
+            />
+            <Divider colors={colors} />
+            <ToggleRow
+              icon="eurosign.circle.fill"
+              iconColor={Palette.accent}
+              label="Prijzen"
+              description="Prijsvergelijking en deals"
+              value={catPrijzen}
+              onChange={(v) => { setCatPrijzen(v); save({ categoryPrijzen: v }); }}
+              colors={colors}
+              isDark={isDark}
+            />
+          </Group>
+        </View>
+
+        {/* ── UITERLIJK ── */}
+        <View style={styles.section}>
+          <SectionLabel label="UITERLIJK" colors={colors} />
+          <Group isDark={isDark}>
+            <ThemeRow
+              themeMode={themeMode as ThemeMode}
+              setThemeMode={setThemeMode as (m: ThemeMode) => void}
+              colors={colors}
+              isDark={isDark}
+            />
+            <Divider colors={colors} />
+            <ToggleRow
+              icon="sparkles"
+              iconColor="#5856D6"
               label="Animaties"
-              description="Schakel visuele effecten uit"
+              description="Visuele overgangen en effecten"
               value={!reduceMotion}
               onChange={(v) => setReduceMotion(!v)}
               colors={colors}
+              isDark={isDark}
             />
           </Group>
         </View>
 
-        {/* ── Instellingen ── */}
+        {/* ── OPGESLAGEN CONTENT ── */}
         <View style={styles.section}>
-          <SectionLabel label="INSTELLINGEN" colors={colors} />
-          <Group colors={colors}>
+          <SectionLabel label="OPGESLAGEN" colors={colors} />
+          <Group isDark={isDark}>
             <NavRow
-              icon="bell.badge"
-              iconColor={Palette.accent}
-              label="Prijsalerts"
-              sub={alertCount > 0 ? `${alertCount} actief${alertCount !== 1 ? 'e' : ''}` : 'Geen actieve alerts'}
+              icon="bookmark.fill"
+              iconColor={Palette.primary}
+              label="Bladwijzers"
+              sub="Opgeslagen artikelen bekijken"
+              badge={bookmarks.length}
+              onPress={() => router.push('/(tabs)/bladwijzers' as any)}
+              colors={colors}
+            />
+            <Divider colors={colors} />
+            <NavRow
+              icon="bell.badge.fill"
+              iconColor="#FF9500"
+              label="Prijsalerts beheren"
+              sub={alertCount > 0 ? `${alertCount} actieve alert${alertCount !== 1 ? 's' : ''}` : 'Geen actieve alerts'}
               onPress={() => router.push('/(tabs)/meldingen' as any)}
               colors={colors}
             />
             <Divider colors={colors} />
             <NavRow
-              icon="questionmark.circle"
+              icon="trash"
+              iconColor="#FF3B30"
+              label="Bladwijzers wissen"
+              sub={bookmarks.length > 0 ? `${bookmarks.length} opgeslagen` : 'Geen bladwijzers'}
+              onPress={handleClearBookmarks}
+              colors={colors}
+            />
+            <Divider colors={colors} />
+            <NavRow
+              icon="bell.slash.fill"
+              iconColor="#FF3B30"
+              label="Alle alerts wissen"
+              sub={alertCount > 0 ? `${alertCount} alerts verwijderen` : 'Geen alerts'}
+              onPress={handleClearAlerts}
+              colors={colors}
+            />
+          </Group>
+        </View>
+
+        {/* ── ONTDEKKEN ── */}
+        <View style={styles.section}>
+          <SectionLabel label="ONTDEKKEN" colors={colors} />
+          <Group isDark={isDark}>
+            <NavRow
+              icon="square.grid.2x2.fill"
+              iconColor={Palette.primary}
+              label="Categorieën instellen"
+              sub={`${categoryCount} van 3 actief`}
+              onPress={() => router.push('/(tabs)/instellingen-categorieen' as any)}
+              colors={colors}
+            />
+            <Divider colors={colors} />
+            <NavRow
+              icon="wand.and.stars"
+              iconColor="#FF9500"
+              label="Aanbevelingen"
+              sub="Persoonlijke productaanbevelingen"
+              onPress={() => router.push('/recommender' as any)}
+              colors={colors}
+            />
+            <Divider colors={colors} />
+            <NavRow
+              icon="magnifyingglass"
+              iconColor="#0A84FF"
+              label="Zoeken"
+              sub="Doorzoek producten en artikelen"
+              onPress={() => router.push('/(tabs)/zoeken' as any)}
+              colors={colors}
+            />
+          </Group>
+        </View>
+
+        {/* ── ACCOUNT ── */}
+        <View style={styles.section}>
+          <SectionLabel label="ACCOUNT" colors={colors} />
+          <Group isDark={isDark}>
+            <NavRow
+              icon="key.fill"
+              iconColor="#FF9500"
+              label="Wachtwoord wijzigen"
+              sub="Reset via e-mail"
+              onPress={handleChangePassword}
+              colors={colors}
+            />
+            <Divider colors={colors} />
+            <NavRow
+              icon="envelope.fill"
+              iconColor="#0A84FF"
+              label="E-mailadres"
+              rightText={user?.email?.split('@')[0]}
+              onPress={() => {}}
+              colors={colors}
+            />
+            <Divider colors={colors} />
+            <NavRow
+              icon="rectangle.portrait.and.arrow.right"
+              iconColor="#FF3B30"
+              label="Uitloggen"
+              danger
+              onPress={handleLogout}
+              colors={colors}
+            />
+            <Divider colors={colors} />
+            <NavRow
+              icon="trash.fill"
+              iconColor="#FF3B30"
+              label="Account verwijderen"
+              sub="Permanent — kan niet ongedaan worden"
+              danger
+              onPress={handleDeleteAccount}
+              colors={colors}
+            />
+          </Group>
+        </View>
+
+        {/* ── HULP & ONDERSTEUNING ── */}
+        <View style={styles.section}>
+          <SectionLabel label="HULP" colors={colors} />
+          <Group isDark={isDark}>
+            <NavRow
+              icon="questionmark.circle.fill"
               iconColor="#5856D6"
-              label="App-tour"
+              label="App-tour bekijken"
+              sub="Uitleg over alle functies"
               onPress={() => setTourVisible(true)}
               colors={colors}
             />
             <Divider colors={colors} />
             <NavRow
               icon="arrow.counterclockwise"
-              label="Onboarding opnieuw bekijken"
+              iconColor={Palette.primary}
+              label="Onboarding opnieuw"
+              sub="Beginnersgids opnieuw bekijken"
               onPress={async () => {
                 await AsyncStorage.removeItem('@onboarding_done');
                 router.replace('/(auth)/onboarding' as any);
               }}
               colors={colors}
             />
+            <Divider colors={colors} />
+            <NavRow
+              icon="star.fill"
+              iconColor="#FFB800"
+              label="Beoordeel Tweakly"
+              sub="Laat een review achter in de App Store"
+              onPress={() => {
+                const url = Platform.OS === 'ios'
+                  ? 'itms-apps://itunes.apple.com/app/id0000000000?action=write-review'
+                  : 'market://details?id=com.tweakly.app';
+                Linking.openURL(url).catch(() => {});
+              }}
+              colors={colors}
+            />
+            <Divider colors={colors} />
+            <NavRow
+              icon="envelope.badge.fill"
+              iconColor="#0A84FF"
+              label="Contact & support"
+              sub="Stuur ons een bericht"
+              onPress={() => Linking.openURL('mailto:support@tweakly.app').catch(() => {})}
+              colors={colors}
+            />
           </Group>
         </View>
 
-        {/* ── Account acties ── */}
+        {/* ── JURIDISCH ── */}
         <View style={styles.section}>
-          <SectionLabel label="ACCOUNT" colors={colors} />
-          <Group colors={colors}>
+          <SectionLabel label="JURIDISCH" colors={colors} />
+          <Group isDark={isDark}>
             <NavRow
-              icon="person.crop.circle"
-              label="Profiel bewerken"
-              sub={user?.email}
-              onPress={() => setEditModalVisible(true)}
+              icon="hand.raised.fill"
+              iconColor="#5856D6"
+              label="Privacybeleid"
+              onPress={() => router.push('/privacy' as any)}
               colors={colors}
             />
             <Divider colors={colors} />
             <NavRow
-              icon="trash"
-              iconColor={Palette.danger}
-              label="Account verwijderen"
-              sub="Verwijder je account en alle data"
-              onPress={handleClearBookmarks}
+              icon="doc.text.fill"
+              iconColor={Palette.primary}
+              label="Gebruiksvoorwaarden"
+              onPress={() => router.push('/terms' as any)}
               colors={colors}
             />
             <Divider colors={colors} />
             <NavRow
-              icon="rectangle.portrait.and.arrow.right"
-              iconColor={Palette.danger}
-              label="Uitloggen"
-              danger
-              onPress={handleLogout}
+              icon="shield.fill"
+              iconColor="#FF9500"
+              label="Cookiebeleid"
+              onPress={() => router.push('/cookies' as any)}
+              colors={colors}
+            />
+            <Divider colors={colors} />
+            <NavRow
+              icon="link"
+              iconColor="#34C759"
+              label="Affiliate-informatie"
+              onPress={() => router.push('/affiliate' as any)}
               colors={colors}
             />
           </Group>
@@ -632,26 +852,9 @@ export default function ProfielScreen() {
         {/* ── About ── */}
         <View style={[styles.aboutSection, { borderTopColor: colors.border }]}>
           <Image source={require('@/assets/images/logo-display.png')} style={styles.aboutLogoImg} resizeMode="contain" />
-          <Text style={[styles.aboutVersion, { color: colors.textSecondary }]}>Versie 1.0.0</Text>
-          <View style={styles.aboutLinks}>
-            <Pressable onPress={() => router.push('/privacy' as any)}>
-              <Text style={[styles.aboutLink, { color: colors.tint }]}>Privacy</Text>
-            </Pressable>
-            <Text style={[styles.aboutDivider, { color: colors.border }]}>·</Text>
-            <Pressable onPress={() => router.push('/terms' as any)}>
-              <Text style={[styles.aboutLink, { color: colors.tint }]}>Voorwaarden</Text>
-            </Pressable>
-            <Text style={[styles.aboutDivider, { color: colors.border }]}>·</Text>
-            <Pressable onPress={() => router.push('/cookies' as any)}>
-              <Text style={[styles.aboutLink, { color: colors.tint }]}>Cookies</Text>
-            </Pressable>
-            <Text style={[styles.aboutDivider, { color: colors.border }]}>·</Text>
-            <Pressable onPress={() => router.push('/affiliate' as any)}>
-              <Text style={[styles.aboutLink, { color: colors.tint }]}>Affiliate</Text>
-            </Pressable>
-          </View>
+          <Text style={[styles.aboutVersion, { color: colors.textSecondary }]}>Tweakly · Versie 1.0.0</Text>
           <Text style={[styles.aboutCopy, { color: colors.textSecondary }]}>
-            © 2026 Tweakly
+            © 2026 Tweakly. Alle rechten voorbehouden.
           </Text>
         </View>
       </ScrollView>
@@ -664,6 +867,7 @@ export default function ProfielScreen() {
         onSave={handleSaveProfile}
         onClose={() => setEditModalVisible(false)}
         colors={colors}
+        isDark={isDark}
       />
 
       {/* ── App Tour Overlay ── */}
@@ -699,178 +903,96 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.xxl,
   },
 
-  // Account card
-  accountCard: {
+  // Apple-style profile card
+  profileCard: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
     padding: Spacing.md,
-    borderRadius: Radius.md,
+    borderRadius: Radius.xl,
+    overflow: 'hidden',
+    borderWidth: 0.5,
+    position: 'relative',
   },
-  accountAvatarWrap: {},
-  accountAvatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+  profileAvatar: {
+    width: 64,
+    height: 64,
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
   },
-  accountAvatarText: {
+  profileAvatarText: {
     color: '#fff',
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '700',
   },
-  accountInfo: {
+  profileInfo: {
     flex: 1,
     gap: 2,
   },
-  accountName: {
-    color: '#fff',
-    fontSize: 17,
+  profileName: {
+    fontSize: 20,
     fontWeight: '600',
   },
-  accountEmail: {
-    color: 'rgba(255,255,255,0.7)',
+  profileEmail: {
     fontSize: 13,
   },
-  editBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: Radius.full,
-  },
-  editBadgeText: {
-    color: 'rgba(255,255,255,0.9)',
+  profileSub: {
     fontSize: 12,
     fontWeight: '500',
-  },
-
-  // Stats
-  statsRow: {
-    flexDirection: 'row',
-    borderRadius: Radius.md,
-    overflow: 'hidden',
-  },
-  statItem: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: Spacing.md,
-    gap: 3,
-  },
-  statValue: {
-    fontSize: 20,
-    fontWeight: '700',
-  },
-  statLabel: {
-    fontSize: 11,
-    fontWeight: '500',
-    letterSpacing: 0.3,
-  },
-  statDivider: {
-    width: StyleSheet.hairlineWidth,
-    marginVertical: Spacing.sm,
+    marginTop: 2,
   },
 
   // Sections
   section: { gap: Spacing.xs },
-  sectionHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.xs,
-  },
   sectionLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    letterSpacing: 0.5,
-    paddingHorizontal: Spacing.xs,
-  },
-  sectionLink: {
-    fontSize: 12,
-    fontWeight: '500',
+    fontSize: 13,
+    fontWeight: '400',
+    letterSpacing: 0.2,
+    paddingHorizontal: Spacing.xs + 4,
+    paddingBottom: 4,
   },
 
-  // Intro / Onboarding
-  introCard: {
-    borderRadius: Radius.md,
-    padding: Spacing.md,
-    gap: Spacing.sm,
-  },
-  introHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  introEmoji: {
-    fontSize: 24,
-  },
-  introTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  introDesc: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  introFeatures: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-    marginTop: Spacing.xs,
-  },
-  introFeature: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  introFeatureText: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  introButton: {
-    marginTop: Spacing.sm,
-    paddingVertical: Spacing.sm,
-    borderRadius: Radius.sm,
-    alignItems: 'center',
-  },
-  introButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-
-  // Tip row
-  tipRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: 12,
-  },
-  tipContent: {
-    flex: 1,
-    gap: 2,
-  },
-  tipTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  tipDesc: {
-    fontSize: 12,
-    lineHeight: 16,
-  },
-
-  // Group container
+  // Group container — iOS liquid glass
   group: {
-    borderRadius: Radius.md,
+    borderRadius: Radius.xl,
     overflow: 'hidden',
+    borderWidth: 0.5,
+    position: 'relative',
   },
+  groupLight: {
+    backgroundColor: 'rgba(255,255,255,0.62)',
+    borderColor: 'rgba(255,255,255,0.90)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07,
+    shadowRadius: 18,
+    elevation: 4,
+  },
+  groupDark: {
+    backgroundColor: 'rgba(38,38,48,0.72)',
+    borderColor: 'rgba(255,255,255,0.12)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.45,
+    shadowRadius: 24,
+    elevation: 8,
+  },
+  groupSpecular: {
+    position: 'absolute',
+    top: 0,
+    left: 16,
+    right: 16,
+    height: 0.5,
+    zIndex: 1,
+  },
+  groupSpecularLight: { backgroundColor: 'rgba(255,255,255,1.0)' },
+  groupSpecularDark: { backgroundColor: 'rgba(255,255,255,0.18)' },
+
   divider: {
     height: StyleSheet.hairlineWidth,
-    marginLeft: Spacing.md + 30 + Spacing.sm,
+    marginLeft: Spacing.md + 32 + Spacing.sm,
   },
 
   // Toggle row
@@ -893,9 +1015,9 @@ const styles = StyleSheet.create({
 
   // Shared row pieces
   iconWrap: {
-    width: 30,
-    height: 30,
-    borderRadius: 7,
+    width: 32,
+    height: 32,
+    borderRadius: 9,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
@@ -904,32 +1026,40 @@ const styles = StyleSheet.create({
   rowLabel: { fontSize: 16, fontWeight: '400' },
   rowDesc: { fontSize: 12 },
 
-  // Bookmark rows
-  bookmarkRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: 12,
+  // Badge (green)
+  badge: {
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: Radius.full,
+    marginRight: 4,
   },
-  bookmarkDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    flexShrink: 0,
+  badgeText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '600',
   },
-  bookmarkInfo: { flex: 1, gap: 2 },
-  bookmarkTitle: { fontSize: 14, fontWeight: '500' },
-  bookmarkCat: { fontSize: 12 },
 
-  // Empty state
-  emptyRow: {
-    flexDirection: 'row',
+  // Badge red (notification bubble)
+  badgeRed: {
+    minWidth: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#FF3B30',
     alignItems: 'center',
-    gap: Spacing.sm,
-    padding: Spacing.md,
+    justifyContent: 'center',
+    paddingHorizontal: 5,
+    marginRight: 4,
   },
-  emptyText: { fontSize: 14 },
+  badgeRedText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+
+  rightText: {
+    fontSize: 15,
+    marginRight: 2,
+  },
 
   // About
   aboutSection: {
@@ -940,14 +1070,6 @@ const styles = StyleSheet.create({
   },
   aboutLogoImg: { width: 48, height: 48 },
   aboutVersion: { fontSize: 13 },
-  aboutLinks: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
-    marginTop: Spacing.xs,
-  },
-  aboutLink: { fontSize: 13 },
-  aboutDivider: { fontSize: 13 },
   aboutCopy: { fontSize: 11, marginTop: 2 },
 
   // Edit Profile Modal
@@ -973,7 +1095,7 @@ const styles = StyleSheet.create({
   modalAvatar: {
     width: 80,
     height: 80,
-    borderRadius: 40,
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -983,5 +1105,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: 13,
     fontSize: 16,
+  },
+  inputDisabled: {
+    gap: 2,
+  },
+  inputDisabledText: {
+    fontSize: 16,
+  },
+  inputDisabledNote: {
+    fontSize: 12,
   },
 });
