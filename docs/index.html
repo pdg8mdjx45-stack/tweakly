@@ -218,21 +218,20 @@
       text-align: center; padding: 7rem 2rem 5rem;
       position: relative; overflow: hidden;
     }
+
+    /* Aurora mesh canvas background */
+    #aurora-canvas {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      z-index: 0; pointer-events: none;
+    }
+
     .hero-bg { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
-    .hero-bg .orb { position: absolute; border-radius: 50%; filter: blur(90px); }
-    .hero-bg .orb-1 { width: 800px; height: 800px; background: radial-gradient(circle, rgba(26,58,32,0.8), var(--primary)); top: -30%; left: 20%; opacity: 0.18; animation: orbFloat1 14s ease-in-out infinite; }
-    .hero-bg .orb-2 { width: 550px; height: 550px; background: radial-gradient(circle, #1E90FF, var(--accent)); top: 30%; right: -18%; opacity: 0.12; animation: orbFloat2 17s ease-in-out infinite; }
-    .hero-bg .orb-3 { width: 450px; height: 450px; background: radial-gradient(circle, #D946EF, #AF52DE); bottom: 0%; left: -12%; opacity: 0.08; animation: orbFloat3 20s ease-in-out infinite; }
-    .hero-bg .orb-4 { width: 300px; height: 300px; background: radial-gradient(circle, var(--green), #059669); top: 65%; right: 22%; opacity: 0.07; filter: blur(100px); animation: orbFloat2 22s ease-in-out infinite reverse; }
-    @keyframes orbFloat1 { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(35px,-25px) scale(1.06); } }
-    @keyframes orbFloat2 { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-25px,35px) scale(1.09); } }
-    @keyframes orbFloat3 { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(28px,18px) scale(1.04); } }
     .hero-bg .grid-overlay {
       position: absolute; inset: 0;
-      background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-image: linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
       background-size: 56px 56px;
-      mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
-      -webkit-mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
+      mask-image: radial-gradient(ellipse at center, black 20%, transparent 72%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 72%);
     }
     .hero > * { position: relative; z-index: 1; }
     .hero-badge {
@@ -593,12 +592,6 @@
     .footer-legal { display: flex; gap: 0.5rem; flex-wrap: wrap; }
     .footer-legal a { font-size: 0.75rem; color: var(--text-muted); text-decoration: none; transition: all 0.2s; padding: 0.3rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; }
     .footer-legal a:hover { color: var(--text-secondary); border-color: var(--border-hover); background: rgba(255,255,255,0.04); }
-    .legal-bar { padding: 1.5rem 2rem; background: rgba(255,255,255,0.015); border-top: 1px solid var(--border); }
-    .legal-bar-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
-    .legal-bar-label { font-size: 0.78rem; color: var(--text-muted); }
-    .legal-bar a { font-size: 0.82rem; color: var(--text-secondary); text-decoration: none; padding: 0.4rem 1rem; border: 1px solid var(--border); border-radius: 8px; background: transparent; transition: all 0.2s; }
-    .legal-bar a:hover { color: var(--text); border-color: var(--border-hover); background: rgba(255,255,255,0.06); }
-
     /* ── CHART PREVIEW ── */
     .chart-wrap { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 18px; padding: 1.75rem; box-shadow: var(--glass-shadow); }
     .chart-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
@@ -706,11 +699,8 @@
 
   <!-- HERO -->
   <div class="hero">
+    <canvas id="aurora-canvas"></canvas>
     <div class="hero-bg">
-      <div class="orb orb-1"></div>
-      <div class="orb orb-2"></div>
-      <div class="orb orb-3"></div>
-      <div class="orb orb-4"></div>
       <div class="grid-overlay"></div>
     </div>
 
@@ -1084,6 +1074,7 @@
       </div>
       <p class="shops-affiliate-note">
         Sommige links zijn affiliate-links. Tweakly ontvangt hiervoor een kleine vergoeding. Lees onze <a href="affiliate.html">affiliate disclosure</a>.
+        Voor affiliate-matching werken we ook met partnernetwerken zoals <a href="https://www.daisycon.com/nl/" target="_blank" rel="noopener">Daisycon</a>.
       </p>
     </div>
   </section>
@@ -1153,19 +1144,6 @@
     </div>
   </section>
 
-  <!-- LEGAL LINKS BAR -->
-  <div class="legal-bar">
-    <div class="legal-bar-inner">
-      <span class="legal-bar-label">Juridisch:</span>
-      <a href="privacy.html">Privacybeleid</a>
-      <a href="cookies.html">Cookiebeleid</a>
-      <a href="voorwaarden.html">Algemene voorwaarden</a>
-      <a href="affiliate.html">Affiliate disclosure</a>
-      <a href="over-ons.html">Over ons</a>
-      <a href="contact.html">Contact</a>
-    </div>
-  </div>
-
   <!-- FOOTER -->
   <footer>
     <div class="footer-grid">
@@ -1176,7 +1154,7 @@
         </a>
         <p>De slimste prijsvergelijking voor elektronica in Nederland. Vergelijk, volg en bespaar.</p>
         <div class="footer-contact-info">
-          <a href="mailto:alexander.ballet@hotmail.com">alexander.ballet@hotmail.com</a>
+          <a href="mailto:tweakly.help@hotmail.com">tweakly.help@hotmail.com</a>
           <span>Zolder, België</span>
         </div>
       </div>
@@ -1194,6 +1172,7 @@
         <a href="https://www.coolblue.nl" target="_blank" rel="noopener">Coolblue</a>
         <a href="https://www.bol.com" target="_blank" rel="noopener">Bol.com</a>
         <a href="https://www.mediamarkt.nl" target="_blank" rel="noopener">MediaMarkt</a>
+        <a href="https://www.daisycon.com/nl/" target="_blank" rel="noopener">Daisycon partnernetwerk</a>
       </div>
       <div class="footer-col">
         <h4>Juridisch &amp; Info</h4>
@@ -1223,7 +1202,7 @@
       <div id="contactForm">
         <h3>Neem contact op</h3>
         <p>Heb je een vraag, suggestie of wil je samenwerken? Stuur ons een bericht.</p>
-        <div class="contact-info-line">✉ <a href="mailto:alexander.ballet@hotmail.com">alexander.ballet@hotmail.com</a></div>
+        <div class="contact-info-line">✉ <a href="mailto:tweakly.help@hotmail.com">tweakly.help@hotmail.com</a></div>
         <div class="contact-info-line" style="margin-bottom:1.35rem">📍 Zolder, België</div>
         <form id="contactFormEl">
           <div class="form-group">
@@ -1344,7 +1323,7 @@
       const message = document.getElementById('message').value;
       const subject = encodeURIComponent('Contact via Tweakly - ' + name);
       const body = encodeURIComponent('Naam: ' + name + '\nEmail: ' + email + '\n\n' + message);
-      window.location.href = 'mailto:alexander.ballet@hotmail.com?subject=' + subject + '&body=' + body;
+      window.location.href = 'mailto:tweakly.help@hotmail.com?subject=' + subject + '&body=' + body;
       document.getElementById('contactForm').style.display = 'none';
       document.getElementById('contactSuccess').style.display = 'block';
       setTimeout(() => {
@@ -1445,6 +1424,72 @@
         row.classList.add('highlight');
       });
     });
+
+    // ── Aurora mesh canvas ──
+    (function() {
+      const canvas = document.getElementById('aurora-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let W, H, t = 0;
+
+      function resize() {
+        W = canvas.width = canvas.offsetWidth;
+        H = canvas.height = canvas.offsetHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      // Control points for the flowing mesh blobs
+      const blobs = [
+        { x: 0.3, y: 0.25, r: 0.55, speed: 0.00028, phase: 0,    color: [14, 52, 18] },
+        { x: 0.7, y: 0.55, r: 0.50, speed: 0.00021, phase: 2.1,  color: [8,  38, 14] },
+        { x: 0.15,y: 0.7,  r: 0.42, speed: 0.00035, phase: 4.3,  color: [20, 60, 25] },
+        { x: 0.85,y: 0.2,  r: 0.38, speed: 0.00018, phase: 1.4,  color: [6,  28, 10] },
+        { x: 0.5, y: 0.85, r: 0.45, speed: 0.00030, phase: 3.6,  color: [12, 44, 18] },
+      ];
+
+      function draw() {
+        t++;
+        ctx.clearRect(0, 0, W, H);
+
+        // Dark base
+        ctx.fillStyle = '#06060C';
+        ctx.fillRect(0, 0, W, H);
+
+        // Draw each aurora blob
+        blobs.forEach(b => {
+          const cx = W * (b.x + 0.18 * Math.sin(t * b.speed + b.phase));
+          const cy = H * (b.y + 0.14 * Math.cos(t * b.speed * 1.3 + b.phase + 1));
+          const rx = W * b.r * (1 + 0.06 * Math.sin(t * b.speed * 2 + b.phase));
+          const ry = H * b.r * 0.65 * (1 + 0.06 * Math.cos(t * b.speed * 2.2 + b.phase + 0.8));
+
+          const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(rx, ry));
+          const [r, g, bl] = b.color;
+          grad.addColorStop(0,   `rgba(${r},${g},${bl},0.55)`);
+          grad.addColorStop(0.4, `rgba(${r},${g},${bl},0.22)`);
+          grad.addColorStop(0.75,`rgba(${r},${g},${bl},0.06)`);
+          grad.addColorStop(1,   `rgba(${r},${g},${bl},0)`);
+
+          ctx.save();
+          ctx.scale(1, ry / rx);
+          ctx.beginPath();
+          ctx.arc(cx, cy * (rx / ry), rx, 0, Math.PI * 2);
+          ctx.fillStyle = grad;
+          ctx.fill();
+          ctx.restore();
+        });
+
+        // Subtle vignette overlay
+        const vignette = ctx.createRadialGradient(W/2, H/2, H*0.1, W/2, H/2, H*0.85);
+        vignette.addColorStop(0, 'rgba(6,6,12,0)');
+        vignette.addColorStop(1, 'rgba(6,6,12,0.65)');
+        ctx.fillStyle = vignette;
+        ctx.fillRect(0, 0, W, H);
+
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
   </script>
 
 </body>
