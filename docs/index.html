@@ -219,17 +219,17 @@
       position: relative; overflow: hidden;
     }
 
-    /* Video background */
-    #hero-video {
+    /* Three.js shader canvas */
+    #shader-canvas {
       position: absolute; inset: 0; width: 100%; height: 100%;
-      object-fit: cover; z-index: 0; pointer-events: none;
+      z-index: 0; pointer-events: none;
     }
 
     .hero-bg { position: absolute; inset: 0; overflow: hidden; z-index: 1; }
     /* Dark overlay so text stays readable */
     .hero-bg::before {
       content: ''; position: absolute; inset: 0;
-      background: rgba(6,6,12,0.52);
+      background: rgba(6,6,12,0.38);
       z-index: 0;
     }
     .hero-bg .grid-overlay {
@@ -239,7 +239,7 @@
       mask-image: radial-gradient(ellipse at center, black 20%, transparent 72%);
       -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 72%);
     }
-    .hero > *:not(#hero-video):not(.hero-bg) { position: relative; z-index: 2; }
+    .hero > *:not(#shader-canvas):not(.hero-bg) { position: relative; z-index: 2; }
     .hero-badge {
       display: inline-flex; align-items: center; gap: 0.5rem;
       background: rgba(26,58,32,0.12); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
@@ -632,6 +632,29 @@
     .form-success h4 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem; }
     .form-success p { font-size: 0.88rem; color: var(--text-secondary); }
 
+    /* ── SPOTLIGHT GLOW ON CARDS ── */
+    .glow-card {
+      --glow-x: 50%; --glow-y: 50%; --glow-opacity: 0;
+      position: relative; overflow: hidden;
+    }
+    .glow-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(
+        320px circle at var(--glow-x) var(--glow-y),
+        rgba(52,199,89,0.13) 0%,
+        rgba(45,90,53,0.07) 40%,
+        transparent 70%
+      );
+      opacity: var(--glow-opacity);
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      border-radius: inherit;
+      z-index: 0;
+    }
+    .glow-card:hover::after { --glow-opacity: 1; }
+    .glow-card > * { position: relative; z-index: 1; }
+
     /* ── TYPEWRITER CURSOR ── */
     .hero h1 .gradient::after {
       content: '|';
@@ -705,9 +728,7 @@
 
   <!-- HERO -->
   <div class="hero">
-    <video id="hero-video" autoplay muted loop playsinline preload="auto">
-      <source src="hero-bg.mp4" type="video/mp4">
-    </video>
+    <canvas id="shader-canvas"></canvas>
     <div class="hero-bg">
       <div class="grid-overlay"></div>
     </div>
@@ -753,55 +774,55 @@
     <div class="scene-fade-right"></div>
     <div class="scene-fade-bottom"></div>
     <div class="scene-3d" id="scene3d">
-      <div class="tech-card tc-1">
+      <div class="tech-card glow-card tc-1">
         <span class="card-badge badge-sale">−12%</span>
         <span class="card-icon">🖥️</span>
         <span class="card-title">Monitor 27"</span>
         <span class="card-price">€ 349</span>
       </div>
-      <div class="tech-card tc-2">
+      <div class="tech-card glow-card tc-2">
         <span class="card-badge badge-hot">HOT</span>
         <span class="card-icon">🎮</span>
         <span class="card-title">RTX 4070</span>
         <span class="card-price">€ 549</span>
       </div>
-      <div class="tech-card tc-3">
+      <div class="tech-card glow-card tc-3">
         <span class="card-badge badge-new">NIEUW</span>
         <span class="card-icon">💻</span>
         <span class="card-title">MacBook Air M3</span>
         <span class="card-price">€ 1.149</span>
       </div>
-      <div class="tech-card tc-4">
+      <div class="tech-card glow-card tc-4">
         <span class="card-badge badge-sale">−8%</span>
         <span class="card-icon">📱</span>
         <span class="card-title">iPhone 16</span>
         <span class="card-price">€ 899</span>
       </div>
-      <div class="tech-card tc-5">
+      <div class="tech-card glow-card tc-5">
         <span class="card-badge badge-new">NIEUW</span>
         <span class="card-icon">⚡</span>
         <span class="card-title">Ryzen 9 9950X</span>
         <span class="card-price">€ 689</span>
       </div>
-      <div class="tech-card tc-6">
+      <div class="tech-card glow-card tc-6">
         <span class="card-badge badge-hot">HOT</span>
         <span class="card-icon">🎧</span>
         <span class="card-title">Sony WH-1000XM5</span>
         <span class="card-price">€ 279</span>
       </div>
-      <div class="tech-card tc-7">
+      <div class="tech-card glow-card tc-7">
         <span class="card-badge badge-sale">−15%</span>
         <span class="card-icon">💾</span>
         <span class="card-title">SSD 2TB NVMe</span>
         <span class="card-price">€ 109</span>
       </div>
-      <div class="tech-card tc-8">
+      <div class="tech-card glow-card tc-8">
         <span class="card-badge badge-new">NIEUW</span>
         <span class="card-icon">📷</span>
         <span class="card-title">Sony A7 V</span>
         <span class="card-price">€ 2.999</span>
       </div>
-      <div class="tech-card tc-9">
+      <div class="tech-card glow-card tc-9">
         <span class="card-badge badge-hot">HOT</span>
         <span class="card-icon">🖱️</span>
         <span class="card-title">Logitech G Pro X2</span>
@@ -855,37 +876,37 @@
       <h2 class="section-title reveal">Alles wat je nodig hebt</h2>
       <p class="section-subtitle reveal">Tweakly brengt de krachtigste tools voor slimme shoppers samen in één app.</p>
       <div class="features-grid stagger">
-        <div class="feature-card" data-accent="green">
+        <div class="feature-card glow-card" data-accent="green">
           <span class="feature-icon">📊</span>
           <h3>Prijsvergelijking</h3>
           <p>Vergelijk prijzen bij alle grote Nederlandse webshops tegelijk. Altijd het laagste tarief in beeld.</p>
           <span class="feature-tag tag-green">Realtime</span>
         </div>
-        <div class="feature-card" data-accent="blue">
+        <div class="feature-card glow-card" data-accent="blue">
           <span class="feature-icon">🔔</span>
           <h3>Prijsalerts</h3>
           <p>Stel een doelprijs in en ontvang een pushmelding zodra het product goedkoper wordt.</p>
           <span class="feature-tag tag-blue">Gratis</span>
         </div>
-        <div class="feature-card" data-accent="orange">
+        <div class="feature-card glow-card" data-accent="orange">
           <span class="feature-icon">📈</span>
           <h3>Prijsgeschiedenis</h3>
           <p>Bekijk de volledige prijshistorie van een product. Koop op het juiste moment.</p>
           <span class="feature-tag tag-orange">Inzicht</span>
         </div>
-        <div class="feature-card" data-accent="green">
+        <div class="feature-card glow-card" data-accent="green">
           <span class="feature-icon">📰</span>
           <h3>Tech nieuws</h3>
           <p>Blijf op de hoogte met nieuws en reviews van Tweakers.net — direct in de app.</p>
           <span class="feature-tag tag-green">RSS-feed</span>
         </div>
-        <div class="feature-card" data-accent="blue">
+        <div class="feature-card glow-card" data-accent="blue">
           <span class="feature-icon">⭐</span>
           <h3>Productreviews</h3>
           <p>Lees uitgebreide reviews en scores voor producten die je wilt kopen.</p>
           <span class="feature-tag tag-blue">Redactioneel</span>
         </div>
-        <div class="feature-card" data-accent="purple">
+        <div class="feature-card glow-card" data-accent="purple">
           <span class="feature-icon">🐉</span>
           <h3>PC Builder</h3>
           <p>Stel je eigen PC samen en vergelijk prijzen voor elke component in één overzicht.</p>
@@ -902,7 +923,7 @@
       <h2 class="section-title reveal">Vergelijk in seconden</h2>
       <p class="section-subtitle reveal">Zie direct bij welke shop je het goedkoopst uit bent. Links gaan naar de betreffende webshop.*</p>
 
-      <div class="price-table reveal">
+      <div class="price-table glow-card reveal">
         <div class="price-table-header">
           <span>Winkel</span>
           <span>Prijs</span>
@@ -958,7 +979,7 @@
           <p class="section-subtitle reveal-left" style="margin-bottom:2rem">Bekijk hoe de prijs van een product zich ontwikkelt over de tijd. Maak een betere koopbeslissing met historische data.</p>
           <a href="#" class="btn btn-primary reveal-left" id="openContactBtn4">Bèta-toegang aanvragen</a>
         </div>
-        <div class="chart-wrap reveal-right">
+        <div class="chart-wrap glow-card reveal-right">
           <div class="chart-header">
             <div>
               <div class="chart-product">MacBook Air M3 13"</div>
@@ -1026,18 +1047,18 @@
       <h2 class="section-title reveal">30 productcategorieën</h2>
       <p class="section-subtitle reveal">Van smartphones en laptops tot PC-componenten en randapparatuur — vergelijk prijzen in alle populaire categorieën.</p>
       <div class="categories-grid stagger">
-        <div class="cat-card"><span class="cat-icon">📱</span><h4>Smartphones</h4></div>
-        <div class="cat-card"><span class="cat-icon">💻</span><h4>Laptops</h4></div>
-        <div class="cat-card"><span class="cat-icon">🖥️</span><h4>Monitoren</h4></div>
-        <div class="cat-card"><span class="cat-icon">🎮</span><h4>Gaming</h4></div>
-        <div class="cat-card"><span class="cat-icon">🎧</span><h4>Audio</h4></div>
-        <div class="cat-card"><span class="cat-icon">📺</span><h4>Televisies</h4></div>
-        <div class="cat-card"><span class="cat-icon">📷</span><h4>Fotografie</h4></div>
-        <div class="cat-card"><span class="cat-icon">⚡</span><h4>Grafische kaarten</h4></div>
-        <div class="cat-card"><span class="cat-icon">🧩</span><h4>Processors</h4></div>
-        <div class="cat-card"><span class="cat-icon">💾</span><h4>Opslag (SSD)</h4></div>
-        <div class="cat-card"><span class="cat-icon">📡</span><h4>Netwerk</h4></div>
-        <div class="cat-card"><span class="cat-icon">⌚</span><h4>Wearables</h4></div>
+        <div class="cat-card glow-card"><span class="cat-icon">📱</span><h4>Smartphones</h4></div>
+        <div class="cat-card glow-card"><span class="cat-icon">💻</span><h4>Laptops</h4></div>
+        <div class="cat-card glow-card"><span class="cat-icon">🖥️</span><h4>Monitoren</h4></div>
+        <div class="cat-card glow-card"><span class="cat-icon">🎮</span><h4>Gaming</h4></div>
+        <div class="cat-card glow-card"><span class="cat-icon">🎧</span><h4>Audio</h4></div>
+        <div class="cat-card glow-card"><span class="cat-icon">📺</span><h4>Televisies</h4></div>
+        <div class="cat-card glow-card"><span class="cat-icon">📷</span><h4>Fotografie</h4></div>
+        <div class="cat-card glow-card"><span class="cat-icon">⚡</span><h4>Grafische kaarten</h4></div>
+        <div class="cat-card glow-card"><span class="cat-icon">🧩</span><h4>Processors</h4></div>
+        <div class="cat-card glow-card"><span class="cat-icon">💾</span><h4>Opslag (SSD)</h4></div>
+        <div class="cat-card glow-card"><span class="cat-icon">📡</span><h4>Netwerk</h4></div>
+        <div class="cat-card glow-card"><span class="cat-icon">⌚</span><h4>Wearables</h4></div>
       </div>
     </div>
   </section>
@@ -1049,34 +1070,34 @@
       <h2 class="section-title reveal">10 aangesloten winkels</h2>
       <p class="section-subtitle reveal">We vergelijken prijzen van de grote Nederlandse webshops — regelmatig uitgebreid.</p>
       <div class="shops-grid stagger">
-        <a href="https://www.coolblue.nl" target="_blank" rel="noopener" class="shop-card">
+        <a href="https://www.coolblue.nl" target="_blank" rel="noopener" class="shop-card glow-card">
           <div class="shop-logo-badge sl-cb">CB</div><h4>Coolblue</h4><p>coolblue.nl</p>
         </a>
-        <a href="https://www.bol.com" target="_blank" rel="noopener" class="shop-card">
+        <a href="https://www.bol.com" target="_blank" rel="noopener" class="shop-card glow-card">
           <div class="shop-logo-badge sl-bol">BOL</div><h4>Bol.com</h4><p>bol.com</p>
         </a>
-        <a href="https://www.mediamarkt.nl" target="_blank" rel="noopener" class="shop-card">
+        <a href="https://www.mediamarkt.nl" target="_blank" rel="noopener" class="shop-card glow-card">
           <div class="shop-logo-badge sl-mm">MM</div><h4>MediaMarkt</h4><p>mediamarkt.nl</p>
         </a>
-        <a href="https://www.amazon.nl" target="_blank" rel="noopener" class="shop-card">
+        <a href="https://www.amazon.nl" target="_blank" rel="noopener" class="shop-card glow-card">
           <div class="shop-logo-badge sl-amz">AMZ</div><h4>Amazon.nl</h4><p>amazon.nl</p>
         </a>
-        <a href="https://www.alternate.nl" target="_blank" rel="noopener" class="shop-card">
+        <a href="https://www.alternate.nl" target="_blank" rel="noopener" class="shop-card glow-card">
           <div class="shop-logo-badge sl-alt">ALT</div><h4>Alternate</h4><p>alternate.nl</p>
         </a>
-        <a href="https://www.megekko.nl" target="_blank" rel="noopener" class="shop-card">
+        <a href="https://www.megekko.nl" target="_blank" rel="noopener" class="shop-card glow-card">
           <div class="shop-logo-badge sl-meg">MEG</div><h4>Megekko</h4><p>megekko.nl</p>
         </a>
-        <a href="https://www.azerty.nl" target="_blank" rel="noopener" class="shop-card">
+        <a href="https://www.azerty.nl" target="_blank" rel="noopener" class="shop-card glow-card">
           <div class="shop-logo-badge sl-az">AZ</div><h4>Azerty</h4><p>azerty.nl</p>
         </a>
-        <a href="https://www.paradigit.nl" target="_blank" rel="noopener" class="shop-card">
+        <a href="https://www.paradigit.nl" target="_blank" rel="noopener" class="shop-card glow-card">
           <div class="shop-logo-badge sl-par">PAR</div><h4>Paradigit</h4><p>paradigit.nl</p>
         </a>
-        <a href="https://www.samsung.com/nl" target="_blank" rel="noopener" class="shop-card">
+        <a href="https://www.samsung.com/nl" target="_blank" rel="noopener" class="shop-card glow-card">
           <div class="shop-logo-badge sl-sam">SAM</div><h4>Samsung</h4><p>samsung.com/nl</p>
         </a>
-        <a href="https://www.hp.com/nl-nl" target="_blank" rel="noopener" class="shop-card">
+        <a href="https://www.hp.com/nl-nl" target="_blank" rel="noopener" class="shop-card glow-card">
           <div class="shop-logo-badge sl-hp">HP</div><h4>HP</h4><p>hp.com/nl-nl</p>
         </a>
       </div>
@@ -1094,21 +1115,21 @@
       <h2 class="section-title reveal">Gebouwd door een tech-enthousiasteling</h2>
       <p class="section-subtitle reveal" style="margin-left:auto;margin-right:auto;max-width:560px">Tweakly is ontwikkeld door Alexander Ballet vanuit Zolder, België, met als missie: prijsvergelijking voor elektronica toegankelijker en transparanter maken voor Nederlandse consumenten.</p>
       <div class="stagger" style="display:flex;flex-direction:column;gap:1rem;max-width:640px;margin:2rem auto 0;text-align:left">
-        <div class="testimonial-card" style="display:flex;gap:1.25rem;align-items:flex-start;text-align:left">
+        <div class="testimonial-card glow-card" style="display:flex;gap:1.25rem;align-items:flex-start;text-align:left">
           <div style="font-size:2rem;flex-shrink:0">🎯</div>
           <div>
             <div style="font-weight:700;margin-bottom:0.35rem">Onze missie</div>
             <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.6;margin:0">Altijd de eerlijkste prijsvergelijking bieden — zonder betaalde plaatsingen, zonder manipulatie. Winkels worden gesorteerd op prijs, niet op commissie.</p>
           </div>
         </div>
-        <div class="testimonial-card" style="display:flex;gap:1.25rem;align-items:flex-start;text-align:left">
+        <div class="testimonial-card glow-card" style="display:flex;gap:1.25rem;align-items:flex-start;text-align:left">
           <div style="font-size:2rem;flex-shrink:0">🔍</div>
           <div>
             <div style="font-weight:700;margin-bottom:0.35rem">Transparantie over affiliate-links</div>
             <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.6;margin:0">Tweakly bevat affiliate-links. Wanneer u via Tweakly een aankoop doet, ontvangen wij een kleine commissie — zonder extra kosten voor u. <a href="affiliate.html">Lees onze volledige disclosure</a>.</p>
           </div>
         </div>
-        <div class="testimonial-card" style="display:flex;gap:1.25rem;align-items:flex-start;text-align:left">
+        <div class="testimonial-card glow-card" style="display:flex;gap:1.25rem;align-items:flex-start;text-align:left">
           <div style="font-size:2rem;flex-shrink:0">🚀</div>
           <div>
             <div style="font-weight:700;margin-bottom:0.35rem">Status: in ontwikkeling</div>
@@ -1124,7 +1145,7 @@
 
   <!-- NEWSLETTER -->
   <section>
-    <div class="newsletter reveal">
+    <div class="newsletter glow-card reveal">
       <div class="section-label" style="display:inline-flex">Blijf op de hoogte</div>
       <h2 class="section-title">Ontvang de beste deals</h2>
       <p class="section-subtitle" style="margin-left:auto;margin-right:auto">Schrijf je in voor onze wekelijkse nieuwsbrief en ontvang de beste prijsdalingen in je inbox.</p>
@@ -1236,7 +1257,119 @@
     </div>
   </div>
 
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
   <script>
+    // ── Three.js shader hero ──
+    (function() {
+      const canvas = document.getElementById('shader-canvas');
+      if (!canvas || typeof THREE === 'undefined') return;
+
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const camera = new THREE.Camera();
+      camera.position.z = 1;
+      const scene = new THREE.Scene();
+
+      const uniforms = {
+        time:       { value: 0.0 },
+        resolution: { value: new THREE.Vector2() },
+        mouse:      { value: new THREE.Vector2(0.5, 0.5) },
+      };
+
+      const material = new THREE.ShaderMaterial({
+        uniforms,
+        vertexShader: `void main() { gl_Position = vec4(position, 1.0); }`,
+        fragmentShader: `
+          precision highp float;
+          uniform vec2  resolution;
+          uniform float time;
+          uniform vec2  mouse;
+
+          void main(void) {
+            vec2 uv = (gl_FragCoord.xy * 2.0 - resolution.xy) / min(resolution.x, resolution.y);
+            float t  = time * 0.04;
+
+            // Mouse-reactive offset
+            vec2 m = (mouse - 0.5) * 1.4;
+
+            float lineWidth = 0.0025;
+            vec3 col = vec3(0.0);
+
+            // Green channel dominant, slight teal/blue tint
+            float[3] gains;
+            gains[0] = 0.18; // R — faint
+            gains[1] = 1.0;  // G — dominant green
+            gains[2] = 0.32; // B — subtle teal
+
+            for (int j = 0; j < 3; j++) {
+              for (int i = 0; i < 6; i++) {
+                vec2 p = uv + m * (0.08 + float(i) * 0.04);
+                col[j] += gains[j] * lineWidth * float(i * i + 1)
+                  / abs(fract(t - 0.012 * float(j) + float(i) * 0.012) * 5.0
+                        - length(p) + mod(p.x + p.y, 0.22));
+              }
+            }
+
+            // Darken edges for vignette
+            float vig = 1.0 - smoothstep(0.6, 1.5, length(uv));
+            col *= vig * 0.85;
+
+            gl_FragColor = vec4(col, 1.0);
+          }
+        `,
+      });
+
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+      scene.add(mesh);
+
+      function resize() {
+        const w = canvas.offsetWidth, h = canvas.offsetHeight;
+        renderer.setSize(w, h, false);
+        uniforms.resolution.value.set(renderer.domElement.width, renderer.domElement.height);
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      // Mouse tracking
+      document.addEventListener('mousemove', e => {
+        uniforms.mouse.value.set(e.clientX / window.innerWidth, 1.0 - e.clientY / window.innerHeight);
+      });
+
+      (function animate() {
+        requestAnimationFrame(animate);
+        uniforms.time.value += 0.5;
+        renderer.render(scene, camera);
+      })();
+    })();
+
+    // ── Spotlight glow on cards ──
+    (function() {
+      function initGlowCards() {
+        document.querySelectorAll('.glow-card').forEach(card => {
+          card.addEventListener('mousemove', e => {
+            const rect = card.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width  * 100).toFixed(1) + '%';
+            const y = ((e.clientY - rect.top)  / rect.height * 100).toFixed(1) + '%';
+            card.style.setProperty('--glow-x', x);
+            card.style.setProperty('--glow-y', y);
+            card.style.setProperty('--glow-opacity', '1');
+          });
+          card.addEventListener('mouseleave', () => {
+            card.style.setProperty('--glow-opacity', '0');
+          });
+        });
+      }
+      // Init after DOM settles
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initGlowCards);
+      } else {
+        initGlowCards();
+      }
+    })();
+
     // ── Cookie consent ──
     const COOKIE_KEY = 'tweakly_cookie_consent';
     const banner = document.getElementById('cookie-banner');
