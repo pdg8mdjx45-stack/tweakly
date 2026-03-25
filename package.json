@@ -73,6 +73,7 @@
     "eslint-config-expo": "~10.0.0",
     "firebase-admin": "^13.7.0",
     "puppeteer": "^24.38.0",
+    "semver": "^7.7.4",
     "tough-cookie": "^6.0.0",
     "typescript": "~5.9.2"
   },
