@@ -7,7 +7,7 @@ import { AdCard } from '@/components/ad-card';
 import { CompareBar } from '@/components/compare-bar';
 import { ProductCard } from '@/components/product-card';
 import { ProductFilters } from '@/components/product-filters';
-import { Colors, Palette, Radius, Shadow, Spacing } from '@/constants/theme';
+import { Colors, Palette, Radius, Shadow, Spacing, TAB_BAR_SCROLL_INSET } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useProductFilters } from '@/hooks/use-product-filters';
 import { type Product } from '@/services/product-db';
@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
   categoryGrid: {
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.sm,
-    paddingBottom: Spacing.xxl,
+    paddingBottom: TAB_BAR_SCROLL_INSET,
     gap: Spacing.sm,
   },
   categoryRow: {
@@ -444,7 +444,7 @@ const styles = StyleSheet.create({
   productGrid: {
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.sm,
-    paddingBottom: Spacing.xxl,
+    paddingBottom: TAB_BAR_SCROLL_INSET,
     gap: Spacing.sm,
   },
   productRow: {

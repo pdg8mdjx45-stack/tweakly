@@ -11,7 +11,7 @@ import { Dimensions, FlatList, Pressable, ScrollView, StyleSheet, Text, View } f
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { PRICE_DISCLAIMER } from '@/constants/mock-data';
-import { Colors, Glass, Palette, Radius, Spacing } from '@/constants/theme';
+import { Colors, Glass, Palette, Radius, Spacing, TAB_BAR_SCROLL_INSET } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useProductImage } from '@/hooks/use-product-image';
@@ -398,7 +398,8 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
-  scrollContent: { paddingBottom: Spacing.xxl },
+  // Extra bottom space so content clears the floating pill tab bar (62 + 28 + 20)
+  scrollContent: { paddingBottom: 110 },
 
   // Header
   header: {
@@ -747,7 +748,7 @@ const styles = StyleSheet.create({
   // Disclaimer
   disclaimerContainer: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xxl,
+    paddingBottom: TAB_BAR_SCROLL_INSET,
     paddingTop: Spacing.lg,
     alignItems: 'center',
     gap: Spacing.sm,

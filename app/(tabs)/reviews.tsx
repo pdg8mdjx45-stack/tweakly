@@ -6,7 +6,7 @@
 import { ArticleCard } from '@/components/article-card';
 import { EmptyState } from '@/components/empty-state';
 import { FeedLoading } from '@/components/feed-loading';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, TAB_BAR_SCROLL_INSET } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useRSSFeed } from '@/hooks/use-rss-feed';
 import type { Article, FeedCategory } from '@/types/rss';
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: Spacing.md,
-    paddingBottom: Spacing.xxl,
+    paddingBottom: TAB_BAR_SCROLL_INSET,
     paddingTop: Spacing.xs,
   },
   articleRow: {

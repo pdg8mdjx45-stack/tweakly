@@ -1,7 +1,7 @@
 
 import { AppTour } from '@/components/tour-overlay';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
+import { Colors, Palette, Radius, Spacing, TAB_BAR_SCROLL_INSET } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
 import { useBookmarks } from '@/hooks/use-bookmarks';
 import { useReduceMotion } from '@/hooks/use-reduce-motion';
@@ -900,7 +900,7 @@ const styles = StyleSheet.create({
   content: {
     padding: Spacing.md,
     gap: Spacing.lg,
-    paddingBottom: Spacing.xxl,
+    paddingBottom: TAB_BAR_SCROLL_INSET,
   },
 
   // Apple-style profile card
@@ -1089,7 +1089,7 @@ const styles = StyleSheet.create({
   modalContent: {
     padding: Spacing.md,
     gap: Spacing.lg,
-    paddingBottom: Spacing.xxl,
+    paddingBottom: TAB_BAR_SCROLL_INSET,
   },
   modalAvatarWrap: { alignItems: 'center', gap: Spacing.sm, paddingVertical: Spacing.md },
   modalAvatar: {

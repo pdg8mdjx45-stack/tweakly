@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 // Modern, clean UI with Tweakly dark green brand color
 export const Palette = {
@@ -82,6 +82,12 @@ export const Spacing = {
   xxl: 48,
 } as const;
 
+/**
+ * Extra bottom padding so scroll content always clears the floating pill tab bar.
+ * Pill height (62) + bottom offset (28 iOS / 16 Android) + breathing room (20) ≈ 110
+ */
+export const TAB_BAR_SCROLL_INSET = 110;
+
 export const Radius = {
   xs: 6,
   sm: 8,
@@ -122,9 +128,14 @@ export const Glass = {
     borderColor: 'rgba(255,255,255,0.1)',
   },
   cardLight: {
-    backgroundColor: 'rgba(255,255,255,0.7)',
+    backgroundColor: 'rgba(255,255,255,0.72)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
+    borderColor: 'rgba(255,255,255,0.5)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
   surface: {
     backgroundColor: 'rgba(255,255,255,0.04)',
@@ -132,95 +143,107 @@ export const Glass = {
     borderColor: 'rgba(255,255,255,0.08)',
   },
   surfaceLight: {
-    backgroundColor: 'rgba(255,255,255,0.85)',
+    backgroundColor: 'rgba(255,255,255,0.88)',
     borderWidth: 1,
-    borderColor: 'rgba(200,200,200,0.3)',
+    borderColor: 'rgba(200,200,200,0.25)',
   },
   accent: {
-    backgroundColor: 'rgba(26,58,32,0.12)',
+    backgroundColor: 'rgba(26,58,32,0.10)',
     borderWidth: 1,
-    borderColor: 'rgba(26,58,32,0.2)',
+    borderColor: 'rgba(26,58,32,0.18)',
   },
+  // Liquid glass — the key iOS 26-style effect
   liquid: {
     light: {
-      backgroundColor: 'rgba(255,255,255,0.45)',
+      backgroundColor: 'rgba(255,255,255,0.55)',
       borderWidth: 1,
-      borderColor: 'rgba(255,255,255,0.7)',
-      shadowColor: 'rgba(26,58,32,0.08)',
-      shadowOffset: { width: 0, height: 4 },
+      borderColor: 'rgba(255,255,255,0.75)',
+      shadowColor: 'rgba(0,0,0,0.12)',
+      shadowOffset: { width: 0, height: 8 },
       shadowOpacity: 1,
-      shadowRadius: 16,
-      elevation: 3,
+      shadowRadius: 24,
+      elevation: 6,
     },
     dark: {
-      backgroundColor: 'rgba(30,30,38,0.65)',
+      backgroundColor: 'rgba(28,28,38,0.78)',
       borderWidth: 1,
-      borderColor: 'rgba(255,255,255,0.08)',
+      borderColor: 'rgba(255,255,255,0.10)',
       shadowColor: '#000',
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.35,
-      shadowRadius: 24,
-      elevation: 8,
+      shadowOffset: { width: 0, height: 12 },
+      shadowOpacity: 0.5,
+      shadowRadius: 32,
+      elevation: 12,
     },
   },
   glassmorphic: {
     light: {
-      backgroundColor: 'rgba(255,255,255,0.25)',
+      backgroundColor: 'rgba(255,255,255,0.30)',
       borderWidth: 1,
-      borderColor: 'rgba(255,255,255,0.4)',
-      backdropFilter: 'blur(20px)',
+      borderColor: 'rgba(255,255,255,0.5)',
+      backdropFilter: 'blur(24px)',
     },
     dark: {
-      backgroundColor: 'rgba(20,20,26,0.6)',
+      backgroundColor: 'rgba(20,20,28,0.65)',
       borderWidth: 1,
-      borderColor: 'rgba(255,255,255,0.06)',
-      backdropFilter: 'blur(20px)',
+      borderColor: 'rgba(255,255,255,0.07)',
+      backdropFilter: 'blur(24px)',
     },
   },
   header: {
     light: {
-      backgroundColor: 'rgba(255,255,255,0.8)',
-      borderBottomWidth: 1,
-      borderBottomColor: 'rgba(0,0,0,0.06)',
+      backgroundColor: 'rgba(242,242,247,0.82)',
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: 'rgba(0,0,0,0.08)',
     },
     dark: {
-      backgroundColor: 'rgba(10,10,15,0.75)',
-      borderBottomWidth: 1,
-      borderBottomColor: 'rgba(255,255,255,0.05)',
+      backgroundColor: 'rgba(10,10,15,0.80)',
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: 'rgba(255,255,255,0.06)',
     },
   },
+  // Floating pill tab bar (used in LiquidGlassTabBar)
   tabBar: {
     light: {
-      backgroundColor: 'rgba(255,255,255,0.85)',
-      borderTopWidth: 1,
-      borderTopColor: 'rgba(0,0,0,0.08)',
-      shadowColor: 'rgba(0,0,0,0.1)',
-      shadowOffset: { width: 0, height: -4 },
-      shadowOpacity: 0.08,
-      shadowRadius: 12,
-      elevation: 10,
+      backgroundColor: 'rgba(255,255,255,0.80)',
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.65)',
+      shadowColor: '#1A3A20',
+      shadowOffset: { width: 0, height: 12 },
+      shadowOpacity: 0.14,
+      shadowRadius: 28,
+      elevation: 18,
     },
     dark: {
-      backgroundColor: 'rgba(20,20,26,0.8)',
-      borderTopWidth: 1,
-      borderTopColor: 'rgba(255,255,255,0.05)',
+      backgroundColor: 'rgba(28,28,38,0.90)',
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.09)',
       shadowColor: '#000',
-      shadowOffset: { width: 0, height: -8 },
-      shadowOpacity: 0.25,
-      shadowRadius: 16,
-      elevation: 10,
+      shadowOffset: { width: 0, height: 16 },
+      shadowOpacity: 0.55,
+      shadowRadius: 32,
+      elevation: 24,
     },
   },
   modal: {
     light: {
-      backgroundColor: 'rgba(255,255,255,0.95)',
+      backgroundColor: 'rgba(255,255,255,0.96)',
       borderWidth: 1,
-      borderColor: 'rgba(255,255,255,0.5)',
+      borderColor: 'rgba(255,255,255,0.6)',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.10,
+      shadowRadius: 24,
+      elevation: 8,
     },
     dark: {
-      backgroundColor: 'rgba(25,25,32,0.92)',
+      backgroundColor: 'rgba(24,24,32,0.94)',
       borderWidth: 1,
-      borderColor: 'rgba(255,255,255,0.08)',
+      borderColor: 'rgba(255,255,255,0.09)',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 12 },
+      shadowOpacity: 0.40,
+      shadowRadius: 32,
+      elevation: 16,
     },
   },
 } as const;
