@@ -2,1570 +2,1339 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <meta name="e7fe051fb748f47" content="6d8e0aeb674d648844135db5f5e6e595" />
-  <meta name="verification" content="32e2869a848cbc14e9287dd843138dd2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tweakly — Slimme prijsvergelijking voor elektronica</title>
-  <meta name="description" content="Tweakly vergelijkt prijzen van Nederlandse webshops voor smartphones, laptops, monitoren, componenten en meer. Vind altijd de beste deal.">
-  <meta name="theme-color" content="#1A3A20">
-  <meta name="robots" content="index, follow">
-  <meta property="og:title" content="Tweakly — Slimme prijsvergelijking voor elektronica">
-  <meta property="og:description" content="Vergelijk prijzen bij Coolblue, Bol.com, MediaMarkt en meer. Download de gratis app.">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="logo.png">
+  <meta name="description" content="Vergelijk prijzen bij 20+ webshops. Download gratis.">
   <link rel="icon" href="logo.png" type="image/png">
-  <link rel="canonical" href="https://tweakly.netlify.app/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
+    /* ═══════════════════════════════════════════════
+       DESIGN TOKENS — iOS 26 Liquid Glass System
+    ═══════════════════════════════════════════════ */
     :root {
-      --primary: #1A3A20;
-      --primary-light: #2D5A35;
-      --primary-dark: #0F2414;
-      --accent: #0A84FF;
-      --green: #34C759;
-      --orange: #FF9500;
-      --red: #FF3B30;
-      --bg: #06060C;
-      --surface: rgba(255,255,255,0.03);
-      --elevated: rgba(255,255,255,0.06);
-      --border: rgba(255,255,255,0.08);
-      --border-hover: rgba(255,255,255,0.15);
-      --text: #E8E8ED;
-      --text-secondary: #8888A0;
-      --text-muted: #555566;
-      --glass-bg: rgba(255,255,255,0.04);
-      --glass-bg-hover: rgba(255,255,255,0.07);
-      --glass-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
-      --glass-shadow-hover: 0 16px 48px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.1);
-      --glass-blur: blur(24px);
+      --green:         #1a7a3a;
+      --green-mid:     #25a350;
+      --green-bright:  #30D158;
+      --green-vivid:   #3de06a;
+      --green-glow:    rgba(48,209,88,0.30);
+      --green-glow-sm: rgba(48,209,88,0.12);
+      --text:   #ffffff;
+      --text-2: rgba(255,255,255,0.55);
+      --text-3: rgba(255,255,255,0.30);
+      --text-4: rgba(255,255,255,0.12);
+      /* iOS 26 Liquid Glass — white translucent panels */
+      --glass-bg:        rgba(255,255,255,0.07);
+      --glass-bg-hover:  rgba(255,255,255,0.11);
+      --glass-border:    rgba(255,255,255,0.13);
+      --glass-border-hi: rgba(255,255,255,0.20);
+      --glass-spec:      rgba(255,255,255,0.28);
+      --glass-spec-sm:   rgba(255,255,255,0.14);
+      --glass-blur:      blur(60px) saturate(180%);
+      --glass-blur-sm:   blur(28px) saturate(160%);
+      --glass-blur-lg:   blur(80px) saturate(200%);
+      --shadow-sm:  0 2px 8px rgba(0,0,0,0.28), 0 0 0 0.5px rgba(255,255,255,0.04);
+      --shadow-md:  0 8px 32px rgba(0,0,0,0.42), 0 0 0 0.5px rgba(255,255,255,0.05);
+      --shadow-lg:  0 24px 64px rgba(0,0,0,0.52), 0 4px 16px rgba(0,0,0,0.32), 0 0 0 0.5px rgba(255,255,255,0.06);
+      --shadow-xl:  0 48px 96px rgba(0,0,0,0.62), 0 16px 40px rgba(0,0,0,0.38), 0 0 0 0.5px rgba(255,255,255,0.06);
+      --shadow-grn: 0 0 40px rgba(48,209,88,0.14), 0 0 80px rgba(48,209,88,0.06);
+      --r-sm:4px; --r-md:16px; --r-lg:22px; --r-xl:28px; --r-full:9999px;
+      --perspective: 1200px;
     }
 
+    /* ── RESET ── */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
     html { scroll-behavior: smooth; }
-
+    html.locked, html.locked body { overflow: hidden !important; }
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      overflow-x: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #000; color: var(--text);
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
+    a { text-decoration: none; color: inherit; }
 
-    /* ── LOGO ── */
-    .logo-img {
-      width: 36px; height: 36px;
-      object-fit: contain;
-      flex-shrink: 0;
-      filter: drop-shadow(0 2px 8px rgba(26,58,32,0.35));
-    }
-
-    .logo-img-lg {
-      width: 96px; height: 96px;
-      object-fit: contain;
-      margin: 0 auto 2.5rem;
-      display: block;
-      animation: floatLogo 6s ease-in-out infinite;
-      filter: drop-shadow(0 12px 32px rgba(26,58,32,0.5));
-    }
-    @keyframes floatLogo {
-      0%, 100% { transform: translateY(0) rotate(-1deg); }
-      50% { transform: translateY(-12px) rotate(1deg); }
-    }
-
-    .glass {
-      background: var(--glass-bg);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--border);
-      box-shadow: var(--glass-shadow);
-    }
-    .glass-hover:hover {
-      background: var(--glass-bg-hover);
-      border-color: var(--border-hover);
-      box-shadow: var(--glass-shadow-hover);
-    }
-
-    /* ── COOKIE BANNER ── */
-    #cookie-banner {
-      position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
-      background: rgba(10,10,18,0.97);
-      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-      border-top: 1px solid rgba(255,255,255,0.1);
-      padding: 1.25rem 2rem;
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 1.5rem; flex-wrap: wrap;
-      box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
-      transform: translateY(100%);
-      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    #cookie-banner.show { transform: translateY(0); }
-    .cookie-text { flex: 1; min-width: 260px; }
-    .cookie-text p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55; }
-    .cookie-text p a { color: var(--primary-light); text-decoration: underline; text-underline-offset: 2px; }
-    .cookie-text strong { color: var(--text); }
-    .cookie-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; flex-shrink: 0; }
-    .cookie-btn {
-      padding: 0.55rem 1.2rem; border-radius: 8px;
-      font-size: 0.85rem; font-weight: 600; cursor: pointer;
-      border: none; font-family: inherit; transition: all 0.2s;
-    }
-    .cookie-btn-accept {
-      background: linear-gradient(135deg, var(--primary-light), var(--primary));
-      color: #fff; box-shadow: 0 2px 12px rgba(26,58,32,0.3);
-    }
-    .cookie-btn-accept:hover { transform: translateY(-1px); box-shadow: 0 4px 18px rgba(26,58,32,0.4); }
-    .cookie-btn-essential {
-      background: rgba(255,255,255,0.07); color: var(--text); border: 1px solid var(--border);
-    }
-    .cookie-btn-essential:hover { background: rgba(255,255,255,0.12); }
-
-    /* ── NAV ── */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      padding: 0 2rem; height: 64px;
-      display: flex; align-items: center; justify-content: space-between;
-      background: rgba(6,6,12,0.5);
-      backdrop-filter: blur(30px) saturate(1.6); -webkit-backdrop-filter: blur(30px) saturate(1.6);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      transition: all 0.3s;
-    }
-    nav.scrolled {
-      background: rgba(6,6,12,0.85);
-      box-shadow: 0 4px 40px rgba(0,0,0,0.5), inset 0 -1px 0 rgba(255,255,255,0.04);
-      border-bottom-color: rgba(255,255,255,0.1);
-    }
-    .nav-brand { display: flex; align-items: center; gap: 0.65rem; text-decoration: none; }
-    .nav-brand-text { font-size: 1.22rem; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
-    .nav-brand-text em { font-style: normal; color: var(--primary-light); }
-    .nav-links { display: flex; gap: 0.25rem; list-style: none; align-items: center; }
-    .nav-links a {
-      color: var(--text-secondary); text-decoration: none; font-size: 0.88rem; font-weight: 500;
-      transition: color 0.2s; padding: 0.4rem 0.75rem; border-radius: 7px;
-    }
-    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.06); }
-    .nav-cta {
-      background: linear-gradient(135deg, var(--primary-light), var(--primary)) !important;
-      color: white !important; padding: 0.45rem 1.1rem !important;
-      border-radius: 8px !important; font-weight: 600 !important;
-      font-size: 0.85rem !important; transition: all 0.2s !important;
-      box-shadow: 0 4px 16px rgba(26,58,32,0.3), inset 0 1px 0 rgba(255,255,255,0.1) !important;
-      border: none !important;
-    }
-    .nav-cta:hover { transform: translateY(-1px) !important; box-shadow: 0 6px 20px rgba(26,58,32,0.45) !important; background: linear-gradient(135deg, #2D5A35, var(--primary-light)) !important; }
-    .nav-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
-    .nav-toggle span { width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.3s; }
-    .nav-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
-    .nav-toggle.active span:nth-child(2) { opacity: 0; }
-    .nav-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
-    @media (max-width: 768px) {
-      .nav-links { display: none; position: fixed; top: 64px; left: 0; right: 0; flex-direction: column; gap: 0; background: rgba(6,6,12,0.98); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border-bottom: 1px solid var(--border); padding: 1rem 0; }
-      .nav-links.open { display: flex; }
-      .nav-links li { width: 100%; }
-      .nav-links a { display: block; padding: 0.85rem 2rem; font-size: 1rem; border-radius: 0; }
-      .nav-toggle { display: flex; }
-    }
-
-    /* ── BUTTONS ── */
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-      padding: 0.85rem 1.75rem; border-radius: 10px; font-weight: 700;
-      font-size: 0.95rem; text-decoration: none;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      border: none; cursor: pointer; font-family: inherit; letter-spacing: -0.01em;
-      position: relative; overflow: hidden;
-    }
-    .btn::after {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.08), transparent);
-      border-radius: inherit; pointer-events: none;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, #2D5A35, var(--primary-light), var(--primary));
-      background-size: 200% 200%;
-      color: white;
-      box-shadow: 0 4px 24px rgba(26,58,32,0.4), inset 0 1px 0 rgba(255,255,255,0.12);
-      border: 1px solid rgba(26,58,32,0.3);
-    }
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 36px rgba(26,58,32,0.55), inset 0 1px 0 rgba(255,255,255,0.18);
-      background-position: right center;
-    }
-    .btn-primary:active { transform: translateY(0); }
-    .btn-secondary {
-      background: rgba(255,255,255,0.07);
-      color: var(--text);
-      border: 1px solid var(--border);
-      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06);
-    }
-    .btn-secondary:hover {
-      background: rgba(255,255,255,0.12);
-      border-color: var(--border-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 28px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
-    }
-    .btn-secondary:active { transform: translateY(0); }
-    .btn svg { width: 18px; height: 18px; flex-shrink: 0; }
-    .btn-lg { padding: 1rem 2.2rem; font-size: 1.05rem; border-radius: 12px; }
-
-    /* ── HERO ── */
-    .hero {
-      min-height: 100vh; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      text-align: center; padding: 7rem 2rem 5rem;
-      position: relative; overflow: hidden;
-    }
-
-    /* Three.js shader canvas */
-    #shader-canvas {
-      position: absolute; inset: 0; width: 100%; height: 100%;
-      z-index: 0; pointer-events: none;
-    }
-
-    .hero-bg { position: absolute; inset: 0; overflow: hidden; z-index: 1; }
-    /* Dark overlay so text stays readable */
-    .hero-bg::before {
-      content: ''; position: absolute; inset: 0;
-      background: rgba(6,6,12,0.38);
-      z-index: 0;
-    }
-    .hero-bg .grid-overlay {
-      position: absolute; inset: 0;
-      background-image: linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
-      background-size: 56px 56px;
-      mask-image: radial-gradient(ellipse at center, black 20%, transparent 72%);
-      -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 72%);
-    }
-    .hero > *:not(#shader-canvas):not(.hero-bg) { position: relative; z-index: 2; }
-    .hero-badge {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      background: rgba(26,58,32,0.12); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(26,58,32,0.25); border-radius: 999px;
-      padding: 0.45rem 1.2rem; font-size: 0.78rem; color: #6BCB7A;
-      font-weight: 600; margin-bottom: 1.75rem; letter-spacing: 0.02em;
-      box-shadow: 0 4px 20px rgba(26,58,32,0.15), inset 0 1px 0 rgba(255,255,255,0.05);
-    }
-    .hero-badge .dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s ease-in-out infinite; box-shadow: 0 0 10px rgba(52,199,89,0.5); }
-    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.75); } }
-    .hero h1 {
-      font-size: clamp(2.6rem, 6.5vw, 4.5rem); font-weight: 900;
-      line-height: 1.08; margin-bottom: 1.5rem; letter-spacing: -0.035em; max-width: 800px;
-    }
-    .hero h1 .gradient {
-      background: linear-gradient(135deg, #6BCB7A 10%, #1A5C28 50%, var(--primary) 90%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
-      display: block;
-      min-height: 1.15em;
-      white-space: nowrap;
-    }
-    .hero-sub { font-size: 1.18rem; color: var(--text-secondary); max-width: 530px; line-height: 1.7; margin-bottom: 2.75rem; }
-    .hero-buttons { display: flex; gap: 0.85rem; flex-wrap: wrap; justify-content: center; }
-    .affiliate-notice {
-      display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 2.5rem;
-      padding: 0.4rem 1rem; background: rgba(255,165,0,0.07);
-      border: 1px solid rgba(255,165,0,0.18); border-radius: 8px;
-      font-size: 0.78rem; color: var(--text-muted);
-    }
-    .affiliate-notice a { color: var(--orange); text-decoration: underline; text-underline-offset: 2px; }
-
-    /* ── 3D SCENE ── */
-    .scene-3d-wrapper {
-      width: 100%; max-width: 1200px; margin: 0 auto;
-      position: relative; height: 460px; overflow: hidden;
-      perspective: 1000px;
-    }
-    .scene-3d {
-      position: absolute; inset: 0;
-      transform-style: preserve-3d;
-      animation: sceneRotate 30s ease-in-out infinite alternate;
-    }
-    @keyframes sceneRotate {
-      0% { transform: rotateY(-8deg) rotateX(4deg); }
-      100% { transform: rotateY(8deg) rotateX(-4deg); }
-    }
-
-    .tech-card {
-      position: absolute;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.04);
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.1);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.6rem;
-      padding: 1.5rem;
-      transform-style: preserve-3d;
-      transition: transform 0.4s ease, box-shadow 0.4s ease;
-      cursor: default;
-    }
-    .tech-card:hover {
-      box-shadow: 0 30px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.15), 0 0 0 1px rgba(255,255,255,0.12);
-    }
-    .tech-card .card-icon { font-size: 2.4rem; line-height: 1; }
-    .tech-card .card-title { font-size: 0.82rem; font-weight: 700; color: var(--text); }
-    .tech-card .card-price { font-size: 0.78rem; color: var(--green); font-weight: 600; }
-    .tech-card .card-badge {
-      position: absolute; top: 0.6rem; right: 0.6rem;
-      font-size: 0.62rem; font-weight: 700; padding: 0.18rem 0.5rem;
-      border-radius: 4px; text-transform: uppercase;
-    }
-    .badge-sale { background: rgba(52,199,89,0.15); color: var(--green); border: 1px solid rgba(52,199,89,0.25); }
-    .badge-new { background: rgba(10,132,255,0.15); color: var(--accent); border: 1px solid rgba(10,132,255,0.25); }
-    .badge-hot { background: rgba(255,59,48,0.15); color: var(--red); border: 1px solid rgba(255,59,48,0.25); }
-
-    /* card positions */
-    .tc-1 { width: 160px; height: 150px; top: 30px; left: 80px; animation: float3d-1 7s ease-in-out infinite; transform: translateZ(40px) rotate(-3deg); }
-    .tc-2 { width: 180px; height: 160px; top: 60px; left: 310px; animation: float3d-2 9s ease-in-out infinite; transform: translateZ(80px) rotate(2deg); }
-    .tc-3 { width: 165px; height: 155px; top: 20px; left: 550px; animation: float3d-3 8s ease-in-out infinite; transform: translateZ(30px) rotate(-1.5deg); }
-    .tc-4 { width: 155px; height: 145px; top: 30px; left: 790px; animation: float3d-1 10s ease-in-out infinite reverse; transform: translateZ(60px) rotate(3deg); }
-    .tc-5 { width: 170px; height: 160px; top: 30px; left: 1010px; animation: float3d-2 7.5s ease-in-out infinite; transform: translateZ(20px) rotate(-2deg); }
-    .tc-6 { width: 175px; height: 165px; top: 220px; left: 160px; animation: float3d-3 11s ease-in-out infinite; transform: translateZ(70px) rotate(1.5deg); }
-    .tc-7 { width: 155px; height: 148px; top: 240px; left: 430px; animation: float3d-1 8.5s ease-in-out infinite reverse; transform: translateZ(50px) rotate(-2.5deg); }
-    .tc-8 { width: 168px; height: 158px; top: 220px; left: 680px; animation: float3d-2 9.5s ease-in-out infinite; transform: translateZ(90px) rotate(1deg); }
-    .tc-9 { width: 158px; height: 150px; top: 235px; left: 930px; animation: float3d-3 7.2s ease-in-out infinite; transform: translateZ(35px) rotate(-3.5deg); }
-
-    @keyframes float3d-1 { 0%, 100% { transform: translateZ(40px) rotate(-3deg) translateY(0); } 50% { transform: translateZ(50px) rotate(-3deg) translateY(-16px); } }
-    @keyframes float3d-2 { 0%, 100% { transform: translateZ(80px) rotate(2deg) translateY(0); } 50% { transform: translateZ(90px) rotate(2deg) translateY(-20px); } }
-    @keyframes float3d-3 { 0%, 100% { transform: translateZ(30px) rotate(-1.5deg) translateY(0); } 50% { transform: translateZ(40px) rotate(-1.5deg) translateY(-12px); } }
-
-    .scene-fade-left { position: absolute; top: 0; bottom: 0; left: 0; width: 120px; background: linear-gradient(to right, var(--bg), transparent); z-index: 2; pointer-events: none; }
-    .scene-fade-right { position: absolute; top: 0; bottom: 0; right: 0; width: 120px; background: linear-gradient(to left, var(--bg), transparent); z-index: 2; pointer-events: none; }
-    .scene-fade-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 100px; background: linear-gradient(to top, var(--bg), transparent); z-index: 2; pointer-events: none; }
-
-    @media (max-width: 900px) { .scene-3d-wrapper { height: 320px; } .scene-3d { transform: scale(0.7) !important; transform-origin: top center; } }
-    @media (max-width: 600px) { .scene-3d-wrapper { display: none; } }
-
-    /* ── SCROLL PROGRESS ── */
-    #scroll-progress {
-      position: fixed; top: 0; left: 0; height: 2px; z-index: 9999;
-      background: linear-gradient(90deg, #6BCB7A, var(--primary-light), #0A84FF);
-      width: 0%; transition: width 0.1s linear;
-      box-shadow: 0 0 8px rgba(107,203,122,0.5);
-    }
-
-    /* ── TRUST BAR ── */
-    .trust-bar {
-      padding: 1.5rem 0; text-align: center;
-      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-      background: rgba(255,255,255,0.015);
-      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      overflow: hidden;
-    }
-    .trust-bar p { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 700; margin-bottom: 1.25rem; }
-    .trust-marquee-wrap {
-      overflow: hidden; position: relative;
-      mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
-      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
-    }
-    .trust-logos {
-      display: flex; align-items: center; gap: 1rem;
-      width: max-content;
-      animation: marqueeScroll 22s linear infinite;
-    }
-    .trust-logos:hover { animation-play-state: paused; }
-    @keyframes marqueeScroll {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-    .trust-logo-pill {
-      display: flex; align-items: center; gap: 0.5rem;
-      padding: 0.45rem 1.1rem; border-radius: 999px;
-      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-      font-size: 0.85rem; font-weight: 700; color: var(--text-secondary);
-      transition: all 0.2s; white-space: nowrap; flex-shrink: 0;
-    }
-    .trust-logo-pill:hover { color: var(--text); background: rgba(255,255,255,0.09); border-color: var(--border-hover); }
-    .trust-logo-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-
-    /* ── STATS BAR ── */
-    .stats-bar {
-      display: grid; grid-template-columns: repeat(4, 1fr);
-      max-width: 960px; margin: -2rem auto 0; position: relative; z-index: 2;
-      background: rgba(255,255,255,0.04);
-      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-      border: 1px solid var(--border); border-radius: 18px;
-      overflow: hidden; box-shadow: var(--glass-shadow);
-    }
-    .stat { text-align: center; padding: 2rem 1rem; position: relative; }
-    .stat:not(:last-child)::after { content: ''; position: absolute; right: 0; top: 25%; height: 50%; width: 1px; background: var(--border); }
-    .stat-number { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.03em; background: linear-gradient(135deg, #6BCB7A, #2D8A3E); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; transition: transform 0.3s; }
-    .stat:hover .stat-number { transform: scale(1.08); }
-    .stat-label { font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.4rem; font-weight: 600; letter-spacing: 0.02em; }
-    @media (max-width: 600px) { .stats-bar { grid-template-columns: repeat(2, 1fr); border-radius: 14px; } }
-
-    /* ── SECTIONS ── */
-    section { padding: 6rem 2rem; }
-    .section-inner { max-width: 1100px; margin: 0 auto; }
-    .section-label {
-      display: inline-flex; align-items: center; gap: 0.4rem;
-      font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em;
-      color: #6BCB7A; margin-bottom: 0.85rem;
-      background: rgba(26,58,32,0.1); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-      padding: 0.35rem 0.9rem; border-radius: 6px;
-      border: 1px solid rgba(26,58,32,0.2);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
-    }
-    .section-title { font-size: clamp(1.9rem, 4vw, 2.7rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.8rem; line-height: 1.12; }
-    .section-subtitle { font-size: 1.05rem; color: var(--text-secondary); max-width: 560px; line-height: 1.65; margin-bottom: 3rem; }
-
-    /* ── FEATURES GRID ── */
-    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
-    @media (max-width: 900px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 600px) { .features-grid { grid-template-columns: 1fr; } }
-    .feature-card {
-      background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--border); border-radius: 16px; padding: 1.85rem;
-      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative; overflow: hidden; box-shadow: var(--glass-shadow);
-    }
-    .feature-card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: var(--card-accent, linear-gradient(90deg, transparent, var(--primary-light), transparent));
-      opacity: 0; transition: opacity 0.35s;
-    }
-    .feature-card:hover { transform: translateY(-6px); background: var(--glass-bg-hover); border-color: var(--border-hover); box-shadow: var(--glass-shadow-hover), 0 0 40px var(--card-glow, rgba(26,58,32,0.12)); }
-    .feature-card:hover::before { opacity: 1; }
-    .feature-card[data-accent="green"] { --card-accent: linear-gradient(90deg, transparent, #34C759, transparent); --card-glow: rgba(52,199,89,0.1); }
-    .feature-card[data-accent="blue"] { --card-accent: linear-gradient(90deg, transparent, #0A84FF, transparent); --card-glow: rgba(10,132,255,0.1); }
-    .feature-card[data-accent="orange"] { --card-accent: linear-gradient(90deg, transparent, #FF9500, transparent); --card-glow: rgba(255,149,0,0.1); }
-    .feature-card[data-accent="purple"] { --card-accent: linear-gradient(90deg, transparent, #AF52DE, transparent); --card-glow: rgba(175,82,222,0.1); }
-    .feature-icon { font-size: 2.1rem; margin-bottom: 1.1rem; display: block; }
-    .feature-card h3 { font-size: 1.08rem; font-weight: 700; margin-bottom: 0.55rem; }
-    .feature-card p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
-    .feature-tag { display: inline-block; margin-top: 0.85rem; padding: 0.25rem 0.7rem; border-radius: 6px; font-size: 0.72rem; font-weight: 600; }
-    .tag-green { background: rgba(52,199,89,0.1); color: var(--green); border: 1px solid rgba(52,199,89,0.2); }
-    .tag-blue { background: rgba(10,132,255,0.1); color: var(--accent); border: 1px solid rgba(10,132,255,0.2); }
-    .tag-orange { background: rgba(255,149,0,0.1); color: var(--orange); border: 1px solid rgba(255,149,0,0.2); }
-
-    /* ── PRICE COMPARE ── */
-    .price-table {
-      background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--border); border-radius: 18px; overflow: hidden; box-shadow: var(--glass-shadow);
-    }
-    .price-table-header { display: grid; grid-template-columns: 1fr auto auto; gap: 1rem; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
-    .price-row { display: grid; grid-template-columns: 1fr auto auto; gap: 1rem; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.2s; cursor: pointer; }
-    .price-row:last-child { border-bottom: none; }
-    .price-row:hover, .price-row.highlight { background: rgba(255,255,255,0.04); }
-    .shop-badge { display: flex; align-items: center; gap: 0.65rem; }
-    .shop-color-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .shop-name { font-weight: 600; font-size: 0.95rem; }
-    .price-val { font-size: 1.1rem; font-weight: 700; color: var(--text); }
-    .price-best { color: var(--green); }
-    .price-link {
-      font-size: 0.8rem; color: white; text-decoration: none;
-      padding: 0.35rem 0.85rem; border-radius: 7px;
-      background: linear-gradient(135deg, var(--primary-light), var(--primary));
-      box-shadow: 0 2px 10px rgba(26,58,32,0.3);
-      transition: all 0.2s; font-weight: 600;
-    }
-    .price-link:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(26,58,32,0.45); }
-    .affiliate-badge { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.7rem; color: var(--text-muted); margin-top: 0.75rem; padding: 0.2rem 0.6rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; }
-
-    /* ── HOW IT WORKS ── */
-    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; position: relative; }
-    @media (max-width: 700px) { .steps { grid-template-columns: 1fr; } }
-    .steps::before { content: ''; position: absolute; top: 2rem; left: calc(16.66% + 1rem); right: calc(16.66% + 1rem); height: 1px; background: linear-gradient(90deg, transparent, var(--border), var(--border), transparent); }
-    @media (max-width: 700px) { .steps::before { display: none; } }
-    .step { text-align: center; padding: 2rem 1.5rem; }
-    .step-num {
-      width: 56px; height: 56px; border-radius: 18px;
-      background: linear-gradient(135deg, #2D5A35, var(--primary-light), var(--primary));
-      color: white; font-size: 1.35rem; font-weight: 800;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 1.35rem;
-      box-shadow: 0 8px 28px rgba(26,58,32,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
-      position: relative; z-index: 1;
-    }
-    .step h3 { font-size: 1.08rem; font-weight: 700; margin-bottom: 0.55rem; }
-    .step p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; }
-
-    /* ── CATEGORIES ── */
-    .categories-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem; }
-    @media (max-width: 900px) { .categories-grid { grid-template-columns: repeat(4, 1fr); } }
-    @media (max-width: 600px) { .categories-grid { grid-template-columns: repeat(3, 1fr); } }
-    .cat-card {
-      background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--border); border-radius: 14px;
-      padding: 1.35rem 0.75rem; text-align: center;
-      transition: all 0.25s; box-shadow: var(--glass-shadow); cursor: default;
-    }
-    .cat-card:hover { transform: translateY(-4px); background: var(--glass-bg-hover); border-color: var(--border-hover); box-shadow: var(--glass-shadow-hover); }
-    .cat-icon { font-size: 1.9rem; margin-bottom: 0.65rem; display: block; }
-    .cat-card h4 { font-size: 0.83rem; font-weight: 700; margin-bottom: 0.2rem; }
-    .cat-card p { font-size: 0.72rem; color: var(--text-muted); }
-
-    /* ── SHOPS ── */
-    .shops-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; }
-    @media (max-width: 900px) { .shops-grid { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 500px) { .shops-grid { grid-template-columns: repeat(2, 1fr); } }
-    .shop-card {
-      background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--border); border-radius: 14px;
-      padding: 1.35rem 1rem; text-align: center;
-      text-decoration: none; color: var(--text);
-      transition: all 0.25s; box-shadow: var(--glass-shadow);
-    }
-    .shop-card:hover { transform: translateY(-4px); background: var(--glass-bg-hover); border-color: var(--border-hover); box-shadow: var(--glass-shadow-hover); }
-    .shop-logo-badge {
-      width: 52px; height: 52px; border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 0.78rem; margin: 0 auto 0.85rem;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12);
-      letter-spacing: 0.02em;
-    }
-    .sl-cb { background: linear-gradient(135deg, #0088ee, #0065cc); color: white; }
-    .sl-bol { background: linear-gradient(135deg, #0088cc, #005fa3); color: white; }
-    .sl-mm { background: linear-gradient(135deg, #e30613, #b5000f); color: white; }
-    .sl-amz { background: linear-gradient(135deg, #ff9900, #e68a00); color: #111; }
-    .sl-alt { background: linear-gradient(135deg, #444, #222); color: #00ff88; }
-    .sl-meg { background: linear-gradient(135deg, #1a1a3e, #0d0d24); color: #e94560; }
-    .sl-az { background: linear-gradient(135deg, #333, #1a1a1a); color: #f4a261; }
-    .sl-par { background: linear-gradient(135deg, #006b58, #004d40); color: white; }
-    .sl-sam { background: linear-gradient(135deg, #1428a0, #0a1872); color: white; }
-    .sl-hp { background: linear-gradient(135deg, #0096d6, #0070a0); color: white; }
-    .shop-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.25rem; }
-    .shop-card p { font-size: 0.72rem; color: var(--text-muted); }
-    .shops-affiliate-note { margin-top: 1.35rem; font-size: 0.78rem; color: var(--text-muted); text-align: center; }
-    .shops-affiliate-note a { color: var(--text-secondary); text-decoration: underline; text-underline-offset: 2px; }
-
-    /* ── TESTIMONIALS ── */
-    .testimonial-section { background: rgba(255,255,255,0.01); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-    .testimonials { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-    @media (max-width: 900px) { .testimonials { grid-template-columns: 1fr; } }
-    .testimonial-card {
-      background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--border); border-radius: 16px; padding: 1.85rem; box-shadow: var(--glass-shadow);
-    }
-    .testimonial-stars { color: #FFB800; font-size: 0.95rem; margin-bottom: 1rem; letter-spacing: 0.1em; }
-    .testimonial-card blockquote { font-size: 0.92rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.35rem; font-style: italic; }
-    .testimonial-author { display: flex; align-items: center; gap: 0.75rem; }
-    .author-avatar {
-      width: 42px; height: 42px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary-light), var(--primary));
-      color: white; display: flex; align-items: center; justify-content: center;
-      font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(26,58,32,0.3);
-    }
-    .author-name { font-size: 0.9rem; font-weight: 700; }
-    .author-role { font-size: 0.78rem; color: var(--text-muted); }
-
-    /* ── NEWSLETTER ── */
-    .newsletter {
-      max-width: 640px; margin: 0 auto; text-align: center;
-      background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--border); border-radius: 22px; padding: 3.5rem 2.5rem; box-shadow: var(--glass-shadow);
-    }
-    .newsletter .section-title { margin-bottom: 0.5rem; }
-    .newsletter .section-subtitle { margin: 0.5rem auto 2rem; }
-    .newsletter-form { display: flex; gap: 0.6rem; max-width: 440px; margin: 0 auto; }
-    .newsletter-form input {
-      flex: 1; background: rgba(255,255,255,0.06); border: 1px solid var(--border);
-      border-radius: 9px; padding: 0.8rem 1rem; color: var(--text);
-      font-family: inherit; font-size: 0.9rem; outline: none; transition: border-color 0.2s;
-    }
-    .newsletter-form input:focus { border-color: var(--primary-light); background: rgba(255,255,255,0.08); }
-    .newsletter-form button {
-      background: linear-gradient(135deg, var(--primary-light), var(--primary));
-      color: white; border: none; border-radius: 9px; padding: 0.8rem 1.4rem;
-      font-weight: 700; font-size: 0.88rem; cursor: pointer; font-family: inherit;
-      transition: all 0.2s; white-space: nowrap;
-      box-shadow: 0 4px 16px rgba(26,58,32,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
-    }
-    .newsletter-form button:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(26,58,32,0.45); }
-    .newsletter-note { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.85rem; }
-
-    /* ── CTA ── */
-    .cta-section { text-align: center; padding: 6rem 2rem; }
-    .cta-section .section-subtitle { margin: 0.85rem auto 2.5rem; }
-
-    /* ── FOOTER ── */
-    footer { padding: 4.5rem 2rem 2rem; background: rgba(255,255,255,0.01); border-top: 1px solid var(--border); }
-    .footer-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
-    @media (max-width: 900px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; } }
-    @media (max-width: 500px) { .footer-grid { grid-template-columns: 1fr; } }
-    .footer-brand p { margin-top: 0.85rem; font-size: 0.88rem; color: var(--text-muted); line-height: 1.65; max-width: 290px; }
-    .footer-contact-info { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 1rem; }
-    .footer-contact-info a, .footer-contact-info span { font-size: 0.83rem; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
-    .footer-contact-info a:hover { color: var(--text-secondary); }
-    .footer-col h4 { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 1.1rem; }
-    .footer-col a { display: block; font-size: 0.88rem; color: var(--text-secondary); text-decoration: none; margin-bottom: 0.65rem; transition: color 0.2s; }
-    .footer-col a:hover { color: var(--text); }
-    .footer-bottom { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding-top: 1.5rem; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 1rem; }
-    .footer-copy { font-size: 0.8rem; color: var(--text-muted); }
-    .footer-legal { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-    .footer-legal a { font-size: 0.75rem; color: var(--text-muted); text-decoration: none; transition: all 0.2s; padding: 0.3rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; }
-    .footer-legal a:hover { color: var(--text-secondary); border-color: var(--border-hover); background: rgba(255,255,255,0.04); }
-    /* ── CHART PREVIEW ── */
-    .chart-wrap { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border); border-radius: 18px; padding: 1.75rem; box-shadow: var(--glass-shadow); }
-    .chart-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
-    .chart-product { font-weight: 700; font-size: 1rem; }
-    .chart-current { text-align: right; }
-    .chart-price { font-size: 1.7rem; font-weight: 800; color: var(--green); }
-    .chart-change { font-size: 0.8rem; color: var(--green); }
-    .chart-period { display: flex; gap: 0.35rem; margin-bottom: 1rem; }
-    .chart-period button { padding: 0.3rem 0.75rem; border-radius: 7px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); font-size: 0.78rem; cursor: pointer; font-family: inherit; transition: all 0.2s; }
-    .chart-period button.active, .chart-period button:hover { background: rgba(26,58,32,0.15); color: #6BCB7A; border-color: rgba(26,58,32,0.35); }
-    .chart-svg { width: 100%; height: 130px; }
-
-    /* ── MODAL ── */
-    .modal-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.75); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; padding: 1.5rem; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-    .modal-overlay.open { opacity: 1; pointer-events: all; }
-    .modal { background: #0C0C18; border: 1px solid rgba(255,255,255,0.1); border-radius: 22px; padding: 2.5rem; width: 100%; max-width: 480px; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 28px 100px rgba(0,0,0,0.7); transform: translateY(20px) scale(0.97); transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
-    .modal-overlay.open .modal { transform: none; }
-    .modal-close { position: absolute; top: 1.25rem; right: 1.25rem; background: rgba(255,255,255,0.07); border: 1px solid var(--border); width: 34px; height: 34px; border-radius: 50%; color: var(--text-secondary); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-    .modal-close:hover { background: rgba(255,255,255,0.14); color: var(--text); }
-    .modal h3 { font-size: 1.35rem; font-weight: 700; margin-bottom: 0.5rem; }
-    .modal p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.55; }
-    .contact-info-line { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.6rem; }
-    .contact-info-line a { color: var(--accent); text-decoration: none; }
-    .contact-info-line a:hover { text-decoration: underline; }
-    .form-group { margin-bottom: 1rem; }
-    .form-group label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.45rem; }
-    .form-group input, .form-group textarea { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 9px; padding: 0.75rem 1rem; color: var(--text); font-family: inherit; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
-    .form-group input:focus, .form-group textarea:focus { border-color: var(--primary-light); background: rgba(255,255,255,0.08); }
-    .form-group textarea { height: 120px; resize: vertical; }
-    .form-success { text-align: center; padding: 2rem 0; }
-    .form-success .check { font-size: 2.8rem; color: var(--green); margin-bottom: 0.75rem; }
-    .form-success h4 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem; }
-    .form-success p { font-size: 0.88rem; color: var(--text-secondary); }
-
-    /* ── SPOTLIGHT GLOW ON CARDS ── */
-    .glow-card {
-      --glow-x: 50%; --glow-y: 50%; --glow-opacity: 0;
-      position: relative; overflow: hidden;
-    }
-    .glow-card::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(
-        320px circle at var(--glow-x) var(--glow-y),
-        rgba(52,199,89,0.13) 0%,
-        rgba(45,90,53,0.07) 40%,
-        transparent 70%
-      );
-      opacity: var(--glow-opacity);
-      transition: opacity 0.3s ease;
+    /* ── COVER: hides all page content until unicorn scrolls away ── */
+    #cover {
+      position: fixed; inset: 0; z-index: 9999; background: #000;
       pointer-events: none;
-      border-radius: inherit;
-      z-index: 0;
+      transition: opacity 0.6s ease;
     }
-    .glow-card:hover::after { --glow-opacity: 1; }
-    .glow-card > * { position: relative; z-index: 1; }
+    #cover.gone { opacity: 0; }
 
-    /* ── TYPEWRITER CURSOR ── */
-    .hero h1 .gradient::after {
-      content: '|';
-      display: inline;
-      margin-left: 1px;
-      animation: blink 0.75s step-end infinite;
-      -webkit-text-fill-color: #6BCB7A;
-      opacity: 0.8;
-      font-weight: 300;
+    /* ── HERO SCREEN ── */
+    #hero {
+      position: relative; width: 100%; height: 100vh;
+      overflow: hidden; background: #000;
     }
-    @keyframes blink { 0%, 100% { opacity: 0.8; } 50% { opacity: 0; } }
+    /* UnicornStudio = the intro screen, starts fully visible, scrolls UP and away */
+    #unicorn-wrap {
+      position: fixed; inset: 0;
+      z-index: 11; pointer-events: none;
+      overflow: hidden;
+      transform: translateY(0);
+      will-change: transform;
+    }
+    /* Cover the viewport at 1440×900 (16:10), like object-fit:cover */
+    #unicorn-bg {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: max(100vw, 100vh * (1440/900));
+      height: max(100vh, 100vw * (900/1440));
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    #unicorn-bg > div,
+    #unicorn-bg > div > canvas,
+    #unicorn-bg iframe,
+    #unicorn-bg canvas {
+      width: 100% !important;
+      height: 100% !important;
+      border: none; display: block;
+    }
+    /* Hide the "Made with unicorn.studio" badge */
+    #unicorn-wrap a, #unicorn-bg a, .us-badge,
+    a[href*="unicorn.studio"], a[href*="unicornstudio"] { display: none !important; }
+    /* Logo: fixed center, always visible until lens fully lands */
+    #hero-logo {
+      position: fixed; left: 0; right: 0; top: 50%; transform: translateY(-50%);
+      z-index: 12;
+      display: flex; flex-direction: column; align-items: center; gap: 1.1rem;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    #hero-logo.hide { opacity: 0; }
+    #hero-logo img { width: 72px; height: 72px; filter: drop-shadow(0 0 28px rgba(48,209,88,0.55)); }
+    #hero-logo span { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
+    /* Hero content: inside #hero, shown after lens lands */
+    #hero-content {
+      position: absolute; inset: 0; z-index: 4;
+      display: flex; align-items: flex-end;
+      padding: 0 clamp(16px,5vw,80px) clamp(5rem,10vh,8rem);
+      pointer-events: none;
+    }
+    #hero-content .sc { pointer-events: auto; }
+    #hero-content .sb,
+    #hero-content .sh,
+    #hero-content .sp,
+    #hero-content .sbt {
+      opacity: 0; transform: translateY(32px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    #hero-content.reveal .sb  { opacity:1; transform:none; transition-delay: 0.05s; }
+    #hero-content.reveal .sh  { opacity:1; transform:none; transition-delay: 0.18s; }
+    #hero-content.reveal .sp  { opacity:1; transform:none; transition-delay: 0.32s; }
+    #hero-content.reveal .sbt { opacity:1; transform:none; transition-delay: 0.46s; }
 
-    /* ── REVEAL ANIMATIONS ── */
-    .reveal, .reveal-left, .reveal-right { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
-    .reveal-left { transform: translateX(-28px); }
-    .reveal-right { transform: translateX(28px); }
-    .reveal.visible, .reveal-left.visible, .reveal-right.visible { opacity: 1; transform: none; }
-    .stagger { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
-    .stagger.visible { opacity: 1; transform: none; }
-    .stagger > * { opacity: 0; transform: translateY(18px); transition: opacity 0.5s ease, transform 0.5s ease; }
-    .stagger.visible > *:nth-child(1) { opacity: 1; transform: none; transition-delay: 0s; }
-    .stagger.visible > *:nth-child(2) { opacity: 1; transform: none; transition-delay: 0.07s; }
-    .stagger.visible > *:nth-child(3) { opacity: 1; transform: none; transition-delay: 0.14s; }
-    .stagger.visible > *:nth-child(4) { opacity: 1; transform: none; transition-delay: 0.21s; }
-    .stagger.visible > *:nth-child(5) { opacity: 1; transform: none; transition-delay: 0.28s; }
-    .stagger.visible > *:nth-child(6) { opacity: 1; transform: none; transition-delay: 0.35s; }
-    .stagger.visible > *:nth-child(n+7) { opacity: 1; transform: none; transition-delay: 0.42s; }
+    /* ── AMBIENT DEPTH ORBS ── */
+    .orbs { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+    .orb { position:absolute; border-radius:50%; pointer-events:none; will-change:transform; }
+    .orb-1 {
+      width:900px; height:900px;
+      background: radial-gradient(circle at center, rgba(48,209,88,0.10) 0%, transparent 65%);
+      top:-200px; right:-200px;
+      animation: orbDrift1 20s ease-in-out infinite;
+    }
+    .orb-2 {
+      width:700px; height:700px;
+      background: radial-gradient(circle at center, rgba(37,163,80,0.07) 0%, transparent 65%);
+      bottom:5%; left:-200px;
+      animation: orbDrift2 25s ease-in-out infinite;
+    }
+    .orb-3 {
+      width:500px; height:500px;
+      background: radial-gradient(circle at center, rgba(48,209,88,0.06) 0%, transparent 65%);
+      top:40%; left:35%;
+      animation: orbDrift3 18s ease-in-out infinite;
+    }
+    @keyframes orbDrift1 { 0%,100%{transform:translate(0,0) scale(1);} 33%{transform:translate(-70px,50px) scale(1.06);} 66%{transform:translate(45px,-35px) scale(0.94);} }
+    @keyframes orbDrift2 { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(90px,-60px) scale(1.09);} }
+    @keyframes orbDrift3 { 0%,100%{transform:translate(0,0) scale(1);} 40%{transform:translate(-50px,70px) scale(1.05);} 80%{transform:translate(60px,-25px) scale(0.96);} }
+
+    /* ── FILM GRAIN ── */
+    body::before {
+      content:''; position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0.022;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 160px;
+    }
+
+    /* ── PROGRESS BAR ── */
+    #prog {
+      position:fixed; top:0; left:0; height:1.5px; z-index:9999;
+      background: linear-gradient(90deg, var(--green-mid), var(--green-bright), var(--green-vivid));
+      width:0%; box-shadow: 0 0 10px var(--green-glow);
+    }
+
+    /* ═══════════════════════════════════════════════
+       NAV — iOS 26 Liquid Glass (always on)
+    ═══════════════════════════════════════════════ */
+    .nav {
+      position:fixed; top:0; left:0; right:0; z-index:1000;
+      padding: 0 clamp(16px,5vw,60px); height:64px;
+      display:flex; align-items:center; justify-content:space-between;
+      background: rgba(5,5,9,0.35);
+      /* backdrop-filter handled by .gf SVG filter */
+      border-bottom: 0.5px solid var(--glass-border);
+      transition: background 0.4s, border-color 0.4s;
+    }
+    .nav::before {
+      content:''; position:absolute; top:0; left:60px; right:60px; height:0.5px;
+      background: linear-gradient(90deg, transparent, var(--glass-spec), transparent);
+      pointer-events:none;
+    }
+    .nav.scrolled { background: rgba(3,3,7,0.68); border-bottom-color: rgba(255,255,255,0.13); box-shadow: 0 0 48px rgba(0,0,0,0.40); }
+    .nb { display:flex; align-items:center; gap:10px; font-weight:800; }
+    .nb img { width:24px; height:24px; filter: drop-shadow(0 0 8px var(--green-glow)) drop-shadow(0 0 20px var(--green-glow-sm)); }
+    .nb span { font-weight:800; font-size:0.95rem; }
+    .nl { display:flex; align-items:center; gap:2px; list-style:none; }
+    .nl a { font-size:0.75rem; font-weight:500; color:var(--text-2); padding:6px 14px; border-radius:var(--r-full); transition:all 0.2s; }
+    .nl a:hover { color:var(--text); background:var(--glass-bg); }
+    .ncta {
+      background: linear-gradient(135deg, var(--green), var(--green-mid)) !important;
+      color:#fff !important; font-weight:700 !important;
+      box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.14), 0 4px 16px rgba(48,209,88,0.35) !important;
+    }
+    .ncta:hover { filter:brightness(1.12); box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.20), 0 8px 24px rgba(48,209,88,0.50) !important; }
+    .nm { display:none; background:none; border:none; color:var(--text); cursor:pointer; padding:8px; font-size:1.2rem; }
+    @media (max-width:768px) {
+      .nm { display:flex; }
+      .nl { display:none; position:fixed; top:64px; left:0; right:0; background:rgba(4,4,8,0.94); backdrop-filter:var(--glass-blur-lg); -webkit-backdrop-filter:var(--glass-blur-lg); flex-direction:column; gap:0; align-items:stretch; padding:0.5rem 0; border-bottom:0.5px solid var(--glass-border); }
+      .nl.open { display:flex; }
+      .nl li { width:100%; }
+      .nl a { display:block; padding:14px 20px; border-radius:0; font-size:0.95rem; color:var(--text) !important; border-bottom:0.5px solid rgba(255,255,255,0.04); }
+      .ncta { background:none !important; color:var(--green-bright) !important; box-shadow:none !important; }
+    }
+
+    /* ═══════════════════════════════════════════════
+       HERO / SLIDER
+    ═══════════════════════════════════════════════ */
+    #slider { position:relative; width:100%; min-height:100vh; height:100dvh; overflow:hidden; z-index:2; }
+
+    .grid-lines {
+      position:absolute; inset:0; z-index:0; pointer-events:none;
+      background-image: linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: radial-gradient(ellipse 70% 70% at 65% 45%, rgba(0,0,0,0.55) 0%, transparent 80%);
+      -webkit-mask-image: radial-gradient(ellipse 70% 70% at 65% 45%, rgba(0,0,0,0.55) 0%, transparent 80%);
+      opacity:0; animation: gridIn 2.5s ease 0.8s forwards;
+    }
+    @keyframes gridIn { to { opacity:1; } }
+
+    .s { position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity 1.2s ease-out; display:flex; align-items:flex-end; padding:0 clamp(16px,5vw,80px) clamp(5rem,10vh,8rem); }
+    .s.a { opacity:1; pointer-events:auto; }
+    .so { position:absolute; inset:0; z-index:1; background: linear-gradient(135deg, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.78) 30%, rgba(0,0,0,0.36) 65%, transparent 100%); }
+    .sc { position:relative; z-index:2; max-width:640px; transform-style:preserve-3d; will-change:transform; }
+
+    .sb {
+      display:inline-flex; align-items:center; gap:7px;
+      font-size:0.6rem; font-weight:700; letter-spacing:0.2em; text-transform:uppercase;
+      color:var(--green-bright); padding:5px 13px; border-radius:var(--r-full);
+      background:rgba(48,209,88,0.08); border:0.5px solid rgba(48,209,88,0.22);
+      /* backdrop-filter handled by .gf */
+      box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.15), 0 4px 16px rgba(48,209,88,0.10);
+      margin-bottom:1.3rem; opacity:0; transform:translateY(14px);
+      transition: opacity 0.8s ease 0.05s, transform 0.8s ease 0.05s;
+    }
+    .sbd { width:5px; height:5px; border-radius:50%; background:var(--green-bright); box-shadow:0 0 8px var(--green-glow); animation:dotPulse 2s ease-in-out infinite; }
+    @keyframes dotPulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.25;transform:scale(0.75);} }
+
+    .sh { font-size:clamp(3.8rem,11vw,9.5rem); font-weight:900; letter-spacing:-0.055em; line-height:0.86; opacity:0; transform:translateY(30px); transition:opacity 0.95s ease 0.15s, transform 0.95s ease 0.15s; }
+    .sh .a { color:var(--green-bright); display:block; }
+    .sp { font-size:clamp(0.95rem,1.8vw,1.1rem); font-weight:300; color:var(--text-2); line-height:1.78; max-width:480px; margin-top:1.5rem; opacity:0; transform:translateY(22px); transition:opacity 0.95s ease 0.30s, transform 0.95s ease 0.30s; }
+    .sbt { display:flex; gap:10px; flex-wrap:wrap; margin-top:2.2rem; opacity:0; transform:translateY(18px); transition:opacity 0.95s ease 0.45s, transform 0.95s ease 0.45s; }
+    .s.a .sb, .s.a .sh, .s.a .sp, .s.a .sbt { opacity:1; transform:translateY(0); }
+
+    /* ═══════════════════════════════════════════════
+       BUTTONS — 3D Liquid Glass
+    ═══════════════════════════════════════════════ */
+    .b {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:13px 26px; border-radius:var(--r-full);
+      font-size:0.85rem; font-weight:700; cursor:pointer; border:none; font-family:inherit;
+      transition:all 0.20s cubic-bezier(0.34,1.3,0.64,1);
+      position:relative; overflow:hidden; transform:translateZ(0);
+    }
+    .b::before { content:''; position:absolute; top:0; left:0; right:0; height:50%; background:linear-gradient(to bottom, rgba(255,255,255,0.12), transparent); pointer-events:none; border-radius:inherit; }
+    .bg { background:linear-gradient(135deg, var(--green), var(--green-mid)); color:#fff; box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.18), 0 6px 24px rgba(48,209,88,0.30), var(--shadow-sm); }
+    .bg:hover { filter:brightness(1.12); transform:translateY(-2px) scale(1.02); box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.22), 0 12px 36px rgba(48,209,88,0.42), var(--shadow-md); }
+    .bg:active { transform:translateY(1px) scale(0.98); }
+    .bl { background:rgba(255,255,255,0.10); color:#fff; border:0.5px solid rgba(255,255,255,0.22); /* backdrop-filter handled by .gf */ box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.18), var(--shadow-sm); }
+    .bl:hover { background:var(--glass-bg-hover); transform:translateY(-2px) scale(1.02); border-color:rgba(255,255,255,0.30); box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.22), var(--shadow-md); }
+    .bl:active { transform:translateY(1px) scale(0.98); }
+
+    /* ── CONTROLS ── */
+    .arrows { position:fixed; bottom:clamp(1.8rem,4vh,3.5rem); left:clamp(16px,5vw,60px); z-index:100; display:flex; gap:8px; }
+    .ab { width:40px; height:40px; border-radius:50%; border:0.5px solid var(--glass-border-hi); background:var(--glass-bg); backdrop-filter:var(--glass-blur-sm); -webkit-backdrop-filter:var(--glass-blur-sm); color:var(--text); cursor:pointer; font-size:0.9rem; display:flex; align-items:center; justify-content:center; transition:all 0.22s cubic-bezier(0.34,1.3,0.64,1); box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.18), var(--shadow-sm); }
+    .ab:hover { border-color:rgba(255,255,255,0.55); background:var(--glass-bg-hover); transform:scale(1.10); box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.28), var(--shadow-md); }
+    .ab:active { transform:scale(0.92); }
+
+    .dots { position:fixed; bottom:clamp(1.8rem,4vh,3.5rem); right:clamp(16px,5vw,60px); z-index:100; display:flex; gap:6px; align-items:center; }
+    .d { width:4px; height:4px; border-radius:50%; background:rgba(255,255,255,0.22); cursor:pointer; transition:all 0.35s cubic-bezier(0.34,1.3,0.64,1); }
+    .d.a { background:var(--green-bright); transform:scale(1.9); box-shadow:0 0 8px var(--green-glow); }
+
+    .cue { position:fixed; bottom:clamp(1.8rem,4vh,3.5rem); left:50%; transform:translateX(-50%); z-index:100; display:flex; flex-direction:column; align-items:center; gap:6px; color:var(--text-3); font-size:0.55rem; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; opacity:1; transition:opacity 0.4s; }
+    .cue.h { opacity:0; pointer-events:none; }
+    .cl { width:0.5px; height:36px; background:linear-gradient(to bottom, rgba(255,255,255,0.35), transparent); animation:cueAnim 2s ease-in-out infinite; }
+    @keyframes cueAnim { 0%,100%{transform:scaleY(1);opacity:1;} 50%{transform:scaleY(0.45);opacity:0.4;} }
+
+    /* ═══════════════════════════════════════════════
+       MARQUEE
+    ═══════════════════════════════════════════════ */
+    .mw { padding:2rem 0; border-top:0.5px solid rgba(255,255,255,0.04); border-bottom:0.5px solid rgba(255,255,255,0.04); background:rgba(255,255,255,0.008); position:relative; z-index:2; }
+    .ml { text-align:center; margin-bottom:1rem; font-size:0.58rem; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-3); }
+    .mo { overflow:hidden; mask-image:linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image:linear-gradient(to right, transparent, black 10%, black 90%, transparent); }
+    .mt { display:flex; gap:7px; width:max-content; animation:marqueeScroll 26s linear infinite; }
+    .mt:hover { animation-play-state:paused; }
+    @keyframes marqueeScroll { from{transform:translateX(0);} to{transform:translateX(-50%);} }
+    .mp { padding:7px 18px; border-radius:var(--r-full); border:0.5px solid rgba(255,255,255,0.09); background:var(--glass-bg); font-size:0.76rem; font-weight:600; color:var(--text-2); white-space:nowrap; flex-shrink:0; transition:all 0.18s; box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.10); }
+    .mp:hover { color:var(--text); border-color:rgba(255,255,255,0.22); background:var(--glass-bg-hover); }
+
+    /* ═══════════════════════════════════════════════
+       SECTIONS
+    ═══════════════════════════════════════════════ */
+    .sec { padding:clamp(5.5rem,10vw,12rem) clamp(16px,5vw,80px); position:relative; z-index:2; }
+    .si { max-width:1200px; margin:0 auto; }
+    .sp2 { display:grid; grid-template-columns:1fr 1fr; gap:clamp(2.5rem,6vw,7rem); align-items:center; perspective:var(--perspective); }
+    .sp2.r { direction:rtl; }
+    .sp2.r > * { direction:ltr; }
+    @media (max-width:800px) { .sp2 { grid-template-columns:1fr; } .sp2.r { direction:ltr; } }
+    .ey { display:block; font-size:0.62rem; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--green-bright); margin-bottom:1rem; }
+    .h2 { font-size:clamp(2.4rem,4.5vw,4.6rem); font-weight:900; letter-spacing:-0.048em; line-height:0.93; margin-bottom:1.3rem; }
+    .tx { font-size:clamp(0.9rem,1.3vw,1rem); color:var(--text-2); line-height:1.78; margin-bottom:2rem; }
+    .kp { display:flex; gap:2rem; flex-wrap:wrap; }
+    .kn { font-size:2.2rem; font-weight:900; letter-spacing:-0.05em; color:var(--green-bright); }
+    .kl { font-size:0.68rem; font-weight:500; color:var(--text-2); margin-top:2px; }
+
+    /* ═══════════════════════════════════════════════
+       GLASS CARD — iOS 26 Liquid Glass
+    ═══════════════════════════════════════════════ */
+    .gc {
+      background:var(--glass-bg);
+      /* backdrop-filter handled by .gf */
+      border:0.5px solid var(--glass-border); border-radius:28px; overflow:hidden;
+      box-shadow: inset 0 0.5px 0 var(--glass-spec-sm), inset 0 -0.5px 0 rgba(0,0,0,0.20), var(--shadow-xl), var(--shadow-grn);
+      width:100%; max-width:380px;
+      transition:transform 0.5s cubic-bezier(0.34,1.1,0.64,1), box-shadow 0.5s;
+      transform-style:preserve-3d; will-change:transform;
+    }
+    .sv:hover .gc {
+      box-shadow: inset 0 0.5px 0 var(--glass-spec), inset 0 -0.5px 0 rgba(0,0,0,0.28), 0 70px 100px rgba(0,0,0,0.68), 0 20px 40px rgba(0,0,0,0.42), 0 0 0 0.5px rgba(255,255,255,0.08), 0 0 60px rgba(48,209,88,0.16);
+    }
+    .gh { padding:18px 20px 12px; border-bottom:0.5px solid rgba(255,255,255,0.07); }
+    .gm { font-size:0.6rem; color:var(--text-3); font-weight:600; text-transform:uppercase; letter-spacing:0.12em; margin-bottom:3px; }
+    .gn { font-size:0.95rem; font-weight:700; }
+    .gr { padding:4px 0; }
+    .grw { display:flex; align-items:center; justify-content:space-between; padding:11px 20px; opacity:0; transform:translateX(-12px); transition:opacity 0.4s ease, transform 0.4s ease, background 0.15s; }
+    .grw.i { opacity:1; transform:none; }
+    .grw:hover { background:rgba(255,255,255,0.025); }
+    .grw.b { background:rgba(48,209,88,0.07); }
+    .gsh { display:flex; align-items:center; gap:9px; }
+    .gd { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .gsn { font-size:0.82rem; color:var(--text-2); font-weight:500; }
+    .grw.b .gsn { color:var(--text); font-weight:600; }
+    .gp { font-size:0.86rem; font-weight:700; }
+    .grw.b .gp { color:var(--green-bright); }
+    .gb { font-size:0.55rem; font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(48,209,88,0.14); color:var(--green-bright); margin-left:5px; border:0.5px solid rgba(48,209,88,0.24); }
+
+    /* ═══════════════════════════════════════════════
+       NOTIFICATIONS — iOS 26 Live Notification
+    ═══════════════════════════════════════════════ */
+    .ns { display:flex; flex-direction:column; gap:10px; max-width:330px; transition:transform 0.55s cubic-bezier(0.34,1.1,0.64,1); perspective:var(--perspective); }
+    .sv:hover .ns { transform:translateY(-10px) rotateX(1.5deg); }
+    .nc {
+      border-radius:22px; padding:14px;
+      background:rgba(255,255,255,0.91);
+      /* backdrop-filter handled by .gf */
+      border:0.5px solid rgba(255,255,255,0.72);
+      box-shadow: inset 0 0.5px 0 rgba(255,255,255,1.0), 0 2px 8px rgba(0,0,0,0.07), 0 12px 36px rgba(0,0,0,0.26), 0 0 0 0.5px rgba(0,0,0,0.04);
+      transition:transform 0.3s cubic-bezier(0.34,1.3,0.64,1), box-shadow 0.3s;
+    }
+    .nc:hover { transform:scale(1.025) translateY(-2px); box-shadow: inset 0 0.5px 0 rgba(255,255,255,1.0), 0 4px 16px rgba(0,0,0,0.10), 0 20px 48px rgba(0,0,0,0.32); }
+    .nc.d { background:rgba(255,255,255,0.52); transform:scale(0.94); transform-origin:top center; opacity:0.78; }
+    .nt { display:flex; align-items:center; gap:7px; margin-bottom:8px; }
+    .ni { width:30px; height:30px; border-radius:8px; background:var(--green-mid); display:flex; align-items:center; justify-content:center; font-size:0.8rem; flex-shrink:0; box-shadow:0 2px 8px rgba(48,209,88,0.30); }
+    .na { font-size:0.62rem; font-weight:700; color:#1d1d1f; }
+    .nti { font-size:0.58rem; color:#86868b; margin-left:auto; }
+    .ntl { font-size:0.8rem; font-weight:700; color:#1d1d1f; margin-bottom:2px; }
+    .ntx { font-size:0.72rem; color:#515154; line-height:1.4; }
+    .nd { color:var(--green-mid); font-weight:700; }
+
+    /* ── NEWS CARDS ── */
+    .nws { display:flex; flex-direction:column; gap:10px; max-width:390px; transition:transform 0.55s cubic-bezier(0.34,1.1,0.64,1); }
+    .sv:hover .nws { transform:translateY(-10px) rotateX(1.5deg); }
+    .nwc { background:var(--glass-bg); border-radius:16px; border:0.5px solid var(--glass-border); overflow:hidden; box-shadow: inset 0 0.5px 0 var(--glass-spec-sm), var(--shadow-md); transition:transform 0.25s cubic-bezier(0.34,1.3,0.64,1), border-color 0.2s, box-shadow 0.25s; }
+    .nwc:hover { transform:translateY(-3px) scale(1.012); border-color:rgba(255,255,255,0.20); box-shadow: inset 0 0.5px 0 var(--glass-spec), var(--shadow-lg); }
+    .nwt { height:100px; background:linear-gradient(135deg, #0a0a16 0%, #050508 100%); display:flex; align-items:center; justify-content:center; }
+    .nwi { font-size:1.8rem; opacity:0.38; }
+    .nwi2 { padding:12px 14px; }
+    .nwc2 { font-size:0.58rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--green-bright); margin-bottom:3px; }
+    .nwt2 { font-size:0.86rem; font-weight:700; line-height:1.3; margin-bottom:4px; }
+    .nwm { font-size:0.64rem; color:var(--text-3); }
+    .nwc.cp { flex-direction:row; align-items:center; gap:10px; padding:10px; }
+    .nwc.cp .nwt { height:46px; width:46px; border-radius:9px; flex-shrink:0; }
+    .nwc.cp .nwi { font-size:1rem; }
+    .nwc.cp .nwi2 { padding:0; }
+    .sv { display:flex; align-items:center; justify-content:center; }
+
+    /* ═══════════════════════════════════════════════
+       STAT — 3D Depth
+    ═══════════════════════════════════════════════ */
+    .stat { padding:clamp(6rem,12vw,16rem) clamp(16px,5vw,80px); text-align:center; background:#000; position:relative; z-index:2; border-top:0.5px solid rgba(255,255,255,0.04); overflow:hidden; }
+    .stg { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:900px; height:900px; pointer-events:none; background:radial-gradient(circle, rgba(48,209,88,0.12) 0%, transparent 58%); }
+    .stat-ring { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); border-radius:50%; pointer-events:none; border:0.5px solid rgba(48,209,88,0.12); animation:ringPulse 4s ease-in-out infinite; }
+    .ring-1 { width:520px; height:520px; animation-delay:0s; }
+    .ring-2 { width:360px; height:360px; animation-delay:1s; border-color:rgba(48,209,88,0.18); }
+    .ring-3 { width:220px; height:220px; animation-delay:2s; border-color:rgba(48,209,88,0.24); }
+    @keyframes ringPulse { 0%,100%{opacity:0.6;transform:translate(-50%,-50%) scale(1);} 50%{opacity:1;transform:translate(-50%,-50%) scale(1.03);} }
+    .sti { position:relative; z-index:1; max-width:640px; margin:0 auto; }
+    .stn { font-size:clamp(6rem,18vw,16rem); font-weight:900; letter-spacing:-0.06em; line-height:0.8; color:var(--green-bright); text-shadow:0 0 80px rgba(48,209,88,0.40), 0 0 160px rgba(48,209,88,0.18); }
+    .stl { font-size:clamp(1.1rem,2.8vw,1.9rem); font-weight:800; margin-top:1.3rem; }
+    .sts { font-size:0.95rem; color:var(--text-2); margin-top:0.8rem; line-height:1.65; }
+
+    /* ═══════════════════════════════════════════════
+       BENTO — 3D Glass Cards
+    ═══════════════════════════════════════════════ */
+    .ben { padding:clamp(5rem,9vw,11rem) clamp(16px,5vw,80px); background:#050505; border-top:0.5px solid rgba(255,255,255,0.04); position:relative; z-index:2; }
+    .beni { max-width:1200px; margin:0 auto; }
+    .beh { margin-bottom:3rem; }
+    .beg { display:grid; grid-template-columns:repeat(12,1fr); gap:12px; perspective:1000px; }
+    .bc {
+      background:var(--glass-bg); border:0.5px solid rgba(255,255,255,0.07); border-radius:22px; padding:1.6rem;
+      position:relative; overflow:hidden; --mx:50%; --my:50%;
+      transition:border-color 0.3s, background 0.3s, transform 0.4s cubic-bezier(0.34,1.1,0.64,1), box-shadow 0.4s;
+      transform-style:preserve-3d; will-change:transform;
+      box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.09), var(--shadow-sm);
+    }
+    .bc::before { content:''; position:absolute; top:0; left:16px; right:16px; height:0.5px; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent); pointer-events:none; z-index:1; }
+    .bc::after { content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; background:radial-gradient(180px circle at var(--mx) var(--my), rgba(48,209,88,0.16) 0%, transparent 80%); opacity:0; transition:opacity 0.3s; }
+    .bc:hover::after { opacity:1; }
+    .bc:hover { border-color:rgba(48,209,88,0.26); background:var(--glass-bg-hover); box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.16), var(--shadow-md), 0 0 24px rgba(48,209,88,0.07); }
+    .bc-1,.bc-2,.bc-3 { grid-column:span 4; }
+    .bc-4 { grid-column:span 6; }
+    .bc-5 { grid-column:span 6; }
+    @media (max-width:900px) { .bc-1,.bc-2,.bc-3 { grid-column:span 6; } .bc-4,.bc-5 { grid-column:span 12; } }
+    @media (max-width:540px) { .bc-1,.bc-2,.bc-3,.bc-4,.bc-5 { grid-column:span 12; } }
+    .bci { font-size:1.6rem; display:block; margin-bottom:0.9rem; }
+    .bcl { font-size:0.58rem; font-weight:700; text-transform:uppercase; letter-spacing:0.14em; color:var(--text-3); margin-bottom:0.3rem; }
+    .bcv { font-size:clamp(1.8rem,3.5vw,2.8rem); font-weight:900; letter-spacing:-0.05em; color:var(--green-bright); }
+    .bcd { font-size:0.78rem; color:var(--text-2); margin-top:0.4rem; line-height:1.5; }
+    .bcb { font-size:clamp(1.2rem,2.4vw,1.9rem); font-weight:800; letter-spacing:-0.03em; line-height:1.2; margin-top:0.6rem; }
+
+    /* ═══════════════════════════════════════════════
+       DOWNLOAD
+    ═══════════════════════════════════════════════ */
+    .dl { padding:clamp(6rem,12vw,16rem) clamp(16px,5vw,80px); text-align:center; background:#000; border-top:0.5px solid rgba(255,255,255,0.04); position:relative; z-index:2; }
+    .dli { max-width:600px; margin:0 auto; }
+    .dlh { font-size:clamp(3.2rem,8vw,8rem); font-weight:900; letter-spacing:-0.058em; line-height:0.86; margin-bottom:1.1rem; }
+    .dlh .a { color:var(--green-bright); }
+    .dls { font-size:1rem; color:var(--text-2); line-height:1.65; margin-bottom:2.5rem; }
+    .stb { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:1.3rem; }
+    .st {
+      display:inline-flex; align-items:center; gap:12px; padding:14px 24px; border-radius:16px;
+      background:var(--glass-bg); border:0.5px solid var(--glass-border-hi);
+      /* backdrop-filter handled by .gf */
+      box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.20), inset 0 -0.5px 0 rgba(0,0,0,0.20), var(--shadow-md);
+      transition:all 0.22s cubic-bezier(0.34,1.3,0.64,1); position:relative; overflow:hidden;
+    }
+    .st::before { content:''; position:absolute; top:0; left:0; right:0; height:50%; background:linear-gradient(to bottom, rgba(255,255,255,0.07), transparent); pointer-events:none; }
+    .st:hover { background:var(--glass-bg-hover); transform:translateY(-3px) scale(1.04); border-color:rgba(255,255,255,0.30); box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.28), inset 0 -0.5px 0 rgba(0,0,0,0.28), var(--shadow-lg); }
+    .st:active { transform:translateY(0) scale(0.97); }
+    .sti2 { font-size:1.5rem; }
+    .stsx { font-size:0.56rem; color:var(--text-2); font-weight:500; }
+    .stsn { font-size:0.88rem; font-weight:700; }
+    .dln { font-size:0.7rem; color:var(--text-3); line-height:1.6; }
+    .dln a { color:var(--green-bright); text-decoration:underline; }
+
+    /* ═══════════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════════ */
+    .ft { background:#000; border-top:0.5px solid rgba(255,255,255,0.06); padding:4.5rem clamp(16px,5vw,80px) 2rem; position:relative; z-index:2; }
+    .fti { max-width:1200px; margin:0 auto; }
+    .ftg { display:grid; grid-template-columns:1.5fr 1fr 1fr 1fr; gap:2.5rem; margin-bottom:3.5rem; }
+    @media (max-width:900px) { .ftg { grid-template-columns:1fr 1fr; gap:1.8rem; } }
+    @media (max-width:480px) { .ftg { grid-template-columns:1fr; } }
+    .ftl { display:flex; align-items:center; gap:8px; margin-bottom:0.8rem; }
+    .ftl img { width:24px; height:24px; }
+    .ftn { font-size:0.92rem; font-weight:800; }
+    .ftt { font-size:0.76rem; color:var(--text-3); line-height:1.6; max-width:180px; margin-bottom:1rem; }
+    .ftc a, .ftc sp { display:block; font-size:0.74rem; color:var(--text-3); margin-bottom:2px; transition:color 0.15s; }
+    .ftc a:hover { color:var(--text-2); }
+    .ftct { font-size:0.58rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-3); margin-bottom:1rem; }
+    .ftcl { list-style:none; display:flex; flex-direction:column; gap:0.5rem; }
+    .ftcl a { font-size:0.8rem; color:var(--text-2); transition:color 0.15s; }
+    .ftcl a:hover { color:var(--text); }
+    .ftb { border-top:0.5px solid rgba(255,255,255,0.04); padding-top:1.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.6rem; }
+    .ftp { font-size:0.7rem; color:var(--text-3); }
+
+    /* ═══════════════════════════════════════════════
+       COOKIE — iOS 26 Glass
+    ═══════════════════════════════════════════════ */
+    #ckb { position:fixed; bottom:0; left:0; right:0; z-index:9998; background:rgba(6,6,12,0.78); /* backdrop-filter handled by .gf */ border-top:0.5px solid var(--glass-border-hi); box-shadow: inset 0 0.5px 0 var(--glass-spec-sm), 0 -16px 48px rgba(0,0,0,0.32); padding:1.3rem 1.8rem; display:flex; align-items:center; gap:1.3rem; flex-wrap:wrap; transform:translateY(100%); transition:transform 0.48s cubic-bezier(0.34,1.1,0.64,1); }
+    #ckb.show { transform:translateY(0); }
+    .ckt { flex:1; min-width:230px; font-size:0.78rem; color:var(--text-2); line-height:1.6; }
+    .ckt strong { color:var(--text); }
+    .ckt a { color:var(--green-bright); text-decoration:underline; }
+    .ckbs { display:flex; gap:7px; flex-shrink:0; flex-wrap:wrap; }
+    .ckb { padding:9px 18px; border-radius:var(--r-full); font-size:0.76rem; font-weight:600; cursor:pointer; border:none; font-family:inherit; transition:all 0.18s; }
+    .cka { background:linear-gradient(135deg, var(--green), var(--green-mid)); color:#fff; box-shadow:0 4px 16px rgba(48,209,88,0.26); }
+    .cka:hover { filter:brightness(1.12); }
+    .cke { background:var(--glass-bg); color:var(--text); border:0.5px solid var(--glass-border-hi); box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.12); }
+    .cke:hover { background:var(--glass-bg-hover); }
+
+    /* ═══════════════════════════════════════════════
+       SCROLL REVEAL
+    ═══════════════════════════════════════════════ */
+    .rv { opacity:0; transform:translateY(36px) scale(0.98); transition:opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1); }
+    .rv.v { opacity:1; transform:none; }
+    .d1{transition-delay:0.08s;} .d2{transition-delay:0.17s;} .d3{transition-delay:0.26s;} .d4{transition-delay:0.35s;}
+
+    /* ═══════════════════════════════════════════════
+       SVG GLASS DISTORTION — Chromatic Aberration
+       Chromium only; non-Chromium falls back to existing blur silently.
+    ═══════════════════════════════════════════════ */
+    .gf-svg-sprite {
+      position: absolute;
+      width: 0; height: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .gf {
+      /* --gf-filter is set inline on each element by createGlassFilter() */
+      backdrop-filter: var(--gf-filter, none);
+      -webkit-backdrop-filter: var(--gf-filter, none);
+    }
+
+    /* ── STICKY GLASS PILL ─────────────────────────────────────────── */
+    .pill-wrapper {
+      position: sticky;
+      top: calc(100vh - 180px);
+      z-index: 200;
+      display: flex;
+      justify-content: center;
+      pointer-events: none;
+      height: 0;
+      overflow: visible;
+    }
+    .pill-inner {
+      pointer-events: auto;
+      width: clamp(280px, 45vw, 520px);
+      height: 64px;
+      border-radius: 9999px;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid rgba(255,255,255,0.18);
+      box-shadow:
+        inset 0 0.5px 0 rgba(255,255,255,0.22),
+        inset 0 -0.5px 0 rgba(0,0,0,0.18),
+        0 8px 40px rgba(0,0,0,0.48),
+        0 2px 8px rgba(0,0,0,0.32),
+        0 0 0 0.5px rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px 0 16px;
+      gap: 12px;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.34,1.3,0.64,1), box-shadow 0.3s;
+    }
+    .pill-inner.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .pill-inner:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow:
+        inset 0 0.5px 0 rgba(255,255,255,0.32),
+        0 16px 56px rgba(0,0,0,0.56),
+        0 0 40px rgba(48,209,88,0.12),
+        0 0 0 0.5px rgba(255,255,255,0.10);
+    }
+    .pill-left { display:flex; align-items:center; gap:10px; }
+    .pill-dot {
+      width:8px; height:8px; border-radius:50%;
+      background:var(--green-bright);
+      box-shadow:0 0 10px var(--green-glow);
+      animation:dotPulse 2s ease-in-out infinite;
+      flex-shrink:0;
+    }
+    .pill-label { font-size:0.78rem; font-weight:700; color:rgba(255,255,255,0.92); letter-spacing:-0.01em; }
+    .pill-sub { font-size:0.62rem; color:var(--text-3); font-weight:500; margin-top:1px; }
+    .pill-cta {
+      background: linear-gradient(135deg, var(--green), var(--green-mid));
+      color: #fff; font-size:0.72rem; font-weight:700;
+      padding: 7px 16px; border-radius:9999px; border:none;
+      cursor:pointer; font-family:inherit;
+      box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.18), 0 4px 16px rgba(48,209,88,0.30);
+      transition: filter 0.15s, transform 0.15s; flex-shrink:0;
+    }
+    .pill-cta:hover { filter:brightness(1.14); transform:scale(1.06); }
+
+    /* Specular light sweep on glass card hover */
+    .gc::after {
+      content:''; position:absolute;
+      top:-100%; left:-60%;
+      width:40%; height:300%;
+      background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.07) 50%, transparent 60%);
+      transform:skewX(-20deg);
+      transition: left 0s;
+      pointer-events:none; z-index:2;
+    }
+    .gc:hover::after { left:130%; transition:left 0.55s cubic-bezier(0.25,0.46,0.45,0.94); }
+    .bc-sweep {
+      position:absolute; top:-100%; left:-60%;
+      width:40%; height:300%;
+      background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.06) 50%, transparent 60%);
+      transform:skewX(-20deg); transition:left 0s;
+      pointer-events:none; z-index:2;
+    }
+    .bc:hover .bc-sweep { left:130%; transition:left 0.55s cubic-bezier(0.25,0.46,0.45,0.94); }
+
+    /* Green top-light on download store buttons */
+    .st::after {
+      content:''; position:absolute;
+      top:0; left:20%; right:20%; height:1px;
+      background: linear-gradient(90deg, transparent, rgba(48,209,88,0.35), transparent);
+      border-radius:0 0 1px 1px; pointer-events:none;
+    }
+
   </style>
 </head>
 <body>
 
-  <!-- SCROLL PROGRESS -->
-  <div id="scroll-progress"></div>
+  <!-- SVG Glass Distortion Sprite -->
+  <svg class="gf-svg-sprite" id="gf-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs id="gf-defs"></defs>
+  </svg>
 
-  <!-- COOKIE CONSENT BANNER -->
-  <div id="cookie-banner" role="dialog" aria-label="Cookie toestemming" aria-live="polite">
-    <div class="cookie-text">
-      <strong>Wij gebruiken cookies</strong>
-      <p>
-        Tweakly gebruikt functionele en analytische cookies om de app te verbeteren. Links naar webshops kunnen affiliate-links zijn waarover we een kleine commissie ontvangen — zonder meerkosten voor jou.
-        Lees ons <a href="cookies.html">cookiebeleid</a> en <a href="privacy.html">privacybeleid</a>.
-      </p>
+  <div class="orbs" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div id="prog"></div>
+
+  <!-- COOKIE -->
+  <div id="ckb" role="dialog">
+    <div class="ckt">
+      <strong>Wij gebruiken cookies</strong> — Tweakly gebruikt functionele cookies. Links kunnen affiliate-links zijn. Commissies hebben geen invloed op jouw prijs.
+      <a href="cookies.html">Cookiebeleid</a> &amp; <a href="privacy.html">Privacybeleid</a>.
     </div>
-    <div class="cookie-actions">
-      <button class="cookie-btn cookie-btn-essential" id="cookieEssential">Alleen noodzakelijk</button>
-      <button class="cookie-btn cookie-btn-accept" id="cookieAccept">Alles accepteren</button>
+    <div class="ckbs">
+      <button class="ckb cke" id="cke">Alleen noodzakelijk</button>
+      <button class="ckb cka" id="cka">Alles accepteren</button>
     </div>
   </div>
 
+  <div id="cover"></div>
+
   <!-- NAV -->
-  <nav id="mainNav">
-    <a href="#" class="nav-brand">
-      <img src="logo.png" alt="Tweakly logo" class="logo-img">
-      <span class="nav-brand-text">Tweak<em>ly</em></span>
-    </a>
-    <ul class="nav-links" id="navLinks">
-      <li><a href="#features">Features</a></li>
-      <li><a href="#prijzen">Prijzen</a></li>
-      <li><a href="#winkels">Winkels</a></li>
-      <li><a href="aanbiedingen.html">Aanbiedingen</a></li>
+  <nav class="nav" id="nav">
+    <a href="/" class="nb"><img src="logo.png" alt="Tweakly"><span>Tweakly</span></a>
+    <ul class="nl" id="nl">
+      <li><a href="#features">Functies</a></li>
       <li><a href="over-ons.html">Over ons</a></li>
-      <li><a href="#" id="openContactBtn" class="nav-cta">
-        <svg style="width:13px;height:13px;display:inline;vertical-align:middle;margin-right:4px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        Bèta aanvragen
-      </a></li>
+      <li><a href="affiliate.html">Affiliate</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="#download" class="ncta">Download</a></li>
     </ul>
-    <button class="nav-toggle" id="navToggle" aria-label="Menu openen">
-      <span></span><span></span><span></span>
-    </button>
+    <button class="nm" id="menu" aria-label="Menu" aria-expanded="false">☰</button>
   </nav>
 
   <!-- HERO -->
-  <div class="hero">
-    <canvas id="shader-canvas"></canvas>
-    <div class="hero-bg">
-      <div class="grid-overlay"></div>
+  <div id="hero">
+    <div id="unicorn-wrap" aria-hidden="true">
+      <div id="unicorn-bg">
+        <div style="width:100%;height:100%;position:absolute;inset:0" data-us-project="fdfhcoxsfVXx0O2ZKbcg"></div>
+      </div>
     </div>
-
-    <!-- Logo groot -->
-    <img src="logo.png" alt="Tweakly" class="logo-img-lg">
-
-    <div class="hero-badge">
-      <div class="dot"></div>
-      Binnenkort beschikbaar — iOS &amp; Android
+    <div id="hero-logo">
+      <img src="logo.png" alt="Tweakly">
+      <span>Tweakly</span>
     </div>
-
-    <h1>
-      Vind altijd de
-      <span class="gradient">beste prijs</span>
-      voor jouw tech
-    </h1>
-
-    <p class="hero-sub">
-      Tweakly vergelijkt prijzen bij Coolblue, Bol.com, MediaMarkt en meer. Stel een prijsalert in en mis nooit meer een aanbieding.
-    </p>
-
-    <div class="hero-buttons">
-      <a href="#" class="btn btn-primary btn-lg" id="openContactBtn2">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/></svg>
-        Bèta-toegang aanvragen
-      </a>
-      <a href="#features" class="btn btn-secondary btn-lg">
-        Ontdek features
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
-      </a>
-    </div>
-
-    <div class="affiliate-notice">
-      &#9432;&nbsp; Wij ontvangen een kleine commissie via affiliate-links — zonder extra kosten voor jou.
-      <a href="affiliate.html">Meer info</a>
-    </div>
-  </div>
-
-  <!-- 3D TECH SCENE -->
-  <div class="scene-3d-wrapper">
-    <div class="scene-fade-left"></div>
-    <div class="scene-fade-right"></div>
-    <div class="scene-fade-bottom"></div>
-    <div class="scene-3d" id="scene3d">
-      <div class="tech-card glow-card tc-1">
-        <span class="card-badge badge-sale">−12%</span>
-        <span class="card-icon">🖥️</span>
-        <span class="card-title">Monitor 27"</span>
-        <span class="card-price">€ 349</span>
-      </div>
-      <div class="tech-card glow-card tc-2">
-        <span class="card-badge badge-hot">HOT</span>
-        <span class="card-icon">🎮</span>
-        <span class="card-title">RTX 4070</span>
-        <span class="card-price">€ 549</span>
-      </div>
-      <div class="tech-card glow-card tc-3">
-        <span class="card-badge badge-new">NIEUW</span>
-        <span class="card-icon">💻</span>
-        <span class="card-title">MacBook Air M3</span>
-        <span class="card-price">€ 1.149</span>
-      </div>
-      <div class="tech-card glow-card tc-4">
-        <span class="card-badge badge-sale">−8%</span>
-        <span class="card-icon">📱</span>
-        <span class="card-title">iPhone 16</span>
-        <span class="card-price">€ 899</span>
-      </div>
-      <div class="tech-card glow-card tc-5">
-        <span class="card-badge badge-new">NIEUW</span>
-        <span class="card-icon">⚡</span>
-        <span class="card-title">Ryzen 9 9950X</span>
-        <span class="card-price">€ 689</span>
-      </div>
-      <div class="tech-card glow-card tc-6">
-        <span class="card-badge badge-hot">HOT</span>
-        <span class="card-icon">🎧</span>
-        <span class="card-title">Sony WH-1000XM5</span>
-        <span class="card-price">€ 279</span>
-      </div>
-      <div class="tech-card glow-card tc-7">
-        <span class="card-badge badge-sale">−15%</span>
-        <span class="card-icon">💾</span>
-        <span class="card-title">SSD 2TB NVMe</span>
-        <span class="card-price">€ 109</span>
-      </div>
-      <div class="tech-card glow-card tc-8">
-        <span class="card-badge badge-new">NIEUW</span>
-        <span class="card-icon">📷</span>
-        <span class="card-title">Sony A7 V</span>
-        <span class="card-price">€ 2.999</span>
-      </div>
-      <div class="tech-card glow-card tc-9">
-        <span class="card-badge badge-hot">HOT</span>
-        <span class="card-icon">🖱️</span>
-        <span class="card-title">Logitech G Pro X2</span>
-        <span class="card-price">€ 149</span>
+    <div id="hero-content">
+      <div class="sc">
+        <div class="sb"><span class="sbd"></span>Nu gratis beschikbaar</div>
+        <h1 class="sh">Slimmer<span class="a">winkelen.</span></h1>
+        <p class="sp">Vergelijk prijzen bij 20+ webshops, volg je favoriete producten en ontvang een melding zodra de prijs daalt.</p>
+        <div class="sbt">
+          <a href="#features" class="b bg">Ontdek functies →</a>
+          <a href="#download" class="b bl">Download app</a>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- TRUST BAR -->
-  <div class="trust-bar">
-    <p>Prijzen vergeleken bij</p>
-    <div class="trust-marquee-wrap">
-      <div class="trust-logos">
-        <span class="trust-logo-pill"><span class="trust-logo-dot" style="background:#0088ee"></span>Coolblue</span>
-        <span class="trust-logo-pill"><span class="trust-logo-dot" style="background:#0088cc"></span>Bol.com</span>
-        <span class="trust-logo-pill"><span class="trust-logo-dot" style="background:#e30613"></span>MediaMarkt</span>
-        <span class="trust-logo-pill"><span class="trust-logo-dot" style="background:#ff9900"></span>Amazon.nl</span>
-        <span class="trust-logo-pill"><span class="trust-logo-dot" style="background:#00ff88"></span>Alternate</span>
-        <span class="trust-logo-pill"><span class="trust-logo-dot" style="background:#e94560"></span>Megekko</span>
-        <span class="trust-logo-pill"><span class="trust-logo-dot" style="background:#1428a0"></span>Samsung</span>
-        <span class="trust-logo-pill"><span class="trust-logo-dot" style="background:#0096d6"></span>HP</span>
-        <span class="trust-logo-pill"><span class="trust-logo-dot" style="background:#006b58"></span>Paradigit</span>
-        <span class="trust-logo-pill"><span class="trust-logo-dot" style="background:#007ab9"></span>Azerty</span>
-        <!-- duplicate for seamless loop -->
-        <span class="trust-logo-pill"><span class="trust-logo-dot" style="background:#0088ee"></span>Coolblue</span>
-        <span class="trust-logo-pill"><span class="trust-logo-dot" style="background:#0088cc"></span>Bol.com</span>
-        <span class="trust-logo-pill"><span class="trust-logo-dot" style="background:#e30613"></span>MediaMarkt</span>
-        <span class="trust-logo-pill"><span class="trust-logo-dot" style="background:#ff9900"></span>Amazon.nl</span>
-        <span class="trust-logo-pill"><span class="trust-logo-dot" style="background:#00ff88"></span>Alternate</span>
-        <span class="trust-logo-pill"><span class="trust-logo-dot" style="background:#e94560"></span>Megekko</span>
-        <span class="trust-logo-pill"><span class="trust-logo-dot" style="background:#1428a0"></span>Samsung</span>
-        <span class="trust-logo-pill"><span class="trust-logo-dot" style="background:#0096d6"></span>HP</span>
-        <span class="trust-logo-pill"><span class="trust-logo-dot" style="background:#006b58"></span>Paradigit</span>
-        <span class="trust-logo-pill"><span class="trust-logo-dot" style="background:#007ab9"></span>Azerty</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- STATS BAR -->
-  <div class="stats-bar reveal">
-    <div class="stat"><div class="stat-number">10+</div><div class="stat-label">Webshops</div></div>
-    <div class="stat"><div class="stat-number">30</div><div class="stat-label">Categorieën</div></div>
-    <div class="stat"><div class="stat-number">Groeiend</div><div class="stat-label">Productcatalogus</div></div>
-    <div class="stat"><div class="stat-number">Gratis</div><div class="stat-label">Te gebruiken</div></div>
-  </div>
-
-  <!-- FEATURES -->
-  <section id="features">
-    <div class="section-inner">
-      <div class="section-label reveal">Features</div>
-      <h2 class="section-title reveal">Alles wat je nodig hebt</h2>
-      <p class="section-subtitle reveal">Tweakly brengt de krachtigste tools voor slimme shoppers samen in één app.</p>
-      <div class="features-grid stagger">
-        <div class="feature-card glow-card" data-accent="green">
-          <span class="feature-icon">📊</span>
-          <h3>Prijsvergelijking</h3>
-          <p>Vergelijk prijzen bij alle grote Nederlandse webshops tegelijk. Altijd het laagste tarief in beeld.</p>
-          <span class="feature-tag tag-green">Realtime</span>
-        </div>
-        <div class="feature-card glow-card" data-accent="blue">
-          <span class="feature-icon">🔔</span>
-          <h3>Prijsalerts</h3>
-          <p>Stel een doelprijs in en ontvang een pushmelding zodra het product goedkoper wordt.</p>
-          <span class="feature-tag tag-blue">Gratis</span>
-        </div>
-        <div class="feature-card glow-card" data-accent="orange">
-          <span class="feature-icon">📈</span>
-          <h3>Prijsgeschiedenis</h3>
-          <p>Bekijk de volledige prijshistorie van een product. Koop op het juiste moment.</p>
-          <span class="feature-tag tag-orange">Inzicht</span>
-        </div>
-        <div class="feature-card glow-card" data-accent="green">
-          <span class="feature-icon">📰</span>
-          <h3>Tech nieuws</h3>
-          <p>Blijf op de hoogte met nieuws en reviews van Tweakers.net — direct in de app.</p>
-          <span class="feature-tag tag-green">RSS-feed</span>
-        </div>
-        <div class="feature-card glow-card" data-accent="blue">
-          <span class="feature-icon">⭐</span>
-          <h3>Productreviews</h3>
-          <p>Lees uitgebreide reviews en scores voor producten die je wilt kopen.</p>
-          <span class="feature-tag tag-blue">Redactioneel</span>
-        </div>
-        <div class="feature-card glow-card" data-accent="purple">
-          <span class="feature-icon">🐉</span>
-          <h3>PC Builder</h3>
-          <p>Stel je eigen PC samen en vergelijk prijzen voor elke component in één overzicht.</p>
-          <span class="feature-tag tag-orange">Nieuw</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- PRICE COMPARISON DEMO -->
-  <section id="prijzen" style="background: rgba(255,255,255,0.01);">
-    <div class="section-inner">
-      <div class="section-label reveal">Prijsvergelijking</div>
-      <h2 class="section-title reveal">Vergelijk in seconden</h2>
-      <p class="section-subtitle reveal">Zie direct bij welke shop je het goedkoopst uit bent. Links gaan naar de betreffende webshop.*</p>
-
-      <div class="price-table glow-card reveal">
-        <div class="price-table-header">
-          <span>Winkel</span>
-          <span>Prijs</span>
-          <span></span>
-        </div>
-        <div class="price-row highlight">
-          <div class="shop-badge">
-            <div class="shop-color-dot" style="background:#0088ee"></div>
-            <span class="shop-name">Coolblue</span>
-          </div>
-          <span class="price-val price-best">€ 1.149</span>
-          <a href="https://www.coolblue.nl/zoeken?query=MacBook+Air+M3&utm_source=tweakly&utm_medium=affiliate" target="_blank" rel="noopener sponsored" class="price-link">Bekijk</a>
-        </div>
-        <div class="price-row">
-          <div class="shop-badge">
-            <div class="shop-color-dot" style="background:#0088cc"></div>
-            <span class="shop-name">Bol.com</span>
-          </div>
-          <span class="price-val">€ 1.179</span>
-          <a href="https://www.bol.com/nl/s/?searchtext=MacBook+Air+M3&utm_source=tweakly&utm_medium=affiliate" target="_blank" rel="noopener sponsored" class="price-link">Bekijk</a>
-        </div>
-        <div class="price-row">
-          <div class="shop-badge">
-            <div class="shop-color-dot" style="background:#e30613"></div>
-            <span class="shop-name">MediaMarkt</span>
-          </div>
-          <span class="price-val">€ 1.199</span>
-          <a href="https://www.mediamarkt.nl/zoeken.html?query=MacBook+Air+M3&utm_source=tweakly&utm_medium=affiliate" target="_blank" rel="noopener sponsored" class="price-link">Bekijk</a>
-        </div>
-        <div class="price-row">
-          <div class="shop-badge">
-            <div class="shop-color-dot" style="background:#ff9900"></div>
-            <span class="shop-name">Amazon.nl</span>
-          </div>
-          <span class="price-val">€ 1.189</span>
-          <a href="https://www.amazon.nl/s?k=MacBook+Air+M3&tag=tweakly08-20" target="_blank" rel="noopener sponsored" class="price-link">Bekijk</a>
-        </div>
-      </div>
-      <div style="text-align:center">
-        <span class="affiliate-badge">&#9432; Links zijn mogelijk affiliate-links. <a href="affiliate.html" style="color:var(--text-secondary);text-decoration:underline;margin-left:4px;">Lees meer</a></span>
-      </div>
-      <p style="font-size:0.75rem;color:var(--text-muted);margin-top:0.5rem;text-align:center">* Prijzen zijn indicatief en kunnen afwijken. Links zijn affiliate-links van Amazon (tag: tweakly08-20), Coolblue, Bol.com, MediaMarkt, Paradigit, Samsung, HP via Daisycon.</p>
-    </div>
-  </section>
-
-  <!-- PRICE CHART DEMO -->
-  <section>
-    <div class="section-inner">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center">
+  <!-- STICKY GLASS PILL -->
+  <div class="pill-wrapper" id="pillWrapper">
+    <div class="pill-inner" id="pillInner">
+      <div class="pill-left">
+        <span class="pill-dot"></span>
         <div>
-          <div class="section-label reveal-left">Prijsgeschiedenis</div>
-          <h2 class="section-title reveal-left">Koop op het juiste moment</h2>
-          <p class="section-subtitle reveal-left" style="margin-bottom:2rem">Bekijk hoe de prijs van een product zich ontwikkelt over de tijd. Maak een betere koopbeslissing met historische data.</p>
-          <a href="#" class="btn btn-primary reveal-left" id="openContactBtn4">Bèta-toegang aanvragen</a>
+          <div class="pill-label">Tweakly vergelijkt nu</div>
+          <div class="pill-sub">50.000+ producten · 20+ webshops</div>
         </div>
-        <div class="chart-wrap glow-card reveal-right">
-          <div class="chart-header">
-            <div>
-              <div class="chart-product">MacBook Air M3 13"</div>
-              <div style="font-size:0.8rem;color:var(--text-muted)">Prijsverloop — afgelopen 6 maanden</div>
+      </div>
+      <button class="pill-cta" onclick="document.getElementById('download').scrollIntoView({behavior:'smooth'})">Download gratis</button>
+    </div>
+  </div>
+
+  <!-- MARQUEE -->
+  <div class="mw">
+    <p class="ml">Vergelijkt prijzen bij</p>
+    <div class="mo">
+      <div class="mt">
+        <span class="mp">Coolblue</span><span class="mp">Bol.com</span><span class="mp">MediaMarkt</span><span class="mp">Amazon.nl</span><span class="mp">Alternate</span><span class="mp">Centralpoint</span><span class="mp">Azerty</span><span class="mp">BCC</span><span class="mp">Wehkamp</span><span class="mp">Expert</span><span class="mp">EP</span>
+        <span class="mp">Coolblue</span><span class="mp">Bol.com</span><span class="mp">MediaMarkt</span><span class="mp">Amazon.nl</span><span class="mp">Alternate</span><span class="mp">Centralpoint</span><span class="mp">Azerty</span><span class="mp">BCC</span><span class="mp">Wehkamp</span><span class="mp">Expert</span><span class="mp">EP</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURE 1 -->
+  <section class="sec" id="features" style="background:#000">
+    <div class="si">
+      <div class="sp2 rv">
+        <div>
+          <span class="ey">Prijsvergelijking</span>
+          <h2 class="h2">Altijd de laagste prijs.</h2>
+          <p class="tx">Tweakly vergelijkt real-time prijzen bij meer dan 20 Nederlandse en Belgische webshops. Gesorteerd op prijs — niet op commissie. Eerlijk, altijd.</p>
+          <div class="kp">
+            <div><span class="kn">20+</span><span class="kl">Webshops</span></div>
+            <div><span class="kn">50k+</span><span class="kl">Producten</span></div>
+            <div><span class="kn">Real-time</span><span class="kl">Prijsdata</span></div>
+          </div>
+        </div>
+        <div class="sv">
+          <div class="gc" id="priceCard">
+            <div class="gh">
+              <div class="gm">Prijsvergelijking</div>
+              <div class="gn">Sony PlayStation 5 Slim</div>
             </div>
-            <div class="chart-current">
-              <div class="chart-price">€ 1.149</div>
-              <div class="chart-change">↓ 8% vs. vorige maand</div>
+            <div class="gr">
+              <div class="grw b"><div class="gsh"><div class="gd" style="background:#30D158"></div><span class="gsn">Coolblue</span><span class="gb">BESTE PRIJS</span></div><span class="gp">€449,99</span></div>
+              <div class="grw"><div class="gsh"><div class="gd" style="background:#0A84FF"></div><span class="gsn">Bol.com</span></div><span class="gp">€459,00</span></div>
+              <div class="grw"><div class="gsh"><div class="gd" style="background:#FF9F0A"></div><span class="gsn">MediaMarkt</span></div><span class="gp">€469,99</span></div>
+              <div class="grw"><div class="gsh"><div class="gd" style="background:#FF453A"></div><span class="gsn">Amazon.nl</span></div><span class="gp">€472,00</span></div>
+              <div class="grw"><div class="gsh"><div class="gd" style="background:#BF5AF2"></div><span class="gsn">Alternate</span></div><span class="gp">€479,00</span></div>
             </div>
           </div>
-          <div class="chart-period">
-            <button>1M</button>
-            <button>3M</button>
-            <button class="active">6M</button>
-            <button>1J</button>
-            <button>Alles</button>
-          </div>
-          <svg class="chart-svg" viewBox="0 0 400 130" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#1A3A20" stop-opacity="0.3"/>
-                <stop offset="100%" stop-color="#1A3A20" stop-opacity="0"/>
-              </linearGradient>
-            </defs>
-            <path d="M0,70 C30,64 60,88 90,76 C120,64 150,44 180,50 C210,56 240,72 270,60 C300,48 330,32 360,22 C375,17 390,20 400,16" stroke="#2D5A35" stroke-width="2.5" fill="none"/>
-            <path d="M0,70 C30,64 60,88 90,76 C120,64 150,44 180,50 C210,56 240,72 270,60 C300,48 330,32 360,22 C375,17 390,20 400,16 L400,130 L0,130 Z" fill="url(#chartGrad)"/>
-            <circle cx="400" cy="16" r="5" fill="#2D5A35"/>
-            <circle cx="400" cy="16" r="9" fill="#2D5A35" opacity="0.25"/>
-          </svg>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- HOW IT WORKS -->
-  <section id="hoe-werkt-het" style="background: rgba(255,255,255,0.01);">
-    <div class="section-inner" style="text-align:center">
-      <div class="section-label reveal">Hoe het werkt</div>
-      <h2 class="section-title reveal">In 3 stappen besparen</h2>
-      <p class="section-subtitle reveal" style="margin-left:auto;margin-right:auto">Download de app en start direct met het vergelijken van prijzen.</p>
-      <div class="steps stagger">
-        <div class="step">
-          <div class="step-num">1</div>
-          <h3>Download de app</h3>
-          <p>Gratis beschikbaar voor iOS en Android. Registreer in minder dan een minuut.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">2</div>
-          <h3>Zoek een product</h3>
-          <p>Zoek een laptop, smartphone of component en zie direct de beste prijs bij alle shops.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">3</div>
-          <h3>Stel een alert in</h3>
-          <p>Krijg een melding zodra de prijs daalt. Koop op het perfecte moment.</p>
-        </div>
-      </div>
+  <!-- STAT -->
+  <div class="stat">
+    <div class="stg" aria-hidden="true"></div>
+    <div class="stat-ring ring-1" aria-hidden="true"></div>
+    <div class="stat-ring ring-2" aria-hidden="true"></div>
+    <div class="stat-ring ring-3" aria-hidden="true"></div>
+    <div class="sti rv">
+      <span class="stn" id="statNum" data-target="38" data-suffix="%">0%</span>
+      <div class="stl">Gemiddelde besparing per aankoop</div>
+      <p class="sts">Door het perfecte moment te kiezen, besparen Tweakly-gebruikers gemiddeld 38% ten opzichte van de aanbevolen winkelprijs.</p>
     </div>
-  </section>
+  </div>
 
-  <!-- CATEGORIES -->
-  <section id="categorieen">
-    <div class="section-inner">
-      <div class="section-label reveal">Categorieën</div>
-      <h2 class="section-title reveal">30 productcategorieën</h2>
-      <p class="section-subtitle reveal">Van smartphones en laptops tot PC-componenten en randapparatuur — vergelijk prijzen in alle populaire categorieën.</p>
-      <div class="categories-grid stagger">
-        <div class="cat-card glow-card"><span class="cat-icon">📱</span><h4>Smartphones</h4></div>
-        <div class="cat-card glow-card"><span class="cat-icon">💻</span><h4>Laptops</h4></div>
-        <div class="cat-card glow-card"><span class="cat-icon">🖥️</span><h4>Monitoren</h4></div>
-        <div class="cat-card glow-card"><span class="cat-icon">🎮</span><h4>Gaming</h4></div>
-        <div class="cat-card glow-card"><span class="cat-icon">🎧</span><h4>Audio</h4></div>
-        <div class="cat-card glow-card"><span class="cat-icon">📺</span><h4>Televisies</h4></div>
-        <div class="cat-card glow-card"><span class="cat-icon">📷</span><h4>Fotografie</h4></div>
-        <div class="cat-card glow-card"><span class="cat-icon">⚡</span><h4>Grafische kaarten</h4></div>
-        <div class="cat-card glow-card"><span class="cat-icon">🧩</span><h4>Processors</h4></div>
-        <div class="cat-card glow-card"><span class="cat-icon">💾</span><h4>Opslag (SSD)</h4></div>
-        <div class="cat-card glow-card"><span class="cat-icon">📡</span><h4>Netwerk</h4></div>
-        <div class="cat-card glow-card"><span class="cat-icon">⌚</span><h4>Wearables</h4></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SHOPS -->
-  <section id="winkels" style="background: rgba(255,255,255,0.01);">
-    <div class="section-inner">
-      <div class="section-label reveal">Webshops</div>
-      <h2 class="section-title reveal">10 aangesloten winkels</h2>
-      <p class="section-subtitle reveal">We vergelijken prijzen van de grote Nederlandse webshops — regelmatig uitgebreid.</p>
-      <div class="shops-grid stagger">
-        <a href="https://www.coolblue.nl/zoeken?query=elektronica&utm_source=tweakly&utm_medium=affiliate" target="_blank" rel="noopener" class="shop-card glow-card">
-          <div class="shop-logo-badge sl-cb">CB</div><h4>Coolblue</h4><p>coolblue.nl</p>
-        </a>
-        <a href="https://www.bol.com/nl/s/?searchtext=elektronica&utm_source=tweakly&utm_medium=affiliate" target="_blank" rel="noopener" class="shop-card glow-card">
-          <div class="shop-logo-badge sl-bol">BOL</div><h4>Bol.com</h4><p>bol.com</p>
-        </a>
-        <a href="https://www.mediamarkt.nl/zoeken.html?query=elektronica&utm_source=tweakly&utm_medium=affiliate" target="_blank" rel="noopener" class="shop-card glow-card">
-          <div class="shop-logo-badge sl-mm">MM</div><h4>MediaMarkt</h4><p>mediamarkt.nl</p>
-        </a>
-        <a href="https://www.amazon.nl/s?k=elektronica&tag=tweakly08-20" target="_blank" rel="noopener" class="shop-card glow-card">
-          <div class="shop-logo-badge sl-amz">AMZ</div><h4>Amazon.nl</h4><p>amazon.nl</p>
-        </a>
-        <a href="https://www.alternate.nl?utm_source=tweakly&utm_medium=referral" target="_blank" rel="noopener" class="shop-card glow-card">
-          <div class="shop-logo-badge sl-alt">ALT</div><h4>Alternate</h4><p>alternate.nl</p>
-        </a>
-        <a href="https://www.megekko.nl?utm_source=tweakly&utm_medium=referral" target="_blank" rel="noopener" class="shop-card glow-card">
-          <div class="shop-logo-badge sl-meg">MEG</div><h4>Megekko</h4><p>megekko.nl</p>
-        </a>
-        <a href="https://www.azerty.nl?utm_source=tweakly&utm_medium=referral" target="_blank" rel="noopener" class="shop-card glow-card">
-          <div class="shop-logo-badge sl-az">AZ</div><h4>Azerty</h4><p>azerty.nl</p>
-        </a>
-        <a href="https://www.paradigit.nl/zoeken?query=elektronica&utm_source=tweakly&utm_medium=affiliate" target="_blank" rel="noopener" class="shop-card glow-card">
-          <div class="shop-logo-badge sl-par">PAR</div><h4>Paradigit</h4><p>paradigit.nl</p>
-        </a>
-        <a href="https://www.samsung.com/nl/search/?searchvalue=elektronica&utm_source=tweakly&utm_medium=affiliate" target="_blank" rel="noopener" class="shop-card glow-card">
-          <div class="shop-logo-badge sl-sam">SAM</div><h4>Samsung</h4><p>samsung.com/nl</p>
-        </a>
-        <a href="https://www.hp.com/nl-nl/shop/SearchDisplay?searchTerm=elektronica&utm_source=tweakly&utm_medium=affiliate" target="_blank" rel="noopener" class="shop-card glow-card">
-          <div class="shop-logo-badge sl-hp">HP</div><h4>HP</h4><p>hp.com/nl-nl</p>
-        </a>
-      </div>
-      <p class="shops-affiliate-note">
-        Tweakly werkt samen met affiliate-netwerken: <strong>Amazon Associates</strong> (tag: tweakly08-20), <strong>Daisycon</strong> (Coolblue BE, Paradigit NL, MediaMarkt, Samsung BE, HP) en <strong>Bol.com Partner Programma</strong>. Bij aankoop via onze links ontvangen wij een kleine commissie — zonder meerkosten voor jou. Lees onze <a href="affiliate.html">volledige affiliate disclosure</a>.
-      </p>
-    </div>
-  </section>
-
-  <!-- ABOUT TEASER -->
-  <section class="testimonial-section">
-    <div class="section-inner" style="text-align:center">
-      <div class="section-label reveal">Over Tweakly</div>
-      <h2 class="section-title reveal">Gebouwd door een tech-enthousiasteling</h2>
-      <p class="section-subtitle reveal" style="margin-left:auto;margin-right:auto;max-width:560px">Tweakly is ontwikkeld door Alexander Ballet vanuit Zolder, België, met als missie: prijsvergelijking voor elektronica toegankelijker en transparanter maken voor Nederlandse consumenten.</p>
-      <div class="stagger" style="display:flex;flex-direction:column;gap:1rem;max-width:640px;margin:2rem auto 0;text-align:left">
-        <div class="testimonial-card glow-card" style="display:flex;gap:1.25rem;align-items:flex-start;text-align:left">
-          <div style="font-size:2rem;flex-shrink:0">🎯</div>
-          <div>
-            <div style="font-weight:700;margin-bottom:0.35rem">Onze missie</div>
-            <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.6;margin:0">Altijd de eerlijkste prijsvergelijking bieden — zonder betaalde plaatsingen, zonder manipulatie. Winkels worden gesorteerd op prijs, niet op commissie.</p>
+  <!-- FEATURE 2 -->
+  <section class="sec" style="background:#040404;border-top:0.5px solid rgba(255,255,255,0.04);" id="alerts">
+    <div class="si">
+      <div class="sp2 r rv">
+        <div>
+          <span class="ey">Prijsalerts</span>
+          <h2 class="h2">Koop op het perfecte moment.</h2>
+          <p class="tx">Stel een doelprijs in en ontvang direct een pushmelding zodra de prijs daalt. Nooit meer dagelijks handmatig controleren.</p>
+          <div class="kp">
+            <div><span class="kn">1.200+</span><span class="kl">Actieve meldingen</span></div>
+            <div><span class="kn">Direct</span><span class="kl">Push notificatie</span></div>
           </div>
         </div>
-        <div class="testimonial-card glow-card" style="display:flex;gap:1.25rem;align-items:flex-start;text-align:left">
-          <div style="font-size:2rem;flex-shrink:0">🔍</div>
-          <div>
-            <div style="font-weight:700;margin-bottom:0.35rem">Transparantie over affiliate-links</div>
-            <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.6;margin:0">Tweakly bevat affiliate-links. Wanneer u via Tweakly een aankoop doet, ontvangen wij een kleine commissie — zonder extra kosten voor u. <a href="affiliate.html">Lees onze volledige disclosure</a>.</p>
-          </div>
-        </div>
-        <div class="testimonial-card glow-card" style="display:flex;gap:1.25rem;align-items:flex-start;text-align:left">
-          <div style="font-size:2rem;flex-shrink:0">🚀</div>
-          <div>
-            <div style="font-weight:700;margin-bottom:0.35rem">Status: in ontwikkeling</div>
-            <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.6;margin:0">Tweakly is momenteel in actieve ontwikkeling. Meld je aan voor bèta-toegang en ontvang een bericht zodra de app beschikbaar is in de App Store en Google Play.</p>
+        <div class="sv">
+          <div class="ns">
+            <div class="nc">
+              <div class="nt"><div class="ni">🔔</div><div><div class="na">TWEAKLY</div></div><div class="nti">Nu</div></div>
+              <div class="ntl">Prijsdaling gedetecteerd!</div>
+              <div class="ntx">MacBook Air M3 is <span class="nd">€80 goedkoper</span> bij Coolblue. Nu: €1.099 — jouw doelprijs bereikt.</div>
+            </div>
+            <div class="nc d">
+              <div class="nt"><div class="ni" style="background:#0A84FF">🔔</div><div><div class="na" style="color:#515154">TWEAKLY</div></div><div class="nti" style="color:#86868b">2u geleden</div></div>
+              <div class="ntl" style="color:#515154">iPhone 16 Pro terug op voorraad</div>
+            </div>
           </div>
         </div>
       </div>
-      <div style="margin-top:2rem">
-        <a href="over-ons.html" class="btn btn-secondary">Meer over ons</a>
+    </div>
+  </section>
+
+  <!-- FEATURE 3 -->
+  <section class="sec" style="background:#000;border-top:0.5px solid rgba(255,255,255,0.04);" id="nieuws">
+    <div class="si">
+      <div class="sp2 rv">
+        <div>
+          <span class="ey">Nieuws &amp; Reviews</span>
+          <h2 class="h2">Altijd op de hoogte.</h2>
+          <p class="tx">Het laatste tech-nieuws en productreviews rechtstreeks in de app, powered by Tweakers.net — de beste techbron van de Benelux.</p>
+          <a href="#download" class="b bg" style="display:inline-flex">Download gratis →</a>
+        </div>
+        <div class="sv">
+          <div class="nws">
+            <div class="nwc">
+              <div class="nwt"><span class="nwi">📱</span></div>
+              <div class="nwi2">
+                <div class="nwc2">Nieuws · Smartphones</div>
+                <div class="nwt2">Samsung Galaxy S25 Ultra vs iPhone 16 Pro</div>
+                <div class="nwm">Tweakers.net · 2 uur geleden</div>
+              </div>
+            </div>
+            <div class="nwc cp">
+              <div class="nwt"><span class="nwi">💻</span></div>
+              <div class="nwi2">
+                <div class="nwc2" style="color:#0A84FF">Review</div>
+                <div class="nwt2">MacBook Pro M4: snelheidstest &amp; review</div>
+                <div class="nwm">Gisteren</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- NEWSLETTER -->
-  <section>
-    <div class="newsletter glow-card reveal">
-      <div class="section-label" style="display:inline-flex">Blijf op de hoogte</div>
-      <h2 class="section-title">Ontvang de beste deals</h2>
-      <p class="section-subtitle" style="margin-left:auto;margin-right:auto">Schrijf je in voor onze wekelijkse nieuwsbrief en ontvang de beste prijsdalingen in je inbox.</p>
-      <form class="newsletter-form" id="newsletterForm">
-        <input type="email" placeholder="je@email.com" required autocomplete="email">
-        <button type="submit">Aanmelden</button>
-      </form>
-      <p class="newsletter-note">Geen spam. Altijd uitschrijven mogelijk. Lees ons <a href="privacy.html" style="color:inherit;text-decoration:underline">privacybeleid</a>.</p>
+  <!-- BENTO -->
+  <section class="ben">
+    <div class="beni">
+      <div class="beh rv">
+        <span class="ey">Alles in één app</span>
+        <h2 class="h2">Gebouwd voor de<span style="color:var(--green-bright)"> slimme shopper.</span></h2>
+      </div>
+      <div class="beg">
+        <div class="bc bc-1 rv d1"><span class="bc-sweep" aria-hidden="true"></span><span class="bci">🏪</span><div class="bcl">Webshops</div><div class="bcv">20+</div><div class="bcd">Nederlandse &amp; Belgische webshops vergeleken</div></div>
+        <div class="bc bc-2 rv d2"><span class="bc-sweep" aria-hidden="true"></span><span class="bci">🔔</span><div class="bcl">Alerts</div><div class="bcv">Direct</div><div class="bcd">Push notificatie op het moment dat prijs daalt</div></div>
+        <div class="bc bc-3 rv d3"><span class="bc-sweep" aria-hidden="true"></span><span class="bci">📈</span><div class="bcl">Prijsgeschiedenis</div><div class="bcv">365d</div><div class="bcd">Volledig prijsverloop per product inzichtelijk</div></div>
+        <div class="bc bc-4 rv d1"><span class="bc-sweep" aria-hidden="true"></span><span class="bci">🔒</span><div class="bcl">Privacy</div><div class="bcb">Minimale data.<br>Nooit verkoop.</div><div class="bcd" style="margin-top:0.85rem">AVG-conform. Geen tracking voor advertenties. Jouw data blijft van jou.</div></div>
+        <div class="bc bc-5 rv d2"><span class="bc-sweep" aria-hidden="true"></span><span class="bci">⭐</span><div class="bcl">Eerlijk sorteren</div><div class="bcb">Prijs bepaalt<br>de volgorde.</div><div class="bcd" style="margin-top:0.85rem">Niet de commissie die wij ontvangen. Altijd transparant.</div></div>
+      </div>
     </div>
   </section>
 
-  <!-- CTA -->
-  <section class="cta-section">
-    <h2 class="section-title reveal">Interesse in Tweakly?</h2>
-    <p class="section-subtitle reveal" style="margin:0.85rem auto 2.5rem">Tweakly is in actieve ontwikkeling. Meld je aan voor bèta-toegang of neem contact op via onderstaande knop.</p>
-    <div class="reveal" style="display:flex;gap:0.85rem;justify-content:center;flex-wrap:wrap">
-      <a href="#" class="btn btn-primary btn-lg" id="openContactBtn3">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/></svg>
-        Bèta-toegang aanvragen
-      </a>
-      <a href="#" class="btn btn-secondary btn-lg" id="backToTopBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 15l-6-6-6 6"/></svg>
-        Terug naar boven
-      </a>
+  <!-- DOWNLOAD -->
+  <section class="dl" id="download">
+    <div class="dli rv">
+      <span class="ey">Gratis downloaden</span>
+      <h2 class="dlh">Tweakly.<br><span class="a">Start slim.</span></h2>
+      <p class="dls">Beschikbaar voor iOS en Android. Gratis, altijd. Geen abonnement.</p>
+      <div class="stb">
+        <a href="#" class="st"><span class="sti2">🍎</span><div><div class="stsx">Download in de</div><div class="stsn">App Store</div></div></a>
+        <a href="#" class="st"><span class="sti2">▶</span><div><div class="stsx">Downloaden via</div><div class="stsn">Google Play</div></div></a>
+      </div>
+      <p class="dln">Binnenkort beschikbaar in de officiële stores. Beta-toegang via <a href="contact.html">contact</a>.</p>
     </div>
   </section>
+
 
   <!-- FOOTER -->
-  <footer>
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <a href="#" class="nav-brand" style="text-decoration:none">
-          <img src="logo.png" alt="Tweakly logo" class="logo-img">
-          <span class="nav-brand-text">Tweak<em>ly</em></span>
-        </a>
-        <p>De slimste prijsvergelijking voor elektronica in Nederland. Vergelijk, volg en bespaar.</p>
-        <div class="footer-contact-info">
-          <a href="mailto:tweakly.help@hotmail.com">tweakly.help@hotmail.com</a>
-          <span>Zolder, België</span>
+  <footer class="ft">
+    <div class="fti">
+      <div class="ftg">
+        <div>
+          <div class="ftl"><img src="logo.png" alt="Tweakly"><span class="ftn">Tweakly</span></div>
+          <p class="ftt">Slimme prijsvergelijking voor elektronica. Gratis, eerlijk, altijd.</p>
+        </div>
+        <div>
+          <div class="ftct">App</div>
+          <ul class="ftcl">
+            <li><a href="#features">Functies</a></li>
+            <li><a href="#download">Download</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="ftct">Bedrijf</div>
+          <ul class="ftcl">
+            <li><a href="over-ons.html">Over ons</a></li>
+            <li><a href="affiliate.html">Affiliate</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="ftct">Juridisch</div>
+          <ul class="ftcl">
+            <li><a href="privacy.html">Privacybeleid</a></li>
+            <li><a href="cookies.html">Cookiebeleid</a></li>
+            <li><a href="voorwaarden.html">Voorwaarden</a></li>
+          </ul>
         </div>
       </div>
-      <div class="footer-col">
-        <h4>Product</h4>
-        <a href="#features">Features</a>
-        <a href="#prijzen">Prijsvergelijking</a>
-        <a href="#categorieen">Categorieën</a>
-        <a href="#hoe-werkt-het">Hoe het werkt</a>
-        <a href="over-ons.html">Over ons</a>
-      </div>
-      <div class="footer-col">
-        <h4>Winkels</h4>
-        <a href="#winkels">Alle winkels</a>
-        <a href="https://www.coolblue.nl/zoeken?query=elektronica&utm_source=tweakly&utm_medium=affiliate" target="_blank" rel="noopener">Coolblue</a>
-        <a href="https://www.bol.com/nl/s/?searchtext=elektronica&utm_source=tweakly&utm_medium=affiliate" target="_blank" rel="noopener">Bol.com</a>
-        <a href="https://www.mediamarkt.nl/zoeken.html?query=elektronica&utm_source=tweakly&utm_medium=affiliate" target="_blank" rel="noopener">MediaMarkt</a>
-        <a href="https://www.daisycon.com/nl/" target="_blank" rel="noopener">Daisycon partnernetwerk</a>
-      </div>
-      <div class="footer-col">
-        <h4>Juridisch &amp; Info</h4>
-        <a href="privacy.html">Privacybeleid</a>
-        <a href="cookies.html">Cookiebeleid</a>
-        <a href="voorwaarden.html">Algemene voorwaarden</a>
-        <a href="affiliate.html">Affiliate disclosure</a>
-        <a href="over-ons.html">Over ons</a>
-        <a href="contact.html">Contact</a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <div class="footer-copy">&copy; 2026 Tweakly. Alle rechten voorbehouden.</div>
-      <div class="footer-legal">
-        <a href="privacy.html">Privacy</a>
-        <a href="cookies.html">Cookies</a>
-        <a href="voorwaarden.html">Voorwaarden</a>
-        <a href="affiliate.html">Affiliate</a>
+      <div class="ftb">
+        <p class="ftp">© 2026 Tweakly. Alle rechten voorbehouden.</p>
+        <p class="ftp">Prijzen zijn indicatief. Affiliate-links mogelijk.</p>
       </div>
     </div>
   </footer>
 
-  <!-- CONTACT MODAL -->
-  <div class="modal-overlay" id="contactModal">
-    <div class="modal">
-      <button class="modal-close" id="closeModal" aria-label="Sluiten">&times;</button>
-      <div id="contactForm">
-        <h3>Neem contact op</h3>
-        <p>Heb je een vraag, suggestie of wil je samenwerken? Stuur ons een bericht.</p>
-        <div class="contact-info-line">✉ <a href="mailto:tweakly.help@hotmail.com">tweakly.help@hotmail.com</a></div>
-        <div class="contact-info-line" style="margin-bottom:1.35rem">📍 Zolder, België</div>
-        <form id="contactFormEl">
-          <div class="form-group">
-            <label for="name">Naam</label>
-            <input type="text" id="name" placeholder="Je naam" required autocomplete="name">
-          </div>
-          <div class="form-group">
-            <label for="email">E-mailadres</label>
-            <input type="email" id="email" placeholder="je@email.com" required autocomplete="email">
-          </div>
-          <div class="form-group">
-            <label for="message">Bericht</label>
-            <textarea id="message" placeholder="Je bericht..." required></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Verstuur bericht</button>
-        </form>
-      </div>
-      <div id="contactSuccess" class="form-success" style="display:none">
-        <div class="check">✓</div>
-        <h4>Bericht verstuurd!</h4>
-        <p>Bedankt voor je bericht. We nemen zo snel mogelijk contact met je op.</p>
-      </div>
-    </div>
-  </div>
+  <!-- WebGL fragment shader: liquid green shader overlay on cards/buttons -->
+  <script id="fragShader" type="x-shader/x-fragment">
+    precision mediump float;
+    uniform vec3 iResolution;
+    uniform float iTime;
+    uniform vec4 iMouse;
+    uniform sampler2D iChannel0;
 
-  <!-- Three.js CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    float hash(vec2 p){p=fract(p*vec2(234.34,435.345));p+=dot(p,p+34.23);return fract(p.x*p.y);}
+    float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
+    float fbm(vec2 p){float v=0.0,a=0.5;for(int i=0;i<4;i++){v+=a*noise(p);p=p*2.1+vec2(1.7,9.2);a*=0.5;}return v;}
 
-  <script>
-    // ── Three.js shader hero ──
-    (function() {
-      const canvas = document.getElementById('shader-canvas');
-      if (!canvas || typeof THREE === 'undefined') return;
-
-      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-      const camera = new THREE.Camera();
-      camera.position.z = 1;
-      const scene = new THREE.Scene();
-
-      const uniforms = {
-        time:       { value: 0.0 },
-        resolution: { value: new THREE.Vector2() },
-        mouse:      { value: new THREE.Vector2(0.5, 0.5) },
-      };
-
-      const material = new THREE.ShaderMaterial({
-        uniforms,
-        vertexShader: `void main() { gl_Position = vec4(position, 1.0); }`,
-        fragmentShader: `
-          precision highp float;
-          uniform vec2  resolution;
-          uniform float time;
-          uniform vec2  mouse;
-
-          void main(void) {
-            vec2 uv = (gl_FragCoord.xy * 2.0 - resolution.xy) / min(resolution.x, resolution.y);
-            float t  = time * 0.025;
-
-            // Mouse-reactive offset
-            vec2 m = (mouse - 0.5) * 1.4;
-
-            float lineWidth = 0.0025;
-            vec3 col = vec3(0.0);
-
-            // Green channel dominant, slight teal/blue tint
-            float[3] gains;
-            gains[0] = 0.18; // R — faint
-            gains[1] = 1.0;  // G — dominant green
-            gains[2] = 0.32; // B — subtle teal
-
-            for (int j = 0; j < 3; j++) {
-              for (int i = 0; i < 6; i++) {
-                vec2 p = uv + m * (0.08 + float(i) * 0.04);
-                col[j] += gains[j] * lineWidth * float(i * i + 1)
-                  / abs(fract(t - 0.012 * float(j) + float(i) * 0.012) * 5.0
-                        - length(p) + mod(p.x + p.y, 0.22));
-              }
-            }
-
-            // Darken edges for vignette
-            float vig = 1.0 - smoothstep(0.6, 1.5, length(uv));
-            col *= vig * 0.85;
-
-            gl_FragColor = vec4(col, 1.0);
-          }
-        `,
-      });
-
-      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
-      scene.add(mesh);
-
-      function resize() {
-        const w = canvas.offsetWidth, h = canvas.offsetHeight;
-        renderer.setSize(w, h, false);
-        uniforms.resolution.value.set(renderer.domElement.width, renderer.domElement.height);
-      }
-      resize();
-      window.addEventListener('resize', resize);
-
-      // Mouse tracking
-      document.addEventListener('mousemove', e => {
-        uniforms.mouse.value.set(e.clientX / window.innerWidth, 1.0 - e.clientY / window.innerHeight);
-      });
-
-      (function animate() {
-        requestAnimationFrame(animate);
-        uniforms.time.value += 0.12;
-        renderer.render(scene, camera);
-      })();
-    })();
-
-    // ── Spotlight glow on cards ──
-    (function() {
-      function initGlowCards() {
-        document.querySelectorAll('.glow-card').forEach(card => {
-          card.addEventListener('mousemove', e => {
-            const rect = card.getBoundingClientRect();
-            const x = ((e.clientX - rect.left) / rect.width  * 100).toFixed(1) + '%';
-            const y = ((e.clientY - rect.top)  / rect.height * 100).toFixed(1) + '%';
-            card.style.setProperty('--glow-x', x);
-            card.style.setProperty('--glow-y', y);
-            card.style.setProperty('--glow-opacity', '1');
-          });
-          card.addEventListener('mouseleave', () => {
-            card.style.setProperty('--glow-opacity', '0');
-          });
-        });
-      }
-      // Init after DOM settles
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initGlowCards);
-      } else {
-        initGlowCards();
-      }
-    })();
-
-    // ── Cookie consent ──
-    const COOKIE_KEY = 'tweakly_cookie_consent';
-    const banner = document.getElementById('cookie-banner');
-    if (!localStorage.getItem(COOKIE_KEY)) {
-      setTimeout(() => banner.classList.add('show'), 900);
+    void main(){
+      vec2 uv=gl_FragCoord.xy/iResolution.xy;
+      vec2 st=uv*vec2(iResolution.x/iResolution.y,1.0);
+      float t=iTime*0.18;
+      vec2 q=vec2(fbm(st+t),fbm(st+vec2(5.2,1.3)+t*0.9));
+      vec2 r=vec2(fbm(st+2.8*q+vec2(1.7,9.2)+t*0.6),fbm(st+2.8*q+vec2(8.3,2.8)+t*0.5));
+      float f=fbm(st+2.8*r);
+      vec3 col=mix(vec3(0.03,0.03,0.07),vec3(0.08,0.10,0.28),clamp(f*f*3.0,0.0,1.0));
+      col=mix(col,vec3(0.14,0.16,0.40),clamp(length(q)*1.6,0.0,1.0));
+      col=mix(col,vec3(0.01,0.01,0.03),f*f*f*0.8);
+      vec2 vig=uv*2.0-1.0;
+      col*=1.0-dot(vig,vig)*0.35;
+      gl_FragColor=vec4(col,0.10);
     }
-    document.getElementById('cookieAccept').addEventListener('click', () => {
-      localStorage.setItem(COOKIE_KEY, 'all'); banner.classList.remove('show');
-    });
-    document.getElementById('cookieEssential').addEventListener('click', () => {
-      localStorage.setItem(COOKIE_KEY, 'essential'); banner.classList.remove('show');
-    });
-
-    // ── Scroll reveal ──
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('visible');
-      });
-    }, { threshold: 0.07, rootMargin: '0px 0px -40px 0px' });
-    document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .stagger').forEach(el => observer.observe(el));
-
-    // ── Nav scroll ──
-    window.addEventListener('scroll', () => {
-      document.querySelector('nav').classList.toggle('scrolled', window.scrollY > 60);
-    });
-
-    // ── Mobile nav ──
-    const navToggle = document.getElementById('navToggle');
-    const navLinks = document.getElementById('navLinks');
-    navToggle.addEventListener('click', () => {
-      navToggle.classList.toggle('active');
-      navLinks.classList.toggle('open');
-    });
-    navLinks.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', () => {
-        navToggle.classList.remove('active');
-        navLinks.classList.remove('open');
-      });
-    });
-
-    // ── Smooth scroll ──
-    document.querySelectorAll('a[href^="#"]').forEach(a => {
-      a.addEventListener('click', e => {
-        const href = a.getAttribute('href');
-        if (href === '#') return;
-        e.preventDefault();
-        const target = document.querySelector(href);
-        if (target) {
-          window.scrollTo({ top: target.getBoundingClientRect().top + window.pageYOffset - 80, behavior: 'smooth' });
-        }
-      });
-    });
-
-    // ── Back to top ──
-    document.getElementById('backToTopBtn').addEventListener('click', e => {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    // ── 3D scene mouse parallax ──
-    const scene3d = document.getElementById('scene3d');
-    if (scene3d) {
-      let targetX = 0, targetY = 0, currentX = 0, currentY = 0;
-      document.addEventListener('mousemove', e => {
-        const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
-        targetX = (e.clientX - cx) / cx * 6;
-        targetY = (e.clientY - cy) / cy * 3;
-      });
-      function animateScene() {
-        currentX += (targetX - currentX) * 0.06;
-        currentY += (targetY - currentY) * 0.06;
-        scene3d.style.transform = `rotateY(${currentX}deg) rotateX(${-currentY}deg)`;
-        requestAnimationFrame(animateScene);
-      }
-      animateScene();
-    }
-
-    // ── Contact modal ──
-    const modal = document.getElementById('contactModal');
-    ['openContactBtn','openContactBtn2','openContactBtn3','openContactBtn4','openContactFooter'].forEach(id => {
-      const btn = document.getElementById(id);
-      if (btn) btn.addEventListener('click', e => { e.preventDefault(); modal.classList.add('open'); });
-    });
-    document.getElementById('closeModal').addEventListener('click', () => modal.classList.remove('open'));
-    modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') modal.classList.remove('open'); });
-
-    document.getElementById('contactFormEl').addEventListener('submit', e => {
-      e.preventDefault();
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
-      const message = document.getElementById('message').value;
-      const subject = encodeURIComponent('Contact via Tweakly - ' + name);
-      const body = encodeURIComponent('Naam: ' + name + '\nEmail: ' + email + '\n\n' + message);
-      window.location.href = 'mailto:tweakly.help@hotmail.com?subject=' + subject + '&body=' + body;
-      document.getElementById('contactForm').style.display = 'none';
-      document.getElementById('contactSuccess').style.display = 'block';
-      setTimeout(() => {
-        modal.classList.remove('open');
-        setTimeout(() => {
-          document.getElementById('contactForm').style.display = 'block';
-          document.getElementById('contactSuccess').style.display = 'none';
-          document.getElementById('contactFormEl').reset();
-        }, 300);
-      }, 2500);
-    });
-
-    // ── Newsletter ──
-    document.getElementById('newsletterForm').addEventListener('submit', e => {
-      e.preventDefault();
-      const btn = e.target.querySelector('button');
-      btn.textContent = 'Aangemeld! ✓';
-      btn.style.background = 'var(--green)';
-      e.target.querySelector('input').value = '';
-      setTimeout(() => { btn.textContent = 'Aanmelden'; btn.style.background = ''; }, 3500);
-    });
-
-    // ── Scroll progress bar ──
-    const scrollBar = document.getElementById('scroll-progress');
-    window.addEventListener('scroll', () => {
-      const total = document.documentElement.scrollHeight - window.innerHeight;
-      const pct = total > 0 ? (window.scrollY / total) * 100 : 0;
-      scrollBar.style.width = pct + '%';
-    }, { passive: true });
-
-    // ── Count-up animation for stats ──
-    function animateCount(el, target, suffix) {
-      const duration = 1600;
-      const start = performance.now();
-      const isFloat = typeof target === 'number' && !Number.isInteger(target);
-      function update(now) {
-        const elapsed = now - start;
-        const progress = Math.min(elapsed / duration, 1);
-        const ease = 1 - Math.pow(1 - progress, 3);
-        const current = isFloat ? (target * ease).toFixed(1) : Math.round(target * ease);
-        el.textContent = current + suffix;
-        if (progress < 1) requestAnimationFrame(update);
-      }
-      requestAnimationFrame(update);
-    }
-    const statsBar = document.querySelector('.stats-bar');
-    if (statsBar) {
-      const statsObserver = new IntersectionObserver(entries => {
-        if (entries[0].isIntersecting) {
-          statsObserver.disconnect();
-          const statNumbers = statsBar.querySelectorAll('.stat-number');
-          const data = [
-            { target: 10, suffix: '+' },
-            { target: 30, suffix: '' },
-            { text: 'Groeiend' },
-            { text: 'Gratis' },
-          ];
-          statNumbers.forEach((el, i) => {
-            if (data[i].text) return;
-            animateCount(el, data[i].target, data[i].suffix);
-          });
-        }
-      }, { threshold: 0.5 });
-      statsObserver.observe(statsBar);
-    }
-
-    // ── Typewriter effect on hero gradient word ──
-    const gradientEl = document.querySelector('.hero h1 .gradient');
-    if (gradientEl) {
-      const words = ['beste prijs', 'slimste keuze', 'laagste tarief', 'beste deal'];
-      let wi = 0, ci = 0, deleting = false;
-      function typeWriter() {
-        const word = words[wi];
-        if (!deleting) {
-          gradientEl.textContent = word.slice(0, ++ci);
-          if (ci === word.length) { deleting = true; setTimeout(typeWriter, 2200); return; }
-        } else {
-          gradientEl.textContent = word.slice(0, --ci);
-          if (ci === 0) { deleting = false; wi = (wi + 1) % words.length; }
-        }
-        setTimeout(typeWriter, deleting ? 55 : 90);
-      }
-      setTimeout(typeWriter, 1800);
-    }
-
-    // ── Chart period ──
-    document.querySelectorAll('.chart-period button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-      });
-    });
-
-    // ── Price row highlight ──
-    document.querySelectorAll('.price-row').forEach(row => {
-      row.addEventListener('click', () => {
-        document.querySelectorAll('.price-row').forEach(r => r.classList.remove('highlight'));
-        row.classList.add('highlight');
-      });
-    });
-
   </script>
 
+  <script>
+  (function(){
+    'use strict';
+
+    // ── SVG Glass Distortion Factory ────────────────────────────────────────
+    var gfDefs = document.getElementById('gf-defs');
+    var gfCounter = 0;
+
+    function createGlassFilter(el, opts) {
+      var id = 'gf-' + (++gfCounter);
+      var br = opts.borderRadius != null ? opts.borderRadius : 16;
+      var bw = opts.borderWidth != null ? opts.borderWidth : 0.07;
+      var brightness = opts.brightness != null ? opts.brightness : 50;
+      var opacity = opts.opacity != null ? opts.opacity : 0.93;
+      var blur = opts.blur != null ? opts.blur : 11;
+      var ds = opts.distortionScale != null ? opts.distortionScale : -120;
+      var ro = opts.redOffset != null ? opts.redOffset : 0;
+      var go = opts.greenOffset != null ? opts.greenOffset : 10;
+      var bo = opts.blueOffset != null ? opts.blueOffset : 20;
+      var xCh = opts.xChannel || 'R';
+      var yCh = opts.yChannel || 'G';
+      var blend = opts.mixBlendMode || 'difference';
+      var displace = opts.displace != null ? opts.displace : 0.7;
+
+      var feImg;
+
+      function buildMap() {
+        var ew = el.offsetWidth || 200;
+        var eh = el.offsetHeight || 60;
+        var edge = Math.min(ew, eh) * bw * 0.5;
+        var rgId = id + '-rg';
+        var bgId = id + '-bg';
+        var s = '<svg viewBox="0 0 ' + ew + ' ' + eh + '" xmlns="http://www.w3.org/2000/svg">';
+        s += '<defs>';
+        s += '<linearGradient id="' + rgId + '" x1="100%" y1="0%" x2="0%" y2="0%">';
+        s += '<stop offset="0%" stop-color="#0000"/><stop offset="100%" stop-color="red"/>';
+        s += '</linearGradient>';
+        s += '<linearGradient id="' + bgId + '" x1="0%" y1="0%" x2="0%" y2="100%">';
+        s += '<stop offset="0%" stop-color="#0000"/><stop offset="100%" stop-color="blue"/>';
+        s += '</linearGradient></defs>';
+        s += '<rect width="' + ew + '" height="' + eh + '" fill="black"/>';
+        s += '<rect width="' + ew + '" height="' + eh + '" rx="' + br + '" fill="url(#' + rgId + ')"/>';
+        s += '<rect width="' + ew + '" height="' + eh + '" rx="' + br + '" fill="url(#' + bgId + ')" style="mix-blend-mode:' + blend + '"/>';
+        s += '<rect x="' + edge + '" y="' + edge + '" width="' + (ew - edge*2) + '" height="' + (eh - edge*2) + '" rx="' + br + '" fill="hsl(0 0% ' + brightness + '% / ' + opacity + ')" style="filter:blur(' + blur + 'px)"/>';
+        s += '</svg>';
+        return 'data:image/svg+xml,' + encodeURIComponent(s);
+      }
+
+      var ns = 'http://www.w3.org/2000/svg';
+      var filt = document.createElementNS(ns, 'filter');
+      filt.setAttribute('id', id);
+      filt.setAttribute('color-interpolation-filters', 'sRGB');
+      filt.setAttribute('x', '0%'); filt.setAttribute('y', '0%');
+      filt.setAttribute('width', '100%'); filt.setAttribute('height', '100%');
+
+      feImg = document.createElementNS(ns, 'feImage');
+      feImg.setAttribute('x', '0'); feImg.setAttribute('y', '0');
+      feImg.setAttribute('width', '100%'); feImg.setAttribute('height', '100%');
+      feImg.setAttribute('preserveAspectRatio', 'none');
+      feImg.setAttribute('result', 'map');
+      feImg.setAttribute('href', buildMap());
+
+      function mkDisplace(result, scale) {
+        var d = document.createElementNS(ns, 'feDisplacementMap');
+        d.setAttribute('in', 'SourceGraphic'); d.setAttribute('in2', 'map');
+        d.setAttribute('result', result);
+        d.setAttribute('scale', String(scale));
+        d.setAttribute('xChannelSelector', xCh);
+        d.setAttribute('yChannelSelector', yCh);
+        return d;
+      }
+      function mkMatrix(inName, vals, result) {
+        var m = document.createElementNS(ns, 'feColorMatrix');
+        m.setAttribute('in', inName); m.setAttribute('type', 'matrix');
+        m.setAttribute('values', vals); m.setAttribute('result', result);
+        return m;
+      }
+      function mkBlend(in1, in2, mode, result) {
+        var b = document.createElementNS(ns, 'feBlend');
+        b.setAttribute('in', in1); b.setAttribute('in2', in2);
+        b.setAttribute('mode', mode); b.setAttribute('result', result);
+        return b;
+      }
+
+      filt.appendChild(feImg);
+      filt.appendChild(mkDisplace('dispRed', ds + ro));
+      filt.appendChild(mkMatrix('dispRed', '1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0', 'red'));
+      filt.appendChild(mkDisplace('dispGreen', ds + go));
+      filt.appendChild(mkMatrix('dispGreen', '0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0', 'green'));
+      filt.appendChild(mkDisplace('dispBlue', ds + bo));
+      filt.appendChild(mkMatrix('dispBlue', '0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0', 'blue'));
+      filt.appendChild(mkBlend('red', 'green', 'screen', 'rg'));
+      filt.appendChild(mkBlend('rg', 'blue', 'screen', 'output'));
+      var gauss = document.createElementNS(ns, 'feGaussianBlur');
+      gauss.setAttribute('in', 'output');
+      gauss.setAttribute('stdDeviation', String(displace));
+      filt.appendChild(gauss);
+      gfDefs.appendChild(filt);
+
+      el.style.setProperty('--gf-filter', 'url(#' + id + ') saturate(1.2)');
+      el.classList.add('gf');
+
+      var ro2 = new ResizeObserver(function() {
+        setTimeout(function() { feImg.setAttribute('href', buildMap()); }, 0);
+      });
+      ro2.observe(el);
+    }
+    // ── End SVG Glass Distortion Factory ────────────────────────────────────
+
+    // ── Apply glass distortion to nav ────────────────────────────────────────
+    (function() {
+      var nav = document.getElementById('nav');
+      if (!nav) return;
+      createGlassFilter(nav, {
+        borderRadius: 0, borderWidth: 0.04, brightness: 45, opacity: 0.88,
+        blur: 8, distortionScale: -110, redOffset: 0, greenOffset: 8, blueOffset: 16,
+        displace: 0.5, mixBlendMode: 'difference'
+      });
+    })();
+
+    // ── Apply glass distortion to feature cards ──────────────────────────────
+    document.querySelectorAll('.gc, .nc, .nwc').forEach(function(card) {
+      var br = card.classList.contains('gc') ? 28 : card.classList.contains('nc') ? 22 : 16;
+      createGlassFilter(card, {
+        borderRadius: br, borderWidth: 0.06, brightness: 52, opacity: 0.92,
+        blur: 10, distortionScale: -150, redOffset: 0, greenOffset: 10, blueOffset: 20,
+        displace: 0.7, mixBlendMode: 'difference'
+      });
+    });
+
+    // ── Apply glass distortion to bento cards ────────────────────────────────
+    document.querySelectorAll('.bc').forEach(function(card) {
+      createGlassFilter(card, {
+        borderRadius: 22, borderWidth: 0.05, brightness: 48, opacity: 0.90,
+        blur: 9, distortionScale: -130, redOffset: 0, greenOffset: 9, blueOffset: 18,
+        displace: 0.6, mixBlendMode: 'difference'
+      });
+    });
+
+    // ── Apply glass distortion to glass buttons ───────────────────────────────
+    document.querySelectorAll('.bl, .ab, .st').forEach(function(btn) {
+      createGlassFilter(btn, {
+        borderRadius: 9999, borderWidth: 0.10, brightness: 55, opacity: 0.90,
+        blur: 7, distortionScale: -80, redOffset: 0, greenOffset: 8, blueOffset: 16,
+        displace: 0.4, mixBlendMode: 'difference'
+      });
+    });
+    document.querySelectorAll('.sb').forEach(function(badge) {
+      createGlassFilter(badge, {
+        borderRadius: 9999, borderWidth: 0.12, brightness: 50, opacity: 0.88,
+        blur: 6, distortionScale: -60, redOffset: 0, greenOffset: 6, blueOffset: 12,
+        displace: 0.4, mixBlendMode: 'difference'
+      });
+    });
+
+    // ── Apply glass distortion to marquee pills ───────────────────────────────
+    document.querySelectorAll('.mp').forEach(function(pill) {
+      createGlassFilter(pill, {
+        borderRadius: 9999, borderWidth: 0.14, brightness: 52, opacity: 0.88,
+        blur: 6, distortionScale: -55, redOffset: 0, greenOffset: 6, blueOffset: 12,
+        displace: 0.3, mixBlendMode: 'difference'
+      });
+    });
+
+    // ── Apply glass distortion to cookie bar ─────────────────────────────────
+    setTimeout(function() {
+      var ckb = document.getElementById('ckb');
+      if (!ckb) return;
+      createGlassFilter(ckb, {
+        borderRadius: 0, borderWidth: 0.03, brightness: 42, opacity: 0.85,
+        blur: 10, distortionScale: -100, redOffset: 0, greenOffset: 8, blueOffset: 16,
+        displace: 0.5, mixBlendMode: 'difference'
+      });
+    }, 1300);
+
+    // ── Sticky pill: show after hero, apply glass filter ─────────────────────
+    (function() {
+      var pillInner = document.getElementById('pillInner');
+      if (!pillInner) return;
+      var shown = false;
+      window.addEventListener('scroll', function() {
+        if (!shown && scrollY > window.innerHeight * 0.6) {
+          shown = true;
+          pillInner.classList.add('visible');
+          setTimeout(function() {
+            createGlassFilter(pillInner, {
+              borderRadius: 9999, borderWidth: 0.08, brightness: 50, opacity: 0.93,
+              blur: 11, distortionScale: -180, redOffset: 0, greenOffset: 10, blueOffset: 20,
+              displace: 0.5, mixBlendMode: 'difference'
+            });
+          }, 100);
+        }
+        if (shown) {
+          var dlSection = document.getElementById('download');
+          if (dlSection) {
+            var dlTop = dlSection.getBoundingClientRect().top;
+            pillInner.style.opacity = dlTop < window.innerHeight * 0.6 ? '0' : '';
+          }
+        }
+      }, { passive: true });
+    })();
+
+    // ── WebGL shader overlay on cards / buttons ───────────────────────────
+    var fsSrc = document.getElementById('fragShader').textContent;
+    var vsSrc = 'attribute vec2 pos;void main(){gl_Position=vec4(pos,0.0,1.0);}';
+    var QUAD = new Float32Array([-1,-1,1,-1,-1,1,1,1]);
+
+    function mkShader(gl, type, src){
+      var s = gl.createShader(type);
+      gl.shaderSource(s, src); gl.compileShader(s);
+      if(!gl.getShaderParameter(s, gl.COMPILE_STATUS)){console.warn(gl.getShaderInfoLog(s));return null;}
+      return s;
+    }
+
+    function attachShader(host){
+      var canvas = document.createElement('canvas');
+      canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border-radius:inherit;pointer-events:none;z-index:0;';
+      if(getComputedStyle(host).position === 'static') host.style.position = 'relative';
+      host.insertBefore(canvas, host.firstChild);
+
+      var gl = canvas.getContext('webgl',{alpha:true,premultipliedAlpha:false,antialias:false});
+      if(!gl) return null;
+
+      var vs = mkShader(gl, gl.VERTEX_SHADER, vsSrc);
+      var fs = mkShader(gl, gl.FRAGMENT_SHADER, fsSrc);
+      if(!vs||!fs) return null;
+
+      var prog = gl.createProgram();
+      gl.attachShader(prog,vs); gl.attachShader(prog,fs);
+      gl.linkProgram(prog); gl.useProgram(prog);
+
+      var buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, QUAD, gl.STATIC_DRAW);
+      var posLoc = gl.getAttribLocation(prog,'pos');
+      gl.enableVertexAttribArray(posLoc);
+      gl.vertexAttribPointer(posLoc,2,gl.FLOAT,false,0,0);
+
+      var uRes   = gl.getUniformLocation(prog,'iResolution');
+      var uTime  = gl.getUniformLocation(prog,'iTime');
+      var uMouse = gl.getUniformLocation(prog,'iMouse');
+
+      var tex = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D,tex);
+      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([0,0,0,0]));
+      gl.uniform1i(gl.getUniformLocation(prog,'iChannel0'),0);
+
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+      var w=0,h=0,mouse=[0,0],visible=false;
+
+      function resize(){
+        var r=host.getBoundingClientRect();
+        w=Math.round(r.width); h=Math.round(r.height);
+        canvas.width=w; canvas.height=h;
+      }
+      var ro = new ResizeObserver(resize); ro.observe(host); resize();
+
+      host.addEventListener('mousemove',function(e){
+        var r=canvas.getBoundingClientRect();
+        mouse=[e.clientX-r.left, h-(e.clientY-r.top)];
+      });
+
+      var io = new IntersectionObserver(function(entries){visible=entries[0].isIntersecting;},{threshold:0.05});
+      io.observe(host);
+
+      return function(t){
+        if(!visible||w===0||h===0) return;
+        gl.viewport(0,0,w,h);
+        gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.uniform3f(uRes,w,h,1.0);
+        gl.uniform1f(uTime,t);
+        gl.uniform4f(uMouse,mouse[0],mouse[1],0,0);
+        gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+      };
+    }
+
+    var renderers = [];
+    document.querySelectorAll('.gc,.bc,.nc,.nwc,.b,.st,.ab,.sb').forEach(function(el){
+      var fn = attachShader(el);
+      if(fn) renderers.push(fn);
+    });
+
+    var t0 = performance.now();
+    function loop(){
+      var t=(performance.now()-t0)/1000;
+      for(var i=0;i<renderers.length;i++) renderers[i](t);
+      requestAnimationFrame(loop);
+    }
+    if(renderers.length) requestAnimationFrame(loop);
+
+    // ── UnicornStudio — official embed init ───────────────────────────────
+    !function(){var u=window.UnicornStudio;if(u&&u.init){if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){u.init()})}else{u.init()}}else{window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.1.5/dist/unicornStudio.umd.js",i.onload=function(){if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){UnicornStudio.init()})}else{UnicornStudio.init()}},(document.head||document.body).appendChild(i)}}();
+
+    // ── Scroll-jacked hero — unicorn starts visible, scrolls UP and away ──
+    (function(){
+      var unicorn = document.getElementById('unicorn-wrap');
+      var logo    = document.getElementById('hero-logo');
+      var content = document.getElementById('hero-content');
+      var cover   = document.getElementById('cover');
+      var VH      = window.innerHeight;
+      var scrollAcc = 0;  // virtual scroll px, 0 = unicorn fully visible, VH = unicorn gone
+      var locked  = true;
+      var revealed = false;
+
+      // Force top and lock scroll
+      history.scrollRestoration = 'manual';
+      window.scrollTo(0, 0);
+      document.documentElement.classList.add('locked');
+
+      function setLens(pct) {
+        // pct 0 = unicorn fully visible, 1 = unicorn fully scrolled away (up)
+        unicorn.style.transform = 'translateY(' + (-pct * 100) + 'vh)';
+        // fade out the logo as the unicorn scrolls away
+        if(logo) logo.style.opacity = Math.max(0, 1 - pct * 2);
+      }
+
+      function advance(delta) {
+        var prev = scrollAcc;
+        scrollAcc = Math.max(0, Math.min(VH, scrollAcc + delta));
+        if(scrollAcc === prev) return;
+        var pct = scrollAcc / VH;
+        setLens(pct);
+
+        if(pct >= 1 && !revealed) {
+          // Unicorn fully scrolled away — unlock page
+          revealed = true;
+          locked = false;
+          logo.classList.add('hide');
+          cover.classList.add('gone');
+          document.documentElement.classList.remove('locked');
+          content.classList.add('reveal');
+          setTimeout(function(){ cover.style.display = 'none'; }, 700);
+        } else if(pct < 1 && revealed) {
+          // Scrolled back up — unicorn comes back, re-lock
+          revealed = false;
+          locked = true;
+          logo.classList.remove('hide');
+          cover.style.display = '';
+          cover.classList.remove('gone');
+          content.classList.remove('reveal');
+          document.documentElement.classList.add('locked');
+          window.scrollTo(0, 0);
+        }
+      }
+
+      // wheel
+      window.addEventListener('wheel', function(e){
+        if(!locked) return;
+        e.preventDefault();
+        advance(e.deltaY);
+      }, { passive: false });
+
+      // touch
+      var _ty = null;
+      window.addEventListener('touchstart', function(e){ _ty = e.touches[0].clientY; }, { passive: true });
+      window.addEventListener('touchmove', function(e){
+        if(!locked || _ty === null) return;
+        var dy = _ty - e.touches[0].clientY;
+        _ty = e.touches[0].clientY;
+        advance(dy * 2);
+      }, { passive: true });
+
+      // keyboard
+      window.addEventListener('keydown', function(e){
+        if(!locked) return;
+        if(e.key==='ArrowDown'||e.key===' '||e.key==='PageDown'){ e.preventDefault(); advance(80); }
+        if(e.key==='ArrowUp'||e.key==='PageUp'){ e.preventDefault(); advance(-80); }
+      });
+    })();
+
+    // ── Nav scroll ────────────────────────────────────────────────────────
+    var nav=document.getElementById('nav');
+    window.addEventListener('scroll',function(){nav.classList.toggle('scrolled',scrollY>60);},{passive:true});
+
+    // ── Mobile menu ───────────────────────────────────────────────────────
+    document.getElementById('menu').addEventListener('click',function(){
+      var nl=document.getElementById('nl'), open=nl.classList.toggle('open');
+      this.setAttribute('aria-expanded',open); this.textContent=open?'✕':'☰';
+    });
+
+    // ── Scroll reveal ─────────────────────────────────────────────────────
+    var revIO=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('v');revIO.unobserve(e.target);}});
+    },{threshold:0.12});
+    document.querySelectorAll('.rv').forEach(function(el){revIO.observe(el);});
+
+    // ── Price card row stagger ─────────────────────────────────────────────
+    var rowIO=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(!e.isIntersecting) return;
+        e.target.querySelectorAll('.grw').forEach(function(r,i){setTimeout(function(){r.classList.add('i');},i*90);});
+        rowIO.unobserve(e.target);
+      });
+    },{threshold:0.3});
+    document.querySelectorAll('.gc').forEach(function(c){rowIO.observe(c);});
+
+    // ── Bento tilt ────────────────────────────────────────────────────────
+    document.querySelectorAll('.bc').forEach(function(card){
+      card.addEventListener('mousemove',function(e){
+        var r=card.getBoundingClientRect();
+        var x=(e.clientX-r.left)/r.width-0.5, y=(e.clientY-r.top)/r.height-0.5;
+        card.style.transform='perspective(600px) rotateY('+(x*8)+'deg) rotateX('+(-y*8)+'deg) translateZ(6px)';
+        card.style.setProperty('--mx',((x+0.5)*100)+'%');
+        card.style.setProperty('--my',((y+0.5)*100)+'%');
+      });
+      card.addEventListener('mouseleave',function(){card.style.transform='';});
+    });
+
+    // ── Stat counter ──────────────────────────────────────────────────────
+    var statEl=document.getElementById('statNum');
+    if(statEl){
+      new IntersectionObserver(function(entries,obs){
+        if(!entries[0].isIntersecting) return;
+        obs.unobserve(statEl);
+        var target=+statEl.dataset.target, suffix=statEl.dataset.suffix||'', n=0, step=target/60;
+        var ti=setInterval(function(){n=Math.min(n+step,target);statEl.textContent=Math.round(n)+suffix;if(n>=target)clearInterval(ti);},16);
+      },{threshold:0.5}).observe(statEl);
+    }
+
+    // ── Read progress bar ─────────────────────────────────────────────────
+    var prog=document.getElementById('prog');
+    if(prog) window.addEventListener('scroll',function(){
+      prog.style.width=(scrollY/(document.body.scrollHeight-innerHeight)*100)+'%';
+    },{passive:true});
+
+    // ── Cookie banner ─────────────────────────────────────────────────────
+    var ckb=document.getElementById('ckb');
+    if(ckb&&!localStorage.getItem('ck')) setTimeout(function(){ckb.classList.add('show');},1200);
+    var cka=document.getElementById('cka'), cke=document.getElementById('cke');
+    if(cka) cka.addEventListener('click',function(){localStorage.setItem('ck','1');ckb.classList.remove('show');});
+    if(cke) cke.addEventListener('click',function(){localStorage.setItem('ck','0');ckb.classList.remove('show');});
+
+  })();
+  </script>
 </body>
 </html>
