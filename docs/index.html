@@ -45,7 +45,6 @@
     /* ── RESET ── */
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
     html { scroll-behavior: smooth; }
-    html.locked, html.locked body { overflow: hidden !important; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background: #000; color: var(--text);
@@ -54,59 +53,24 @@
     }
     a { text-decoration: none; color: inherit; }
 
-    /* ── COVER: hides all page content until unicorn scrolls away ── */
-    #cover {
-      position: fixed; inset: 0; z-index: 9999; background: #000;
-      pointer-events: none;
-      transition: opacity 0.6s ease;
-    }
-    #cover.gone { opacity: 0; }
-
     /* ── HERO SCREEN ── */
     #hero {
       position: relative; width: 100%; height: 100vh;
-      overflow: hidden; background: #000;
-    }
-    /* UnicornStudio = the intro screen, starts fully visible, scrolls UP and away */
-    #unicorn-wrap {
-      position: fixed; inset: 0;
-      z-index: 11; pointer-events: none;
       overflow: hidden;
-      transform: translateY(0);
-      will-change: transform;
+      background:
+        radial-gradient(ellipse 80% 60% at 65% 40%, rgba(48,209,88,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 80% at 20% 70%, rgba(10,132,255,0.05) 0%, transparent 65%),
+        #000;
     }
-    /* Cover the viewport at 1440×900 (16:10), like object-fit:cover */
-    #unicorn-bg {
-      position: absolute;
-      top: 50%; left: 50%;
-      width: max(100vw, 100vh * (1440/900));
-      height: max(100vh, 100vw * (900/1440));
-      transform: translate(-50%, -50%);
-      pointer-events: none;
+    /* Subtle grid overlay on hero */
+    #hero::before {
+      content:''; position:absolute; inset:0; z-index:1; pointer-events:none;
+      background-image: linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: radial-gradient(ellipse 70% 70% at 65% 45%, rgba(0,0,0,0.5) 0%, transparent 80%);
+      -webkit-mask-image: radial-gradient(ellipse 70% 70% at 65% 45%, rgba(0,0,0,0.5) 0%, transparent 80%);
     }
-    #unicorn-bg > div,
-    #unicorn-bg > div > canvas,
-    #unicorn-bg iframe,
-    #unicorn-bg canvas {
-      width: 100% !important;
-      height: 100% !important;
-      border: none; display: block;
-    }
-    /* Hide the "Made with unicorn.studio" badge */
-    #unicorn-wrap a, #unicorn-bg a, .us-badge,
-    a[href*="unicorn.studio"], a[href*="unicornstudio"] { display: none !important; }
-    /* Logo: fixed center, always visible until lens fully lands */
-    #hero-logo {
-      position: fixed; left: 0; right: 0; top: 50%; transform: translateY(-50%);
-      z-index: 12;
-      display: flex; flex-direction: column; align-items: center; gap: 1.1rem;
-      pointer-events: none;
-      transition: opacity 0.4s ease;
-    }
-    #hero-logo.hide { opacity: 0; }
-    #hero-logo img { width: 72px; height: 72px; filter: drop-shadow(0 0 28px rgba(48,209,88,0.55)); }
-    #hero-logo span { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
-    /* Hero content: inside #hero, shown after lens lands */
+    /* Hero content visible immediately */
     #hero-content {
       position: absolute; inset: 0; z-index: 4;
       display: flex; align-items: flex-end;
@@ -121,10 +85,10 @@
       opacity: 0; transform: translateY(32px);
       transition: opacity 0.7s ease, transform 0.7s ease;
     }
-    #hero-content.reveal .sb  { opacity:1; transform:none; transition-delay: 0.05s; }
-    #hero-content.reveal .sh  { opacity:1; transform:none; transition-delay: 0.18s; }
-    #hero-content.reveal .sp  { opacity:1; transform:none; transition-delay: 0.32s; }
-    #hero-content.reveal .sbt { opacity:1; transform:none; transition-delay: 0.46s; }
+    #hero-content .sb  { opacity:1; transform:none; transition-delay: 0.05s; }
+    #hero-content .sh  { opacity:1; transform:none; transition-delay: 0.18s; }
+    #hero-content .sp  { opacity:1; transform:none; transition-delay: 0.32s; }
+    #hero-content .sbt { opacity:1; transform:none; transition-delay: 0.46s; }
 
     /* ── AMBIENT DEPTH ORBS ── */
     .orbs { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
@@ -627,8 +591,6 @@
     </div>
   </div>
 
-  <div id="cover"></div>
-
   <!-- NAV -->
   <nav class="nav" id="nav">
     <a href="/" class="nb"><img src="logo.png" alt="Tweakly"><span>Tweakly</span></a>
@@ -644,15 +606,6 @@
 
   <!-- HERO -->
   <div id="hero">
-    <div id="unicorn-wrap" aria-hidden="true">
-      <div id="unicorn-bg">
-        <div style="width:100%;height:100%;position:absolute;inset:0" data-us-project="fdfhcoxsfVXx0O2ZKbcg"></div>
-      </div>
-    </div>
-    <div id="hero-logo">
-      <img src="logo.png" alt="Tweakly">
-      <span>Tweakly</span>
-    </div>
     <div id="hero-content">
       <div class="sc">
         <div class="sb"><span class="sbd"></span>Nu gratis beschikbaar</div>
@@ -1191,86 +1144,6 @@
       requestAnimationFrame(loop);
     }
     if(renderers.length) requestAnimationFrame(loop);
-
-    // ── UnicornStudio — official embed init ───────────────────────────────
-    !function(){var u=window.UnicornStudio;if(u&&u.init){if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){u.init()})}else{u.init()}}else{window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.1.5/dist/unicornStudio.umd.js",i.onload=function(){if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){UnicornStudio.init()})}else{UnicornStudio.init()}},(document.head||document.body).appendChild(i)}}();
-
-    // ── Scroll-jacked hero — unicorn starts visible, scrolls UP and away ──
-    (function(){
-      var unicorn = document.getElementById('unicorn-wrap');
-      var logo    = document.getElementById('hero-logo');
-      var content = document.getElementById('hero-content');
-      var cover   = document.getElementById('cover');
-      var VH      = window.innerHeight;
-      var scrollAcc = 0;  // virtual scroll px, 0 = unicorn fully visible, VH = unicorn gone
-      var locked  = true;
-      var revealed = false;
-
-      // Force top and lock scroll
-      history.scrollRestoration = 'manual';
-      window.scrollTo(0, 0);
-      document.documentElement.classList.add('locked');
-
-      function setLens(pct) {
-        // pct 0 = unicorn fully visible, 1 = unicorn fully scrolled away (up)
-        unicorn.style.transform = 'translateY(' + (-pct * 100) + 'vh)';
-        // fade out the logo as the unicorn scrolls away
-        if(logo) logo.style.opacity = Math.max(0, 1 - pct * 2);
-      }
-
-      function advance(delta) {
-        var prev = scrollAcc;
-        scrollAcc = Math.max(0, Math.min(VH, scrollAcc + delta));
-        if(scrollAcc === prev) return;
-        var pct = scrollAcc / VH;
-        setLens(pct);
-
-        if(pct >= 1 && !revealed) {
-          // Unicorn fully scrolled away — unlock page
-          revealed = true;
-          locked = false;
-          logo.classList.add('hide');
-          cover.classList.add('gone');
-          document.documentElement.classList.remove('locked');
-          content.classList.add('reveal');
-          setTimeout(function(){ cover.style.display = 'none'; }, 700);
-        } else if(pct < 1 && revealed) {
-          // Scrolled back up — unicorn comes back, re-lock
-          revealed = false;
-          locked = true;
-          logo.classList.remove('hide');
-          cover.style.display = '';
-          cover.classList.remove('gone');
-          content.classList.remove('reveal');
-          document.documentElement.classList.add('locked');
-          window.scrollTo(0, 0);
-        }
-      }
-
-      // wheel
-      window.addEventListener('wheel', function(e){
-        if(!locked) return;
-        e.preventDefault();
-        advance(e.deltaY);
-      }, { passive: false });
-
-      // touch
-      var _ty = null;
-      window.addEventListener('touchstart', function(e){ _ty = e.touches[0].clientY; }, { passive: true });
-      window.addEventListener('touchmove', function(e){
-        if(!locked || _ty === null) return;
-        var dy = _ty - e.touches[0].clientY;
-        _ty = e.touches[0].clientY;
-        advance(dy * 2);
-      }, { passive: true });
-
-      // keyboard
-      window.addEventListener('keydown', function(e){
-        if(!locked) return;
-        if(e.key==='ArrowDown'||e.key===' '||e.key==='PageDown'){ e.preventDefault(); advance(80); }
-        if(e.key==='ArrowUp'||e.key==='PageUp'){ e.preventDefault(); advance(-80); }
-      });
-    })();
 
     // ── Nav scroll ────────────────────────────────────────────────────────
     var nav=document.getElementById('nav');
