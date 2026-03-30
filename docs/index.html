@@ -1,1853 +1,1056 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tweakly — Smart Price Comparison</title>
-  <meta name="description" content="Smart price comparison. Always the best deal. Track prices across 10+ stores and get notified the moment they drop.">
+  <title>Tweakly — Altijd de beste prijs</title>
+  <meta name="description" content="Vergelijk prijzen, volg producten en ontvang meldingen zodra de prijs daalt. Tweakly houdt alle deals bij — jij hoeft niets te doen.">
   <link rel="icon" href="logo.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Three.js r160 -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-  <!-- GSAP + ScrollTrigger -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 
   <style>
-    /* ═══════════════════════════════════════
-       CSS CUSTOM PROPERTIES
-    ═══════════════════════════════════════ */
+    /* ─── tokens ─────────────────────────────────────────────── */
     :root {
-      --green:       #2d6a2d;
-      --green-light: #4a9a4a;
-      --green-dim:   rgba(45,106,45,0.12);
-      --green-glow:  rgba(45,106,45,0.35);
-      --bg:          #000000;
-      --text:        #ffffff;
-      --text-2:      rgba(255,255,255,0.55);
-      --text-3:      rgba(255,255,255,0.25);
-      --glass-bg:    rgba(255,255,255,0.05);
-      --glass-bd:    rgba(255,255,255,0.10);
-      --font:        'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --radius:      20px;
+      --green:        #30D158;
+      --green-glow:   rgba(48,209,88,0.35);
+      --green-dim:    rgba(48,209,88,0.10);
+      --blue:         #0A84FF;
+      --purple:       #BF5AF2;
+      --bg:           #000000;
+      --text:         #ffffff;
+      --text-2:       rgba(255,255,255,0.55);
+      --text-3:       rgba(255,255,255,0.28);
+      --glass:        rgba(255,255,255,0.055);
+      --glass-hi:     rgba(255,255,255,0.10);
+      --glass-bd:     rgba(255,255,255,0.09);
+      --glass-bd-hi:  rgba(255,255,255,0.18);
+      --r:            20px;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    /* ═══════════════════════════════════════
-       RESET
-    ═══════════════════════════════════════ */
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    /* ─── reset ──────────────────────────────────────────────── */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
     html { scroll-behavior: smooth; }
     body {
       font-family: var(--font);
-      font-weight: 300;
       background: var(--bg);
       color: var(--text);
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
     a { text-decoration: none; color: inherit; }
-    button { font-family: inherit; cursor: pointer; border: none; background: none; }
-    img { display: block; }
 
-    /* ═══════════════════════════════════════
-       GRAIN OVERLAY
-    ═══════════════════════════════════════ */
-    .grain {
-      position: fixed; inset: 0;
-      pointer-events: none; z-index: 9999;
-      opacity: 0.018;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      background-size: 128px 128px;
-    }
-
-    /* ═══════════════════════════════════════
-       VIGNETTE OVERLAY
-    ═══════════════════════════════════════ */
-    .vignette {
-      position: fixed; inset: 0;
-      pointer-events: none; z-index: 9998;
-      background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.5) 100%);
-    }
-
-    /* ═══════════════════════════════════════
-       LOADER
-    ═══════════════════════════════════════ */
-    #loader {
-      position: fixed; inset: 0; z-index: 99998;
-      background: #000;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 20px;
-    }
-    .loader-wordmark {
-      font-size: 1.3rem; font-weight: 600; letter-spacing: 0.12em;
-      color: var(--green-light);
-      opacity: 0;
+    /* ─── glass mixin ─────────────────────────────────────────
+       Applied via .glass class + optional modifiers             */
+    .glass {
+      background: var(--glass);
+      backdrop-filter: blur(48px) saturate(180%) brightness(1.1);
+      -webkit-backdrop-filter: blur(48px) saturate(180%) brightness(1.1);
+      border: 0.5px solid var(--glass-bd);
+      border-radius: var(--r);
+      box-shadow:
+        inset 0 1.5px 0 rgba(255,255,255,0.10),
+        inset 0 -1px 0 rgba(0,0,0,0.3),
+        0 12px 48px rgba(0,0,0,0.55),
+        0 2px 8px rgba(0,0,0,0.3);
       position: relative;
       overflow: hidden;
     }
-    .loader-wordmark::after {
+    /* top-edge highlight */
+    .glass::before {
       content: '';
       position: absolute;
-      top: 0; left: -100%; width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
-      animation: shine-sweep 1.5s ease-in-out infinite;
+      top: 0; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22) 40%, rgba(255,255,255,0.22) 60%, transparent);
+      pointer-events: none;
     }
-    @keyframes shine-sweep {
-      0%   { left: -100%; }
-      100% { left: 200%; }
-    }
-    .loader-bar-wrap {
-      width: 120px; height: 2px;
-      background: rgba(255,255,255,0.06);
-      border-radius: 1px;
-      overflow: hidden;
-      opacity: 0;
-    }
-    .loader-bar {
-      width: 0%; height: 100%;
-      background: linear-gradient(90deg, var(--green), var(--green-light));
-      border-radius: 1px;
-      transition: width 0.3s ease;
-    }
-
-    /* ═══════════════════════════════════════
-       THREE.JS CANVAS
-    ═══════════════════════════════════════ */
-    #scene-canvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 0;
-      display: block;
-    }
-
-    /* ═══════════════════════════════════════
-       SCENE SCROLL DRIVER
-    ═══════════════════════════════════════ */
-    #scene-scroll-driver {
-      height: 500vh;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* ═══════════════════════════════════════
-       GLASS CARDS (shared)
-    ═══════════════════════════════════════ */
-    .glass-card {
-      background: var(--glass-bg);
-      backdrop-filter: blur(40px) saturate(180%);
-      -webkit-backdrop-filter: blur(40px) saturate(180%);
-      border: 0.5px solid var(--glass-bd);
-      border-radius: var(--radius);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.08),
-        0 8px 32px rgba(0,0,0,0.6);
-      padding: clamp(1.4rem, 3vw, 2rem);
-      position: relative;
-      overflow: hidden;
-      transition: box-shadow 0.3s ease, transform 0.5s cubic-bezier(0.34,1.3,0.64,1);
-      will-change: transform;
-    }
-    /* Frosted noise texture inside glass */
-    .glass-card::after {
+    /* slow shimmer sweep */
+    .glass::after {
       content: '';
       position: absolute; inset: 0;
-      border-radius: var(--radius);
-      opacity: 0.03;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 128 128' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      background-size: 64px 64px;
-      pointer-events: none;
-      z-index: 1;
-    }
-    /* Animated shimmer sweep */
-    .glass-card .shimmer {
-      position: absolute; inset: 0;
-      border-radius: var(--radius);
       background: linear-gradient(105deg,
         transparent 0%,
-        transparent 35%,
-        rgba(255,255,255,0.04) 42%,
-        rgba(255,255,255,0.08) 50%,
-        rgba(255,255,255,0.04) 58%,
-        transparent 65%,
+        transparent 38%,
+        rgba(255,255,255,0.04) 44%,
+        rgba(255,255,255,0.07) 50%,
+        rgba(255,255,255,0.04) 56%,
+        transparent 62%,
         transparent 100%
       );
       background-size: 250% 100%;
-      animation: shimmer-sweep 4s ease-in-out infinite;
+      animation: shimmer 6s ease-in-out infinite;
       pointer-events: none;
-      z-index: 2;
+      z-index: 1;
     }
-    @keyframes shimmer-sweep {
+    @keyframes shimmer {
       0%   { background-position: 200% 0; }
       100% { background-position: -100% 0; }
     }
-    .glass-card::before {
-      content: '';
-      position: absolute; inset: -2px;
-      border-radius: calc(var(--radius) + 2px);
-      background: conic-gradient(
-        from var(--border-angle, 0deg),
-        transparent 0%,
-        rgba(45,106,45,0.4) 10%,
-        transparent 20%
-      );
-      opacity: 0;
-      transition: opacity 0.3s;
-      z-index: -1;
-      pointer-events: none;
-    }
-    .glass-card:hover::before { opacity: 1; }
-    .glass-card:hover {
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.08),
-        0 8px 32px rgba(0,0,0,0.6),
-        0 0 30px rgba(45,106,45,0.20);
-    }
-    /* Active card border pulse */
-    .scene-card.visible {
-      animation: border-glow-pulse 3s ease-in-out infinite;
-    }
-    @keyframes border-glow-pulse {
-      0%,100% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 32px rgba(0,0,0,0.6), 0 0 15px rgba(45,106,45,0.10); }
-      50%     { box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 32px rgba(0,0,0,0.6), 0 0 30px rgba(45,106,45,0.25); }
-    }
+    .glass > * { position: relative; z-index: 2; }
 
-    /* Ripple */
-    .ripple {
-      position: absolute;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.15);
-      transform: scale(0);
-      animation: ripple-anim 0.6s linear forwards;
-      pointer-events: none;
-    }
-    @keyframes ripple-anim {
-      to { transform: scale(4); opacity: 0; }
-    }
-
-    /* Rotating border angle */
-    @property --border-angle {
-      syntax: '<angle>';
-      inherits: false;
-      initial-value: 0deg;
-    }
-    @keyframes rotate-border {
-      to { --border-angle: 360deg; }
-    }
-    .glass-card:hover::before {
-      animation: rotate-border 3s linear infinite;
-      opacity: 1;
-    }
-
-    /* ═══════════════════════════════════════
-       SCENE GLASS CARDS — positioned over canvas
-    ═══════════════════════════════════════ */
-    .scene-card {
-      position: fixed;
-      z-index: 10;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.6s cubic-bezier(0.25,0.46,0.45,0.94), transform 0.6s cubic-bezier(0.34,1.3,0.64,1);
-      max-width: 340px;
-      width: calc(100% - 3rem);
-    }
-    .scene-card.visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    /* card positions per keyframe */
-    #card-0 { bottom: 12vh; left: clamp(1.5rem, 6vw, 6rem); }
-    #card-1 { top: 50%; right: clamp(1.5rem, 5vw, 5rem); transform: translateY(-50%) translateX(20px); }
-    #card-1.visible { transform: translateY(-50%) translateX(0); }
-    #card-2 { bottom: 15vh; left: 50%; transform: translateX(-50%) translateY(20px); }
-    #card-2.visible { transform: translateX(-50%) translateY(0); }
-    #card-3 { top: 50%; right: clamp(1.5rem, 5vw, 5rem); transform: translateY(-50%) translateX(20px); }
-    #card-3.visible { transform: translateY(-50%) translateX(0); }
-    #card-4 { bottom: 8vh; left: 50%; transform: translateX(-50%) translateY(20px); max-width: 480px; }
-    #card-4.visible { transform: translateX(-50%) translateY(0); }
-    #card-5 { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); max-width: 480px; }
-    #card-5.visible { transform: translate(-50%, -50%) scale(1); }
-
-    /* ═══════════════════════════════════════
-       TYPOGRAPHY
-    ═══════════════════════════════════════ */
-    .eyebrow {
-      font-size: 0.62rem; font-weight: 500;
-      letter-spacing: 0.18em; text-transform: uppercase;
-      color: var(--green-light); margin-bottom: 0.75rem;
-    }
-    .card-title {
-      font-size: clamp(1.2rem, 2.5vw, 1.6rem);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
-      margin-bottom: 0.75rem;
-    }
-    .card-sub {
-      font-size: 0.84rem;
-      color: var(--text-2);
-      line-height: 1.65;
-    }
-
-    /* Gradient heading */
-    .grad-text {
-      background: linear-gradient(135deg, #ffffff 0%, var(--green-light) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    /* ═══════════════════════════════════════
-       HERO OVERLAY TEXT (camera stop 0)
-    ═══════════════════════════════════════ */
-    #hero-overlay {
-      position: fixed;
-      bottom: 12vh;
-      left: clamp(1.5rem, 6vw, 6rem);
-      z-index: 10;
-      max-width: 700px;
-      opacity: 0;
-    }
-    .hero-badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-size: 0.62rem; font-weight: 500;
-      letter-spacing: 0.16em; text-transform: uppercase;
-      color: var(--green-light);
-      padding: 6px 16px; border-radius: 9999px;
-      background: var(--green-dim);
-      border: 0.5px solid rgba(45,106,45,0.3);
-      margin-bottom: 1.2rem;
-    }
-    .badge-dot {
-      width: 5px; height: 5px; border-radius: 50%;
-      background: var(--green-light);
-      box-shadow: 0 0 8px var(--green-glow);
-      animation: pulse 2.2s ease-in-out infinite;
-      flex-shrink: 0;
-    }
-    @keyframes pulse {
-      0%,100% { opacity:1; transform:scale(1); }
-      50%      { opacity:0.25; transform:scale(0.65); }
-    }
-    .hero-title {
-      font-size: clamp(3.6rem, 11vw, 9.5rem);
-      font-weight: 700;
-      letter-spacing: -0.04em;
-      line-height: 0.88;
-      margin-bottom: 0.6rem;
-      position: relative;
-    }
-    /* Green glow halo behind title */
-    .hero-title::before {
-      content: 'Tweakly';
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, #ffffff 0%, var(--green-light) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      filter: blur(40px);
-      opacity: 0.35;
-      z-index: -1;
-      pointer-events: none;
-    }
-    .hero-title .letter {
-      display: inline-block;
-      opacity: 0;
-      filter: blur(8px);
-      transform: scale(0.7);
-    }
-    .hero-sub {
-      font-size: clamp(0.95rem, 1.5vw, 1.1rem);
-      color: var(--text-2);
-      line-height: 1.75;
-      margin-bottom: 1.8rem;
-      min-height: 2.5em;
-    }
-    .hero-btns { display: flex; gap: 10px; flex-wrap: wrap; }
-
-    /* ═══════════════════════════════════════
-       SCROLL INDICATOR
-    ═══════════════════════════════════════ */
-    #scroll-indicator {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 10;
-      opacity: 0;
-      display: flex; flex-direction: column; align-items: center; gap: 6px;
-      transition: opacity 0.5s ease;
-    }
-    .scroll-text {
-      font-size: 0.6rem; font-weight: 500;
-      letter-spacing: 0.15em; text-transform: uppercase;
-      color: var(--text-3);
-    }
-    .scroll-chevron {
-      width: 20px; height: 20px;
-      border-right: 1.5px solid var(--text-3);
-      border-bottom: 1.5px solid var(--text-3);
-      transform: rotate(45deg);
-      animation: chevron-bounce 2s ease-in-out infinite;
-    }
-    @keyframes chevron-bounce {
-      0%,100% { transform: rotate(45deg) translateY(0); opacity: 0.4; }
-      50%     { transform: rotate(45deg) translateY(5px); opacity: 1; }
-    }
-
-    /* ═══════════════════════════════════════
-       BUTTONS
-    ═══════════════════════════════════════ */
-    .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 13px 28px; border-radius: 9999px;
-      font-size: 0.88rem; font-weight: 600;
-      transition: all 0.22s cubic-bezier(0.34,1.3,0.64,1);
-      cursor: pointer; border: none;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-      position: relative; overflow: hidden;
-    }
-    .btn-green {
-      background: var(--green); color: #fff;
-      box-shadow: 0 4px 20px var(--green-glow);
-      animation: glow-pulse 3s ease-in-out infinite;
-    }
-    @keyframes glow-pulse {
-      0%,100% { box-shadow: 0 4px 20px var(--green-glow); }
-      50%      { box-shadow: 0 4px 32px rgba(45,106,45,0.6); }
-    }
-    .btn-green:hover { opacity: 0.88; transform: translateY(-2px) scale(1.02); }
-    .btn-green:active { transform: scale(0.97); }
-    .btn-ghost {
-      background: var(--glass-bg); color: var(--text);
-      border: 0.5px solid var(--glass-bd);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-    }
-    .btn-ghost:hover { background: rgba(255,255,255,0.09); transform: translateY(-2px); }
-    .btn-ghost:active { transform: scale(0.97); }
-
-    /* ═══════════════════════════════════════
-       NAV
-    ═══════════════════════════════════════ */
+    /* ─── nav ────────────────────────────────────────────────── */
     .nav-wrap {
       position: fixed; top: 1.25rem; left: 50%;
       transform: translateX(-50%);
-      z-index: 1000;
-      width: calc(100% - 2rem); max-width: 52rem;
-      pointer-events: none;
+      width: calc(100% - 2rem); max-width: 860px;
+      z-index: 900;
     }
-    .nav {
-      pointer-events: auto;
+    nav {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 6px 0 20px; height: 52px;
+      padding: 0 6px 0 20px; height: 50px;
       border-radius: 9999px;
-      background: rgba(255,255,255,0.03);
-      border: 0.5px solid rgba(255,255,255,0.12);
-      backdrop-filter: blur(40px) saturate(180%);
-      -webkit-backdrop-filter: blur(40px) saturate(180%);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 32px rgba(0,0,0,0.5);
-      transition: background 0.5s, border-color 0.5s;
-    }
-    .nav.scrolled {
-      background: rgba(0,0,0,0.75);
-      border-color: rgba(255,255,255,0.07);
+      transition: background 0.5s;
     }
     .nav-brand {
       display: flex; align-items: center; gap: 9px;
-      font-size: 1rem; font-weight: 600;
-      color: var(--green-light); flex-shrink: 0;
+      font-size: 0.95rem; font-weight: 700;
+      color: var(--green); letter-spacing: -0.02em;
     }
     .nav-brand img { width: 22px; height: 22px; border-radius: 6px; }
     .nav-links {
-      display: flex; align-items: center; gap: 0; list-style: none;
+      display: flex; align-items: center; gap: 2px; list-style: none;
     }
     .nav-links a {
-      font-size: 0.82rem; font-weight: 400;
-      color: var(--text-2);
-      padding: 7px 13px; border-radius: 9999px;
-      transition: color 0.2s;
-      white-space: nowrap;
-      position: relative;
+      font-size: 0.8rem; font-weight: 400; color: var(--text-2);
+      padding: 6px 12px; border-radius: 9999px;
+      transition: color 0.2s, background 0.2s;
     }
-    .nav-links a::after {
-      content: '';
-      position: absolute; bottom: 4px; left: 13px; right: 13px;
-      height: 1px; background: var(--green-light);
-      transform: scaleX(0); transform-origin: left;
-      transition: transform 0.25s ease;
-    }
-    .nav-links a:hover { color: var(--text); }
-    .nav-links a:hover::after { transform: scaleX(1); }
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
     .nav-cta {
-      background: var(--green); color: #fff;
-      font-weight: 600; font-size: 0.82rem;
+      display: inline-flex; align-items: center;
       padding: 9px 22px; border-radius: 9999px;
+      font-size: 0.8rem; font-weight: 600;
+      background: var(--green); color: #000;
       transition: opacity 0.2s, transform 0.2s;
-      white-space: nowrap;
-      -webkit-tap-highlight-color: transparent;
     }
     .nav-cta:hover { opacity: 0.85; transform: scale(1.03); }
-    .nav-cta:active { transform: scale(0.97); }
-    .menu-btn {
-      display: none; color: var(--text);
-      font-size: 1.15rem; padding: 10px 14px;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .nav-links.open {
-      display: flex; flex-direction: column;
-      position: absolute; top: 60px; left: 0; right: 0;
-      background: rgba(0,0,0,0.92);
-      backdrop-filter: blur(40px);
-      border: 0.5px solid var(--glass-bd);
-      border-radius: 16px;
-      padding: 12px 0;
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
     }
 
-    /* ═══════════════════════════════════════
-       FEATURE LIST (card-1)
-    ═══════════════════════════════════════ */
-    .feature-list { list-style: none; margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
-    .feature-item {
-      display: flex; align-items: flex-start; gap: 10px;
-      font-size: 0.84rem; color: var(--text-2); line-height: 1.5;
-    }
-    .feature-icon {
-      font-size: 1rem; flex-shrink: 0; margin-top: 1px;
-    }
-    .feature-item strong { color: var(--text); display: block; font-weight: 600; font-size: 0.88rem; }
+    /* ─── layout ─────────────────────────────────────────────── */
+    .content { position: relative; z-index: 1; }
+    section { padding: clamp(4rem, 10vh, 7rem) clamp(1.5rem, 5vw, 4rem); }
+    .container { max-width: 1080px; margin: 0 auto; }
 
-    /* ═══════════════════════════════════════
-       STEPS (card-2)
-    ═══════════════════════════════════════ */
-    .steps { display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; }
-    .step { display: flex; align-items: flex-start; gap: 12px; }
-    .step-num {
-      width: 28px; height: 28px; border-radius: 50%;
+    /* ─── hero ───────────────────────────────────────────────── */
+    #hero {
+      min-height: 100dvh;
+      display: flex; align-items: center;
+      padding-top: 7rem;
+    }
+    .hero-inner {
+      max-width: 780px;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.65rem; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--green);
+      padding: 6px 16px; border-radius: 9999px;
       background: var(--green-dim);
-      border: 0.5px solid rgba(45,106,45,0.3);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.75rem; font-weight: 700; color: var(--green-light);
-      flex-shrink: 0;
+      border: 0.5px solid rgba(48,209,88,0.25);
+      margin-bottom: 1.4rem;
+      animation: fade-up 0.8s cubic-bezier(0.22,1,0.36,1) 0.1s both;
     }
-    .step-text strong { display: block; font-size: 0.88rem; font-weight: 600; color: var(--text); }
-    .step-text span { font-size: 0.8rem; color: var(--text-2); }
-    .step-connector {
-      width: 1px; height: 20px;
-      background: linear-gradient(to bottom, rgba(45,106,45,0.4), transparent);
-      margin-left: 14px;
-      position: relative;
+    .badge-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green-glow);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:0.3; transform:scale(0.6); }
+    }
+    .hero-title {
+      font-size: clamp(3.8rem, 10vw, 9rem);
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      line-height: 0.92;
+      margin-bottom: 1.4rem;
+      animation: fade-up 0.9s cubic-bezier(0.22,1,0.36,1) 0.2s both;
+    }
+    .hero-title .line-2 {
+      display: block;
+      background: linear-gradient(130deg, #fff 30%, var(--green) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(1rem, 1.8vw, 1.15rem);
+      color: var(--text-2); line-height: 1.75;
+      max-width: 520px; margin-bottom: 2.2rem;
+      animation: fade-up 0.9s cubic-bezier(0.22,1,0.36,1) 0.32s both;
+    }
+    .hero-btns {
+      display: flex; gap: 10px; flex-wrap: wrap;
+      animation: fade-up 0.9s cubic-bezier(0.22,1,0.36,1) 0.44s both;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 30px; border-radius: 9999px;
+      font-size: 0.9rem; font-weight: 600; font-family: var(--font);
+      cursor: pointer; border: none;
+      transition: all 0.22s cubic-bezier(0.34,1.3,0.64,1);
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .btn-primary {
+      background: var(--green); color: #000;
+      box-shadow: 0 0 28px var(--green-glow);
+    }
+    .btn-primary:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 0 40px var(--green-glow); }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-ghost {
+      background: var(--glass); color: var(--text);
+      border: 0.5px solid var(--glass-bd);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    }
+    .btn-ghost:hover { background: var(--glass-hi); border-color: var(--glass-bd-hi); transform: translateY(-2px); }
+
+    /* floating phone mockup */
+    .hero-float {
+      position: absolute;
+      right: clamp(0px, 5vw, 120px);
+      top: 50%; transform: translateY(-50%);
+      width: clamp(180px, 22vw, 300px);
+      animation: float 6s ease-in-out infinite, fade-in 1s ease 0.6s both;
+      pointer-events: none;
+    }
+    @media (max-width: 860px) { .hero-float { display: none; } }
+    .phone-shell {
+      width: 100%; aspect-ratio: 9/19;
+      border-radius: 36px;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(60px);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        0 40px 80px rgba(0,0,0,0.7),
+        0 0 60px rgba(48,209,88,0.12);
+      display: flex; flex-direction: column;
+      padding: 24px 14px 20px;
+      gap: 10px;
+    }
+    .phone-statusbar {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.55rem; font-weight: 600; color: var(--text-2);
+      padding: 0 4px;
+    }
+    .phone-notch {
+      width: 70px; height: 10px; border-radius: 5px;
+      background: rgba(255,255,255,0.06); margin: 0 auto;
+    }
+    .phone-row {
+      height: 52px; border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid rgba(255,255,255,0.07);
+      display: flex; align-items: center; padding: 0 12px; gap: 9px;
+    }
+    .phone-icon {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: var(--green-dim);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; flex-shrink: 0;
+    }
+    .phone-label { flex: 1; }
+    .phone-label .ph-name { font-size: 0.6rem; font-weight: 600; color: var(--text); }
+    .phone-label .ph-price { font-size: 0.55rem; color: var(--text-2); }
+    .phone-badge-green {
+      font-size: 0.5rem; font-weight: 700;
+      background: var(--green-dim); color: var(--green);
+      border: 0.5px solid rgba(48,209,88,0.25);
+      padding: 2px 7px; border-radius: 9999px;
+    }
+    .phone-badge-red {
+      font-size: 0.5rem; font-weight: 700;
+      background: rgba(255,69,58,0.12); color: #FF453A;
+      border: 0.5px solid rgba(255,69,58,0.25);
+      padding: 2px 7px; border-radius: 9999px;
+    }
+    .phone-chart {
+      height: 60px; border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 0.5px solid rgba(255,255,255,0.06);
+      padding: 8px 10px;
+      display: flex; align-items: flex-end; gap: 4px;
+    }
+    .ph-bar {
+      flex: 1; border-radius: 3px 3px 0 0;
+      background: var(--green-dim);
+      border-top: 1px solid rgba(48,209,88,0.35);
+      animation: bar-grow 1.5s ease both;
+      animation-delay: calc(var(--i, 0) * 0.08s + 0.8s);
+      transform-origin: bottom;
+    }
+    @keyframes bar-grow {
+      from { transform: scaleY(0); }
+      to   { transform: scaleY(1); }
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(-50%); }
+      50%      { transform: translateY(calc(-50% - 18px)); }
+    }
+    @keyframes fade-in { from { opacity:0; } to { opacity:1; } }
+
+    /* ─── scroll indicator ───────────────────────────────────── */
+    .scroll-hint {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      margin-top: 4rem;
+      animation: fade-up 1s ease 1s both;
+    }
+    .scroll-hint span {
+      font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-3);
+    }
+    .scroll-chevron {
+      width: 18px; height: 18px;
+      border-right: 1.5px solid var(--text-3);
+      border-bottom: 1.5px solid var(--text-3);
+      transform: rotate(45deg);
+      animation: chev 2s ease-in-out infinite;
+    }
+    @keyframes chev {
+      0%,100% { transform: rotate(45deg) translate(0,0); opacity:0.4; }
+      50%      { transform: rotate(45deg) translate(3px,3px); opacity:1; }
+    }
+
+    /* ─── section heading ────────────────────────────────────── */
+    .section-eyebrow {
+      font-size: 0.62rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--green); margin-bottom: 0.7rem;
+    }
+    .section-title {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800; letter-spacing: -0.04em; line-height: 1.05;
+      margin-bottom: 1rem;
+    }
+    .section-sub {
+      font-size: 1rem; color: var(--text-2); line-height: 1.75;
+      max-width: 520px;
+    }
+    .section-head { margin-bottom: clamp(2.5rem, 5vw, 3.5rem); }
+
+    /* ─── features grid ──────────────────────────────────────── */
+    #features { padding-top: 0; }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5px;
+      border-radius: calc(var(--r) + 1px);
       overflow: hidden;
     }
-    .step-connector::after {
-      content: '';
-      position: absolute; top: -100%; left: 0;
-      width: 100%; height: 100%;
-      background: var(--green-light);
-      animation: flow-down 2s ease-in-out infinite;
+    .feat-card {
+      padding: clamp(1.5rem, 3vw, 2.2rem);
+      background: rgba(255,255,255,0.03);
+      border: 0.5px solid rgba(255,255,255,0.07);
+      transition: background 0.3s;
+      display: flex; flex-direction: column; gap: 1rem;
     }
-    @keyframes flow-down {
-      0% { top: -100%; opacity: 1; }
-      100% { top: 100%; opacity: 0; }
+    .feat-card:hover { background: rgba(255,255,255,0.055); }
+    .feat-icon {
+      width: 44px; height: 44px; border-radius: 14px;
+      background: var(--green-dim);
+      border: 0.5px solid rgba(48,209,88,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
     }
+    .feat-title { font-size: 1rem; font-weight: 700; letter-spacing: -0.02em; }
+    .feat-desc { font-size: 0.85rem; color: var(--text-2); line-height: 1.65; }
 
-    /* ═══════════════════════════════════════
-       STORE BADGES (card-3)
-    ═══════════════════════════════════════ */
-    .store-badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 10px 20px; border-radius: 12px;
-      background: var(--glass-bg);
-      border: 0.5px solid rgba(255,255,255,0.12);
-      font-size: 0.82rem; font-weight: 500;
-      color: var(--text-2);
-      transition: background 0.2s, border-color 0.2s, transform 0.2s;
-      -webkit-tap-highlight-color: transparent;
+    /* ─── live price demo ────────────────────────────────────── */
+    #demo { padding-bottom: 0; }
+    .demo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      align-items: center;
     }
-    .store-badge:hover {
-      background: rgba(255,255,255,0.09);
-      border-color: rgba(255,255,255,0.22);
-      transform: translateY(-2px);
+    @media (max-width: 700px) { .demo-grid { grid-template-columns: 1fr; } }
+    .demo-card {
+      padding: clamp(1.5rem, 3vw, 2.2rem);
     }
-    .store-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 1rem; }
-
-    /* ═══════════════════════════════════════
-       MARQUEE (card-4)
-    ═══════════════════════════════════════ */
-    .marquee-outer {
-      overflow: hidden; margin-top: 1.2rem;
-      -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
-      mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+    .price-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px; border-radius: 14px;
+      background: rgba(255,255,255,0.035);
+      border: 0.5px solid rgba(255,255,255,0.07);
+      margin-bottom: 8px;
+      transition: background 0.2s;
     }
-    .marquee-track {
-      display: flex; align-items: center; gap: 2rem;
-      animation: marquee 18s linear infinite;
-      width: max-content; will-change: transform;
+    .price-row:hover { background: rgba(255,255,255,0.07); }
+    .price-row:last-child { margin-bottom: 0; }
+    .price-store {
+      display: flex; align-items: center; gap: 10px;
     }
-    @keyframes marquee {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
+    .store-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
     }
-    .marquee-item { font-size: 0.88rem; font-weight: 500; color: var(--text-2); white-space: nowrap; }
-    .marquee-sep  { color: var(--text-3); }
-
-    /* ═══════════════════════════════════════
-       EMAIL INPUT (card-5)
-    ═══════════════════════════════════════ */
-    .email-row {
-      display: flex; gap: 0;
-      background: rgba(255,255,255,0.05);
-      border: 0.5px solid var(--glass-bd);
-      border-radius: 9999px;
-      padding: 5px 5px 5px 18px;
+    .store-name { font-size: 0.82rem; font-weight: 500; }
+    .price-tag {
+      font-size: 0.95rem; font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .price-tag.best { color: var(--green); }
+    .price-tag.higher { color: var(--text-2); }
+    .savings-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: 9999px;
+      font-size: 0.78rem; font-weight: 600;
+      background: var(--green-dim); color: var(--green);
+      border: 0.5px solid rgba(48,209,88,0.25);
       margin-top: 1.2rem;
-      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .email-row:focus-within {
-      border-color: rgba(45,106,45,0.5);
-      box-shadow: 0 0 0 3px rgba(45,106,45,0.08);
+    /* mini sparkline */
+    .sparkline-wrap { padding: clamp(1.5rem, 3vw, 2rem); }
+    .spark-title { font-size: 0.7rem; color: var(--text-3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; }
+    svg.spark { width: 100%; height: 80px; overflow: visible; }
+    .spark-area { fill: url(#sparkGrad); opacity: 0.5; }
+    .spark-line { fill: none; stroke: var(--green); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .spark-dot { fill: var(--green); filter: drop-shadow(0 0 4px var(--green-glow)); }
+    .spark-label {
+      font-size: 0.65rem; fill: var(--text-2);
     }
-    .email-input {
-      flex: 1; min-width: 0;
-      background: none; border: none; outline: none;
-      color: var(--text); font-family: var(--font);
-      font-size: 0.85rem; font-weight: 300;
+    .price-now {
+      font-size: clamp(1.8rem, 4vw, 2.4rem);
+      font-weight: 800; letter-spacing: -0.04em; color: var(--green);
+      margin-bottom: 0.2rem;
     }
-    .email-input::placeholder { color: var(--text-3); }
-    .email-btn {
-      background: var(--green); color: #fff;
-      font-weight: 700; font-size: 0.8rem;
-      padding: 10px 20px; border-radius: 9999px;
-      white-space: nowrap; flex-shrink: 0;
-      transition: opacity 0.2s, transform 0.15s;
+    .price-was {
+      font-size: 0.85rem; color: var(--text-3);
+      text-decoration: line-through;
+    }
+    .price-meta { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 1rem; }
+
+    /* ─── alert card ─────────────────────────────────────────── */
+    .alert-card {
+      padding: clamp(1.4rem, 3vw, 2rem);
+    }
+    .alert-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 0;
+      border-bottom: 0.5px solid rgba(255,255,255,0.05);
+    }
+    .alert-item:last-child { border-bottom: none; }
+    .alert-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+    }
+    .alert-icon.green { background: var(--green-dim); }
+    .alert-icon.red { background: rgba(255,69,58,0.10); }
+    .alert-icon.blue { background: rgba(10,132,255,0.10); }
+    .alert-body { flex: 1; }
+    .alert-name { font-size: 0.82rem; font-weight: 600; }
+    .alert-detail { font-size: 0.73rem; color: var(--text-2); }
+    .alert-delta { font-size: 0.82rem; font-weight: 700; }
+    .alert-delta.down { color: var(--green); }
+    .alert-delta.up   { color: #FF453A; }
+    .alert-time { font-size: 0.65rem; color: var(--text-3); margin-left: auto; }
+
+    /* ─── social proof ───────────────────────────────────────── */
+    .stats-row {
+      display: flex; gap: clamp(1.5rem, 4vw, 3rem);
+      flex-wrap: wrap;
+    }
+    .stat { display: flex; flex-direction: column; gap: 4px; }
+    .stat-num {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800; letter-spacing: -0.05em;
+    }
+    .stat-num.g { color: var(--green); }
+    .stat-label { font-size: 0.78rem; color: var(--text-2); }
+    .divider { width: 1px; background: rgba(255,255,255,0.07); align-self: stretch; }
+    @media (max-width: 500px) { .divider { display: none; } }
+
+    /* ─── testimonials ───────────────────────────────────────── */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.2rem;
+    }
+    .testi-card { padding: 1.5rem; }
+    .testi-stars { color: #FFD60A; font-size: 0.85rem; letter-spacing: 2px; margin-bottom: 0.9rem; }
+    .testi-text {
+      font-size: 0.9rem; color: var(--text-2); line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+    .testi-author { display: flex; align-items: center; gap: 10px; }
+    .testi-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--glass-hi); border: 1px solid var(--glass-bd);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem;
+    }
+    .testi-name { font-size: 0.82rem; font-weight: 600; }
+    .testi-role { font-size: 0.72rem; color: var(--text-3); }
+
+    /* ─── CTA banner ─────────────────────────────────────────── */
+    .cta-band {
+      padding: clamp(2.5rem, 6vw, 4rem) clamp(1.5rem, 5vw, 3.5rem);
+      border-radius: 28px;
+      background: rgba(48,209,88,0.07);
+      border: 0.5px solid rgba(48,209,88,0.18);
+      backdrop-filter: blur(60px) saturate(180%);
+      -webkit-backdrop-filter: blur(60px) saturate(180%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        0 0 80px rgba(48,209,88,0.08),
+        0 24px 60px rgba(0,0,0,0.45);
+      text-align: center;
       position: relative; overflow: hidden;
     }
-    .email-btn:hover { opacity: 0.85; }
-    .email-btn:active { transform: scale(0.96); }
-    .email-fine { font-size: 0.72rem; color: var(--text-3); margin-top: 0.75rem; text-align: center; }
-
-    /* ═══════════════════════════════════════
-       FOOTER
-    ═══════════════════════════════════════ */
-    #footer {
-      position: relative; z-index: 2;
-      padding: clamp(2rem, 5vh, 3rem) clamp(1.5rem, 5vw, 4rem);
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(40px);
-      -webkit-backdrop-filter: blur(40px);
-      border-top: 0.5px solid rgba(255,255,255,0.07);
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 1.5rem;
+    .cta-band::before {
+      content: '';
+      position: absolute; top: 0; left: 20%; right: 20%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(48,209,88,0.5), transparent);
     }
-    .footer-copy { font-size: 0.78rem; color: var(--text-3); }
-    .footer-links { display: flex; gap: 1.5rem; flex-wrap: wrap; }
-    .footer-links a {
-      font-size: 0.78rem; color: var(--text-3);
-      transition: color 0.2s;
-    }
-    .footer-links a:hover { color: var(--text-2); }
-    .footer-stores { display: flex; gap: 10px; }
-    .footer-store-btn {
-      font-size: 0.72rem; font-weight: 500; color: var(--text-3);
-      padding: 6px 14px; border-radius: 8px;
-      border: 0.5px solid rgba(255,255,255,0.08);
-      background: var(--glass-bg);
-      transition: border-color 0.2s, color 0.2s;
-    }
-    .footer-store-btn:hover { border-color: rgba(255,255,255,0.18); color: var(--text-2); }
-
-    /* ═══════════════════════════════════════
-       CUSTOM CURSOR
-    ═══════════════════════════════════════ */
-    #cursor {
-      position: fixed;
-      width: 40px; height: 40px;
-      border: 1px solid rgba(45,106,45,0.6);
-      border-radius: 50%;
+    .cta-band::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(48,209,88,0.08), transparent);
       pointer-events: none;
-      z-index: 99997;
-      transform: translate(-50%, -50%);
-      transition: width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
-      mix-blend-mode: difference;
-      opacity: 0;
     }
-    #cursor.expanded { width: 60px; height: 60px; }
-
-    /* ═══════════════════════════════════════
-       REDUCED MOTION
-    ═══════════════════════════════════════ */
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+    .cta-title {
+      font-size: clamp(2rem, 4.5vw, 3rem);
+      font-weight: 800; letter-spacing: -0.04em;
+      margin-bottom: 0.8rem;
+    }
+    .cta-sub {
+      font-size: 1rem; color: var(--text-2); margin-bottom: 2rem;
+    }
+    .cta-band .btn-primary {
+      box-shadow: 0 0 40px rgba(48,209,88,0.45);
     }
 
-    /* ═══════════════════════════════════════
-       MOBILE
-    ═══════════════════════════════════════ */
-    @media (max-width: 767px) {
-      .grain { opacity: 0.010; }
-      .vignette { display: none; }
-      #cursor { display: none; }
-      #scroll-indicator { display: none; }
-      .menu-btn { display: block; }
-      .nav-links:not(.open) { display: none; }
-      .nav-links.open { position: fixed; top: 70px; }
-      .scene-card {
-        position: relative !important;
-        top: auto !important; left: auto !important;
-        right: auto !important; bottom: auto !important;
-        transform: none !important;
-        opacity: 1 !important;
-        pointer-events: auto !important;
-        max-width: 100% !important;
-        width: 100% !important;
-        margin-bottom: 1rem;
-      }
-      #hero-overlay {
-        position: relative;
-        bottom: auto; left: auto;
-        opacity: 1 !important;
-        padding: 2rem 1.5rem 1rem;
-      }
-      #scene-scroll-driver { height: auto; }
-      #scene-canvas { position: relative; height: 60vw; min-height: 260px; }
-      .mobile-cards-wrap {
-        padding: 1.5rem;
-        display: flex; flex-direction: column; gap: 1rem;
-        position: relative; z-index: 2;
-      }
+    /* ─── footer ─────────────────────────────────────────────── */
+    footer {
+      padding: 3rem clamp(1.5rem, 5vw, 4rem) 2.5rem;
+      border-top: 0.5px solid rgba(255,255,255,0.06);
     }
-    @media (min-width: 768px) {
-      .mobile-cards-wrap { display: none; }
+    .footer-inner {
+      max-width: 1080px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
     }
+    .footer-brand {
+      font-size: 0.88rem; font-weight: 700; color: var(--green);
+    }
+    .footer-links { display: flex; gap: 1.4rem; }
+    .footer-links a { font-size: 0.78rem; color: var(--text-3); transition: color 0.2s; }
+    .footer-links a:hover { color: var(--text-2); }
+    .footer-copy { font-size: 0.72rem; color: var(--text-3); }
+
+    /* ─── animations ─────────────────────────────────────────── */
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .reveal {
+      opacity: 0; transform: translateY(32px);
+      transition: opacity 0.75s cubic-bezier(0.22,1,0.36,1),
+                  transform 0.75s cubic-bezier(0.22,1,0.36,1);
+    }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ─── tilt cursor follow ─────────────────────────────────── */
+    .glass[data-tilt] { transition: transform 0.25s ease, box-shadow 0.25s ease; }
   </style>
 </head>
 <body>
 
-<!-- GRAIN -->
-<div class="grain" aria-hidden="true"></div>
-
-<!-- VIGNETTE -->
-<div class="vignette" aria-hidden="true"></div>
-
-<!-- CUSTOM CURSOR -->
-<div id="cursor" aria-hidden="true"></div>
-
-<!-- LOADER -->
-<div id="loader" aria-hidden="true">
-  <span class="loader-wordmark">Tweakly</span>
-  <div class="loader-bar-wrap">
-    <div class="loader-bar" id="loaderBar"></div>
-  </div>
-</div>
-
-<!-- NAV -->
+<!-- nav -->
 <div class="nav-wrap">
-  <nav class="nav" id="nav" role="navigation" aria-label="Main navigation">
-    <a href="#" class="nav-brand">
-      <img src="logo.png" alt="Tweakly logo" width="22" height="22">
+  <nav class="glass" style="border-radius:9999px;">
+    <a href="/" class="nav-brand">
+      <img src="logo.png" alt="Tweakly" onerror="this.style.display='none'">
       Tweakly
     </a>
-    <ul class="nav-links" id="navLinks" role="list">
-      <li><a href="#card-1">Features</a></li>
-      <li><a href="#card-2">How It Works</a></li>
-      <li><a href="#card-5">Download</a></li>
+    <ul class="nav-links">
+      <li><a href="#features">Functies</a></li>
+      <li><a href="#demo">Prijzen</a></li>
+      <li><a href="#reviews">Reviews</a></li>
     </ul>
-    <button class="nav-cta" id="navCta">Get Early Access</button>
-    <button class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <a href="#download" class="nav-cta">Download gratis</a>
   </nav>
 </div>
 
-<!-- THREE.JS CANVAS -->
-<canvas id="scene-canvas" aria-hidden="true"></canvas>
+<!-- main content -->
+<div class="content">
 
-<!-- HERO OVERLAY (desktop, camera stop 0) -->
-<div id="hero-overlay" aria-label="Hero section">
-  <div class="hero-badge">
-    <span class="badge-dot" aria-hidden="true"></span>
-    Now in Beta
-  </div>
-  <h1 class="hero-title grad-text" id="heroTitle" aria-label="Tweakly"></h1>
-  <p class="hero-sub" id="heroSub" aria-label="Smart price comparison. Always the best deal."></p>
-  <div class="hero-btns">
-    <button class="btn btn-green" id="heroCta">Get Early Access</button>
-    <button class="btn btn-ghost" id="heroLearn">Learn More</button>
-  </div>
-</div>
-
-<!-- SCROLL INDICATOR -->
-<div id="scroll-indicator" aria-hidden="true">
-  <span class="scroll-text">Scroll</span>
-  <div class="scroll-chevron"></div>
-</div>
-
-<!-- SCENE SCROLL DRIVER -->
-<div id="scene-scroll-driver" aria-hidden="true">
-
-  <!-- CARD 1: Features -->
-  <div class="glass-card scene-card" id="card-1" role="region" aria-label="Features">
-    <div class="shimmer"></div>
-    <p class="eyebrow">Features</p>
-    <h2 class="card-title grad-text">Everything you need</h2>
-    <ul class="feature-list">
-      <li class="feature-item">
-        <span class="feature-icon" aria-hidden="true">&#x1F4C8;</span>
-        <div><strong>Price Tracking</strong>Monitor price history across 10+ stores</div>
-      </li>
-      <li class="feature-item">
-        <span class="feature-icon" aria-hidden="true">&#x1F514;</span>
-        <div><strong>Instant Alerts</strong>Get notified the moment prices drop</div>
-      </li>
-      <li class="feature-item">
-        <span class="feature-icon" aria-hidden="true">&#x26A1;</span>
-        <div><strong>One-tap Compare</strong>Paste a link, see every price side by side</div>
-      </li>
-    </ul>
-  </div>
-
-  <!-- CARD 2: How It Works -->
-  <div class="glass-card scene-card" id="card-2" role="region" aria-label="How it works">
-    <div class="shimmer"></div>
-    <p class="eyebrow">How It Works</p>
-    <h2 class="card-title grad-text">Three steps. That's it.</h2>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num" aria-hidden="true">1</div>
-        <div class="step-text">
-          <strong>Search a product</strong>
-          <span>Type a name or paste a link</span>
+  <!-- ── hero ─────────────────────────────────────────────────── -->
+  <section id="hero">
+    <div class="container" style="position:relative;">
+      <div class="hero-inner">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          Nieuw — versie 2.0 beschikbaar
+        </div>
+        <h1 class="hero-title">
+          Altijd<br>
+          <span class="line-2">de beste prijs.</span>
+        </h1>
+        <p class="hero-sub">
+          Tweakly vergelijkt prijzen bij meer dan 10 webshops, volgt je producten automatisch en stuurt een melding zodra de prijs daalt.
+        </p>
+        <div class="hero-btns">
+          <a href="#download" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1v9M5 7l3 3 3-3M2 11v1a2 2 0 002 2h8a2 2 0 002-2v-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Gratis downloaden
+          </a>
+          <a href="#demo" class="btn btn-ghost">Bekijk demo</a>
+        </div>
+        <div class="scroll-hint">
+          <span>Scroll</span>
+          <div class="scroll-chevron"></div>
         </div>
       </div>
-      <div class="step-connector" aria-hidden="true"></div>
-      <div class="step">
-        <div class="step-num" aria-hidden="true">2</div>
-        <div class="step-text">
-          <strong>We scan 10+ stores</strong>
-          <span>Real-time price comparison</span>
+
+      <!-- floating phone -->
+      <div class="hero-float">
+        <div class="phone-shell">
+          <div class="phone-statusbar">
+            <span>9:41</span>
+            <div class="phone-notch"></div>
+            <span>●●●</span>
+          </div>
+
+          <div class="phone-row">
+            <div class="phone-icon">📦</div>
+            <div class="phone-label">
+              <div class="ph-name">Sony WH-1000XM5</div>
+              <div class="ph-price">€ 279,–</div>
+            </div>
+            <span class="phone-badge-green">−12%</span>
+          </div>
+
+          <div class="phone-row">
+            <div class="phone-icon">💻</div>
+            <div class="phone-label">
+              <div class="ph-name">MacBook Air M3</div>
+              <div class="ph-price">€ 1.249,–</div>
+            </div>
+            <span class="phone-badge-red">+3%</span>
+          </div>
+
+          <div class="phone-row">
+            <div class="phone-icon">📺</div>
+            <div class="phone-label">
+              <div class="ph-name">LG OLED C3 55"</div>
+              <div class="ph-price">€ 889,–</div>
+            </div>
+            <span class="phone-badge-green">−8%</span>
+          </div>
+
+          <div class="phone-chart">
+            <div class="ph-bar" style="height:45%;--i:0"></div>
+            <div class="ph-bar" style="height:60%;--i:1"></div>
+            <div class="ph-bar" style="height:40%;--i:2"></div>
+            <div class="ph-bar" style="height:75%;--i:3"></div>
+            <div class="ph-bar" style="height:55%;--i:4"></div>
+            <div class="ph-bar" style="height:65%;--i:5"></div>
+            <div class="ph-bar" style="height:50%;--i:6"></div>
+            <div class="ph-bar" style="height:80%;--i:7;background:rgba(48,209,88,0.25);border-top-color:var(--green)"></div>
+          </div>
         </div>
       </div>
-      <div class="step-connector" aria-hidden="true"></div>
-      <div class="step">
-        <div class="step-num" aria-hidden="true">3</div>
-        <div class="step-text">
-          <strong>You save money</strong>
-          <span>Always the best deal, guaranteed</span>
+    </div>
+  </section>
+
+  <!-- ── stats ─────────────────────────────────────────────────── -->
+  <section style="padding-top:0; padding-bottom: clamp(3rem,6vh,5rem);">
+    <div class="container">
+      <div class="stats-row reveal">
+        <div class="stat">
+          <span class="stat-num g">50K+</span>
+          <span class="stat-label">actieve gebruikers</span>
+        </div>
+        <div class="divider"></div>
+        <div class="stat">
+          <span class="stat-num">10+</span>
+          <span class="stat-label">webshops vergeleken</span>
+        </div>
+        <div class="divider"></div>
+        <div class="stat">
+          <span class="stat-num g">€ 2,4M</span>
+          <span class="stat-label">bespaard door gebruikers</span>
+        </div>
+        <div class="divider"></div>
+        <div class="stat">
+          <span class="stat-num">4.8 ★</span>
+          <span class="stat-label">App Store rating</span>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- CARD 3: Mobile -->
-  <div class="glass-card scene-card" id="card-3" role="region" aria-label="Mobile app">
-    <div class="shimmer"></div>
-    <p class="eyebrow">Mobile</p>
-    <h2 class="card-title grad-text">Always in your pocket</h2>
-    <p class="card-sub">Tweakly on iOS &amp; Android. Never overpay again, wherever you are.</p>
-    <div class="store-badges" style="margin-top:1.2rem;">
-      <span class="store-badge" aria-label="App Store Coming Soon">&#x1F34E; App Store <span style="color:var(--text-3);font-size:0.72rem;margin-left:4px;">Coming soon</span></span>
-      <span class="store-badge" aria-label="Google Play Coming Soon">&#x25B6; Google Play <span style="color:var(--text-3);font-size:0.72rem;margin-left:4px;">Coming soon</span></span>
-    </div>
-  </div>
-
-  <!-- CARD 4: Shops -->
-  <div class="glass-card scene-card" id="card-4" role="region" aria-label="Supported stores">
-    <div class="shimmer"></div>
-    <p class="eyebrow">Stores</p>
-    <h2 class="card-title grad-text">10 stores. One search.</h2>
-    <p class="card-sub">We compare prices at the biggest Dutch and international webshops, all in one place.</p>
-    <div class="marquee-outer" aria-label="Supported stores list">
-      <div class="marquee-track" aria-hidden="true">
-        <span class="marquee-item">Bol.com</span><span class="marquee-sep">&middot;</span>
-        <span class="marquee-item">Coolblue</span><span class="marquee-sep">&middot;</span>
-        <span class="marquee-item">MediaMarkt</span><span class="marquee-sep">&middot;</span>
-        <span class="marquee-item">Amazon</span><span class="marquee-sep">&middot;</span>
-        <span class="marquee-item">Alternate</span><span class="marquee-sep">&middot;</span>
-        <span class="marquee-item">Azerty</span><span class="marquee-sep">&middot;</span>
-        <span class="marquee-item">Paradigit</span><span class="marquee-sep">&middot;</span>
-        <span class="marquee-item">Belsimpel</span><span class="marquee-sep">&middot;</span>
-        <span class="marquee-item">Mobiel.nl</span><span class="marquee-sep">&middot;</span>
-        <span class="marquee-item">Centralpoint</span><span class="marquee-sep">&middot;</span>
-        <!-- duplicate for seamless loop -->
-        <span class="marquee-item">Bol.com</span><span class="marquee-sep">&middot;</span>
-        <span class="marquee-item">Coolblue</span><span class="marquee-sep">&middot;</span>
-        <span class="marquee-item">MediaMarkt</span><span class="marquee-sep">&middot;</span>
-        <span class="marquee-item">Amazon</span><span class="marquee-sep">&middot;</span>
-        <span class="marquee-item">Alternate</span><span class="marquee-sep">&middot;</span>
-        <span class="marquee-item">Azerty</span><span class="marquee-sep">&middot;</span>
-        <span class="marquee-item">Paradigit</span><span class="marquee-sep">&middot;</span>
-        <span class="marquee-item">Belsimpel</span><span class="marquee-sep">&middot;</span>
-        <span class="marquee-item">Mobiel.nl</span><span class="marquee-sep">&middot;</span>
-        <span class="marquee-item">Centralpoint</span>
+  <!-- ── features ──────────────────────────────────────────────── -->
+  <section id="features">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="section-eyebrow">Functies</p>
+        <h2 class="section-title">Alles wat je nodig hebt<br>om slim te kopen.</h2>
+        <p class="section-sub">Van realtimeprijzen tot slimme meldingen — Tweakly doet het zware werk.</p>
+      </div>
+      <div class="features-grid glass reveal">
+        <div class="feat-card">
+          <div class="feat-icon">📊</div>
+          <div>
+            <div class="feat-title">Prijsvergelijking</div>
+            <div class="feat-desc">Zie in één oogopslag welke winkel het goedkoopst is. Prijzen bijgewerkt meerdere keren per dag.</div>
+          </div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🔔</div>
+          <div>
+            <div class="feat-title">Prijsmeldingen</div>
+            <div class="feat-desc">Stel een doelprijs in en ontvang een melding op je telefoon zodra die bereikt wordt.</div>
+          </div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">📈</div>
+          <div>
+            <div class="feat-title">Prijsgeschiedenis</div>
+            <div class="feat-desc">Zie hoe de prijs in de loop van de tijd bewogen heeft. Herken echte deals van neppromocties.</div>
+          </div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🔖</div>
+          <div>
+            <div class="feat-title">Bladwijzers</div>
+            <div class="feat-desc">Sla producten op en bekijk ze later eenvoudig terug. Alles gesynchroniseerd op al je apparaten.</div>
+          </div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🗂️</div>
+          <div>
+            <div class="feat-title">Categorieën</div>
+            <div class="feat-desc">Blader door categorieën als laptops, telefoons en audio om de beste aanbiedingen te ontdekken.</div>
+          </div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🤖</div>
+          <div>
+            <div class="feat-title">Slim aanbevolen</div>
+            <div class="feat-desc">Onze aanbevelingsengine stelt producten voor op basis van jouw zoekgeschiedenis en budget.</div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- CARD 5: CTA -->
-  <div class="glass-card scene-card" id="card-5" role="region" aria-label="Get early access">
-    <div class="shimmer"></div>
-    <p class="eyebrow">Early Access</p>
-    <h2 class="card-title grad-text" style="font-size:clamp(1.4rem,3vw,2rem);">Get early access</h2>
-    <p class="card-sub">Be among the first to try Tweakly. Free forever for beta users.</p>
-    <form class="email-row" id="accessForm" onsubmit="return false;" aria-label="Email signup">
-      <input
-        class="email-input" id="emailInput" type="email"
-        placeholder="your@email.com"
-        autocomplete="email" aria-label="Email address"
-      >
-      <button class="email-btn" id="accessBtn" type="submit">Request Access</button>
-    </form>
-    <p class="email-fine">iOS &amp; Android &middot; Free &middot; No spam</p>
-  </div>
+  <!-- ── live demo ──────────────────────────────────────────────── -->
+  <section id="demo">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="section-eyebrow">Live demo</p>
+        <h2 class="section-title">Realtime prijzen,<br>helder in beeld.</h2>
+      </div>
+      <div class="demo-grid">
+        <!-- price comparison card -->
+        <div class="glass demo-card reveal" data-tilt>
+          <p class="section-eyebrow" style="margin-bottom:0.4rem;">Sony WH-1000XM5</p>
+          <div class="price-meta">
+            <span class="price-now">€&nbsp;279,–</span>
+            <span class="price-was">€&nbsp;319,–</span>
+          </div>
+          <div class="price-row">
+            <div class="price-store">
+              <div class="store-dot" style="background:#0064D2;"></div>
+              <span class="store-name">Coolblue</span>
+            </div>
+            <span class="price-tag best">€&nbsp;279,–</span>
+          </div>
+          <div class="price-row">
+            <div class="price-store">
+              <div class="store-dot" style="background:#F76D00;"></div>
+              <span class="store-name">Bol.com</span>
+            </div>
+            <span class="price-tag higher">€&nbsp;289,–</span>
+          </div>
+          <div class="price-row">
+            <div class="price-store">
+              <div class="store-dot" style="background:#E2001A;"></div>
+              <span class="store-name">MediaMarkt</span>
+            </div>
+            <span class="price-tag higher">€&nbsp;299,–</span>
+          </div>
+          <div class="price-row">
+            <div class="price-store">
+              <div class="store-dot" style="background:#9B59B6;"></div>
+              <span class="store-name">Amazon.nl</span>
+            </div>
+            <span class="price-tag higher">€&nbsp;305,–</span>
+          </div>
+          <div class="savings-pill">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1l1.5 3 3.5.5-2.5 2.5.5 3.5L6 9l-3 1.5.5-3.5L1 4.5 4.5 4z" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/></svg>
+            Bespaar € 26 ten opzichte van de duurste winkel
+          </div>
+        </div>
 
-</div><!-- /scene-scroll-driver -->
-
-<!-- MOBILE CARDS (shown only on mobile, replaces fixed positioning) -->
-<div class="mobile-cards-wrap" aria-label="Features overview">
-  <div class="hero-badge" style="margin-bottom:0.5rem;">
-    <span class="badge-dot" aria-hidden="true"></span>Now in Beta
-  </div>
-  <h1 style="font-size:clamp(2.8rem,9vw,4rem);font-weight:700;letter-spacing:-0.04em;line-height:0.9;margin-bottom:1rem;" class="grad-text">Tweakly</h1>
-  <p style="font-size:0.92rem;color:var(--text-2);line-height:1.7;margin-bottom:1.5rem;">Smart price comparison. Always the best deal.</p>
-  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:2rem;">
-    <button class="btn btn-green" id="heroCta2">Get Early Access</button>
-    <button class="btn btn-ghost" id="heroLearn2">Learn More</button>
-  </div>
-
-  <div class="glass-card" style="margin-bottom:1rem;">
-    <div class="shimmer"></div>
-    <p class="eyebrow">Features</p>
-    <h2 class="card-title grad-text">Everything you need</h2>
-    <ul class="feature-list">
-      <li class="feature-item"><span class="feature-icon" aria-hidden="true">&#x1F4C8;</span><div><strong>Price Tracking</strong>Monitor price history across 10+ stores</div></li>
-      <li class="feature-item"><span class="feature-icon" aria-hidden="true">&#x1F514;</span><div><strong>Instant Alerts</strong>Get notified the moment prices drop</div></li>
-      <li class="feature-item"><span class="feature-icon" aria-hidden="true">&#x26A1;</span><div><strong>One-tap Compare</strong>Paste a link, see every price side by side</div></li>
-    </ul>
-  </div>
-
-  <div class="glass-card" style="margin-bottom:1rem;">
-    <div class="shimmer"></div>
-    <p class="eyebrow">How It Works</p>
-    <h2 class="card-title grad-text">Three steps. That's it.</h2>
-    <div class="steps">
-      <div class="step"><div class="step-num" aria-hidden="true">1</div><div class="step-text"><strong>Search a product</strong><span>Type a name or paste a link</span></div></div>
-      <div class="step-connector" aria-hidden="true"></div>
-      <div class="step"><div class="step-num" aria-hidden="true">2</div><div class="step-text"><strong>We scan 10+ stores</strong><span>Real-time price comparison</span></div></div>
-      <div class="step-connector" aria-hidden="true"></div>
-      <div class="step"><div class="step-num" aria-hidden="true">3</div><div class="step-text"><strong>You save money</strong><span>Always the best deal, guaranteed</span></div></div>
+        <!-- sparkline card -->
+        <div class="glass sparkline-wrap reveal reveal-delay-1" data-tilt>
+          <p class="spark-title">Prijshistorie — 90 dagen</p>
+          <svg class="spark" viewBox="0 0 300 80" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#30D158" stop-opacity="0.4"/>
+                <stop offset="100%" stop-color="#30D158" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- area fill -->
+            <path class="spark-area" d="M0,50 C20,48 40,55 60,52 S100,40 120,38 S160,60 180,58 S220,35 240,30 S270,28 300,20 L300,80 L0,80 Z"/>
+            <!-- line -->
+            <path class="spark-line" d="M0,50 C20,48 40,55 60,52 S100,40 120,38 S160,60 180,58 S220,35 240,30 S270,28 300,20"/>
+            <!-- current dot -->
+            <circle class="spark-dot" cx="300" cy="20" r="4"/>
+            <!-- labels -->
+            <text x="0"   y="76" class="spark-label">jan</text>
+            <text x="95"  y="76" class="spark-label">feb</text>
+            <text x="193" y="76" class="spark-label">mrt</text>
+            <text x="275" y="76" class="spark-label">nu</text>
+          </svg>
+          <div style="margin-top:1rem; display:flex; gap:0.8rem; flex-wrap:wrap;">
+            <div style="font-size:0.75rem; color:var(--text-3);">Min <span style="color:var(--text-2);font-weight:600;">€ 259,–</span></div>
+            <div style="font-size:0.75rem; color:var(--text-3);">Max <span style="color:var(--text-2);font-weight:600;">€ 349,–</span></div>
+            <div style="font-size:0.75rem; color:var(--text-3);">Gemiddeld <span style="color:var(--text-2);font-weight:600;">€ 298,–</span></div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <div class="glass-card" style="margin-bottom:1rem;">
-    <div class="shimmer"></div>
-    <p class="eyebrow">Early Access</p>
-    <h2 class="card-title grad-text">Get early access</h2>
-    <p class="card-sub">Be among the first to try Tweakly. Free forever for beta users.</p>
-    <form class="email-row" id="accessFormMobile" onsubmit="return false;">
-      <input class="email-input" id="emailInputMobile" type="email" placeholder="your@email.com" autocomplete="email" aria-label="Email address">
-      <button class="email-btn" type="submit">Request Access</button>
-    </form>
-    <p class="email-fine">iOS &amp; Android &middot; Free &middot; No spam</p>
-  </div>
-</div>
+  <!-- ── alerts ─────────────────────────────────────────────────── -->
+  <section>
+    <div class="container">
+      <div class="demo-grid" style="align-items:start;">
+        <div style="padding-top:1rem;">
+          <div class="section-head reveal">
+            <p class="section-eyebrow">Meldingen</p>
+            <h2 class="section-title">Nooit meer<br>een deal missen.</h2>
+            <p class="section-sub">Tweakly waakt terwijl jij iets anders doet. Zodra de prijs zakt, ben jij als eerste op de hoogte.</p>
+          </div>
+          <div class="hero-btns reveal reveal-delay-1">
+            <a href="#download" class="btn btn-primary">Download gratis</a>
+          </div>
+        </div>
+        <div class="glass alert-card reveal reveal-delay-2" data-tilt>
+          <p class="section-eyebrow" style="margin-bottom:1rem;">Recente meldingen</p>
+          <div class="alert-item">
+            <div class="alert-icon green">📉</div>
+            <div class="alert-body">
+              <div class="alert-name">Sony WH-1000XM5</div>
+              <div class="alert-detail">Coolblue — doelprijs bereikt</div>
+            </div>
+            <span class="alert-delta down">−€ 40</span>
+            <span class="alert-time">2m</span>
+          </div>
+          <div class="alert-item">
+            <div class="alert-icon blue">🔔</div>
+            <div class="alert-body">
+              <div class="alert-name">iPad Air M2</div>
+              <div class="alert-detail">Bol.com — nieuwe laagste prijs</div>
+            </div>
+            <span class="alert-delta down">−€ 20</span>
+            <span class="alert-time">1u</span>
+          </div>
+          <div class="alert-item">
+            <div class="alert-icon red">📈</div>
+            <div class="alert-body">
+              <div class="alert-name">LG OLED C3 55"</div>
+              <div class="alert-detail">MediaMarkt — prijs gestegen</div>
+            </div>
+            <span class="alert-delta up">+€ 30</span>
+            <span class="alert-time">3u</span>
+          </div>
+          <div class="alert-item">
+            <div class="alert-icon green">🎯</div>
+            <div class="alert-body">
+              <div class="alert-name">Dyson V15 Detect</div>
+              <div class="alert-detail">Amazon.nl — deal gevonden</div>
+            </div>
+            <span class="alert-delta down">−€ 60</span>
+            <span class="alert-time">5u</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<!-- FOOTER -->
-<footer id="footer" role="contentinfo">
-  <span class="footer-copy">&copy; 2026 Alexander Ballet</span>
-  <nav class="footer-links" aria-label="Footer links">
-    <a href="over-ons.html">About</a>
-    <a href="contact.html">Contact</a>
-    <a href="affiliate.html">Affiliate</a>
-    <a href="privacy.html">Privacy</a>
-    <a href="voorwaarden.html">Terms</a>
-    <a href="cookies.html">Cookies</a>
-  </nav>
-  <div class="footer-stores">
-    <span class="footer-store-btn">&#x1F34E; App Store</span>
-    <span class="footer-store-btn">&#x25B6; Google Play</span>
-  </div>
-</footer>
+  <!-- ── testimonials ──────────────────────────────────────────── -->
+  <section id="reviews">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="section-eyebrow">Reviews</p>
+        <h2 class="section-title">Wat gebruikers zeggen.</h2>
+      </div>
+      <div class="testimonials-grid">
+        <div class="glass testi-card reveal">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-text">"Tweakly heeft me al meer dan €200 bespaard. De meldingen werken feilloos en de interface is prachtig."</p>
+          <div class="testi-author">
+            <div class="testi-avatar">👨</div>
+            <div>
+              <div class="testi-name">Sander V.</div>
+              <div class="testi-role">Gebruikt Tweakly 6 maanden</div>
+            </div>
+          </div>
+        </div>
+        <div class="glass testi-card reveal reveal-delay-1">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-text">"Eindelijk een app die echt doet wat hij belooft. Prijsgeschiedenissen zijn super handig om te zien of een 'aanbieding' écht goedkoop is."</p>
+          <div class="testi-author">
+            <div class="testi-avatar">👩</div>
+            <div>
+              <div class="testi-name">Laura D.</div>
+              <div class="testi-role">Power shopper</div>
+            </div>
+          </div>
+        </div>
+        <div class="glass testi-card reveal reveal-delay-2">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-text">"De liquid glass interface is echt vernieuwd — erg mooi en overzichtelijk. Zou het aan iedereen aanraden."</p>
+          <div class="testi-author">
+            <div class="testi-avatar">🧑</div>
+            <div>
+              <div class="testi-name">Thomas K.</div>
+              <div class="testi-role">Tech-enthousiast</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ──────────────────────────────────────────────────── -->
+  <section id="download">
+    <div class="container">
+      <div class="cta-band reveal">
+        <h2 class="cta-title">Begin vandaag nog<br>met besparen.</h2>
+        <p class="cta-sub">Gratis te downloaden. Geen account vereist om te beginnen.</p>
+        <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+          <a href="#" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11"/></svg>
+            App Store
+          </a>
+          <a href="#" class="btn btn-ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.76c.35.19.76.19 1.12 0l11.24-6.48-2.46-2.46-9.9 8.94zm15.44-13.52L16.06 8.7 5.58.27c-.38-.28-.88-.3-1.28-.08L15.76 11.7l2.86-1.46zm1.8 3.96c0-.44-.22-.84-.6-1.06l-2.4-1.38-2.72 2.72 2.72 2.72 2.4-1.38c.38-.22.6-.62.6-1.06v-.56zM4.3.35c-.44 0-.82.34-.82.78v22.74c0 .44.38.78.82.78l11.46-6.6L4.3.35z"/></svg>
+            Google Play
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── footer ─────────────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-inner">
+      <span class="footer-brand">Tweakly</span>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Voorwaarden</a>
+        <a href="cookies.html">Cookies</a>
+        <a href="affiliate.html">Affiliate</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <span class="footer-copy">© 2026 Tweakly</span>
+    </div>
+  </footer>
+
+</div><!-- /content -->
 
 <script>
-/* ════════════════════════════════════════════════════════════
-   TWEAKLY — CINEMATIC 3D DESK SCENE LANDING PAGE
-   Three.js r160 + GSAP ScrollTrigger
-   Enhanced with particles, depth-of-field, mouse parallax,
-   camera breathing, and premium visual polish.
-════════════════════════════════════════════════════════════ */
+  /* ── scroll-reveal ────────────────────────────────────────── */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-(function () {
-  'use strict';
+  /* ── nav scroll state ─────────────────────────────────────── */
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    nav.style.background = window.scrollY > 60
+      ? 'rgba(0,0,0,0.82)'
+      : '';
+  }, { passive: true });
 
-  /* ── UTILS ── */
-  var $ = function(id) { return document.getElementById(id); };
-  var isMobile = function() { return window.innerWidth < 768; };
-  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  /* ── MOUSE TRACKING (for parallax) ── */
-  var mouseX = 0, mouseY = 0;
-  document.addEventListener('mousemove', function(e) {
-    mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-    mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+  /* ── glass card 3D tilt on mousemove ─────────────────────── */
+  document.querySelectorAll('[data-tilt]').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width  - 0.5;
+      const y = (e.clientY - r.top)  / r.height - 0.5;
+      card.style.transform = `perspective(600px) rotateY(${x * 8}deg) rotateX(${-y * 8}deg) scale(1.02)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
   });
 
-  /* ── CUSTOM CURSOR ── */
-  function initCursor() {
-    if (isMobile() || prefersReducedMotion) return;
-    var cursor = $('cursor');
-    var cx = 0, cy = 0, tx = 0, ty = 0;
-    document.addEventListener('mousemove', function(e) { tx = e.clientX; ty = e.clientY; cursor.style.opacity = '1'; });
-    document.querySelectorAll('a, button, .glass-card').forEach(function(el) {
-      el.addEventListener('mouseenter', function() { cursor.classList.add('expanded'); });
-      el.addEventListener('mouseleave', function() { cursor.classList.remove('expanded'); });
-    });
-    function tick() {
-      cx += (tx - cx) * 0.125;
-      cy += (ty - cy) * 0.125;
-      cursor.style.left = cx + 'px';
-      cursor.style.top  = cy + 'px';
-      requestAnimationFrame(tick);
-    }
-    tick();
+  /* ── animated counter ────────────────────────────────────── */
+  function animateCounter(el, target, prefix='', suffix='') {
+    const start = performance.now();
+    const duration = 1800;
+    const isDecimal = target % 1 !== 0;
+    const step = (now) => {
+      const t = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - t, 3);
+      const val = target * ease;
+      el.textContent = prefix + (isDecimal ? val.toFixed(1) : Math.floor(val)) + suffix;
+      if (t < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
   }
 
-  /* ── RIPPLE ── */
-  function addRipple(el) {
-    el.addEventListener('click', function(e) {
-      var r = document.createElement('span');
-      var rect = el.getBoundingClientRect();
-      var size = Math.max(rect.width, rect.height);
-      r.className = 'ripple';
-      r.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + (e.clientX - rect.left - size/2) + 'px;top:' + (e.clientY - rect.top - size/2) + 'px';
-      el.appendChild(r);
-      setTimeout(function() { r.remove(); }, 650);
-    });
-  }
-
-  /* ── GLASS CARD 3D TILT ── */
-  function initCardTilt() {
-    if (prefersReducedMotion) return;
-    document.querySelectorAll('.glass-card').forEach(function(card) {
-      card.addEventListener('mousemove', function(e) {
-        var rect = card.getBoundingClientRect();
-        var x = (e.clientX - rect.left) / rect.width  - 0.5;
-        var y = (e.clientY - rect.top)  / rect.height - 0.5;
-        card.style.transform = 'perspective(1000px) rotateY(' + (x * 8) + 'deg) rotateX(' + (-y * 8) + 'deg)';
+  const statsObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const nums = e.target.querySelectorAll('.stat-num');
+      nums.forEach(n => {
+        const text = n.textContent;
+        if (text.includes('50K'))   animateCounter(n, 50, '', 'K+');
+        else if (text.includes('10')) animateCounter(n, 10, '', '+');
+        else if (text.includes('2,4')) animateCounter(n, 2.4, '€ ', 'M');
+        else if (text.includes('4.8')) animateCounter(n, 4.8, '', ' ★');
       });
-      card.addEventListener('mouseleave', function() {
-        card.style.transform = '';
+      statsObs.unobserve(e.target);
+    });
+  }, { threshold: 0.5 });
+
+  const statsRow = document.querySelector('.stats-row');
+  if (statsRow) statsObs.observe(statsRow);
+
+  /* ── sparkline draw animation ────────────────────────────── */
+  const sparkLine = document.querySelector('.spark-line');
+  const sparkArea = document.querySelector('.spark-area');
+  if (sparkLine) {
+    const len = sparkLine.getTotalLength();
+    sparkLine.style.strokeDasharray = len;
+    sparkLine.style.strokeDashoffset = len;
+    sparkLine.style.transition = 'stroke-dashoffset 1.8s cubic-bezier(0.22,1,0.36,1)';
+
+    const sparkObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        sparkLine.style.strokeDashoffset = '0';
+        sparkObs.unobserve(e.target);
       });
-      addRipple(card);
-    });
-    document.querySelectorAll('.btn, .email-btn').forEach(addRipple);
+    }, { threshold: 0.4 });
+    sparkObs.observe(sparkLine.closest('section') || sparkLine);
   }
-
-  /* ── NAV ── */
-  function initNav() {
-    var nav = $('nav') || document.querySelector('.nav');
-    window.addEventListener('scroll', function() {
-      if (window.scrollY > 40) nav.classList.add('scrolled');
-      else nav.classList.remove('scrolled');
-    }, { passive: true });
-
-    var menuBtn = $('menuBtn');
-    if (menuBtn) {
-      menuBtn.addEventListener('click', function() {
-        var links = $('navLinks');
-        var open = links.classList.toggle('open');
-        menuBtn.setAttribute('aria-expanded', open);
-      });
-    }
-    document.addEventListener('click', function(e) {
-      if (!e.target.closest('#nav')) {
-        var nl = $('navLinks');
-        if (nl) nl.classList.remove('open');
-      }
-    });
-
-    /* scroll nav anchors to CTA card */
-    var navCta = $('navCta');
-    if (navCta) navCta.addEventListener('click', function() {
-      var t = $('card-5') || $('accessFormMobile');
-      if (t) t.scrollIntoView({ behavior: 'smooth' });
-    });
-    var heroCta = $('heroCta');
-    if (heroCta) heroCta.addEventListener('click', function() {
-      var t = $('card-5') || $('accessFormMobile');
-      if (t) t.scrollIntoView({ behavior: 'smooth' });
-    });
-    var heroLearn = $('heroLearn');
-    if (heroLearn) heroLearn.addEventListener('click', function() {
-      var t = $('card-1');
-      if (t) t.scrollIntoView({ behavior: 'smooth' });
-    });
-    var heroCta2 = $('heroCta2');
-    if (heroCta2) heroCta2.addEventListener('click', function() {
-      var t = $('accessFormMobile');
-      if (t) t.scrollIntoView({ behavior: 'smooth' });
-    });
-  }
-
-  /* ── HERO TEXT REVEAL (enhanced with scale + blur) ── */
-  function revealHeroText() {
-    if (prefersReducedMotion) {
-      $('heroTitle').textContent = 'Tweakly';
-      $('heroSub').textContent = 'Smart price comparison. Always the best deal.';
-      return;
-    }
-
-    /* letter-by-letter title with scale + blur clear */
-    var title = $('heroTitle');
-    var letters = 'Tweakly'.split('');
-    title.innerHTML = letters.map(function(l) { return '<span class="letter">' + l + '</span>'; }).join('');
-    gsap.to(title.querySelectorAll('.letter'), {
-      opacity: 1,
-      scale: 1,
-      filter: 'blur(0px)',
-      stagger: 0.08,
-      duration: 0.7,
-      ease: 'power3.out',
-      delay: 0.15
-    });
-
-    /* typewriter subtitle */
-    var sub = $('heroSub');
-    var text = 'Smart price comparison. Always the best deal.';
-    var i = 0;
-    var delay = letters.length * 80 + 350;
-    setTimeout(function() {
-      var t = setInterval(function() {
-        sub.textContent = text.slice(0, ++i);
-        if (i >= text.length) clearInterval(t);
-      }, 28);
-    }, delay);
-  }
-
-  /* ── SCROLL INDICATOR ── */
-  function initScrollIndicator() {
-    var indicator = $('scroll-indicator');
-    if (!indicator) return;
-    /* hide when scrolled */
-    window.addEventListener('scroll', function() {
-      indicator.style.opacity = window.scrollY > 80 ? '0' : '1';
-    }, { passive: true });
-  }
-
-  /* ══════════════════════════════════════════════
-     THREE.JS SCENE — CINEMATIC DESK
-  ══════════════════════════════════════════════ */
-  function initScene() {
-    var canvas = $('scene-canvas');
-    var W = window.innerWidth, H = window.innerHeight;
-    var mobile = isMobile();
-
-    /* Renderer */
-    var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: !mobile, alpha: false });
-    renderer.setSize(W, H);
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-    renderer.shadowMap.enabled = !mobile;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
-
-    /* Scene */
-    var scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x000000);
-    scene.fog = new THREE.FogExp2(0x000000, 0.15);
-
-    /* Camera */
-    var camera = new THREE.PerspectiveCamera(45, W / H, 0.01, 50);
-
-    /* ── HELPER: Rounded box geometry ── */
-    function createRoundedBox(w, h, d, r, segments) {
-      var shape = new THREE.Shape();
-      var hw = w / 2, hh = h / 2;
-      shape.moveTo(-hw + r, -hh);
-      shape.lineTo(hw - r, -hh);
-      shape.quadraticCurveTo(hw, -hh, hw, -hh + r);
-      shape.lineTo(hw, hh - r);
-      shape.quadraticCurveTo(hw, hh, hw - r, hh);
-      shape.lineTo(-hw + r, hh);
-      shape.quadraticCurveTo(-hw, hh, -hw, hh - r);
-      shape.lineTo(-hw, -hh + r);
-      shape.quadraticCurveTo(-hw, -hh, -hw + r, -hh);
-
-      var extrudeSettings = {
-        depth: d,
-        bevelEnabled: false,
-        steps: 1,
-        curveSegments: segments || 4
-      };
-      var geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-      /* center the depth */
-      geo.translate(0, 0, -d / 2);
-      return geo;
-    }
-
-    /* ── MATERIALS ── */
-    var walnutMat = new THREE.MeshStandardMaterial({ color: 0x5c3a1e, roughness: 0.82, metalness: 0.08 });
-    var blackMat  = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.35, metalness: 0.2 });
-    var darkMat   = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.5,  metalness: 0.1 });
-    var padMat    = new THREE.MeshStandardMaterial({ color: 0x0d0d0d, roughness: 0.95, metalness: 0.0 });
-    var phoneMat  = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.2,  metalness: 0.5 });
-    var kbdMat    = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.6,  metalness: 0.1 });
-    var ledMat    = new THREE.MeshStandardMaterial({ color: 0x2d6a2d, emissive: new THREE.Color(0x2d6a2d), emissiveIntensity: mobile ? 0.5 : 1.2, roughness: 1 });
-    var screenMat = new THREE.MeshStandardMaterial({ color: 0x0a1a0a, emissive: new THREE.Color(0x0a1a0a), emissiveIntensity: 0.6, roughness: 1 });
-
-    /* Walnut with subtle color variation (procedural) */
-    var walnutDeskMat = new THREE.MeshStandardMaterial({ color: 0x5c3a1e, roughness: 0.78, metalness: 0.08 });
-    /* We'll add a subtle procedural grain pattern via a canvas texture */
-    (function() {
-      var c = document.createElement('canvas');
-      c.width = 512; c.height = 512;
-      var ctx = c.getContext('2d');
-      /* base color */
-      ctx.fillStyle = '#5c3a1e';
-      ctx.fillRect(0, 0, 512, 512);
-      /* wood grain lines */
-      for (var i = 0; i < 200; i++) {
-        var y = Math.random() * 512;
-        var lightness = Math.random() * 30 - 15;
-        var r = 92 + lightness, g = 58 + lightness * 0.6, b = 30 + lightness * 0.3;
-        ctx.strokeStyle = 'rgba(' + Math.round(r) + ',' + Math.round(g) + ',' + Math.round(b) + ',0.3)';
-        ctx.lineWidth = Math.random() * 2 + 0.5;
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        /* wavy grain */
-        for (var x = 0; x < 512; x += 10) {
-          ctx.lineTo(x, y + Math.sin(x * 0.02 + i) * 3);
-        }
-        ctx.stroke();
-      }
-      var tex = new THREE.CanvasTexture(c);
-      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-      tex.repeat.set(2, 2);
-      walnutDeskMat.map = tex;
-      walnutDeskMat.needsUpdate = true;
-    })();
-
-    /* ── DESK SURFACE (with rounded edges) ── */
-    var deskGeo = createRoundedBox(4, 1.8, 0.06, 0.03, 6);
-    var desk = new THREE.Mesh(deskGeo, walnutDeskMat);
-    desk.rotation.x = Math.PI / 2;
-    desk.position.set(0, 0, 0);
-    desk.receiveShadow = true;
-    scene.add(desk);
-
-    /* ── MONITOR SHELF (rounded) ── */
-    var shelfGeo = createRoundedBox(2.8, 0.5, 0.04, 0.02, 4);
-    var shelf = new THREE.Mesh(shelfGeo, walnutMat);
-    shelf.rotation.x = Math.PI / 2;
-    shelf.position.set(0, 0.05, -0.5);
-    shelf.castShadow = true;
-    scene.add(shelf);
-
-    /* ── MONITOR BEZEL (with beveled edges) ── */
-    var monBezelGeo = createRoundedBox(2.2, 1.1, 0.06, 0.02, 6);
-    var monBezel = new THREE.Mesh(monBezelGeo, blackMat);
-    monBezel.position.set(0, 0.65, -0.72);
-    monBezel.castShadow = true;
-    scene.add(monBezel);
-
-    /* ── MONITOR SCREEN ── */
-    var monScreen = new THREE.Mesh(new THREE.PlaneGeometry(2.1, 0.95), screenMat);
-    monScreen.position.set(0, 0.65, -0.688);
-    scene.add(monScreen);
-
-    /* ── MONITOR STAND (with neck) ── */
-    /* Neck cylinder */
-    var standNeck = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.025, 0.03, 0.35, 12),
-      blackMat
-    );
-    standNeck.position.set(0, 0.085, -0.68);
-    scene.add(standNeck);
-    /* Base plate */
-    var standBase = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.18, 0.2, 0.015, 24),
-      blackMat
-    );
-    standBase.position.set(0, 0.04, -0.68);
-    scene.add(standBase);
-    /* Hinge connector */
-    var standHinge = new THREE.Mesh(
-      new THREE.BoxGeometry(0.06, 0.08, 0.04),
-      blackMat
-    );
-    standHinge.position.set(0, 0.27, -0.7);
-    scene.add(standHinge);
-
-    /* ── PC TOWER (with beveled edges) ── */
-    var pcBodyGeo = createRoundedBox(0.4, 1.1, 0.55, 0.015, 4);
-    var pcBody = new THREE.Mesh(pcBodyGeo, darkMat);
-    pcBody.position.set(1.5, 0.52, -0.5);
-    pcBody.castShadow = true;
-    pcBody.receiveShadow = true;
-    scene.add(pcBody);
-
-    /* PC glass panel with environment reflection */
-    var glassMat = new THREE.MeshPhysicalMaterial({
-      color: 0x111122, transmission: 0.82, roughness: 0.05,
-      metalness: 0.1, thickness: 0.02, transparent: true, opacity: 0.85,
-      envMapIntensity: 1.2
-    });
-    var pcGlass = new THREE.Mesh(new THREE.PlaneGeometry(0.38, 1.08), glassMat);
-    pcGlass.position.set(1.295, 0.52, -0.5);
-    pcGlass.rotation.y = Math.PI / 2;
-    scene.add(pcGlass);
-
-    /* Fan rings */
-    var fanMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.6 });
-    var fans = [];
-    [-0.25, 0, 0.25].forEach(function(z) {
-      var fan = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.012, 8, 24), fanMat);
-      fan.position.set(1.29, 0.5, z - 0.5);
-      fan.rotation.y = Math.PI / 2;
-      scene.add(fan);
-      fans.push(fan);
-
-      /* Fan blade cross */
-      var blade = new THREE.Mesh(new THREE.PlaneGeometry(0.16, 0.005), fanMat);
-      blade.position.copy(fan.position);
-      blade.rotation.y = Math.PI / 2;
-      scene.add(blade);
-      fans.push(blade);
-    });
-
-    /* PC power LED */
-    var pcLedMat = new THREE.MeshStandardMaterial({
-      color: 0x2d6a2d, emissive: new THREE.Color(0x2d6a2d), emissiveIntensity: 2.0, roughness: 1
-    });
-    var pcLed = new THREE.Mesh(new THREE.SphereGeometry(0.008, 8, 8), pcLedMat);
-    pcLed.position.set(1.5, 0.08, -0.22);
-    scene.add(pcLed);
-
-    /* ── KEYBOARD (enhanced with visible keycaps) ── */
-    var kbdGeo = createRoundedBox(0.65, 0.22, 0.025, 0.01, 4);
-    var kbd = new THREE.Mesh(kbdGeo, kbdMat);
-    kbd.rotation.x = Math.PI / 2;
-    kbd.position.set(0.05, 0.043, 0.4);
-    kbd.castShadow = true;
-    scene.add(kbd);
-
-    /* Wrist rest (rounded) */
-    var wristGeo = createRoundedBox(0.65, 0.08, 0.015, 0.005, 4);
-    var wrist = new THREE.Mesh(wristGeo, walnutMat);
-    wrist.rotation.x = Math.PI / 2;
-    wrist.position.set(0.05, 0.038, 0.57);
-    scene.add(wrist);
-
-    /* Keycap rows with better geometry */
-    var keycapMat = new THREE.MeshStandardMaterial({ color: 0x252525, roughness: 0.45, metalness: 0.05 });
-    var keycapTopMat = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.4, metalness: 0.05 });
-    for (var row = 0; row < 5; row++) {
-      var numKeys = row === 4 ? 8 : 14;
-      var keyWidth = row === 4 ? 0.06 : 0.038;
-      for (var col = 0; col < numKeys; col++) {
-        var key = new THREE.Mesh(new THREE.BoxGeometry(keyWidth, 0.012, 0.032), keycapMat);
-        var xOff = row === 4 ? (col * 0.072 - 0.25) : (col * 0.042 - 0.26);
-        key.position.set(0.05 + xOff, 0.06, 0.31 + row * 0.04);
-        scene.add(key);
-      }
-    }
-
-    /* ── MOUSEPAD + MOUSE ── */
-    var mousepad = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.006, 0.32), padMat);
-    mousepad.position.set(0.55, 0.033, 0.35);
-    mousepad.receiveShadow = true;
-    scene.add(mousepad);
-
-    /* Mouse with more detail */
-    var mouseBody = new THREE.Mesh(
-      new THREE.CapsuleGeometry(0.03, 0.05, 8, 12),
-      blackMat
-    );
-    mouseBody.position.set(0.68, 0.052, 0.3);
-    mouseBody.rotation.x = Math.PI / 2;
-    mouseBody.rotation.z = Math.PI / 2;
-    mouseBody.scale.set(1, 0.5, 0.8);
-    mouseBody.castShadow = true;
-    scene.add(mouseBody);
-
-    /* Mouse scroll wheel */
-    var scrollWheel = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.005, 0.005, 0.015, 12),
-      new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.3 })
-    );
-    scrollWheel.position.set(0.68, 0.066, 0.275);
-    scrollWheel.rotation.x = Math.PI / 2;
-    scene.add(scrollWheel);
-
-    /* ── PHONE + CHARGING DOCK ── */
-    var phoneGeo = createRoundedBox(0.075, 0.16, 0.008, 0.004, 6);
-    var phone = new THREE.Mesh(phoneGeo, phoneMat);
-    phone.rotation.x = Math.PI / 2;
-    phone.position.set(-0.7, 0.037, 0.2);
-    phone.castShadow = true;
-    scene.add(phone);
-
-    /* Phone screen glow */
-    var phoneScreenMat = new THREE.MeshStandardMaterial({
-      color: 0x0a200a, emissive: new THREE.Color(0x0a200a),
-      emissiveIntensity: 0.5, roughness: 1
-    });
-    var phoneScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.065, 0.14), phoneScreenMat);
-    phoneScreen.position.set(-0.7, 0.042, 0.2);
-    phoneScreen.rotation.x = -Math.PI / 2;
-    scene.add(phoneScreen);
-
-    var dock = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.055, 0.06, 0.014, 32),
-      new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.4 })
-    );
-    dock.position.set(-0.7, 0.037, 0.2);
-    scene.add(dock);
-
-    /* ── MIC ARM + HEAD ── */
-    var micArm = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.007, 0.75, 8), blackMat);
-    micArm.position.set(-1.7, 0.4, -0.2);
-    micArm.rotation.z = Math.PI / 6;
-    scene.add(micArm);
-
-    /* Mic clamp at desk edge */
-    var micClamp = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.06, 0.04), blackMat);
-    micClamp.position.set(-1.95, 0.02, -0.2);
-    scene.add(micClamp);
-
-    var micHead = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.035, 0.04, 0.1, 16),
-      darkMat
-    );
-    micHead.position.set(-1.45, 0.72, -0.2);
-    micHead.rotation.z = Math.PI / 6;
-    scene.add(micHead);
-
-    /* Mic grille detail */
-    var micGrille = new THREE.Mesh(
-      new THREE.SphereGeometry(0.038, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.5),
-      new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.3, metalness: 0.6 })
-    );
-    micGrille.position.set(-1.41, 0.76, -0.18);
-    micGrille.rotation.z = Math.PI / 6;
-    scene.add(micGrille);
-
-    /* ── SPEAKERS (with more detail) ── */
-    [-0.85, 0.85].forEach(function(x) {
-      /* Speaker body */
-      var spBody = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.05, 0.06, 0.14, 16),
-        blackMat
-      );
-      spBody.position.set(x, 0.1, -0.72);
-      spBody.castShadow = true;
-      scene.add(spBody);
-
-      /* Speaker cone */
-      var coneMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.3, metalness: 0.4 });
-      var cone = new THREE.Mesh(new THREE.CircleGeometry(0.035, 24), coneMat);
-      cone.position.set(x, 0.1, -0.65);
-      scene.add(cone);
-
-      /* Speaker base */
-      var spBase = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.065, 0.065, 0.01, 16),
-        blackMat
-      );
-      spBase.position.set(x, 0.03, -0.72);
-      scene.add(spBase);
-    });
-
-    /* ── COFFEE MUG (desk detail) ── */
-    var mugMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.3, metalness: 0.1 });
-    var mug = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.035, 0.09, 16), mugMat);
-    mug.position.set(-1.2, 0.078, 0.3);
-    mug.castShadow = true;
-    scene.add(mug);
-    /* Mug handle */
-    var handleMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.3, metalness: 0.1 });
-    var handle = new THREE.Mesh(new THREE.TorusGeometry(0.018, 0.005, 8, 12, Math.PI), handleMat);
-    handle.position.set(-1.16, 0.07, 0.3);
-    handle.rotation.y = Math.PI / 2;
-    handle.rotation.z = Math.PI / 2;
-    scene.add(handle);
-
-    /* ── LED STRIP (behind monitor, with volumetric glow) ── */
-    var led = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.015, 0.02), ledMat);
-    led.position.set(0, 0.1, -0.97);
-    scene.add(led);
-
-    /* Side LED strips for extra glow */
-    var ledSideL = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.015, 0.8), ledMat);
-    ledSideL.position.set(-1.1, 0.1, -0.57);
-    scene.add(ledSideL);
-    var ledSideR = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.015, 0.8), ledMat);
-    ledSideR.position.set(1.1, 0.1, -0.57);
-    scene.add(ledSideR);
-
-    /* ── FLOOR ── */
-    var floorMat = new THREE.MeshStandardMaterial({ color: 0x080808, roughness: 0.9, metalness: 0.0 });
-    var floor = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), floorMat);
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -0.5;
-    floor.receiveShadow = true;
-    scene.add(floor);
-
-    /* ── DESK LEGS (metal frame style) ── */
-    var legMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.4, metalness: 0.3 });
-    /* Left A-frame */
-    var leftFront = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.5, 0.04), legMat);
-    leftFront.position.set(-1.7, -0.28, 0.65);
-    scene.add(leftFront);
-    var leftBack = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.5, 0.04), legMat);
-    leftBack.position.set(-1.7, -0.28, -0.65);
-    scene.add(leftBack);
-    var leftCross = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.04, 1.3), legMat);
-    leftCross.position.set(-1.7, -0.25, 0);
-    scene.add(leftCross);
-    /* Right A-frame */
-    var rightFront = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.5, 0.04), legMat);
-    rightFront.position.set(1.7, -0.28, 0.65);
-    scene.add(rightFront);
-    var rightBack = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.5, 0.04), legMat);
-    rightBack.position.set(1.7, -0.28, -0.65);
-    scene.add(rightBack);
-    var rightCross = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.04, 1.3), legMat);
-    rightCross.position.set(1.7, -0.25, 0);
-    scene.add(rightCross);
-
-    /* ── CABLE MANAGEMENT (small detail) ── */
-    var cableMat = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.8 });
-    var cable = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.6, 6), cableMat);
-    cable.position.set(0.3, -0.2, -0.7);
-    cable.rotation.z = 0.2;
-    scene.add(cable);
-
-    /* ══════════════════════════════════════
-       AMBIENT DUST PARTICLES
-    ══════════════════════════════════════ */
-    var particleCount = mobile ? 60 : 200;
-    var particleGeo = new THREE.BufferGeometry();
-    var particlePositions = new Float32Array(particleCount * 3);
-    var particleSpeeds = new Float32Array(particleCount);
-    for (var pi = 0; pi < particleCount; pi++) {
-      particlePositions[pi * 3]     = (Math.random() - 0.5) * 6;
-      particlePositions[pi * 3 + 1] = Math.random() * 2.5 - 0.3;
-      particlePositions[pi * 3 + 2] = (Math.random() - 0.5) * 4;
-      particleSpeeds[pi] = Math.random() * 0.0003 + 0.0001;
-    }
-    particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
-    var particleMat = new THREE.PointsMaterial({
-      color: 0xffffff,
-      size: mobile ? 0.008 : 0.005,
-      transparent: true,
-      opacity: 0.25,
-      sizeAttenuation: true,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
-    });
-    var particles = new THREE.Points(particleGeo, particleMat);
-    scene.add(particles);
-
-    /* ══════════════════════════════════════
-       LIGHTS
-    ══════════════════════════════════════ */
-    var ambient = new THREE.AmbientLight(0x111111, 0.5);
-    scene.add(ambient);
-
-    /* Key light — warm amber */
-    var keyLight = new THREE.PointLight(0xffaa55, 0, 8);
-    keyLight.position.set(-1.5, 1.8, 0.8);
-    keyLight.castShadow = !mobile;
-    if (!mobile) {
-      keyLight.shadow.mapSize.set(1024, 1024);
-      keyLight.shadow.camera.near = 0.1;
-      keyLight.shadow.camera.far = 8;
-      keyLight.shadow.bias = -0.001;
-    }
-    scene.add(keyLight);
-
-    var fillLight = new THREE.DirectionalLight(0xffffff, 0);
-    fillLight.position.set(2, 3, 2);
-    fillLight.castShadow = false;
-    scene.add(fillLight);
-
-    /* RectAreaLight — monitor backlight (cool blue) */
-    var rectLight = null;
-    if (THREE.RectAreaLight) {
-      rectLight = new THREE.RectAreaLight(0xaaccff, 0, 2.0, 0.8);
-      rectLight.position.set(0, 0.8, -0.95);
-      rectLight.lookAt(0, 0.6, 0);
-      scene.add(rectLight);
-    }
-
-    /* LED strip green point light (casts visible light onto wall/desk) */
-    var ledPointLight = new THREE.PointLight(0x2d6a2d, 0, 3);
-    ledPointLight.position.set(0, 0.15, -0.9);
-    scene.add(ledPointLight);
-
-    /* PC tower green accent light */
-    var pcAccentLight = new THREE.PointLight(0x2d6a2d, 0, 1.5);
-    pcAccentLight.position.set(1.3, 0.05, -0.5);
-    scene.add(pcAccentLight);
-
-    /* Subtle rim light from right */
-    var rimLight = new THREE.PointLight(0x334466, 0, 5);
-    rimLight.position.set(2.5, 1.2, -0.5);
-    scene.add(rimLight);
-
-    /* ══════════════════════════════════════
-       CAMERA KEYFRAMES
-    ══════════════════════════════════════ */
-    var KF = [
-      { pos: new THREE.Vector3(0, 1.8, 3.2),   target: new THREE.Vector3(0, 0.3, 0) },
-      { pos: new THREE.Vector3(-0.4, 0.9, 1.4), target: new THREE.Vector3(0, 0.6, -0.2) },
-      { pos: new THREE.Vector3(0.1, 0.45, 0.85),target: new THREE.Vector3(0.1, 0.35, 0.1) },
-      { pos: new THREE.Vector3(0.6, 0.55, 1.0), target: new THREE.Vector3(-0.7, 0.32, 0) },
-      { pos: new THREE.Vector3(0, 2.2, 2.2),    target: new THREE.Vector3(0, 0.3, 0) },
-      { pos: new THREE.Vector3(0, 1.4, 3.8),    target: new THREE.Vector3(0, 0.4, 0) },
-    ];
-
-    /* ── SCROLL-DRIVEN CAMERA STATE ── */
-    var camProgress = 0;
-    var camPos    = KF[0].pos.clone();
-    var camTarget = KF[0].target.clone();
-    var activeCard = -1;
-
-    var LERP = prefersReducedMotion ? 1.0 : 0.055;
-
-    /* ── GSAP SCROLL TRIGGER ── */
-    gsap.registerPlugin(ScrollTrigger);
-
-    ScrollTrigger.create({
-      trigger: '#scene-scroll-driver',
-      start: 'top top',
-      end: 'bottom bottom',
-      scrub: prefersReducedMotion ? 0 : 1.5,
-      onUpdate: function(self) {
-        camProgress = self.progress * (KF.length - 1);
-      }
-    });
-
-    /* ── CARD VISIBILITY ── */
-    var cards = ['card-1','card-2','card-3','card-4','card-5'];
-
-    function updateCards(kfIndex) {
-      var rounded = Math.round(kfIndex);
-      if (rounded === activeCard) return;
-      activeCard = rounded;
-
-      /* hero overlay */
-      var heroOverlay = $('hero-overlay');
-      if (rounded === 0) {
-        heroOverlay.style.opacity = '1';
-        heroOverlay.style.pointerEvents = 'auto';
-      } else {
-        heroOverlay.style.opacity = '0';
-        heroOverlay.style.pointerEvents = 'none';
-      }
-
-      /* scroll indicator */
-      var scrollInd = $('scroll-indicator');
-      if (scrollInd) {
-        scrollInd.style.opacity = rounded === 0 ? '1' : '0';
-      }
-
-      /* scene cards */
-      cards.forEach(function(id, i) {
-        var card = $(id);
-        if (!card) return;
-        var cardKf = i + 1;
-        var show = rounded === cardKf;
-        card.classList.toggle('visible', show);
-      });
-    }
-
-    /* ══════════════════════════════════════
-       EASING: custom easeInOutQuart for smoothing
-    ══════════════════════════════════════ */
-    function easeInOutQuart(t) {
-      return t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
-    }
-
-    /* ══════════════════════════════════════
-       RAF LOOP
-    ══════════════════════════════════════ */
-    var rafId;
-    var paused = false;
-    var time = 0;
-
-    document.addEventListener('visibilitychange', function() {
-      paused = document.hidden;
-      if (!paused && !rafId) loop();
-    });
-
-    function loop() {
-      rafId = requestAnimationFrame(loop);
-      if (paused) return;
-
-      time += 0.016;
-
-      /* Interpolate camera between keyframes with easeInOutQuart */
-      var kfLow  = Math.floor(camProgress);
-      var kfHigh = Math.min(kfLow + 1, KF.length - 1);
-      var rawT   = camProgress - kfLow;
-      var t      = easeInOutQuart(rawT);
-
-      var targetPos = new THREE.Vector3().lerpVectors(KF[kfLow].pos,    KF[kfHigh].pos,    t);
-      var targetLat = new THREE.Vector3().lerpVectors(KF[kfLow].target, KF[kfHigh].target, t);
-
-      camPos.lerp(targetPos, LERP);
-      camTarget.lerp(targetLat, LERP);
-
-      /* Camera breathing (tiny oscillation) */
-      if (!prefersReducedMotion) {
-        var breathX = Math.sin(time * 0.4) * 0.008;
-        var breathY = Math.cos(time * 0.3) * 0.005;
-        camPos.x += breathX;
-        camPos.y += breathY;
-      }
-
-      /* Mouse parallax on camera */
-      if (!prefersReducedMotion) {
-        camPos.x += mouseX * 0.04;
-        camPos.y += mouseY * -0.02;
-      }
-
-      camera.position.copy(camPos);
-      camera.lookAt(camTarget);
-
-      updateCards(camProgress);
-
-      /* Animate dust particles */
-      var positions = particles.geometry.attributes.position.array;
-      for (var pi = 0; pi < particleCount; pi++) {
-        positions[pi * 3 + 1] += particleSpeeds[pi];
-        /* Subtle horizontal drift */
-        positions[pi * 3] += Math.sin(time + pi * 0.1) * 0.00008;
-        /* Reset when too high */
-        if (positions[pi * 3 + 1] > 2.5) {
-          positions[pi * 3 + 1] = -0.3;
-          positions[pi * 3] = (Math.random() - 0.5) * 6;
-          positions[pi * 3 + 2] = (Math.random() - 0.5) * 4;
-        }
-      }
-      particles.geometry.attributes.position.needsUpdate = true;
-
-      /* Rotate fan blades subtly */
-      for (var fi = 1; fi < fans.length; fi += 2) {
-        fans[fi].rotation.x += 0.02;
-      }
-
-      /* Pulse PC LED */
-      pcLed.material.emissiveIntensity = 1.5 + Math.sin(time * 2) * 0.5;
-
-      /* Subtle screen emissive shift */
-      monScreen.material.emissiveIntensity = 0.5 + Math.sin(time * 0.5) * 0.15;
-      phoneScreen.material.emissiveIntensity = 0.4 + Math.sin(time * 0.7) * 0.1;
-
-      renderer.render(scene, camera);
-    }
-
-    /* ── RESIZE ── */
-    window.addEventListener('resize', function() {
-      var W2 = window.innerWidth, H2 = window.innerHeight;
-      camera.aspect = W2 / H2;
-      camera.updateProjectionMatrix();
-      renderer.setSize(W2, H2);
-    }, { passive: true });
-
-    /* ══════════════════════════════════════
-       LOADING SEQUENCE (cinematic)
-    ══════════════════════════════════════ */
-    function onSceneReady() {
-      var loader = $('loader');
-      var wordmark = loader.querySelector('.loader-wordmark');
-      var barWrap = loader.querySelector('.loader-bar-wrap');
-      var bar = $('loaderBar');
-      var heroOverlay = $('hero-overlay');
-      var scrollIndicator = $('scroll-indicator');
-
-      if (prefersReducedMotion) {
-        loader.style.display = 'none';
-        heroOverlay.style.opacity = '1';
-        heroOverlay.style.pointerEvents = 'auto';
-        if (scrollIndicator) scrollIndicator.style.opacity = '1';
-        camera.position.copy(KF[0].pos);
-        camera.lookAt(KF[0].target);
-        revealHeroText();
-        loop();
-        return;
-      }
-
-      var tl = gsap.timeline();
-      tl.to(wordmark, { opacity: 1, duration: 0.5, ease: 'power2.out' })
-        .to(barWrap, { opacity: 1, duration: 0.3 }, '-=0.2')
-        .to(bar, { width: '60%', duration: 0.6, ease: 'power1.inOut' })
-        .to(bar, { width: '100%', duration: 0.4, ease: 'power2.in' })
-        .to(loader, {
-          opacity: 0, scale: 1.04, duration: 0.6,
-          ease: 'power2.inOut',
-          onComplete: function() { loader.style.display = 'none'; }
-        })
-        .to(keyLight, { intensity: 1.6, duration: 1.4, ease: 'power1.inOut' }, '-=0.2')
-        .to(fillLight, { intensity: 0.35, duration: 1.4, ease: 'power1.inOut' }, '<')
-        .to(rimLight, { intensity: 0.3, duration: 1.4, ease: 'power1.inOut' }, '<')
-        .to(ledPointLight, { intensity: 0.8, duration: 1.0, ease: 'power1.inOut' }, '<')
-        .to(pcAccentLight, { intensity: 0.4, duration: 1.0, ease: 'power1.inOut' }, '<')
-        .add(function() {
-          if (rectLight) gsap.to(rectLight, { intensity: 0.8, duration: 1.0 });
-        }, '<')
-        .add(function() {
-          heroOverlay.style.opacity = '1';
-          heroOverlay.style.pointerEvents = 'auto';
-          revealHeroText();
-          if (scrollIndicator) {
-            gsap.to(scrollIndicator, { opacity: 1, duration: 0.8, delay: 1.5 });
-          }
-        }, '-=0.5')
-        .fromTo('.hero-badge', { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.2')
-        .fromTo('.btn-green', { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: 'back.out(2)' })
-        .fromTo('.btn-ghost', { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: 'back.out(2)' }, '-=0.3');
-
-      loop();
-    }
-
-    /* Allow a frame for scene to compile, then fire */
-    renderer.render(scene, camera);
-    requestAnimationFrame(function() { requestAnimationFrame(onSceneReady); });
-  }
-
-  /* ── INIT ── */
-  window.addEventListener('DOMContentLoaded', function() {
-    if (isMobile()) {
-      /* On mobile: skip Three.js, show mobile cards directly */
-      $('loader').style.display = 'none';
-      $('scene-canvas').style.display = 'none';
-      $('scene-scroll-driver').style.display = 'none';
-      $('hero-overlay').style.display = 'none';
-      var si = $('scroll-indicator');
-      if (si) si.style.display = 'none';
-      return;
-    }
-
-    initScene();
-    initCursor();
-    initCardTilt();
-    initScrollIndicator();
-  });
-
-  /* Nav also works on mobile */
-  window.addEventListener('DOMContentLoaded', initNav);
-
-})();
 </script>
 </body>
 </html>
