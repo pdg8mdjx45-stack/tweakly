@@ -139,11 +139,21 @@
     /* ─── hero ───────────────────────────────────────────────── */
     #hero {
       min-height: 100dvh;
-      display: flex; align-items: center;
-      padding-top: 7rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding-top: 6rem;
+      padding-bottom: 3rem;
+      text-align: center;
+      position: relative;
     }
     .hero-inner {
-      max-width: 780px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 860px;
     }
     .hero-badge {
       display: inline-flex; align-items: center; gap: 8px;
@@ -166,11 +176,12 @@
       50%      { opacity:0.3; transform:scale(0.6); }
     }
     .hero-title {
-      font-size: clamp(3.8rem, 10vw, 9rem);
-      font-weight: 800;
+      font-size: clamp(4.5rem, 12vw, 10rem);
+      font-weight: 900;
       letter-spacing: -0.05em;
-      line-height: 0.92;
-      margin-bottom: 1.4rem;
+      line-height: 0.88;
+      margin-bottom: 1.2rem;
+      text-align: center;
       animation: fade-up 0.9s cubic-bezier(0.22,1,0.36,1) 0.2s both;
     }
     .hero-title .line-2 {
@@ -180,14 +191,20 @@
       background-clip: text;
     }
     .hero-sub {
-      font-size: clamp(1rem, 1.8vw, 1.15rem);
-      color: var(--text-2); line-height: 1.75;
-      max-width: 520px; margin-bottom: 2.2rem;
-      animation: fade-up 0.9s cubic-bezier(0.22,1,0.36,1) 0.32s both;
+      font-size: 1rem;
+      color: rgba(255,255,255,0.50);
+      line-height: 1.6;
+      max-width: 420px;
+      text-align: center;
+      margin-bottom: 2.5rem;
+      animation: fade-up 0.9s cubic-bezier(0.22,1,0.36,1) 0.35s both;
     }
     .hero-btns {
-      display: flex; gap: 10px; flex-wrap: wrap;
-      animation: fade-up 0.9s cubic-bezier(0.22,1,0.36,1) 0.44s both;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fade-up 0.9s cubic-bezier(0.22,1,0.36,1) 0.65s both;
     }
     .btn {
       display: inline-flex; align-items: center; gap: 8px;
@@ -298,8 +315,14 @@
 
     /* ─── scroll indicator ───────────────────────────────────── */
     .scroll-hint {
-      display: flex; flex-direction: column; align-items: center; gap: 6px;
-      margin-top: 4rem;
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
       animation: fade-up 1s ease 1s both;
     }
     .scroll-hint span {
