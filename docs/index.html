@@ -6,9 +6,28 @@
   <title>Tweakly — Altijd de beste prijs</title>
   <meta name="description" content="Vergelijk prijzen, volg producten en ontvang meldingen zodra de prijs daalt. Tweakly houdt alle deals bij — jij hoeft niets te doen.">
   <link rel="icon" href="logo.png" type="image/png">
+  
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-H44FS0WM7N"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-H44FS0WM7N');
+  </script>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
 
   <style>
     /* ─── tokens ─────────────────────────────────────────────── */
@@ -382,6 +401,9 @@
       margin-top: 1rem;
     }
 
+    /* ─── tilt cursor follow ─────────────────────────────────── */
+    .glass[data-tilt] { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+
     /* ─── sparkline ──────────────────────────────────────────── */
     .sparkline-wrap { padding: clamp(1.4rem, 3vw, 2rem); }
     .spark-title {
@@ -663,7 +685,7 @@
         <h2 class="section-title">Realtime prijzen,<br>helder in beeld.</h2>
       </div>
       <div class="demo-grid">
-        <div class="glass demo-card">
+        <div class="glass demo-card" data-tilt>
           <div class="price-header">
             <p class="price-product-name">Sony WH-1000XM5</p>
             <span class="price-now">€&nbsp;279,–</span><span class="price-was">€&nbsp;319,–</span>
@@ -702,7 +724,7 @@
           </div>
         </div>
 
-        <div class="glass sparkline-wrap">
+        <div class="glass sparkline-wrap" data-tilt>
           <p class="spark-title">Prijshistorie — 90 dagen</p>
           <svg class="spark" viewBox="0 0 300 80" preserveAspectRatio="none">
             <defs>
@@ -724,6 +746,50 @@
             <div style="font-size:0.72rem; color:var(--text-3);">Max <span style="color:var(--text);font-weight:600;">€ 349,–</span></div>
             <div style="font-size:0.72rem; color:var(--text-3);">Gem. <span style="color:var(--text);font-weight:600;">€ 298,–</span></div>
           </div>
+          <div style="margin-top:1.1rem; border-top:1px solid rgba(255,255,255,0.07); padding-top:1rem; display:flex; flex-direction:column; gap:0.55rem;">
+            <div class="price-row" style="margin:0;">
+              <div class="price-store">
+                <div class="store-dot" style="background:#0064D2;"></div>
+                <span class="store-name">Coolblue</span>
+              </div>
+              <span class="price-tag best" style="font-size:0.78rem;">€&nbsp;259,–</span>
+            </div>
+            <div class="price-row" style="margin:0;">
+              <div class="price-store">
+                <div class="store-dot" style="background:#F76D00;"></div>
+                <span class="store-name">Bol.com</span>
+              </div>
+              <span class="price-tag higher" style="font-size:0.78rem;">€&nbsp;274,–</span>
+            </div>
+            <div class="price-row" style="margin:0;">
+              <div class="price-store">
+                <div class="store-dot" style="background:#E2001A;"></div>
+                <span class="store-name">MediaMarkt</span>
+              </div>
+              <span class="price-tag higher" style="font-size:0.78rem;">€&nbsp;289,–</span>
+            </div>
+            <div class="price-row" style="margin:0;">
+              <div class="price-store">
+                <div class="store-dot" style="background:#9B59B6;"></div>
+                <span class="store-name">Amazon.nl</span>
+              </div>
+              <span class="price-tag higher" style="font-size:0.78rem;">€&nbsp;299,–</span>
+            </div>
+            <div class="price-row" style="margin:0;">
+              <div class="price-store">
+                <div class="store-dot" style="background:#F5A623;"></div>
+                <span class="store-name">Alternate</span>
+              </div>
+              <span class="price-tag higher" style="font-size:0.78rem;">€&nbsp;305,–</span>
+            </div>
+            <div class="price-row" style="margin:0;">
+              <div class="price-store">
+                <div class="store-dot" style="background:#3AAA35;"></div>
+                <span class="store-name">Wehkamp</span>
+              </div>
+              <span class="price-tag higher" style="font-size:0.78rem;">€&nbsp;312,–</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -743,7 +809,7 @@
             <a href="#download" class="btn btn-primary">Download gratis</a>
           </div>
         </div>
-        <div class="glass alert-card">
+        <div class="glass alert-card" data-tilt>
           <p class="section-eyebrow" style="margin-bottom:0.9rem;">Recente meldingen</p>
           <div class="alert-item">
             <div class="alert-icon green">📉</div>
@@ -868,13 +934,14 @@
 
 </div><!-- /content -->
 
-<script>
+<script type="module">
   /* ── 3d hero logo ────────────────────────────────────────── */
-  (function () {
-    const canvas = document.getElementById('hero-canvas');
-    if (!canvas) return;
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+  import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
-    // resolve pixel size once
+  const canvas = document.getElementById('hero-canvas');
+  if (canvas) {
     function setSize() {
       const w = canvas.clientWidth;
       canvas.width  = w * devicePixelRatio;
@@ -882,153 +949,94 @@
     }
     setSize();
 
-    /* ── Three.js inline bootstrap ── */
-    const THREE_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r160/three.min.js';
-    const GLTF_CDN  = 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(devicePixelRatio);
+    renderer.setSize(canvas.clientWidth, canvas.clientWidth);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.4;
 
-    function loadScript(src, type = 'text/javascript') {
-      return new Promise((res, rej) => {
-        const s = document.createElement('script');
-        s.src  = src;
-        s.type = type;
-        s.onload  = res;
-        s.onerror = rej;
-        document.head.appendChild(s);
-      });
+    const scene  = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+    camera.position.set(0, 0.4, 5.5);
+
+    /* ── lighting ── */
+    scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+    const key = new THREE.DirectionalLight(0xa8ffbe, 3.5);
+    key.position.set(-3, 5, 4); scene.add(key);
+    const fill = new THREE.DirectionalLight(0xd0ffe8, 1.0);
+    fill.position.set(4, 0, 2); scene.add(fill);
+    const rim = new THREE.DirectionalLight(0xffffff, 2.0);
+    rim.position.set(1, 8, -2); scene.add(rim);
+    const back = new THREE.DirectionalLight(0x30D158, 0.8);
+    back.position.set(0, -3, -4); scene.add(back);
+
+    /* ── material ── */
+    const mat = new THREE.MeshPhysicalMaterial({
+      color:             new THREE.Color(0x1a3320),
+      metalness:         0.55,
+      roughness:         0.18,
+      envMapIntensity:   1.8,
+      reflectivity:      0.9,
+      clearcoat:         0.6,
+      clearcoatRoughness:0.10,
+      sheen:             0.3,
+      sheenColor:        new THREE.Color(0x30D158),
+      sheenRoughness:    0.5,
+    });
+
+    /* ── load model ── */
+    let model = null;
+    const draco = new DRACOLoader();
+    draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/');
+    const loader = new GLTFLoader();
+    loader.setDRACOLoader(draco);
+    loader.load('hero-model.glb', (gltf) => {
+      gltf.scene.traverse(child => { if (child.isMesh) child.material = mat; });
+      const box    = new THREE.Box3().setFromObject(gltf.scene);
+      const center = box.getCenter(new THREE.Vector3());
+      const size   = box.getSize(new THREE.Vector3()).length();
+      gltf.scene.position.sub(center);
+      gltf.scene.scale.setScalar(3.2 / size);
+      scene.add(gltf.scene);
+      model = gltf.scene;
+    }, undefined, (err) => {
+      console.warn('GLB load failed, using fallback:', err);
+      const g = new THREE.TorusKnotGeometry(0.9, 0.28, 180, 24);
+      model = new THREE.Mesh(g, mat);
+      scene.add(model);
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      if (model) {
+        model.rotation.y += 0.008;
+        model.rotation.x = Math.sin(Date.now() * 0.0004) * 0.12;
+      }
+      renderer.render(scene, camera);
     }
+    animate();
 
-    loadScript(THREE_CDN).then(() => {
-      // THREE is now global
-      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-      renderer.setPixelRatio(devicePixelRatio);
-      renderer.setSize(canvas.clientWidth, canvas.clientWidth);
-      renderer.outputColorSpace = THREE.SRGBColorSpace;
-      renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.4;
+    window.addEventListener('resize', () => {
+      setSize();
+      const w = canvas.clientWidth;
+      renderer.setSize(w, w);
+      camera.updateProjectionMatrix();
+    });
+  }
 
-      const scene  = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
-      camera.position.set(0, 0.4, 5.5);
-
-      /* ── lighting: match dark-green glossy look ── */
-      // ambient base
-      scene.add(new THREE.AmbientLight(0xffffff, 0.25));
-
-      // key light — slight warm green from top-left
-      const key = new THREE.DirectionalLight(0xa8ffbe, 3.5);
-      key.position.set(-3, 5, 4);
-      scene.add(key);
-
-      // fill — cool from right
-      const fill = new THREE.DirectionalLight(0xd0ffe8, 1.0);
-      fill.position.set(4, 0, 2);
-      scene.add(fill);
-
-      // rim — bright top highlight (creates the specular streak)
-      const rim = new THREE.DirectionalLight(0xffffff, 2.0);
-      rim.position.set(1, 8, -2);
-      scene.add(rim);
-
-      // subtle back-bounce green
-      const back = new THREE.DirectionalLight(0x30D158, 0.8);
-      back.position.set(0, -3, -4);
-      scene.add(back);
-
-      /* ── dark forest-green material ── */
-      const mat = new THREE.MeshPhysicalMaterial({
-        color:        new THREE.Color(0x1a3320),
-        metalness:    0.55,
-        roughness:    0.18,
-        envMapIntensity: 1.8,
-        reflectivity: 0.9,
-        clearcoat:    0.6,
-        clearcoatRoughness: 0.10,
-        sheen:        0.3,
-        sheenColor:   new THREE.Color(0x30D158),
-        sheenRoughness: 0.5,
-      });
-
-      /* ── load model ── */
-      // Dynamically import GLTFLoader as ESM
-      const loaderScript = document.createElement('script');
-      loaderScript.type = 'module';
-      loaderScript.textContent = `
-        import { GLTFLoader } from '${GLTF_CDN}';
-        const loader = new GLTFLoader();
-        loader.load('hero-model.glb', (gltf) => {
-          window.__heroGltf = gltf;
-        }, undefined, (err) => {
-          console.warn('GLB load failed, using fallback:', err);
-          window.__heroGltf = null;
-        });
-      `;
-      document.head.appendChild(loaderScript);
-
-      let model = null;
-      let fallbackUsed = false;
-      let frameCount = 0;
-
-      function buildFallback() {
-        // Procedural "T" shape as rounded box approximation
-        const g = new THREE.TorusKnotGeometry(0.9, 0.28, 180, 24);
-        const m = new THREE.Mesh(g, mat);
-        scene.add(m);
-        return m;
-      }
-
-      function tryAttachGltf() {
-        if (window.__heroGltf !== undefined) {
-          if (window.__heroGltf === null) {
-            if (!fallbackUsed) {
-              fallbackUsed = true;
-              model = buildFallback();
-            }
-          } else {
-            const gltf = window.__heroGltf;
-            gltf.scene.traverse(child => {
-              if (child.isMesh) {
-                child.material = mat;
-              }
-            });
-            // center + scale
-            const box = new THREE.Box3().setFromObject(gltf.scene);
-            const center = box.getCenter(new THREE.Vector3());
-            const size   = box.getSize(new THREE.Vector3()).length();
-            gltf.scene.position.sub(center);
-            gltf.scene.scale.setScalar(3.2 / size);
-            scene.add(gltf.scene);
-            model = gltf.scene;
-          }
-        }
-      }
-
-      function animate() {
-        requestAnimationFrame(animate);
-        frameCount++;
-
-        // Try to attach model once available
-        if (!model && frameCount % 6 === 0) tryAttachGltf();
-
-        // Auto-rotate
-        if (model) {
-          model.rotation.y += 0.008;
-          model.rotation.x = Math.sin(Date.now() * 0.0004) * 0.12;
-        }
-
-        renderer.render(scene, camera);
-      }
-      animate();
-
-      // Handle resize
-      window.addEventListener('resize', () => {
-        setSize();
-        const w = canvas.clientWidth;
-        renderer.setSize(w, w);
-        camera.aspect = 1;
-        camera.updateProjectionMatrix();
-      });
-    }).catch(err => console.warn('Three.js load failed:', err));
-  })();
+  /* ── glass card 3D tilt on mousemove ─────────────────────── */
+  document.querySelectorAll('[data-tilt]').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width  - 0.5;
+      const y = (e.clientY - r.top)  / r.height - 0.5;
+      card.style.transform = `perspective(600px) rotateY(${x * 8}deg) rotateX(${-y * 8}deg) scale(1.02)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
 
   /* ── hamburger / mobile nav ───────────────────────────────── */
   const hamburger = document.getElementById('hamburger');
