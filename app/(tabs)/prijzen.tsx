@@ -4,16 +4,26 @@
  */
 
 import { AdCard } from '@/components/ad-card';
+import { ClearLiquidGlass } from '@/components/clear-liquid-glass';
 import { CompareBar } from '@/components/compare-bar';
+import { GlassPageHeader } from '@/components/glass-page-header';
+import { LiquidScreen } from '@/components/liquid-screen';
 import { ProductCard } from '@/components/product-card';
 import { ProductFilters } from '@/components/product-filters';
 import { Colors, Palette, Radius, Shadow, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useProductFilters } from '@/hooks/use-product-filters';
+import { useReduceMotion } from '@/hooks/use-reduce-motion';
 import { type Product } from '@/services/product-db';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
+import Animated, {
+  FadeInDown,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import {
   FlatList,
   Pressable,
@@ -69,7 +79,7 @@ const PRICE_CATEGORIES = [
   { id: 'Wearables',            name: 'Wearables',            icon: 'watch',            subtitle: 'Smartwatches & trackers' },
   { id: 'Grafische kaarten',    name: 'Grafische kaarten',    icon: 'memory',          subtitle: "GPU's" },
   { id: 'Processors',           name: 'Processors',           icon: 'developer-board',  subtitle: "CPU's" },
-  { id: 'Moerborden',           name: 'Moerborden',           icon: 'developer-board',  subtitle: 'ATX, mATX & ITX' },
+  { id: 'Moerborden',           name: 'Noederborden',         icon: 'developer-board',  subtitle: 'ATX, mATX & ITX' },
   { id: 'Geheugen',             name: 'Geheugen',             icon: 'memory',           subtitle: 'DDR4 & DDR5 RAM' },
   { id: 'Opslag (SSD)',         name: 'Opslag (SSD)',         icon: 'sd-storage',       subtitle: 'NVMe & SATA' },
   { id: 'Opslag (HDD)',         name: 'Opslag (HDD)',         icon: 'album',            subtitle: 'NAS & desktop' },
@@ -85,6 +95,55 @@ const PRICE_CATEGORIES = [
 
 type CategoryId = (typeof PRICE_CATEGORIES)[number]['id'];
 
+function CategoryChip({
+  item,
+  isDark,
+  colors,
+  index,
+  onPress,
+  animationsEnabled,
+  cardWidth,
+}: {
+  item: typeof PRICE_CATEGORIES[number];
+  isDark: boolean;
+  colors: (typeof Colors)['light'];
+  index: number;
+  onPress: () => void;
+  animationsEnabled: boolean;
+  cardWidth: number;
+}) {
+  const scale = useSharedValue(1);
+  const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+  const catColors = CATEGORY_COLORS[item.id] || { bg: Palette.primary + '15', color: Palette.primary };
+
+  return (
+    <Animated.View
+      entering={animationsEnabled
+        ? FadeInDown.delay(Math.min(index, 8) * 45).springify().damping(18).stiffness(110)
+        : undefined}
+      style={[animStyle, { width: cardWidth }]}
+    >
+      <Pressable
+        onPressIn={() => { scale.value = withSpring(0.97, { damping: 15, stiffness: 300 }); }}
+        onPressOut={() => { scale.value = withSpring(1, { damping: 15, stiffness: 300 }); }}
+        onPress={onPress}
+      >
+        <ClearLiquidGlass isDark={isDark} borderRadius={Radius.lg} style={styles.categoryCard}>
+          <View style={[styles.iconContainer, { backgroundColor: catColors.bg }]}>
+            <MaterialIcons name={item.icon as any} size={28} color={catColors.color} />
+          </View>
+          <Text style={[styles.categoryName, { color: colors.text }]} numberOfLines={2}>
+            {item.name}
+          </Text>
+          <Text style={[styles.categorySubtitle, { color: colors.textSecondary }]} numberOfLines={1}>
+            {item.subtitle}
+          </Text>
+        </ClearLiquidGlass>
+      </Pressable>
+    </Animated.View>
+  );
+}
+
 // Category Grid
 function CategoryGrid({
   colors,
@@ -96,6 +155,7 @@ function CategoryGrid({
   onSelect: (id: CategoryId) => void;
 }) {
   const { width } = useWindowDimensions();
+  const { animationsEnabled } = useReduceMotion();
   const cardWidth = (width - Spacing.md * 3) / 2;
 
   return (
@@ -106,34 +166,17 @@ function CategoryGrid({
       contentContainerStyle={styles.categoryGrid}
       columnWrapperStyle={styles.categoryRow}
       showsVerticalScrollIndicator={false}
-      renderItem={({ item }) => {
-          const catColors = CATEGORY_COLORS[item.id] || { bg: Palette.primary + '15', color: Palette.primary };
-          return (
-        <Pressable
-          style={({ pressed }) => [
-            styles.categoryCard,
-            {
-              backgroundColor: colors.surface,
-              width: cardWidth,
-            },
-            !isDark && Shadow.sm,
-            isDark && { borderWidth: 1, borderColor: colors.border },
-            pressed && { opacity: 0.85, transform: [{ scale: 0.98 }] },
-          ]}
+      renderItem={({ item, index }) => (
+        <CategoryChip
+          item={item}
+          isDark={isDark}
+          colors={colors}
+          index={index}
           onPress={() => onSelect(item.id as CategoryId)}
-        >
-          <View style={[styles.iconContainer, { backgroundColor: catColors.bg }]}>
-            <MaterialIcons name={item.icon as any} size={28} color={catColors.color} />
-          </View>
-          <Text style={[styles.categoryName, { color: colors.text }]} numberOfLines={2}>
-            {item.name}
-          </Text>
-          <Text style={[styles.categorySubtitle, { color: colors.textSecondary }]} numberOfLines={1}>
-            {item.subtitle}
-          </Text>
-        </Pressable>
-          );
-        }}
+          animationsEnabled={animationsEnabled}
+          cardWidth={cardWidth}
+        />
+      )}
     />
   );
 }
@@ -229,7 +272,7 @@ function ProductList({
   return (
     <View style={styles.productListContainer}>
       {/* Back header */}
-      <View style={[styles.backHeader, { backgroundColor: colors.background }]}>
+      <View style={styles.backHeader}>
         <Pressable onPress={onBack} style={styles.backBtn} hitSlop={12}>
           <Text style={[styles.backArrow, { color: colors.tint }]}>‹</Text>
           <Text style={[styles.backLabel, { color: colors.tint }]}>Terug</Text>
@@ -306,7 +349,7 @@ export default function PrijzenScreen() {
 
   if (selectedCategory !== null) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <LiquidScreen style={styles.container}>
         <ProductList
           categoryId={selectedCategory}
           colors={colors}
@@ -314,18 +357,13 @@ export default function PrijzenScreen() {
           onBack={() => setSelectedCategory(null)}
           onCategoryChange={(newCategoryId: string) => setSelectedCategory(newCategoryId as CategoryId)}
         />
-      </View>
+      </LiquidScreen>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={[styles.pageHeader, { backgroundColor: colors.background }]}>
-        <Text style={[styles.pageTitle, { color: colors.text }]}>Prijzen</Text>
-        <Text style={[styles.pageSubtitle, { color: colors.textSecondary }]}>
-          Vind de beste prijs per categorie
-        </Text>
-      </View>
+    <LiquidScreen style={styles.container}>
+      <GlassPageHeader title="Prijzen" subtitle="Vind de beste prijs per categorie" />
 
       {/* PC Builder banner */}
       <Pressable
@@ -350,7 +388,7 @@ export default function PrijzenScreen() {
       </Pressable>
 
       <CategoryGrid colors={colors} isDark={isDark} onSelect={setSelectedCategory} />
-    </View>
+    </LiquidScreen>
   );
 }
 
@@ -358,21 +396,7 @@ export default function PrijzenScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
 
-  pageHeader: {
-    paddingTop: Spacing.xl + Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    paddingBottom: Spacing.sm,
-    gap: 4,
-  },
-  pageTitle: {
-    fontSize: 34,
-    fontWeight: '800',
-    letterSpacing: -0.8,
-  },
-  pageSubtitle: {
-    fontSize: 14,
-    opacity: 0.7,
-  },
+
 
   categoryGrid: {
     paddingHorizontal: Spacing.md,
@@ -392,7 +416,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 52,
     height: 52,
-    borderRadius: 14,
+    borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 6,
