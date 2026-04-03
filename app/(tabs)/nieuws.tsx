@@ -6,34 +6,40 @@
 import { ArticleCard } from '@/components/article-card';
 import { EmptyState } from '@/components/empty-state';
 import { FeedLoading } from '@/components/feed-loading';
+import { GlassPageHeader } from '@/components/glass-page-header';
+import { LiquidScreen } from '@/components/liquid-screen';
 import { Colors, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useReduceMotion } from '@/hooks/use-reduce-motion';
 import { useRSSFeed } from '@/hooks/use-rss-feed';
 import type { Article } from '@/types/rss';
-import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { FlatList, StyleSheet, View } from 'react-native';
 
 export default function NieuwsScreen() {
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
+  const { animationsEnabled } = useReduceMotion();
 
-  // Use useRSSFeed to get only news (nieuws), excluding reviews
-  const { articles, loading, error, refresh } = useRSSFeed('nieuws');
+  const { articles, loading, error } = useRSSFeed('nieuws');
 
-  const renderArticle = ({ item }: { item: Article }) => (
-    <View style={styles.articleRow}>
-      <ArticleCard article={item} variant="default" />
-    </View>
-  );
+  const renderArticle = ({ item, index }: { item: Article; index: number }) => {
+    if (!item || !item.id || !item.title) return null;
+    return (
+      <Animated.View
+        entering={animationsEnabled
+          ? FadeInDown.delay(Math.min(index, 8) * 45).springify().damping(18).stiffness(110)
+          : undefined}
+        style={styles.articleRow}
+      >
+        <ArticleCard article={item} variant="default" />
+      </Animated.View>
+    );
+  };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Large-title header */}
-      <View style={[styles.pageHeader, { backgroundColor: colors.background }]}>
-        <Text style={[styles.pageTitle, { color: colors.text }]}>Nieuws</Text>
-        <Text style={[styles.pageSubtitle, { color: colors.textSecondary }]}>
-          Het laatste technieuws
-        </Text>
-      </View>
+    <LiquidScreen>
+      <GlassPageHeader title="Nieuws" subtitle="Het laatste technieuws" />
 
       {error ? (
         <EmptyState
@@ -44,7 +50,7 @@ export default function NieuwsScreen() {
       ) : loading && articles.length === 0 ? (
         <FlatList
           data={[]}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item?.id || Math.random().toString()}
           renderItem={renderArticle}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
@@ -53,20 +59,13 @@ export default function NieuwsScreen() {
       ) : (
         <FlatList
           data={articles}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item?.id || Math.random().toString()}
           renderItem={renderArticle}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           ItemSeparatorComponent={() => (
             <View style={[styles.separator, { backgroundColor: colors.border }]} />
           )}
-          refreshControl={
-            <RefreshControl
-              refreshing={loading}
-              onRefresh={refresh}
-              tintColor={colors.tint}
-            />
-          }
           ListEmptyComponent={
             !loading ? (
               <EmptyState
@@ -78,37 +77,23 @@ export default function NieuwsScreen() {
           }
         />
       )}
-    </View>
+    </LiquidScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  pageHeader: {
-    paddingTop: Spacing.xl + Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    paddingBottom: Spacing.sm,
-    gap: 3,
-  },
-  pageTitle: {
-    fontSize: 34,
-    fontWeight: '700',
-    letterSpacing: 0.35,
-  },
-  pageSubtitle: {
-    fontSize: 13,
-  },
   listContent: {
     paddingHorizontal: Spacing.md,
-    paddingBottom: Spacing.xxl,
-    paddingTop: Spacing.xs,
+    paddingBottom: Spacing.xxl + Spacing.lg,
+    paddingTop: Spacing.xs + 2,
   },
   articleRow: {
     marginBottom: Spacing.sm,
   },
   separator: {
-    height: StyleSheet.hairlineWidth,
+    height: 0.33,
     marginHorizontal: Spacing.md,
-    marginLeft: Spacing.md + 46 + 12, // align after category circle
+    marginLeft: Spacing.md + 46 + 12,
+    opacity: 0.6,
   },
 });
