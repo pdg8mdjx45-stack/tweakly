@@ -1,42 +1,50 @@
+import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
+
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import Constants from 'expo-constants';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+configureReanimatedLogger({ level: ReanimatedLogLevel.warn, strict: false });
+
+import ErrorBoundary from '@/components/error-boundary';
 import { LoadingScreen } from '@/components/loading-screen';
 import { Palette } from '@/constants/theme';
 import { AuthProvider, useAuth } from '@/hooks/use-auth';
 import { BookmarksProvider } from '@/hooks/use-bookmarks';
-import { ThemeProvider as AppThemeProvider, useThemeContext } from '@/hooks/use-theme-context';
-import { TourProvider } from '@/hooks/use-tour';
 import { ReduceMotionProvider } from '@/hooks/use-reduce-motion';
+import { ThemeProvider as AppThemeProvider, useThemeContext } from '@/hooks/use-theme-context';
+import { ToastProvider } from '@/hooks/use-toast';
+import { TourProvider } from '@/hooks/use-tour';
 import { setupNotificationHandler } from '@/services/notification-service';
 import { registerPushToken } from '@/services/push-token';
 
-// Revolut-inspired light theme
+// iOS 26 Liquid Glass light theme
 const RevolutLight = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
     primary: Palette.primary,
     background: '#F2F2F7',
-    card: '#FFFFFF',
+    card: 'rgba(255,255,255,0.82)',
     text: '#000000',
-    border: '#C6C6C8',
+    border: 'rgba(0,0,0,0.10)',
     notification: Palette.primary,
   },
 };
 
-// Revolut-inspired dark theme (default for Revolut)
+// iOS 26 Liquid Glass dark theme
 const RevolutDark = {
   ...DarkTheme,
   colors: {
     ...DarkTheme.colors,
     primary: Palette.primary,
     background: Palette.dark1,
-    card: Palette.dark2,
-    border: Palette.dark4,
+    card: 'rgba(28,28,36,0.88)',
+    border: 'rgba(255,255,255,0.10)',
     notification: Palette.primary,
     text: '#FFFFFF',
   },
@@ -52,16 +60,19 @@ function RootLayoutContent() {
   const router = useRouter();
   const segments = useSegments();
   const [appReady, setAppReady] = useState(false);
+  const isExpoGo = Constants.executionEnvironment === 'storeClient';
 
   useEffect(() => {
+    if (isExpoGo) return;
     setupNotificationHandler();
-  }, []);
+  }, [isExpoGo]);
 
   useEffect(() => {
+    if (isExpoGo) return;
     if (user?.id) {
       void registerPushToken(user.id);
     }
-  }, [user?.id]);
+  }, [isExpoGo, user?.id]);
 
   // Navigatiewacht: redirect op basis van auth-status
   useEffect(() => {
@@ -128,9 +139,22 @@ function RootLayoutContent() {
           name="pc-builder"
           options={{ headerShown: false, animation: 'slide_from_right' }}
         />
+        <Stack.Screen
+          name="categorieen"
+          options={{ headerShown: false, animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="recommender/index"
+          options={{ headerShown: false, animation: 'slide_from_right' }}
+        />
+        <Stack.Screen name="instellingen/meldingen" options={{ headerShown: false, animation: 'slide_from_right' }} />
+        <Stack.Screen name="instellingen/bladwijzers" options={{ headerShown: false, animation: 'slide_from_right' }} />
+        <Stack.Screen name="instellingen/prijsalerts" options={{ headerShown: false, animation: 'slide_from_right' }} />
+        <Stack.Screen name="instellingen/zoeken" options={{ headerShown: false, animation: 'slide_from_right' }} />
         <Stack.Screen name="privacy" options={{ headerShown: false }} />
         <Stack.Screen name="cookies" options={{ headerShown: false }} />
         <Stack.Screen name="terms" options={{ headerShown: false }} />
+        <Stack.Screen name="affiliate" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style={resolvedTheme === 'dark' ? 'light' : 'dark'} />
     </ThemeProvider>
@@ -139,16 +163,22 @@ function RootLayoutContent() {
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <ReduceMotionProvider>
-        <AppThemeProvider>
-          <BookmarksProvider>
-            <TourProvider>
-              <RootLayoutContent />
-            </TourProvider>
-          </BookmarksProvider>
-        </AppThemeProvider>
-      </ReduceMotionProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <AuthProvider>
+          <ReduceMotionProvider>
+            <AppThemeProvider>
+              <BookmarksProvider>
+                <TourProvider>
+                  <ToastProvider>
+                    <RootLayoutContent />
+                  </ToastProvider>
+                </TourProvider>
+              </BookmarksProvider>
+            </AppThemeProvider>
+          </ReduceMotionProvider>
+        </AuthProvider>
+      </GestureHandlerRootView>
+    </ErrorBoundary>
   );
 }

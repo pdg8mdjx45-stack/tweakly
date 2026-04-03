@@ -7,11 +7,11 @@ import { useBookmarks } from '@/hooks/use-bookmarks';
 import { useReduceMotion } from '@/hooks/use-reduce-motion';
 import { useThemeContext } from '@/hooks/use-theme-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { LiquidSwitch } from '@/components/liquid-switch';
 import {
-  Alert,
   Image,
   Linking,
   Modal,
@@ -23,6 +23,8 @@ import {
   TextInput,
   View,
 } from 'react-native';
+
+import { ConfirmSheet } from '@/components/confirm-sheet';
 
 import { getAlerts, subscribeAlerts } from '@/services/alerts-store';
 import { supabase } from '@/services/supabase';
@@ -48,10 +50,23 @@ function SectionLabel({ label, colors }: { label: string; colors: (typeof Colors
 
 function Group({ children, isDark }: { children: React.ReactNode; isDark: boolean }) {
   return (
-    <View style={[styles.group, isDark ? styles.groupDark : styles.groupLight]}>
+    <BlurView
+      intensity={isDark ? 28 : 50}
+      tint={isDark ? 'dark' : 'light'}
+      style={[styles.group, isDark ? styles.groupDark : styles.groupLight]}
+    >
+      {/* Glass tint overlay */}
+      <View
+        style={[StyleSheet.absoluteFill, {
+          backgroundColor: isDark ? 'rgba(38,38,54,0.55)' : 'rgba(255,255,255,0.55)',
+          borderRadius: Radius.xl,
+        }]}
+        pointerEvents="none"
+      />
+      {/* Specular top highlight */}
       <View style={[styles.groupSpecular, isDark ? styles.groupSpecularDark : styles.groupSpecularLight]} />
       {children}
-    </View>
+    </BlurView>
   );
 }
 
@@ -303,32 +318,18 @@ export default function ProfielScreen() {
   const [introHidden, setIntroHidden] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
 
-  // Local toggle states backed by profile (optimistic UI)
-  const [pushEnabled, setPushEnabled] = useState(profile?.pushEnabled ?? true);
-  const [emailNotif, setEmailNotif] = useState(profile?.emailNotifEnabled ?? false);
-  const [notifPrijzen, setNotifPrijzen] = useState(profile?.notifPrijzen ?? true);
-  const [notifNieuws, setNotifNieuws] = useState(profile?.notifNieuws ?? true);
-  const [notifReviews, setNotifReviews] = useState(profile?.notifReviews ?? true);
-  const [catNieuws, setCatNieuws] = useState(profile?.categoryNieuws ?? true);
-  const [catReviews, setCatReviews] = useState(profile?.categoryReviews ?? true);
-  const [catPrijzen, setCatPrijzen] = useState(profile?.categoryPrijzen ?? true);
+  // ConfirmSheet states
+  const [sheetClearBookmarks, setSheetClearBookmarks] = useState(false);
+  const [sheetClearAlerts, setSheetClearAlerts] = useState(false);
+  const [sheetLogout, setSheetLogout] = useState(false);
+  const [sheetDeleteAccount, setSheetDeleteAccount] = useState(false);
+  const [sheetDeleteAccountConfirm, setSheetDeleteAccountConfirm] = useState(false);
+  const [sheetChangePassword, setSheetChangePassword] = useState(false);
+  const [sheetPasswordSent, setSheetPasswordSent] = useState(false);
+  const [sheetEmail, setSheetEmail] = useState(false);
+  const [sheetAccountError, setSheetAccountError] = useState(false);
 
-  // Sync local state when profile loads
-  useEffect(() => {
-    if (!profile) return;
-    setPushEnabled(profile.pushEnabled);
-    setEmailNotif(profile.emailNotifEnabled);
-    setNotifPrijzen(profile.notifPrijzen);
-    setNotifNieuws(profile.notifNieuws);
-    setNotifReviews(profile.notifReviews);
-    setCatNieuws(profile.categoryNieuws);
-    setCatReviews(profile.categoryReviews);
-    setCatPrijzen(profile.categoryPrijzen);
-  }, [profile]);
-
-  const save = useCallback((patch: Parameters<typeof updateProfile>[0]) => {
-    updateProfile(patch);
-  }, [updateProfile]);
+  const pushEnabled = profile?.pushEnabled ?? true;
 
   useEffect(() => {
     getAlerts().then(a => setAlertCount(a.length));
@@ -366,108 +367,11 @@ export default function ProfielScreen() {
     [updateProfile],
   );
 
-  const handleClearBookmarks = useCallback(() => {
-    Alert.alert(
-      'Alle bladwijzers wissen',
-      'Weet je zeker dat je alle opgeslagen artikelen wilt verwijderen?',
-      [
-        { text: 'Annuleer', style: 'cancel' },
-        { text: 'Verwijder', style: 'destructive', onPress: clearBookmarks },
-      ],
-    );
-  }, [clearBookmarks]);
-
-  const handleClearAlerts = useCallback(() => {
-    Alert.alert(
-      'Alle alerts wissen',
-      'Wil je alle prijsalerts verwijderen?',
-      [
-        { text: 'Annuleer', style: 'cancel' },
-        {
-          text: 'Verwijder',
-          style: 'destructive',
-          onPress: async () => {
-            await AsyncStorage.removeItem('@price_alerts');
-            setAlertCount(0);
-          },
-        },
-      ],
-    );
-  }, []);
-
-  const handleDeleteAccount = useCallback(() => {
-    Alert.alert(
-      'Account verwijderen',
-      'Weet je zeker dat je je account permanent wilt verwijderen? Dit kan niet ongedaan worden gemaakt.',
-      [
-        { text: 'Annuleer', style: 'cancel' },
-        {
-          text: 'Verwijder account',
-          style: 'destructive',
-          onPress: () => {
-            Alert.alert(
-              'Laatste bevestiging',
-              'Al je gegevens worden permanent verwijderd.',
-              [
-                { text: 'Annuleer', style: 'cancel' },
-                {
-                  text: 'Ja, verwijder',
-                  style: 'destructive',
-                  onPress: async () => {
-                    setDeletingAccount(true);
-                    try {
-                      await supabase.rpc('delete_user');
-                      await signOut();
-                    } catch (e) {
-                      Alert.alert('Fout', 'Kon account niet verwijderen. Neem contact op met support.');
-                    } finally {
-                      setDeletingAccount(false);
-                    }
-                  },
-                },
-              ],
-            );
-          },
-        },
-      ],
-    );
-  }, [signOut]);
-
-  const handleLogout = useCallback(() => {
-    Alert.alert(
-      'Uitloggen',
-      'Weet je zeker dat je wilt uitloggen?',
-      [
-        { text: 'Annuleer', style: 'cancel' },
-        {
-          text: 'Uitloggen',
-          style: 'destructive',
-          onPress: () => signOut(),
-        },
-      ],
-    );
-  }, [signOut]);
-
-  const handleChangePassword = useCallback(() => {
-    Alert.alert(
-      'Wachtwoord wijzigen',
-      'We sturen een e-mail met een link om je wachtwoord te wijzigen.',
-      [
-        { text: 'Annuleer', style: 'cancel' },
-        {
-          text: 'Stuur e-mail',
-          onPress: async () => {
-            if (user?.email) {
-              await supabase.auth.resetPasswordForEmail(user.email, {
-                redirectTo: 'https://tweakly.netlify.app/reset-wachtwoord.html',
-              });
-              Alert.alert('Verstuurd', 'Controleer je e-mail voor de resetlink.');
-            }
-          },
-        },
-      ],
-    );
-  }, [user]);
+  const handleClearBookmarks = useCallback(() => setSheetClearBookmarks(true), []);
+  const handleClearAlerts    = useCallback(() => setSheetClearAlerts(true), []);
+  const handleDeleteAccount  = useCallback(() => setSheetDeleteAccount(true), []);
+  const handleLogout         = useCallback(() => setSheetLogout(true), []);
+  const handleChangePassword = useCallback(() => setSheetChangePassword(true), []);
 
   if (profileLoading || !profile) {
     return (
@@ -483,8 +387,7 @@ export default function ProfielScreen() {
   }
 
   const initials = getInitials(profile?.displayName || '');
-  const notifTypesCount = [notifPrijzen, notifNieuws, notifReviews].filter(Boolean).length;
-  const categoryCount = [catNieuws, catReviews, catPrijzen].filter(Boolean).length;
+  const categoryCount = [profile?.categoryNieuws, profile?.categoryReviews, profile?.categoryPrijzen].filter(Boolean).length;
 
   return (
     <View style={[styles.safe, { backgroundColor: colors.background }]}>
@@ -523,58 +426,13 @@ export default function ProfielScreen() {
         <View style={styles.section}>
           <SectionLabel label="MELDINGEN" colors={colors} />
           <Group isDark={isDark}>
-            <ToggleRow
+            <NavRow
               icon="bell.fill"
               iconColor="#FF3B30"
-              label="Push-meldingen"
-              description="Ontvang meldingen op je apparaat"
-              value={pushEnabled}
-              onChange={(v) => { setPushEnabled(v); save({ pushEnabled: v }); }}
+              label="Meldingen"
+              sub={pushEnabled ? 'Push ingeschakeld' : 'Push uitgeschakeld'}
+              onPress={() => router.push('/instellingen/meldingen' as any)}
               colors={colors}
-              isDark={isDark}
-            />
-            <Divider colors={colors} />
-            <ToggleRow
-              icon="envelope.fill"
-              iconColor="#0A84FF"
-              label="E-mailmeldingen"
-              description="Ontvang updates via e-mail"
-              value={emailNotif}
-              onChange={(v) => { setEmailNotif(v); save({ emailNotifEnabled: v }); }}
-              colors={colors}
-              isDark={isDark}
-            />
-            <Divider colors={colors} />
-            <ToggleRow
-              icon="tag.fill"
-              iconColor="#FF9500"
-              label="Prijsalerts"
-              description="Melding bij prijsdaling"
-              value={notifPrijzen}
-              onChange={(v) => { setNotifPrijzen(v); save({ notifPrijzen: v }); }}
-              colors={colors}
-              isDark={isDark}
-              badge={alertCount > 0 ? String(alertCount) : undefined}
-            />
-            <Divider colors={colors} />
-            <ToggleRow
-              icon="newspaper.fill"
-              iconColor={Palette.primary}
-              label="Nieuws-meldingen"
-              value={notifNieuws}
-              onChange={(v) => { setNotifNieuws(v); save({ notifNieuws: v }); }}
-              colors={colors}
-              isDark={isDark}
-            />
-            <Divider colors={colors} />
-            <ToggleRow
-              icon="star.fill"
-              iconColor="#FFB800"
-              label="Review-meldingen"
-              value={notifReviews}
-              onChange={(v) => { setNotifReviews(v); save({ notifReviews: v }); }}
-              colors={colors}
-              isDark={isDark}
             />
           </Group>
         </View>
@@ -583,37 +441,13 @@ export default function ProfielScreen() {
         <View style={styles.section}>
           <SectionLabel label="CATEGORIEËN" colors={colors} />
           <Group isDark={isDark}>
-            <ToggleRow
-              icon="newspaper"
+            <NavRow
+              icon="square.grid.2x2.fill"
               iconColor={Palette.primary}
-              label="Nieuws"
-              description="Tech-nieuws en persberichten"
-              value={catNieuws}
-              onChange={(v) => { setCatNieuws(v); save({ categoryNieuws: v }); }}
+              label="Categorieën"
+              sub={`${categoryCount} van 3 actief`}
+              onPress={() => router.push('/categorieen?mode=browse' as any)}
               colors={colors}
-              isDark={isDark}
-            />
-            <Divider colors={colors} />
-            <ToggleRow
-              icon="star.circle.fill"
-              iconColor="#FFB800"
-              label="Reviews"
-              description="Productreviews en tests"
-              value={catReviews}
-              onChange={(v) => { setCatReviews(v); save({ categoryReviews: v }); }}
-              colors={colors}
-              isDark={isDark}
-            />
-            <Divider colors={colors} />
-            <ToggleRow
-              icon="eurosign.circle.fill"
-              iconColor={Palette.accent}
-              label="Prijzen"
-              description="Prijsvergelijking en deals"
-              value={catPrijzen}
-              onChange={(v) => { setCatPrijzen(v); save({ categoryPrijzen: v }); }}
-              colors={colors}
-              isDark={isDark}
             />
           </Group>
         </View>
@@ -652,7 +486,7 @@ export default function ProfielScreen() {
               label="Bladwijzers"
               sub="Opgeslagen artikelen bekijken"
               badge={bookmarks.length}
-              onPress={() => router.push('/(tabs)/bladwijzers' as any)}
+              onPress={() => router.push('/instellingen/bladwijzers' as any)}
               colors={colors}
             />
             <Divider colors={colors} />
@@ -661,7 +495,7 @@ export default function ProfielScreen() {
               iconColor="#FF9500"
               label="Prijsalerts beheren"
               sub={alertCount > 0 ? `${alertCount} actieve alert${alertCount !== 1 ? 's' : ''}` : 'Geen actieve alerts'}
-              onPress={() => router.push('/(tabs)/meldingen' as any)}
+              onPress={() => router.push('/instellingen/prijsalerts' as any)}
               colors={colors}
             />
             <Divider colors={colors} />
@@ -690,20 +524,11 @@ export default function ProfielScreen() {
           <SectionLabel label="ONTDEKKEN" colors={colors} />
           <Group isDark={isDark}>
             <NavRow
-              icon="square.grid.2x2.fill"
-              iconColor={Palette.primary}
-              label="Categorieën instellen"
-              sub={`${categoryCount} van 3 actief`}
-              onPress={() => router.push('/(tabs)/instellingen-categorieen' as any)}
-              colors={colors}
-            />
-            <Divider colors={colors} />
-            <NavRow
               icon="wand.and.stars"
               iconColor="#FF9500"
               label="Aanbevelingen"
               sub="Persoonlijke productaanbevelingen"
-              onPress={() => router.push('/recommender' as any)}
+              onPress={() => router.push('/categorieen?mode=select' as any)}
               colors={colors}
             />
             <Divider colors={colors} />
@@ -712,7 +537,7 @@ export default function ProfielScreen() {
               iconColor="#0A84FF"
               label="Zoeken"
               sub="Doorzoek producten en artikelen"
-              onPress={() => router.push('/(tabs)/zoeken' as any)}
+              onPress={() => router.push('/instellingen/zoeken' as any)}
               colors={colors}
             />
           </Group>
@@ -736,7 +561,7 @@ export default function ProfielScreen() {
               iconColor="#0A84FF"
               label="E-mailadres"
               rightText={user?.email?.split('@')[0]}
-              onPress={() => {}}
+              onPress={() => setSheetEmail(true)}
               colors={colors}
             />
             <Divider colors={colors} />
@@ -805,7 +630,7 @@ export default function ProfielScreen() {
               iconColor="#0A84FF"
               label="Contact & support"
               sub="Stuur ons een bericht"
-              onPress={() => Linking.openURL('mailto:support@tweakly.app').catch(() => {})}
+              onPress={() => Linking.openURL('mailto:tweakly.help@hotmail.com').catch(() => {})}
               colors={colors}
             />
           </Group>
@@ -877,6 +702,128 @@ export default function ProfielScreen() {
           onNavigate={(route: string) => router.push(route as any)}
         />
       )}
+
+      <ConfirmSheet
+        visible={sheetClearBookmarks}
+        title="Alle bladwijzers wissen"
+        message="Weet je zeker dat je alle opgeslagen artikelen wilt verwijderen?"
+        onClose={() => setSheetClearBookmarks(false)}
+        actions={[
+          { label: 'Verwijder', style: 'destructive', onPress: clearBookmarks },
+          { label: 'Annuleer', style: 'cancel' },
+        ]}
+      />
+
+      <ConfirmSheet
+        visible={sheetClearAlerts}
+        title="Alle alerts wissen"
+        message="Wil je alle prijsalerts verwijderen?"
+        onClose={() => setSheetClearAlerts(false)}
+        actions={[
+          {
+            label: 'Verwijder',
+            style: 'destructive',
+            onPress: async () => {
+              await AsyncStorage.removeItem('@price_alerts');
+              setAlertCount(0);
+            },
+          },
+          { label: 'Annuleer', style: 'cancel' },
+        ]}
+      />
+
+      <ConfirmSheet
+        visible={sheetLogout}
+        title="Uitloggen"
+        message="Weet je zeker dat je wilt uitloggen?"
+        onClose={() => setSheetLogout(false)}
+        actions={[
+          { label: 'Uitloggen', style: 'destructive', onPress: () => signOut() },
+          { label: 'Annuleer', style: 'cancel' },
+        ]}
+      />
+
+      <ConfirmSheet
+        visible={sheetDeleteAccount}
+        title="Account verwijderen"
+        message="Weet je zeker dat je je account permanent wilt verwijderen? Dit kan niet ongedaan worden gemaakt."
+        onClose={() => setSheetDeleteAccount(false)}
+        actions={[
+          { label: 'Verwijder account', style: 'destructive', onPress: () => setSheetDeleteAccountConfirm(true) },
+          { label: 'Annuleer', style: 'cancel' },
+        ]}
+      />
+
+      <ConfirmSheet
+        visible={sheetDeleteAccountConfirm}
+        title="Laatste bevestiging"
+        message="Al je gegevens worden permanent verwijderd."
+        onClose={() => setSheetDeleteAccountConfirm(false)}
+        actions={[
+          {
+            label: 'Ja, verwijder',
+            style: 'destructive',
+            onPress: async () => {
+              setDeletingAccount(true);
+              try {
+                await supabase.rpc('delete_user');
+                await signOut();
+              } catch (e) {
+                setSheetAccountError(true);
+              } finally {
+                setDeletingAccount(false);
+              }
+            },
+          },
+          { label: 'Annuleer', style: 'cancel' },
+        ]}
+      />
+
+      <ConfirmSheet
+        visible={sheetAccountError}
+        title="Fout"
+        message="Kon account niet verwijderen. Neem contact op met support."
+        onClose={() => setSheetAccountError(false)}
+        actions={[{ label: 'OK', style: 'default' }]}
+      />
+
+      <ConfirmSheet
+        visible={sheetChangePassword}
+        title="Wachtwoord wijzigen"
+        message="We sturen een e-mail met een link om je wachtwoord te wijzigen."
+        onClose={() => setSheetChangePassword(false)}
+        actions={[
+          {
+            label: 'Stuur e-mail',
+            style: 'default',
+            onPress: async () => {
+              if (user?.email) {
+                await supabase.auth.resetPasswordForEmail(user.email, {
+                  redirectTo: 'https://tweakly.netlify.app/reset-wachtwoord.html',
+                });
+                setSheetPasswordSent(true);
+              }
+            },
+          },
+          { label: 'Annuleer', style: 'cancel' },
+        ]}
+      />
+
+      <ConfirmSheet
+        visible={sheetPasswordSent}
+        title="Verstuurd"
+        message="Controleer je e-mail voor de resetlink."
+        onClose={() => setSheetPasswordSent(false)}
+        actions={[{ label: 'OK', style: 'default' }]}
+      />
+
+      <ConfirmSheet
+        visible={sheetEmail}
+        title="E-mailadres"
+        message={user?.email ?? ''}
+        onClose={() => setSheetEmail(false)}
+        actions={[{ label: 'OK', style: 'default' }]}
+      />
     </View>
   );
 }
