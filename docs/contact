@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — Tweakly</title>
+  <meta name="description" content="Neem contact op met Tweakly. Vragen over de app, affiliate-samenwerking of bèta-toegang? Alexander Ballet beantwoordt je zo snel mogelijk.">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="canonical" href="https://tweakly.pages.dev/contact.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #1A3A20; --primary-light: #2D5A35; --accent: #0A84FF; --green: #34C759; --orange: #FF9500;
+      --bg: #0A0A0F; --surface: rgba(255,255,255,0.04); --border: rgba(255,255,255,0.08);
+      --text: #E8E8ED; --text-secondary: #8888A0; --text-muted: #555566;
+    }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    nav { position: sticky; top: 0; z-index: 100; padding: 0 2rem; height: 60px; display: flex; align-items: center; justify-content: space-between; background: rgba(10,10,15,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+    .nav-brand { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .nav-brand img { width: 36px; height: 36px; object-fit: contain; filter: drop-shadow(0 2px 6px rgba(26,58,32,0.3)); }
+    .nav-brand span { font-size: 1.05rem; font-weight: 800; color: var(--text); }
+    .nav-brand span em { font-style: normal; color: var(--primary-light); }
+    .nav-back { font-size: 0.82rem; color: var(--text-secondary); text-decoration: none; transition: color 0.2s; }
+    .nav-back:hover { color: var(--text); text-decoration: none; }
+
+    .page { max-width: 680px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+    .breadcrumb { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 2rem; }
+    .breadcrumb a { color: var(--text-muted); }
+    .breadcrumb a:hover { color: var(--text-secondary); }
+    .page-label { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin-bottom: 0.75rem; background: rgba(10,132,255,0.08); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1px solid rgba(10,132,255,0.2); }
+    h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 800; letter-spacing: -0.025em; margin-bottom: 0.5rem; line-height: 1.2; }
+    .subtitle { font-size: 1rem; color: var(--text-secondary); margin-bottom: 2.5rem; line-height: 1.65; }
+
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2.5rem; }
+    @media (max-width: 560px) { .contact-grid { grid-template-columns: 1fr; } }
+    .contact-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.35rem; }
+    .contact-card .cc-icon { font-size: 1.5rem; margin-bottom: 0.6rem; display: block; }
+    .contact-card h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .contact-card p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 0; }
+    .contact-card a { color: var(--accent); }
+
+    .form-section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; }
+    .form-section h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .form-section .form-note { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.45rem; }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+      border-radius: 9px; padding: 0.75rem 1rem; color: var(--text);
+      font-family: inherit; font-size: 0.9rem; outline: none; transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--primary-light); background: rgba(255,255,255,0.08); }
+    .form-group textarea { height: 130px; resize: vertical; }
+    .form-group select option { background: #1a1a2e; }
+    .submit-btn {
+      width: 100%; background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      color: white; border: none; border-radius: 9px; padding: 0.9rem 1.4rem;
+      font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit;
+      transition: all 0.2s; box-shadow: 0 4px 16px rgba(26,58,32,0.3);
+    }
+    .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(26,58,32,0.45); }
+    .form-success { text-align: center; padding: 2rem 0; display: none; }
+    .form-success .check { font-size: 2.5rem; color: var(--green); margin-bottom: 0.75rem; }
+    .form-success h4 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .form-success p { font-size: 0.88rem; color: var(--text-secondary); }
+
+    footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; }
+    .footer-links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 0.75rem; }
+    .footer-links a { font-size: 0.82rem; color: var(--text-muted); transition: color 0.2s; }
+    .footer-links a:hover { color: var(--text-secondary); text-decoration: none; }
+    .footer-copy { font-size: 0.78rem; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-brand">
+      <img src="logo.png" alt="Tweakly">
+      <span>Tweak<em>ly</em></span>
+    </a>
+    <a href="/" class="nav-back">&#8592; Terug naar home</a>
+  </nav>
+
+  <main class="page">
+    <div class="breadcrumb">
+      <a href="/">Home</a> &rsaquo; Contact
+    </div>
+
+    <div class="page-label">&#9993; Contact</div>
+    <h1>Neem contact op</h1>
+    <p class="subtitle">Vragen over de app, samenwerking, bèta-toegang of affiliate-relaties? Stuur een bericht en we reageren zo snel mogelijk.</p>
+
+    <!-- Direct contact info -->
+    <div class="contact-grid">
+      <div class="contact-card">
+        <span class="cc-icon">&#128100;</span>
+        <h3>Eigenaar</h3>
+        <p>Alexander Ballet<br>Oprichter &amp; Ontwikkelaar</p>
+      </div>
+      <div class="contact-card">
+        <span class="cc-icon">&#128205;</span>
+        <h3>Locatie</h3>
+        <p>Zolder, België<br>KvK: n.v.t. (solo-project)</p>
+      </div>
+      <div class="contact-card">
+        <span class="cc-icon">&#9993;</span>
+        <h3>E-mail</h3>
+        <p><a href="mailto:tweakly.help@hotmail.com">tweakly.help@hotmail.com</a></p>
+      </div>
+      <div class="contact-card">
+        <span class="cc-icon">&#9203;</span>
+        <h3>Reactietijd</h3>
+        <p>Doorgaans binnen 2 werkdagen</p>
+      </div>
+    </div>
+
+    <!-- Contact form -->
+    <div class="form-section">
+      <h2>Stuur een bericht</h2>
+      <p class="form-note">Het formulier opent je standaard e-mailprogramma zodat je direct kunt sturen.</p>
+
+      <div id="contactFormWrap">
+        <form id="contactForm">
+          <div class="form-group">
+            <label for="subject">Onderwerp</label>
+            <select id="subject" required>
+              <option value="" disabled selected>Kies een onderwerp...</option>
+              <option value="Algemene vraag">Algemene vraag</option>
+              <option value="Bèta-toegang aanvragen">Bèta-toegang aanvragen</option>
+              <option value="Affiliate samenwerking">Affiliate samenwerking</option>
+              <option value="Bug of foutmelding">Bug of foutmelding</option>
+              <option value="Feedback">Feedback</option>
+              <option value="Anders">Anders</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="name">Naam</label>
+            <input type="text" id="name" placeholder="Je naam" required autocomplete="name">
+          </div>
+          <div class="form-group">
+            <label for="email">E-mailadres</label>
+            <input type="email" id="email" placeholder="je@email.com" required autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label for="message">Bericht</label>
+            <textarea id="message" placeholder="Je bericht..." required></textarea>
+          </div>
+          <button type="submit" class="submit-btn">Verstuur bericht</button>
+        </form>
+      </div>
+
+      <div id="formSuccess" class="form-success">
+        <div class="check">&#10003;</div>
+        <h4>Bericht verstuurd!</h4>
+        <p>Bedankt voor je bericht. We nemen zo snel mogelijk contact met je op.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="over-ons.html">Over ons</a>
+      <a href="privacy.html">Privacybeleid</a>
+      <a href="cookies.html">Cookiebeleid</a>
+      <a href="voorwaarden.html">Voorwaarden</a>
+      <a href="affiliate.html">Affiliate</a>
+    </div>
+    <div class="footer-copy">&copy; 2026 Tweakly &mdash; Alexander Ballet, Zolder</div>
+  </footer>
+
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const message = document.getElementById('message').value;
+      const subject = document.getElementById('subject').value;
+      const mailSubject = encodeURIComponent('Tweakly Contact: ' + subject + ' — ' + name);
+      const mailBody = encodeURIComponent('Naam: ' + name + '\nE-mail: ' + email + '\nOnderwerp: ' + subject + '\n\n' + message);
+      window.location.href = 'mailto:tweakly.help@hotmail.com?subject=' + mailSubject + '&body=' + mailBody;
+      document.getElementById('contactFormWrap').style.display = 'none';
+      document.getElementById('formSuccess').style.display = 'block';
+    });
+  </script>
+
+</body>
+</html>

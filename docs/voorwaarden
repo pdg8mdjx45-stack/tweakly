@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Algemene Voorwaarden — Tweakly</title>
+  <meta name="description" content="Algemene voorwaarden voor het gebruik van de Tweakly prijsvergelijkingsapp en website.">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="canonical" href="https://tweakly.pages.dev/voorwaarden.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --green: #30D158; --blue: #0A84FF; --orange: #FF9F0A;
+      --bg: #000; --bg-card: #161616;
+      --border: rgba(255,255,255,0.08);
+      --text: #f5f5f7; --text-2: #a1a1a6; --text-3: #6e6e73;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    a { text-decoration: none; transition: color 0.15s; }
+    code { background: rgba(255,255,255,0.08); padding: 0.1em 0.45em; border-radius: 5px; font-size: 0.88em; font-family: 'Courier New', monospace; color: var(--text-2); }
+
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 52px; background: rgba(0,0,0,0.7); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-bottom: 0.5px solid rgba(255,255,255,0.07); transition: background 0.3s; }
+    .nav.solid { background: rgba(0,0,0,0.92); }
+    .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 100%; display: flex; align-items: center; justify-content: space-between; }
+    .nav-brand { display: flex; align-items: center; gap: 8px; }
+    .nav-brand img { width: 26px; height: 26px; object-fit: contain; }
+    .nav-brand-name { font-size: 0.95rem; font-weight: 800; color: var(--text); letter-spacing: -0.025em; }
+    .nav-links { display: flex; align-items: center; gap: 2px; list-style: none; }
+    .nav-links a { color: var(--text-2); font-size: 0.8rem; font-weight: 500; padding: 6px 14px; border-radius: 8px; transition: color 0.15s, background 0.15s; }
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.07); }
+    .nav-links .nav-cta { background: var(--green); color: #000 !important; font-weight: 700; border-radius: 980px; }
+    .nav-links .nav-cta:hover { filter: brightness(1.08); }
+    .nav-menu-btn { display: none; background: none; border: none; cursor: pointer; color: var(--text); padding: 8px; border-radius: 8px; }
+    @media (max-width: 768px) {
+      .nav-menu-btn { display: flex; align-items: center; justify-content: center; }
+      .nav-links { display: none; position: fixed; top: 52px; left: 0; right: 0; background: rgba(0,0,0,0.97); backdrop-filter: blur(30px); flex-direction: column; gap: 0; align-items: stretch; padding: 0.5rem 0; border-bottom: 0.5px solid var(--border); }
+      .nav-links.open { display: flex; }
+      .nav-links li { width: 100%; }
+      .nav-links a { display: block; padding: 15px 24px; border-radius: 0; font-size: 0.95rem; color: var(--text) !important; border-bottom: 0.5px solid rgba(255,255,255,0.04); }
+      .nav-links .nav-cta { background: none; border-radius: 0; color: var(--green) !important; }
+    }
+
+    .page-hero { padding: 9rem 24px 5rem; background: var(--bg); border-bottom: 0.5px solid rgba(255,255,255,0.06); }
+    .page-hero-inner { max-width: 860px; margin: 0 auto; }
+    .page-eyebrow { display: inline-block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-3); margin-bottom: 1.25rem; }
+    .page-h1 { font-size: clamp(2.4rem, 6vw, 4.5rem); font-weight: 900; letter-spacing: -0.04em; line-height: 1; margin-bottom: 1.25rem; }
+    .page-sub { font-size: 1.1rem; color: var(--text-2); line-height: 1.65; max-width: 600px; }
+    .breadcrumb { font-size: 0.75rem; color: var(--text-3); margin-bottom: 2rem; }
+    .breadcrumb a { color: var(--text-3); }
+    .breadcrumb a:hover { color: var(--text-2); }
+    .breadcrumb span { margin: 0 6px; }
+    .page-meta { margin-top: 1.25rem; font-size: 0.78rem; color: var(--text-3); }
+
+    .page-content { max-width: 860px; margin: 0 auto; padding: 4rem 24px 6rem; }
+    .toc { background: var(--bg-card); border: 0.5px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 1.75rem; margin-bottom: 3.5rem; }
+    .toc-title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-3); margin-bottom: 1rem; }
+    .toc ol { padding-left: 1.25rem; }
+    .toc li { font-size: 0.88rem; color: var(--text-2); margin-bottom: 0.4rem; }
+    .toc a { color: var(--text-2); text-decoration: underline; text-underline-offset: 3px; }
+    .toc a:hover { color: var(--text); }
+
+    .content-section { margin-bottom: 3.5rem; scroll-margin-top: 70px; }
+    .section-label { display: inline-block; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); margin-bottom: 1rem; }
+    .section-h2 { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 1rem; line-height: 1.15; }
+    .section-p { font-size: 0.95rem; color: var(--text-2); line-height: 1.75; margin-bottom: 0.85rem; }
+    .section-p strong { color: var(--text); }
+    .section-p a { color: var(--green); text-decoration: underline; text-underline-offset: 2px; }
+    .section-ul { padding-left: 1.5rem; margin-bottom: 0.85rem; }
+    .section-ul li { font-size: 0.95rem; color: var(--text-2); line-height: 1.7; margin-bottom: 0.4rem; }
+    .section-ul li strong { color: var(--text); }
+    .section-ul li a { color: var(--green); text-decoration: underline; text-underline-offset: 2px; }
+
+    .notice-card { border-radius: 16px; padding: 1.5rem; margin-bottom: 1.25rem; }
+    .notice-card.orange { background: rgba(255,159,10,0.06); border: 0.5px solid rgba(255,159,10,0.2); }
+    .notice-card.green { background: rgba(48,209,88,0.06); border: 0.5px solid rgba(48,209,88,0.18); }
+    .notice-card p { font-size: 0.9rem; color: var(--text-2); line-height: 1.68; }
+    .notice-card strong { color: var(--text); }
+
+    .contact-box { background: var(--bg-card); border: 0.5px solid rgba(255,255,255,0.1); border-radius: 18px; padding: 1.75rem; }
+    .contact-box h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.85rem; }
+    .contact-box p { font-size: 0.88rem; color: var(--text-2); margin-bottom: 0.4rem; line-height: 1.6; }
+    .contact-box strong { color: var(--text); }
+    .contact-box a { color: var(--green); }
+
+    .site-footer { background: var(--bg); border-top: 0.5px solid rgba(255,255,255,0.07); padding: 4rem 24px 2rem; }
+    .footer-inner { max-width: 1100px; margin: 0 auto; }
+    .footer-top { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 2.5rem; margin-bottom: 3rem; }
+    @media (max-width: 900px) { .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; } }
+    @media (max-width: 500px) { .footer-top { grid-template-columns: 1fr; } }
+    .footer-logo { display: flex; align-items: center; gap: 8px; margin-bottom: 0.75rem; }
+    .footer-logo img { width: 28px; height: 28px; object-fit: contain; }
+    .footer-logo-name { font-size: 1rem; font-weight: 800; color: var(--text); letter-spacing: -0.025em; }
+    .footer-tagline { font-size: 0.8rem; color: var(--text-3); line-height: 1.55; max-width: 210px; margin-bottom: 1.25rem; }
+    .footer-contact a { display: block; font-size: 0.78rem; color: var(--text-3); margin-bottom: 0.25rem; transition: color 0.15s; }
+    .footer-contact a:hover { color: var(--text-2); }
+    .footer-contact span { display: block; font-size: 0.78rem; color: var(--text-3); }
+    .footer-col-title { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 1rem; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+    .footer-col a { font-size: 0.82rem; color: var(--text-2); transition: color 0.15s; }
+    .footer-col a:hover { color: var(--text); }
+    .footer-bottom { border-top: 0.5px solid rgba(255,255,255,0.06); padding-top: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .footer-copy { font-size: 0.74rem; color: var(--text-3); }
+    .footer-aff-note { font-size: 0.72rem; color: var(--text-3); }
+    .footer-aff-note a { color: var(--text-3); text-decoration: underline; text-underline-offset: 2px; }
+    .footer-aff-note a:hover { color: var(--text-2); }
+
+    .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+
+  <nav class="nav" id="main-nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-brand">
+        <img src="logo.png" alt="Tweakly">
+        <span class="nav-brand-name">Tweakly</span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/#features">Functies</a></li>
+        <li><a href="over-ons.html">Over ons</a></li>
+        <li><a href="affiliate.html">Affiliate</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="/#download" class="nav-cta">Download</a></li>
+      </ul>
+      <button class="nav-menu-btn" id="menu-btn" aria-label="Menu openen">
+        <svg width="18" height="13" viewBox="0 0 18 13" fill="none"><path d="M0 1h18M0 6.5h18M0 12h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <header class="page-hero">
+    <div class="page-hero-inner">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a><span>/</span><span>Algemene Voorwaarden</span>
+      </nav>
+      <div class="page-eyebrow">&#128196; Juridisch</div>
+      <h1 class="page-h1">Algemene<br>Voorwaarden.</h1>
+      <p class="page-sub">De regels en voorwaarden voor het gebruik van de Tweakly-app en website.</p>
+      <div class="page-meta">Laatste update: 22 maart 2026 &mdash; van kracht per 22 maart 2026</div>
+    </div>
+  </header>
+
+  <main class="page-content">
+
+    <div class="toc reveal">
+      <div class="toc-title">Inhoudsopgave</div>
+      <ol>
+        <li><a href="#definities">Definities</a></li>
+        <li><a href="#over-tweakly">Over Tweakly</a></li>
+        <li><a href="#toepasselijkheid">Toepasselijkheid</a></li>
+        <li><a href="#gebruik">Gebruik van de dienst</a></li>
+        <li><a href="#account">Account en beveiliging</a></li>
+        <li><a href="#prijzen-beschikbaarheid">Prijzen en beschikbaarheid</a></li>
+        <li><a href="#affiliate">Affiliate links</a></li>
+        <li><a href="#intellectueel">Intellectueel eigendom</a></li>
+        <li><a href="#aansprakelijkheid">Aansprakelijkheid</a></li>
+        <li><a href="#beindiging">Be&euml;indiging</a></li>
+        <li><a href="#toepasselijk-recht">Toepasselijk recht</a></li>
+        <li><a href="#contact-av">Contact</a></li>
+      </ol>
+    </div>
+
+    <div class="content-section reveal" id="definities">
+      <span class="section-label">01</span>
+      <h2 class="section-h2">Definities.</h2>
+      <ul class="section-ul">
+        <li><strong>"Tweakly"</strong> &mdash; de mobiele applicatie en website, aangeboden door Alexander Ballet</li>
+        <li><strong>"Dienst"</strong> &mdash; alle functionaliteiten van Tweakly, inclusief prijsvergelijking, nieuwsfeed en prijsalerts</li>
+        <li><strong>"Gebruiker" / "u"</strong> &mdash; iedere persoon die de Dienst gebruikt</li>
+        <li><strong>"Webshop"</strong> &mdash; een externe online winkel waarnaar Tweakly verwijst</li>
+        <li><strong>"Affiliate link"</strong> &mdash; een traceerbare link waarover Tweakly een commissie kan ontvangen bij aankoop</li>
+      </ul>
+    </div>
+
+    <div class="content-section reveal" id="over-tweakly">
+      <span class="section-label">02</span>
+      <h2 class="section-h2">Over Tweakly.</h2>
+      <p class="section-p">Tweakly is een <strong>prijsvergelijkingsdienst</strong> voor elektronica en technologieproducten. Tweakly biedt inzicht in prijzen bij Nederlandse webshops en stelt gebruikers in staat prijsalerts in te stellen.</p>
+      <p class="section-p"><strong>Alexander Ballet</strong><br>Zolder, Belgi&euml;<br><a href="mailto:tweakly.help@hotmail.com">tweakly.help@hotmail.com</a></p>
+    </div>
+
+    <div class="content-section reveal" id="toepasselijkheid">
+      <span class="section-label">03</span>
+      <h2 class="section-h2">Toepasselijkheid.</h2>
+      <p class="section-p">Door Tweakly te downloaden, installeren of gebruiken, gaat u akkoord met deze algemene voorwaarden. Als u niet akkoord gaat, dient u de app niet te gebruiken.</p>
+      <p class="section-p">Wij behouden ons het recht voor deze voorwaarden te wijzigen. Bij wezenlijke wijzigingen ontvangt u een melding. Voortgezet gebruik na wijziging geldt als acceptatie.</p>
+    </div>
+
+    <div class="content-section reveal" id="gebruik">
+      <span class="section-label">04</span>
+      <h2 class="section-h2">Gebruik van de dienst.</h2>
+      <p class="section-p">U stemt ermee in de Dienst uitsluitend te gebruiken voor legale doeleinden. Het is verboden om:</p>
+      <ul class="section-ul">
+        <li>De app te hacken, te reverse-engineeren of te decompileren</li>
+        <li>Geautomatiseerde scripts of bots in te zetten om de dienst te misbruiken</li>
+        <li>Valse of misleidende informatie te verstrekken</li>
+        <li>De dienst te gebruiken op een wijze die andere gebruikers of Tweakly schade toebrengt</li>
+        <li>Intellectuele eigendomsrechten van derden te schenden</li>
+        <li>Spam of ongewenste communicatie te versturen</li>
+      </ul>
+    </div>
+
+    <div class="content-section reveal" id="account">
+      <span class="section-label">05</span>
+      <h2 class="section-h2">Account en beveiliging.</h2>
+      <p class="section-p">U bent verantwoordelijk voor:</p>
+      <ul class="section-ul">
+        <li>De vertrouwelijkheid van uw inloggegevens</li>
+        <li>Alle activiteiten die plaatsvinden onder uw account</li>
+        <li>Het onmiddellijk melden van ongeautoriseerd gebruik via <a href="mailto:tweakly.help@hotmail.com">tweakly.help@hotmail.com</a></li>
+      </ul>
+      <p class="section-p">Minimale leeftijd voor een account is <strong>16 jaar</strong>. Minderjarigen jonger dan 16 jaar hebben toestemming van een ouder of voogd nodig.</p>
+    </div>
+
+    <div class="content-section reveal" id="prijzen-beschikbaarheid">
+      <span class="section-label">06</span>
+      <h2 class="section-h2">Prijzen en beschikbaarheid.</h2>
+      <div class="notice-card orange" style="margin-bottom:1.25rem">
+        <p><strong>Disclaimer:</strong> Alle prijzen in Tweakly zijn <strong>indicatief</strong>. Tweakly scrapet geen live prijzen. Getoonde prijzen zijn gebaseerd op beschikbare datafeed-informatie en kunnen afwijken van de actuele prijs bij de webshop. Controleer altijd de prijs bij de betreffende webshop voordat u een aankoop doet.</p>
+      </div>
+      <p class="section-p">Tweakly is niet verantwoordelijk voor:</p>
+      <ul class="section-ul">
+        <li>Onjuiste of verouderde prijsgegevens</li>
+        <li>Producten die niet meer beschikbaar zijn</li>
+        <li>Prijsverschillen tussen de app en de webshop</li>
+        <li>Technische problemen bij externe webshops</li>
+      </ul>
+    </div>
+
+    <div class="content-section reveal" id="affiliate">
+      <span class="section-label">07</span>
+      <h2 class="section-h2">Affiliate links.</h2>
+      <div class="notice-card green" style="margin-bottom:1.25rem">
+        <p><strong>Transparantieverklaring:</strong> Tweakly bevat affiliate links. Wanneer u via een dergelijke link een aankoop doet, kan Tweakly een kleine commissie ontvangen. Dit heeft <strong>geen invloed op de prijs die u betaalt</strong>. Tweakly ontvangt de commissie van de webshop, niet van u.</p>
+      </div>
+      <p class="section-p">Affiliate-links worden gemarkeerd met <code>rel="sponsored nofollow noopener"</code>. Meer informatie op onze <a href="affiliate.html">affiliate disclosure pagina</a>.</p>
+      <p class="section-p">De rangschikking van producten en webshops wordt <strong>niet</strong> be&iuml;nvloed door commerci&euml;le relaties.</p>
+    </div>
+
+    <div class="content-section reveal" id="intellectueel">
+      <span class="section-label">08</span>
+      <h2 class="section-h2">Intellectueel eigendom.</h2>
+      <p class="section-p">Alle rechten op de Tweakly-app, website, logo, ontwerp, software en content berusten bij Alexander Ballet of zijn licentiegevers. U verkrijgt een beperkt, niet-exclusief, niet-overdraagbaar recht de app te gebruiken voor persoonlijke doeleinden.</p>
+      <p class="section-p">Het is niet toegestaan de inhoud van Tweakly zonder schriftelijke toestemming te reproduceren, distribueren of commercieel te exploiteren.</p>
+    </div>
+
+    <div class="content-section reveal" id="aansprakelijkheid">
+      <span class="section-label">09</span>
+      <h2 class="section-h2">Aansprakelijkheid en disclaimer.</h2>
+      <p class="section-p">De Dienst wordt aangeboden "zoals is" en "zoals beschikbaar" zonder enige expliciete of impliciete garanties.</p>
+      <p class="section-p">Voor zover toegestaan door Nederlands recht is Tweakly niet aansprakelijk voor:</p>
+      <ul class="section-ul">
+        <li>Directe of indirecte schade voortvloeiend uit het gebruik van de Dienst</li>
+        <li>Verlies van gegevens of winst</li>
+        <li>Onjuiste prijsinformatie of niet-beschikbaarheid van producten</li>
+        <li>Handelingen of nalatigheden van externe webshops</li>
+        <li>Tijdelijke of permanente onderbreking van de dienst</li>
+      </ul>
+      <p class="section-p">De totale aansprakelijkheid van Tweakly is in alle gevallen beperkt tot maximaal <strong>&euro; 100</strong>.</p>
+    </div>
+
+    <div class="content-section reveal" id="beindiging">
+      <span class="section-label">10</span>
+      <h2 class="section-h2">Be&euml;indiging.</h2>
+      <p class="section-p">U kunt uw account op elk moment verwijderen via de app-instellingen. Tweakly behoudt zich het recht voor accounts te schorsen of te verwijderen bij schending van deze voorwaarden, zonder voorafgaande kennisgeving.</p>
+    </div>
+
+    <div class="content-section reveal" id="toepasselijk-recht">
+      <span class="section-label">11</span>
+      <h2 class="section-h2">Toepasselijk recht.</h2>
+      <p class="section-p">Op deze voorwaarden is <strong>Nederlands recht</strong> van toepassing. Eventuele geschillen worden voorgelegd aan de bevoegde rechter.</p>
+      <p class="section-p">Consumenten in de EU hebben ook het recht een geschil te melden bij het <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener">ODR-platform van de Europese Commissie</a>.</p>
+    </div>
+
+    <div class="content-section reveal" id="contact-av">
+      <span class="section-label">12</span>
+      <h2 class="section-h2">Vragen over de voorwaarden?</h2>
+      <div class="contact-box">
+        <h3>Neem contact op</h3>
+        <p><strong>Alexander Ballet</strong> &middot; Zolder, Belgi&euml;</p>
+        <p><a href="mailto:tweakly.help@hotmail.com">tweakly.help@hotmail.com</a></p>
+        <p style="margin-top:0.85rem;font-size:0.82rem;color:var(--text-3)">Voor vragen over de algemene voorwaarden of uw rechten als gebruiker.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <div class="footer-logo"><img src="logo.png" alt="Tweakly"><span class="footer-logo-name">Tweakly</span></div>
+          <p class="footer-tagline">De slimste manier om elektronica te kopen.</p>
+          <div class="footer-contact">
+            <a href="mailto:tweakly.help@hotmail.com">tweakly.help@hotmail.com</a>
+            <span>Zolder, Belgi&euml;</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Product</div>
+          <ul><li><a href="/#features">Functies</a></li><li><a href="/#download">Download</a></li><li><a href="aanbiedingen.html">Aanbiedingen</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Bedrijf</div>
+          <ul><li><a href="over-ons.html">Over ons</a></li><li><a href="contact.html">Contact</a></li><li><a href="affiliate.html">Affiliate</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Juridisch</div>
+          <ul><li><a href="privacy.html">Privacybeleid</a></li><li><a href="cookies.html">Cookiebeleid</a></li><li><a href="voorwaarden.html">Voorwaarden</a></li></ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">&copy; 2026 Tweakly &middot; Alexander Ballet, Zolder, Belgi&euml;</p>
+        <p class="footer-aff-note">Bevat <a href="affiliate.html">affiliate-links</a> &middot; Commissies hebben geen invloed op uw prijs</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('main-nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('solid', window.scrollY > 60), { passive: true });
+    document.getElementById('menu-btn').addEventListener('click', () => document.getElementById('nav-links').classList.toggle('open'));
+    const obs = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) { x.target.classList.add('visible'); obs.unobserve(x.target); } }), { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  </script>
+</body>
+</html>

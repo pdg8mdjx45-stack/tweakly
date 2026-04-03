@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Over ons — Tweakly</title>
+  <meta name="description" content="Tweakly is een Nederlandse prijsvergelijkingsapp voor elektronica, ontwikkeld door Alexander Ballet vanuit Zolder, België.">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="canonical" href="https://tweakly.pages.dev/over-ons.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --green: #30D158; --green-dim: #248a3d; --blue: #0A84FF;
+      --bg: #000; --bg-2: #0a0a0a; --bg-3: #111; --bg-card: #161616;
+      --border: rgba(255,255,255,0.08);
+      --text: #f5f5f7; --text-2: #a1a1a6; --text-3: #6e6e73;
+      --light-bg: #f5f5f7; --light-text: #1d1d1f; --light-text-2: #515154; --light-text-3: #86868b;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    a { text-decoration: none; transition: color 0.15s; }
+
+    /* NAV */
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 52px; background: rgba(0,0,0,0.7); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-bottom: 0.5px solid rgba(255,255,255,0.07); transition: background 0.3s; }
+    .nav.solid { background: rgba(0,0,0,0.92); }
+    .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 100%; display: flex; align-items: center; justify-content: space-between; }
+    .nav-brand { display: flex; align-items: center; gap: 8px; }
+    .nav-brand img { width: 26px; height: 26px; object-fit: contain; }
+    .nav-brand-name { font-size: 0.95rem; font-weight: 800; color: var(--text); letter-spacing: -0.025em; }
+    .nav-links { display: flex; align-items: center; gap: 2px; list-style: none; }
+    .nav-links a { color: var(--text-2); font-size: 0.8rem; font-weight: 500; padding: 6px 14px; border-radius: 8px; transition: color 0.15s, background 0.15s; }
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.07); }
+    .nav-links .nav-cta { background: var(--green); color: #000 !important; font-weight: 700; border-radius: 980px; }
+    .nav-links .nav-cta:hover { filter: brightness(1.08); }
+    .nav-menu-btn { display: none; background: none; border: none; cursor: pointer; color: var(--text); padding: 8px; border-radius: 8px; }
+    @media (max-width: 768px) {
+      .nav-menu-btn { display: flex; align-items: center; justify-content: center; }
+      .nav-links { display: none; position: fixed; top: 52px; left: 0; right: 0; background: rgba(0,0,0,0.97); backdrop-filter: blur(30px); flex-direction: column; gap: 0; align-items: stretch; padding: 0.5rem 0; border-bottom: 0.5px solid var(--border); }
+      .nav-links.open { display: flex; }
+      .nav-links li { width: 100%; }
+      .nav-links a { display: block; padding: 15px 24px; border-radius: 0; font-size: 0.95rem; color: var(--text) !important; border-bottom: 0.5px solid rgba(255,255,255,0.04); }
+      .nav-links .nav-cta { background: none; border-radius: 0; color: var(--green) !important; }
+    }
+
+    /* PAGE HERO */
+    .page-hero {
+      padding: 9rem 24px 5rem;
+      background: var(--bg);
+      border-bottom: 0.5px solid rgba(255,255,255,0.06);
+    }
+    .page-hero-inner { max-width: 860px; margin: 0 auto; }
+    .page-eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--green);
+      margin-bottom: 1.25rem;
+    }
+    .page-h1 { font-size: clamp(2.4rem, 6vw, 4.5rem); font-weight: 900; letter-spacing: -0.04em; line-height: 1; margin-bottom: 1.25rem; }
+    .page-sub { font-size: 1.1rem; color: var(--text-2); line-height: 1.65; max-width: 600px; letter-spacing: -0.005em; }
+    .breadcrumb { font-size: 0.75rem; color: var(--text-3); margin-bottom: 2rem; }
+    .breadcrumb a { color: var(--text-3); transition: color 0.15s; }
+    .breadcrumb a:hover { color: var(--text-2); }
+    .breadcrumb span { margin: 0 6px; }
+
+    /* CONTENT */
+    .page-content { max-width: 860px; margin: 0 auto; padding: 4rem 24px 6rem; }
+    .content-section { margin-bottom: 4rem; }
+    .section-label {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.66rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--green);
+      margin-bottom: 1rem;
+    }
+    .section-h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 1rem; line-height: 1.15; }
+    .section-p { font-size: 0.95rem; color: var(--text-2); line-height: 1.75; margin-bottom: 0.85rem; }
+    .section-p strong { color: var(--text); }
+    .section-p a { color: var(--green); text-decoration: underline; text-underline-offset: 2px; }
+    .section-p a:hover { color: #38e063; }
+    .section-ul { padding-left: 1.5rem; margin-bottom: 0.85rem; }
+    .section-ul li { font-size: 0.95rem; color: var(--text-2); line-height: 1.7; margin-bottom: 0.4rem; }
+    .section-ul li strong { color: var(--text); }
+
+    /* FOUNDER CARD */
+    .founder-card {
+      background: var(--bg-card); border: 0.5px solid rgba(255,255,255,0.1);
+      border-radius: 22px; padding: 2rem; margin-bottom: 3rem;
+      display: flex; gap: 1.5rem; align-items: flex-start; flex-wrap: wrap;
+    }
+    .founder-avatar {
+      width: 68px; height: 68px; border-radius: 18px; flex-shrink: 0;
+      background: linear-gradient(135deg, #248a3d, #30D158);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; font-weight: 900; color: #fff;
+      box-shadow: 0 8px 24px rgba(48,209,88,0.2);
+    }
+    .founder-info { flex: 1; min-width: 200px; }
+    .founder-name { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 4px; }
+    .founder-role { font-size: 0.8rem; color: var(--green); font-weight: 600; margin-bottom: 0.75rem; }
+    .founder-bio { font-size: 0.88rem; color: var(--text-2); line-height: 1.68; margin-bottom: 0.85rem; }
+    .founder-contact { display: flex; flex-direction: column; gap: 4px; }
+    .founder-contact a { font-size: 0.82rem; color: var(--text-3); transition: color 0.15s; }
+    .founder-contact a:hover { color: var(--text-2); }
+    .founder-contact span { font-size: 0.82rem; color: var(--text-3); }
+
+    /* STATUS BANNER */
+    .status-banner {
+      background: rgba(10,132,255,0.06); border: 0.5px solid rgba(10,132,255,0.2);
+      border-radius: 16px; padding: 1.5rem; margin-bottom: 2.5rem;
+    }
+    .status-banner-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--blue); margin-bottom: 0.4rem; }
+    .status-banner h3 { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+    .status-banner p { font-size: 0.88rem; color: var(--text-2); line-height: 1.65; }
+    .status-banner a { color: var(--blue); text-decoration: underline; text-underline-offset: 2px; }
+
+    /* VALUES GRID */
+    .values-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 1.5rem 0; }
+    @media (max-width: 560px) { .values-grid { grid-template-columns: 1fr; } }
+    .value-card { background: var(--bg-card); border: 0.5px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 1.5rem; transition: border-color 0.2s; }
+    .value-card:hover { border-color: rgba(48,209,88,0.2); }
+    .value-icon { font-size: 1.6rem; display: block; margin-bottom: 0.75rem; }
+    .value-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .value-desc { font-size: 0.85rem; color: var(--text-2); line-height: 1.55; }
+
+    /* CONTACT BOX */
+    .contact-box { background: var(--bg-card); border: 0.5px solid rgba(255,255,255,0.1); border-radius: 18px; padding: 1.75rem; }
+    .contact-box h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.85rem; }
+    .contact-box p { font-size: 0.88rem; color: var(--text-2); margin-bottom: 0.4rem; line-height: 1.6; }
+    .contact-box strong { color: var(--text); }
+    .contact-box a { color: var(--green); transition: color 0.15s; }
+    .contact-box a:hover { color: #38e063; }
+
+    /* TECH LIST */
+    .tech-list { list-style: none; display: flex; flex-direction: column; gap: 6px; margin: 1rem 0; }
+    .tech-item {
+      display: flex; align-items: baseline; gap: 10px;
+      font-size: 0.9rem; color: var(--text-2); line-height: 1.5;
+    }
+    .tech-item::before { content: '—'; color: var(--green); flex-shrink: 0; }
+    .tech-item strong { color: var(--text); }
+
+    /* FOOTER */
+    .site-footer { background: var(--bg); border-top: 0.5px solid rgba(255,255,255,0.07); padding: 4rem 24px 2rem; }
+    .footer-inner { max-width: 1100px; margin: 0 auto; }
+    .footer-top { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 2.5rem; margin-bottom: 3rem; }
+    @media (max-width: 900px) { .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; } }
+    @media (max-width: 500px) { .footer-top { grid-template-columns: 1fr; } }
+    .footer-logo { display: flex; align-items: center; gap: 8px; margin-bottom: 0.75rem; }
+    .footer-logo img { width: 28px; height: 28px; object-fit: contain; }
+    .footer-logo-name { font-size: 1rem; font-weight: 800; color: var(--text); letter-spacing: -0.025em; }
+    .footer-tagline { font-size: 0.8rem; color: var(--text-3); line-height: 1.55; max-width: 210px; margin-bottom: 1.25rem; }
+    .footer-contact a { display: block; font-size: 0.78rem; color: var(--text-3); margin-bottom: 0.25rem; transition: color 0.15s; }
+    .footer-contact a:hover { color: var(--text-2); }
+    .footer-contact span { display: block; font-size: 0.78rem; color: var(--text-3); }
+    .footer-col-title { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 1rem; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+    .footer-col a { font-size: 0.82rem; color: var(--text-2); transition: color 0.15s; }
+    .footer-col a:hover { color: var(--text); }
+    .footer-bottom { border-top: 0.5px solid rgba(255,255,255,0.06); padding-top: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .footer-copy { font-size: 0.74rem; color: var(--text-3); }
+    .footer-aff-note { font-size: 0.72rem; color: var(--text-3); }
+    .footer-aff-note a { color: var(--text-3); text-decoration: underline; text-underline-offset: 2px; }
+    .footer-aff-note a:hover { color: var(--text-2); }
+
+    /* REVEAL */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+    .d1 { transition-delay: 0.1s; } .d2 { transition-delay: 0.2s; } .d3 { transition-delay: 0.3s; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav" id="main-nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-brand">
+        <img src="logo.png" alt="Tweakly">
+        <span class="nav-brand-name">Tweakly</span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/#features">Functies</a></li>
+        <li><a href="over-ons.html" style="color:var(--text)">Over ons</a></li>
+        <li><a href="affiliate.html">Affiliate</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="/#download" class="nav-cta">Download</a></li>
+      </ul>
+      <button class="nav-menu-btn" id="menu-btn" aria-label="Menu openen">
+        <svg width="18" height="13" viewBox="0 0 18 13" fill="none" aria-hidden="true">
+          <path d="M0 1h18M0 6.5h18M0 12h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- PAGE HERO -->
+  <header class="page-hero">
+    <div class="page-hero-inner">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <span>Over ons</span>
+      </nav>
+      <div class="page-eyebrow">&#128467; Over ons</div>
+      <h1 class="page-h1">Het verhaal<br>achter Tweakly.</h1>
+      <p class="page-sub">Een persoonlijk project van &eacute;&eacute;n ontwikkelaar, gebouwd voor slimme shoppers in de Benelux.</p>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="page-content">
+
+    <!-- STATUS BANNER -->
+    <div class="status-banner reveal">
+      <div class="status-banner-label">&#128679; Status</div>
+      <h3>In actieve ontwikkeling &mdash; Bèta-fase</h3>
+      <p>Tweakly is nog niet beschikbaar in de officiële App Store of Google Play. Wil je vroegtijdig toegang? <a href="contact.html">Neem contact op</a> of meld je aan voor de bèta.</p>
+    </div>
+
+    <!-- FOUNDER -->
+    <div class="founder-card reveal">
+      <div class="founder-avatar">AB</div>
+      <div class="founder-info">
+        <div class="founder-name">Alexander Ballet</div>
+        <div class="founder-role">Oprichter &amp; Ontwikkelaar</div>
+        <p class="founder-bio">
+          Tweakly is een persoonlijk project van Alexander Ballet, een Belgische software-ontwikkelaar gevestigd in Zolder. Als tech-enthousiasteling en regelmatige koper van elektronica miste hij een eerlijke, moderne prijsvergelijkingsapp voor de Nederlandse markt. Dus bouwde hij die zelf.
+        </p>
+        <div class="founder-contact">
+          <a href="mailto:tweakly.help@hotmail.com">tweakly.help@hotmail.com</a>
+          <span>Zolder, Belgi&euml; &middot; Opgericht 2025</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- WHAT IS TWEAKLY -->
+    <div class="content-section reveal">
+      <span class="section-label">01 &mdash; Missie</span>
+      <h2 class="section-h2">Wat is Tweakly?</h2>
+      <p class="section-p">
+        Tweakly is een mobiele prijsvergelijkingsapp voor elektronica, gericht op de Nederlandse en Belgische markt. De app vergelijkt prijzen bij populaire webshops zoals Coolblue, Bol.com, MediaMarkt, Amazon.nl, Alternate en meer.
+      </p>
+      <p class="section-p">De focus ligt op:</p>
+      <ul class="section-ul">
+        <li>Eerlijke prijsvergelijking (gesorteerd op prijs, niet op commissie)</li>
+        <li>Prijsgeschiedenis en -trends per product</li>
+        <li>Prijsalerts via pushnotificaties</li>
+        <li>Technisch nieuws via RSS-feeds van Tweakers.net</li>
+        <li>Productreviews en specificaties</li>
+      </ul>
+    </div>
+
+    <!-- VALUES -->
+    <div class="content-section reveal">
+      <span class="section-label">02 &mdash; Waarden</span>
+      <h2 class="section-h2">Waar we voor staan.</h2>
+      <div class="values-grid">
+        <div class="value-card reveal d1">
+          <span class="value-icon">&#9878;&#65039;</span>
+          <div class="value-title">Eerlijkheid</div>
+          <p class="value-desc">Winkels worden altijd gesorteerd op prijs. Commissiehoogte heeft nooit invloed op de rangschikking.</p>
+        </div>
+        <div class="value-card reveal d2">
+          <span class="value-icon">&#128279;</span>
+          <div class="value-title">Transparantie</div>
+          <p class="value-desc">Affiliate-links worden duidelijk gemarkeerd. We zijn open over hoe we inkomsten genereren.</p>
+        </div>
+        <div class="value-card reveal d1">
+          <span class="value-icon">&#128176;</span>
+          <div class="value-title">Geen meerkosten</div>
+          <p class="value-desc">U betaalt nooit meer via een affiliate-link. De commissie wordt door de webshop betaald, niet door u.</p>
+        </div>
+        <div class="value-card reveal d2">
+          <span class="value-icon">&#128274;</span>
+          <div class="value-title">Privacy</div>
+          <p class="value-desc">We verzamelen minimale data en volgen AVG-richtlijnen strikt. Geen verkoop van gebruikersdata.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TECHNOLOGY -->
+    <div class="content-section reveal">
+      <span class="section-label">03 &mdash; Technologie</span>
+      <h2 class="section-h2">Gebouwd met moderne technologie.</h2>
+      <ul class="tech-list">
+        <li class="tech-item"><strong>App:</strong> React Native met Expo SDK 54 (iOS &amp; Android)</li>
+        <li class="tech-item"><strong>Backend:</strong> Supabase (PostgreSQL, Auth, Storage)</li>
+        <li class="tech-item"><strong>Hosting app:</strong> Expo Application Services (EAS)</li>
+        <li class="tech-item"><strong>Website:</strong> Statische HTML, gehost op Cloudflare Pages</li>
+        <li class="tech-item"><strong>Productdata:</strong> Affiliate product feeds (specs, afbeeldingen en prijzen)</li>
+        <li class="tech-item"><strong>Nieuwsfeeds:</strong> Tweakers.net RSS via FeedBurner</li>
+        <li class="tech-item"><strong>Productcatalogus:</strong> Icecat Open Catalog (gratis, op basis van EAN)</li>
+      </ul>
+    </div>
+
+    <!-- AFFILIATE -->
+    <div class="content-section reveal">
+      <span class="section-label">04 &mdash; Affiliate-relaties</span>
+      <h2 class="section-h2">Hoe Tweakly inkomsten genereert.</h2>
+      <p class="section-p">
+        Tweakly bevat affiliate-links naar externe webshops. Wanneer u via Tweakly een aankoop doet, kan Tweakly een kleine commissie ontvangen van de betreffende webshop. <strong>Dit heeft geen invloed op de prijs die u betaalt.</strong>
+      </p>
+      <p class="section-p">
+        Lees onze volledige <a href="affiliate.html">Affiliate Disclosure</a> voor meer informatie over onze partners en principes.
+      </p>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="content-section reveal">
+      <span class="section-label">05 &mdash; Contact</span>
+      <h2 class="section-h2">Neem contact op.</h2>
+      <div class="contact-box">
+        <h3>Stuur een bericht</h3>
+        <p><strong>Alexander Ballet</strong></p>
+        <p>Zolder, Belgi&euml;</p>
+        <p><a href="mailto:tweakly.help@hotmail.com">tweakly.help@hotmail.com</a></p>
+        <p style="margin-top:0.85rem;font-size:0.82rem;color:var(--text-3)">Voor vragen over de app, samenwerking, bèta-toegang of affiliate-relaties.</p>
+        <p style="margin-top:0.6rem"><a href="contact.html" style="color:var(--green)">Ga naar de contactpagina &rarr;</a></p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <div class="footer-logo">
+            <img src="logo.png" alt="Tweakly">
+            <span class="footer-logo-name">Tweakly</span>
+          </div>
+          <p class="footer-tagline">De slimste manier om elektronica te kopen.</p>
+          <div class="footer-contact">
+            <a href="mailto:tweakly.help@hotmail.com">tweakly.help@hotmail.com</a>
+            <span>Zolder, Belgi&euml;</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Product</div>
+          <ul>
+            <li><a href="/#features">Functies</a></li>
+            <li><a href="/#download">Download</a></li>
+            <li><a href="aanbiedingen.html">Aanbiedingen</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Bedrijf</div>
+          <ul>
+            <li><a href="over-ons.html">Over ons</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="affiliate.html">Affiliate</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Juridisch</div>
+          <ul>
+            <li><a href="privacy.html">Privacybeleid</a></li>
+            <li><a href="cookies.html">Cookiebeleid</a></li>
+            <li><a href="voorwaarden.html">Voorwaarden</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">&copy; 2026 Tweakly &middot; Alexander Ballet, Zolder, Belgi&euml;</p>
+        <p class="footer-aff-note">Bevat <a href="affiliate.html">affiliate-links</a> &middot; Commissies hebben geen invloed op uw prijs</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('main-nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('solid', window.scrollY > 60), { passive: true });
+    document.getElementById('menu-btn').addEventListener('click', function() {
+      document.getElementById('nav-links').classList.toggle('open');
+    });
+    const obs = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } }), { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  </script>
+</body>
+</html>

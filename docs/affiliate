@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Affiliate Disclosure — Tweakly</title>
+  <meta name="description" content="Transparantie over affiliate-links en commissies bij Tweakly. Verplichte disclosure voor partners zoals Bol.com, Daisycon en Coolblue.">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="canonical" href="https://tweakly.pages.dev/affiliate.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --green: #30D158; --green-dim: #248a3d; --blue: #0A84FF; --orange: #FF9F0A;
+      --bg: #000; --bg-2: #0a0a0a; --bg-card: #161616;
+      --border: rgba(255,255,255,0.08);
+      --text: #f5f5f7; --text-2: #a1a1a6; --text-3: #6e6e73;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    a { text-decoration: none; transition: color 0.15s; }
+    code { background: rgba(255,255,255,0.08); padding: 0.1em 0.45em; border-radius: 5px; font-size: 0.88em; font-family: 'Courier New', monospace; color: var(--text-2); }
+
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 52px; background: rgba(0,0,0,0.7); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-bottom: 0.5px solid rgba(255,255,255,0.07); transition: background 0.3s; }
+    .nav.solid { background: rgba(0,0,0,0.92); }
+    .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 100%; display: flex; align-items: center; justify-content: space-between; }
+    .nav-brand { display: flex; align-items: center; gap: 8px; }
+    .nav-brand img { width: 26px; height: 26px; object-fit: contain; }
+    .nav-brand-name { font-size: 0.95rem; font-weight: 800; color: var(--text); letter-spacing: -0.025em; }
+    .nav-links { display: flex; align-items: center; gap: 2px; list-style: none; }
+    .nav-links a { color: var(--text-2); font-size: 0.8rem; font-weight: 500; padding: 6px 14px; border-radius: 8px; transition: color 0.15s, background 0.15s; }
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.07); }
+    .nav-links .nav-cta { background: var(--green); color: #000 !important; font-weight: 700; border-radius: 980px; }
+    .nav-links .nav-cta:hover { filter: brightness(1.08); }
+    .nav-menu-btn { display: none; background: none; border: none; cursor: pointer; color: var(--text); padding: 8px; border-radius: 8px; }
+    @media (max-width: 768px) {
+      .nav-menu-btn { display: flex; align-items: center; justify-content: center; }
+      .nav-links { display: none; position: fixed; top: 52px; left: 0; right: 0; background: rgba(0,0,0,0.97); backdrop-filter: blur(30px); flex-direction: column; gap: 0; align-items: stretch; padding: 0.5rem 0; border-bottom: 0.5px solid var(--border); }
+      .nav-links.open { display: flex; }
+      .nav-links li { width: 100%; }
+      .nav-links a { display: block; padding: 15px 24px; border-radius: 0; font-size: 0.95rem; color: var(--text) !important; border-bottom: 0.5px solid rgba(255,255,255,0.04); }
+      .nav-links .nav-cta { background: none; border-radius: 0; color: var(--green) !important; }
+    }
+
+    .page-hero { padding: 9rem 24px 5rem; background: var(--bg); border-bottom: 0.5px solid rgba(255,255,255,0.06); }
+    .page-hero-inner { max-width: 860px; margin: 0 auto; }
+    .page-eyebrow { display: inline-flex; align-items: center; gap: 6px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); margin-bottom: 1.25rem; }
+    .page-h1 { font-size: clamp(2.4rem, 6vw, 4.5rem); font-weight: 900; letter-spacing: -0.04em; line-height: 1; margin-bottom: 1.25rem; }
+    .page-sub { font-size: 1.1rem; color: var(--text-2); line-height: 1.65; max-width: 600px; }
+    .breadcrumb { font-size: 0.75rem; color: var(--text-3); margin-bottom: 2rem; }
+    .breadcrumb a { color: var(--text-3); }
+    .breadcrumb a:hover { color: var(--text-2); }
+    .breadcrumb span { margin: 0 6px; }
+
+    .page-content { max-width: 860px; margin: 0 auto; padding: 4rem 24px 6rem; }
+    .content-section { margin-bottom: 3.5rem; }
+    .section-label { display: inline-flex; align-items: center; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--orange); margin-bottom: 1rem; }
+    .section-h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 1rem; line-height: 1.15; }
+    .section-p { font-size: 0.95rem; color: var(--text-2); line-height: 1.75; margin-bottom: 0.85rem; }
+    .section-p strong { color: var(--text); }
+
+    /* NOTICE CARD */
+    .notice-card { background: rgba(255,159,10,0.06); border: 0.5px solid rgba(255,159,10,0.22); border-radius: 18px; padding: 1.75rem; margin-bottom: 3rem; }
+    .notice-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--orange); margin-bottom: 0.6rem; }
+    .notice-h3 { font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem; }
+    .notice-p { font-size: 0.9rem; color: var(--text-2); line-height: 1.68; margin-bottom: 0.5rem; }
+    .notice-p:last-child { margin-bottom: 0; }
+    .notice-p strong { color: var(--text); }
+
+    /* PARTNERS GRID */
+    .partners-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 1.5rem 0; }
+    @media (max-width: 600px) { .partners-grid { grid-template-columns: 1fr; } }
+    .partner-card { background: var(--bg-card); border: 0.5px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 1.4rem; transition: border-color 0.2s; }
+    .partner-card:hover { border-color: rgba(255,159,10,0.2); }
+    .partner-top { display: flex; align-items: center; gap: 12px; margin-bottom: 0.75rem; }
+    .partner-logo { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.72rem; flex-shrink: 0; color: white; }
+    .partner-name { font-size: 0.95rem; font-weight: 700; margin-bottom: 2px; }
+    .partner-type { font-size: 0.72rem; color: var(--text-3); }
+    .partner-desc { font-size: 0.82rem; color: var(--text-2); line-height: 1.55; }
+
+    /* PRINCIPLES */
+    .principles { display: flex; flex-direction: column; gap: 10px; margin: 1.25rem 0; }
+    .principle { display: flex; gap: 1rem; align-items: flex-start; background: var(--bg-card); border: 0.5px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.25rem; transition: border-color 0.2s; }
+    .principle:hover { border-color: rgba(48,209,88,0.15); }
+    .principle-icon { font-size: 1.4rem; line-height: 1; flex-shrink: 0; margin-top: 2px; }
+    .principle-h3 { font-size: 0.92rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .principle-p { font-size: 0.84rem; color: var(--text-2); line-height: 1.55; margin: 0; }
+    .principle-p strong { color: var(--text); }
+
+    /* TABLE */
+    .table-wrap { border: 0.5px solid rgba(255,255,255,0.08); border-radius: 16px; overflow: hidden; margin: 1.25rem 0; overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 440px; }
+    .data-table th { text-align: left; padding: 10px 16px; background: rgba(255,255,255,0.04); color: var(--text-3); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; border-bottom: 0.5px solid rgba(255,255,255,0.07); }
+    .data-table td { padding: 10px 16px; color: var(--text-2); border-bottom: 0.5px solid rgba(255,255,255,0.04); vertical-align: top; line-height: 1.55; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table strong { color: var(--text); }
+    .data-table a { color: var(--blue); text-decoration: underline; text-underline-offset: 2px; }
+    .data-table a:hover { color: var(--text-2); }
+
+    .contact-box { background: var(--bg-card); border: 0.5px solid rgba(255,255,255,0.1); border-radius: 18px; padding: 1.75rem; }
+    .contact-box h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.85rem; }
+    .contact-box p { font-size: 0.88rem; color: var(--text-2); margin-bottom: 0.4rem; line-height: 1.6; }
+    .contact-box strong { color: var(--text); }
+    .contact-box a { color: var(--green); }
+    .contact-box a:hover { color: #38e063; }
+
+    .site-footer { background: var(--bg); border-top: 0.5px solid rgba(255,255,255,0.07); padding: 4rem 24px 2rem; }
+    .footer-inner { max-width: 1100px; margin: 0 auto; }
+    .footer-top { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 2.5rem; margin-bottom: 3rem; }
+    @media (max-width: 900px) { .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; } }
+    @media (max-width: 500px) { .footer-top { grid-template-columns: 1fr; } }
+    .footer-logo { display: flex; align-items: center; gap: 8px; margin-bottom: 0.75rem; }
+    .footer-logo img { width: 28px; height: 28px; object-fit: contain; }
+    .footer-logo-name { font-size: 1rem; font-weight: 800; color: var(--text); letter-spacing: -0.025em; }
+    .footer-tagline { font-size: 0.8rem; color: var(--text-3); line-height: 1.55; max-width: 210px; margin-bottom: 1.25rem; }
+    .footer-contact a { display: block; font-size: 0.78rem; color: var(--text-3); margin-bottom: 0.25rem; transition: color 0.15s; }
+    .footer-contact a:hover { color: var(--text-2); }
+    .footer-contact span { display: block; font-size: 0.78rem; color: var(--text-3); }
+    .footer-col-title { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 1rem; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+    .footer-col a { font-size: 0.82rem; color: var(--text-2); transition: color 0.15s; }
+    .footer-col a:hover { color: var(--text); }
+    .footer-bottom { border-top: 0.5px solid rgba(255,255,255,0.06); padding-top: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .footer-copy { font-size: 0.74rem; color: var(--text-3); }
+    .footer-aff-note { font-size: 0.72rem; color: var(--text-3); }
+    .footer-aff-note a { color: var(--text-3); text-decoration: underline; text-underline-offset: 2px; }
+    .footer-aff-note a:hover { color: var(--text-2); }
+
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+    .d1 { transition-delay: 0.1s; } .d2 { transition-delay: 0.2s; } .d3 { transition-delay: 0.3s; }
+  </style>
+</head>
+<body>
+
+  <nav class="nav" id="main-nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-brand">
+        <img src="logo.png" alt="Tweakly">
+        <span class="nav-brand-name">Tweakly</span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/#features">Functies</a></li>
+        <li><a href="over-ons.html">Over ons</a></li>
+        <li><a href="affiliate.html" style="color:var(--text)">Affiliate</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="/#download" class="nav-cta">Download</a></li>
+      </ul>
+      <button class="nav-menu-btn" id="menu-btn" aria-label="Menu openen">
+        <svg width="18" height="13" viewBox="0 0 18 13" fill="none"><path d="M0 1h18M0 6.5h18M0 12h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <header class="page-hero">
+    <div class="page-hero-inner">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a><span>/</span><span>Affiliate Disclosure</span>
+      </nav>
+      <div class="page-eyebrow">&#128279; Affiliate</div>
+      <h1 class="page-h1">Eerlijkheid<br>staat voorop.</h1>
+      <p class="page-sub">Volledige transparantie over hoe Tweakly werkt met affiliate-links en wat dit betekent voor u.</p>
+    </div>
+  </header>
+
+  <main class="page-content">
+
+    <div class="notice-card reveal">
+      <div class="notice-label">&#9888;&#65039; Belangrijke mededeling</div>
+      <h3 class="notice-h3">Tweakly bevat affiliate-links</h3>
+      <p class="notice-p">Wanneer u via een Tweakly-link een product aanschaft, ontvangt Tweakly mogelijk een vergoeding van de betreffende webshop.</p>
+      <p class="notice-p">Dit is <strong>volledig transparant</strong>: u betaalt nooit meer via een affiliate-link. De commissie wordt betaald door de webshop, niet door u. De rangschikking van producten is gebaseerd op prijs &mdash; niet op de hoogte van commissies.</p>
+    </div>
+
+    <div class="content-section reveal">
+      <span class="section-label">01 &mdash; Uitleg</span>
+      <h2 class="section-h2">Wat zijn affiliate-links?</h2>
+      <p class="section-p">Affiliate-links zijn speciale trackinglinks die bijhouden of een bezoeker via Tweakly een aankoop doet bij een webshop. Als dat het geval is, ontvangt Tweakly een kleine commissie (doorgaans 1&ndash;5% van het aankoopbedrag).</p>
+      <p class="section-p">Dit is een gangbare manier voor prijsvergelijkingssites om hun dienst gratis aan te bieden. Zo kan Tweakly kosteloos beschikbaar blijven voor alle gebruikers.</p>
+      <p class="section-p">In de app en op deze website worden affiliate-links gemarkeerd met <code>rel="sponsored nofollow noopener"</code> in de HTML-code, conform de richtlijnen van Google en de ACM.</p>
+    </div>
+
+    <div class="content-section reveal">
+      <span class="section-label">02 &mdash; Partners</span>
+      <h2 class="section-h2">Onze affiliate partners.</h2>
+      <div class="partners-grid">
+        <div class="partner-card reveal d1">
+          <div class="partner-top">
+            <div class="partner-logo" style="background:#0071bf">BOL</div>
+            <div>
+              <div class="partner-name">Bol.com</div>
+              <div class="partner-type">via Daisycon / direct</div>
+            </div>
+          </div>
+          <p class="partner-desc">Links naar bol.com kunnen affiliate-links zijn via het Bol.com partnerprogramma of Daisycon.</p>
+        </div>
+        <div class="partner-card reveal d2">
+          <div class="partner-top">
+            <div class="partner-logo" style="background:#0071ce">CB</div>
+            <div>
+              <div class="partner-name">Coolblue</div>
+              <div class="partner-type">via Daisycon</div>
+            </div>
+          </div>
+          <p class="partner-desc">Coolblue-links kunnen affiliate-links zijn via het Daisycon-netwerk.</p>
+        </div>
+        <div class="partner-card reveal d1">
+          <div class="partner-top">
+            <div class="partner-logo" style="background:#e30613">MM</div>
+            <div>
+              <div class="partner-name">MediaMarkt</div>
+              <div class="partner-type">via Daisycon</div>
+            </div>
+          </div>
+          <p class="partner-desc">MediaMarkt-links kunnen affiliate-links zijn via het Daisycon-netwerk.</p>
+        </div>
+        <div class="partner-card reveal d2">
+          <div class="partner-top">
+            <div class="partner-logo" style="background:#ff9900;color:#111">AMZ</div>
+            <div>
+              <div class="partner-name">Amazon.nl</div>
+              <div class="partner-type">Amazon Associates</div>
+            </div>
+          </div>
+          <p class="partner-desc">Amazon-links kunnen deel uitmaken van het Amazon Associates-programma.</p>
+        </div>
+        <div class="partner-card reveal d1">
+          <div class="partner-top">
+            <div class="partner-logo" style="background:#222;color:#30D158">ALT</div>
+            <div>
+              <div class="partner-name">Alternate</div>
+              <div class="partner-type">via Daisycon / TradeTracker</div>
+            </div>
+          </div>
+          <p class="partner-desc">Links naar Alternate.nl kunnen affiliate-links zijn.</p>
+        </div>
+        <div class="partner-card reveal d2">
+          <div class="partner-top">
+            <div class="partner-logo" style="background:#1a1a2e;color:#e94560">MEG</div>
+            <div>
+              <div class="partner-name">Megekko</div>
+              <div class="partner-type">via affiliate netwerk</div>
+            </div>
+          </div>
+          <p class="partner-desc">Links naar Megekko.nl kunnen affiliate-links zijn.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-section reveal">
+      <span class="section-label">03 &mdash; Netwerken</span>
+      <h2 class="section-h2">Affiliate netwerken.</h2>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Netwerk</th><th>Website</th><th>Privacybeleid</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Daisycon</strong></td><td><a href="https://www.daisycon.com" target="_blank" rel="noopener">daisycon.com</a></td><td><a href="https://www.daisycon.com/nl/privacyverklaring/" target="_blank" rel="noopener">Privacy &rarr;</a></td></tr>
+            <tr><td><strong>Amazon Associates</strong></td><td><a href="https://affiliate-program.amazon.nl" target="_blank" rel="noopener">amazon.nl</a></td><td><a href="https://www.amazon.nl/gp/help/customer/display.html?nodeId=GX7NJQ4ZB8MHFRNJ" target="_blank" rel="noopener">Privacy &rarr;</a></td></tr>
+            <tr><td><strong>TradeTracker</strong></td><td><a href="https://www.tradetracker.com" target="_blank" rel="noopener">tradetracker.com</a></td><td><a href="https://tradetracker.com/privacy-policy/" target="_blank" rel="noopener">Privacy &rarr;</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="content-section reveal">
+      <span class="section-label">04 &mdash; Principes</span>
+      <h2 class="section-h2">Onze principes.</h2>
+      <div class="principles">
+        <div class="principle">
+          <div class="principle-icon">&#9878;&#65039;</div>
+          <div>
+            <div class="principle-h3">Prijs staat altijd centraal</div>
+            <p class="principle-p">De rangschikking van webshops is <strong>altijd gebaseerd op prijs</strong> &mdash; van laag naar hoog. De hoogte van een eventuele commissie heeft hier geen invloed op.</p>
+          </div>
+        </div>
+        <div class="principle">
+          <div class="principle-icon">&#128279;</div>
+          <div>
+            <div class="principle-h3">Transparante markering</div>
+            <p class="principle-p">Affiliate-links worden gemarkeerd met <code>rel="sponsored nofollow noopener"</code> zodat zoekmachines en gebruikers dit kunnen identificeren.</p>
+          </div>
+        </div>
+        <div class="principle">
+          <div class="principle-icon">&#128176;</div>
+          <div>
+            <div class="principle-h3">Geen meerkosten voor u</div>
+            <p class="principle-p">U betaalt nooit meer via een affiliate-link. De commissie wordt betaald door de webshop uit de marge op de verkoop.</p>
+          </div>
+        </div>
+        <div class="principle">
+          <div class="principle-icon">&#129305;</div>
+          <div>
+            <div class="principle-h3">Onafhankelijke redactie</div>
+            <p class="principle-p">Productreviews en aanbevelingen in Tweakly zijn gebaseerd op redactioneel oordeel &mdash; niet op betaalde plaatsingen.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-section reveal">
+      <span class="section-label">05 &mdash; Contact</span>
+      <h2 class="section-h2">Vragen over affiliate?</h2>
+      <div class="contact-box">
+        <h3>Neem contact op</h3>
+        <p><strong>Alexander Ballet</strong> &middot; Zolder, Belgi&euml;</p>
+        <p><a href="mailto:tweakly.help@hotmail.com">tweakly.help@hotmail.com</a></p>
+        <p style="margin-top:0.85rem;font-size:0.82rem;color:var(--text-3)">Voor vragen over affiliate-samenwerking, disclosure-vereisten of partnerschap.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <div class="footer-logo"><img src="logo.png" alt="Tweakly"><span class="footer-logo-name">Tweakly</span></div>
+          <p class="footer-tagline">De slimste manier om elektronica te kopen.</p>
+          <div class="footer-contact">
+            <a href="mailto:tweakly.help@hotmail.com">tweakly.help@hotmail.com</a>
+            <span>Zolder, Belgi&euml;</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Product</div>
+          <ul><li><a href="/#features">Functies</a></li><li><a href="/#download">Download</a></li><li><a href="aanbiedingen.html">Aanbiedingen</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Bedrijf</div>
+          <ul><li><a href="over-ons.html">Over ons</a></li><li><a href="contact.html">Contact</a></li><li><a href="affiliate.html">Affiliate</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Juridisch</div>
+          <ul><li><a href="privacy.html">Privacybeleid</a></li><li><a href="cookies.html">Cookiebeleid</a></li><li><a href="voorwaarden.html">Voorwaarden</a></li></ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">&copy; 2026 Tweakly &middot; Alexander Ballet, Zolder, Belgi&euml;</p>
+        <p class="footer-aff-note">Bevat <a href="affiliate.html">affiliate-links</a> &middot; Commissies hebben geen invloed op uw prijs</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('main-nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('solid', window.scrollY > 60), { passive: true });
+    document.getElementById('menu-btn').addEventListener('click', () => document.getElementById('nav-links').classList.toggle('open'));
+    const obs = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) { x.target.classList.add('visible'); obs.unobserve(x.target); } }), { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  </script>
+</body>
+</html>

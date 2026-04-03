@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacybeleid — Tweakly</title>
+  <meta name="description" content="Lees hoe Tweakly omgaat met jouw persoonlijke gegevens. AVG/GDPR-compliant privacybeleid.">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="canonical" href="https://tweakly.pages.dev/privacy.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --green: #30D158; --green-dim: #248a3d; --blue: #0A84FF; --orange: #FF9F0A;
+      --bg: #000; --bg-card: #161616;
+      --border: rgba(255,255,255,0.08);
+      --text: #f5f5f7; --text-2: #a1a1a6; --text-3: #6e6e73;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    a { text-decoration: none; transition: color 0.15s; }
+
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 52px; background: rgba(0,0,0,0.7); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-bottom: 0.5px solid rgba(255,255,255,0.07); transition: background 0.3s; }
+    .nav.solid { background: rgba(0,0,0,0.92); }
+    .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 100%; display: flex; align-items: center; justify-content: space-between; }
+    .nav-brand { display: flex; align-items: center; gap: 8px; }
+    .nav-brand img { width: 26px; height: 26px; object-fit: contain; }
+    .nav-brand-name { font-size: 0.95rem; font-weight: 800; color: var(--text); letter-spacing: -0.025em; }
+    .nav-links { display: flex; align-items: center; gap: 2px; list-style: none; }
+    .nav-links a { color: var(--text-2); font-size: 0.8rem; font-weight: 500; padding: 6px 14px; border-radius: 8px; transition: color 0.15s, background 0.15s; }
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.07); }
+    .nav-links .nav-cta { background: var(--green); color: #000 !important; font-weight: 700; border-radius: 980px; }
+    .nav-links .nav-cta:hover { filter: brightness(1.08); }
+    .nav-menu-btn { display: none; background: none; border: none; cursor: pointer; color: var(--text); padding: 8px; border-radius: 8px; }
+    @media (max-width: 768px) {
+      .nav-menu-btn { display: flex; align-items: center; justify-content: center; }
+      .nav-links { display: none; position: fixed; top: 52px; left: 0; right: 0; background: rgba(0,0,0,0.97); backdrop-filter: blur(30px); flex-direction: column; gap: 0; align-items: stretch; padding: 0.5rem 0; border-bottom: 0.5px solid var(--border); }
+      .nav-links.open { display: flex; }
+      .nav-links li { width: 100%; }
+      .nav-links a { display: block; padding: 15px 24px; border-radius: 0; font-size: 0.95rem; color: var(--text) !important; border-bottom: 0.5px solid rgba(255,255,255,0.04); }
+      .nav-links .nav-cta { background: none; border-radius: 0; color: var(--green) !important; }
+    }
+
+    .page-hero { padding: 9rem 24px 5rem; background: var(--bg); border-bottom: 0.5px solid rgba(255,255,255,0.06); }
+    .page-hero-inner { max-width: 860px; margin: 0 auto; }
+    .page-eyebrow { display: inline-block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue); margin-bottom: 1.25rem; }
+    .page-h1 { font-size: clamp(2.4rem, 6vw, 4.5rem); font-weight: 900; letter-spacing: -0.04em; line-height: 1; margin-bottom: 1.25rem; }
+    .page-sub { font-size: 1.1rem; color: var(--text-2); line-height: 1.65; max-width: 600px; }
+    .breadcrumb { font-size: 0.75rem; color: var(--text-3); margin-bottom: 2rem; }
+    .breadcrumb a { color: var(--text-3); }
+    .breadcrumb a:hover { color: var(--text-2); }
+    .breadcrumb span { margin: 0 6px; }
+    .page-meta { display: flex; align-items: center; gap: 8px; margin-top: 1.25rem; font-size: 0.78rem; color: var(--text-3); }
+    .meta-pill { background: rgba(10,132,255,0.1); border: 0.5px solid rgba(10,132,255,0.2); color: var(--blue); padding: 3px 10px; border-radius: 980px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+
+    .page-content { max-width: 860px; margin: 0 auto; padding: 4rem 24px 6rem; }
+    .summary-card { background: rgba(10,132,255,0.06); border: 0.5px solid rgba(10,132,255,0.18); border-radius: 18px; padding: 1.75rem; margin-bottom: 3.5rem; }
+    .summary-card p { font-size: 0.92rem; color: var(--text-2); line-height: 1.7; }
+    .summary-card strong { color: var(--text); }
+    .toc { background: var(--bg-card); border: 0.5px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 1.75rem; margin-bottom: 3.5rem; }
+    .toc-title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-3); margin-bottom: 1rem; }
+    .toc ol { padding-left: 1.25rem; }
+    .toc li { font-size: 0.88rem; color: var(--text-2); margin-bottom: 0.4rem; }
+    .toc a { color: var(--text-2); text-decoration: underline; text-underline-offset: 3px; }
+    .toc a:hover { color: var(--text); }
+
+    .content-section { margin-bottom: 3.5rem; scroll-margin-top: 70px; }
+    .section-label { display: inline-block; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blue); margin-bottom: 1rem; }
+    .section-h2 { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 1rem; line-height: 1.15; }
+    .section-p { font-size: 0.95rem; color: var(--text-2); line-height: 1.75; margin-bottom: 0.85rem; }
+    .section-p strong { color: var(--text); }
+    .section-p a { color: var(--green); text-decoration: underline; text-underline-offset: 2px; }
+    .section-ul { padding-left: 1.5rem; margin-bottom: 0.85rem; }
+    .section-ul li { font-size: 0.95rem; color: var(--text-2); line-height: 1.7; margin-bottom: 0.4rem; }
+    .section-ul li strong { color: var(--text); }
+
+    .table-wrap { border: 0.5px solid rgba(255,255,255,0.08); border-radius: 16px; overflow: hidden; margin: 1.25rem 0; overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; min-width: 440px; }
+    .data-table th { text-align: left; padding: 10px 16px; background: rgba(255,255,255,0.04); color: var(--text-3); font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; border-bottom: 0.5px solid rgba(255,255,255,0.07); }
+    .data-table td { padding: 10px 16px; color: var(--text-2); border-bottom: 0.5px solid rgba(255,255,255,0.04); vertical-align: top; line-height: 1.55; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table strong { color: var(--text); }
+    .data-table a { color: var(--blue); text-decoration: underline; text-underline-offset: 2px; }
+
+    .rights-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 1.25rem 0; }
+    @media (max-width: 560px) { .rights-grid { grid-template-columns: 1fr; } }
+    .right-card { background: var(--bg-card); border: 0.5px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.25rem; }
+    .right-card h4 { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.35rem; }
+    .right-card p { font-size: 0.82rem; color: var(--text-2); margin: 0; line-height: 1.55; }
+
+    .contact-box { background: var(--bg-card); border: 0.5px solid rgba(255,255,255,0.1); border-radius: 18px; padding: 1.75rem; }
+    .contact-box h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.85rem; }
+    .contact-box p { font-size: 0.88rem; color: var(--text-2); margin-bottom: 0.4rem; line-height: 1.6; }
+    .contact-box strong { color: var(--text); }
+    .contact-box a { color: var(--green); }
+
+    .site-footer { background: var(--bg); border-top: 0.5px solid rgba(255,255,255,0.07); padding: 4rem 24px 2rem; }
+    .footer-inner { max-width: 1100px; margin: 0 auto; }
+    .footer-top { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 2.5rem; margin-bottom: 3rem; }
+    @media (max-width: 900px) { .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; } }
+    @media (max-width: 500px) { .footer-top { grid-template-columns: 1fr; } }
+    .footer-logo { display: flex; align-items: center; gap: 8px; margin-bottom: 0.75rem; }
+    .footer-logo img { width: 28px; height: 28px; object-fit: contain; }
+    .footer-logo-name { font-size: 1rem; font-weight: 800; color: var(--text); letter-spacing: -0.025em; }
+    .footer-tagline { font-size: 0.8rem; color: var(--text-3); line-height: 1.55; max-width: 210px; margin-bottom: 1.25rem; }
+    .footer-contact a { display: block; font-size: 0.78rem; color: var(--text-3); margin-bottom: 0.25rem; transition: color 0.15s; }
+    .footer-contact a:hover { color: var(--text-2); }
+    .footer-contact span { display: block; font-size: 0.78rem; color: var(--text-3); }
+    .footer-col-title { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 1rem; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+    .footer-col a { font-size: 0.82rem; color: var(--text-2); transition: color 0.15s; }
+    .footer-col a:hover { color: var(--text); }
+    .footer-bottom { border-top: 0.5px solid rgba(255,255,255,0.06); padding-top: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .footer-copy { font-size: 0.74rem; color: var(--text-3); }
+    .footer-aff-note { font-size: 0.72rem; color: var(--text-3); }
+    .footer-aff-note a { color: var(--text-3); text-decoration: underline; text-underline-offset: 2px; }
+    .footer-aff-note a:hover { color: var(--text-2); }
+
+    .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+
+  <nav class="nav" id="main-nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-brand">
+        <img src="logo.png" alt="Tweakly">
+        <span class="nav-brand-name">Tweakly</span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/#features">Functies</a></li>
+        <li><a href="over-ons.html">Over ons</a></li>
+        <li><a href="affiliate.html">Affiliate</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="/#download" class="nav-cta">Download</a></li>
+      </ul>
+      <button class="nav-menu-btn" id="menu-btn" aria-label="Menu openen">
+        <svg width="18" height="13" viewBox="0 0 18 13" fill="none"><path d="M0 1h18M0 6.5h18M0 12h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <header class="page-hero">
+    <div class="page-hero-inner">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a><span>/</span><span>Privacybeleid</span>
+      </nav>
+      <div class="page-eyebrow">&#128274; AVG / GDPR</div>
+      <h1 class="page-h1">Uw data.<br>Uw rechten.</h1>
+      <p class="page-sub">Transparantie over hoe Tweakly uw persoonlijke gegevens verwerkt, bewaart en beschermt.</p>
+      <div class="page-meta">
+        <span>Laatste update: 22 maart 2026</span>
+        <span class="meta-pill">AVG-compliant</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-content">
+
+    <div class="summary-card reveal">
+      <p><strong>Samenvatting:</strong> Tweakly verzamelt alleen gegevens die nodig zijn om de app te laten werken. We verkopen nooit uw gegevens aan derden. U heeft het recht uw gegevens in te zien, te corrigeren of te verwijderen. Vragen? <a href="mailto:tweakly.help@hotmail.com">tweakly.help@hotmail.com</a></p>
+    </div>
+
+    <div class="toc reveal">
+      <div class="toc-title">Inhoudsopgave</div>
+      <ol>
+        <li><a href="#wie-zijn-wij">Wie zijn wij?</a></li>
+        <li><a href="#gegevens">Welke gegevens verzamelen we?</a></li>
+        <li><a href="#grondslag">Rechtsgrondslag voor verwerking</a></li>
+        <li><a href="#gebruik">Hoe gebruiken we uw gegevens?</a></li>
+        <li><a href="#deling">Gegevensdeling met derden</a></li>
+        <li><a href="#beveiliging">Gegevensbeveiliging</a></li>
+        <li><a href="#bewaring">Bewaartermijnen</a></li>
+        <li><a href="#rechten">Uw rechten</a></li>
+        <li><a href="#cookies">Cookies</a></li>
+        <li><a href="#daisycon">Daisycon en affiliate matching</a></li>
+        <li><a href="#kinderen">Minderjarigen</a></li>
+        <li><a href="#wijzigingen">Wijzigingen</a></li>
+        <li><a href="#contact-privacy">Contact</a></li>
+      </ol>
+    </div>
+
+    <div class="content-section reveal" id="wie-zijn-wij">
+      <span class="section-label">01</span>
+      <h2 class="section-h2">Wie zijn wij?</h2>
+      <p class="section-p">Tweakly is een prijsvergelijkingsapp voor elektronica. Tweakly is een product van <strong>Alexander Ballet</strong>, gevestigd in Zolder, Belgi&euml;.</p>
+      <p class="section-p"><strong>Verwerkingsverantwoordelijke:</strong><br>Alexander Ballet &middot; Zolder, Belgi&euml;<br><a href="mailto:tweakly.help@hotmail.com" style="color:var(--green)">tweakly.help@hotmail.com</a></p>
+    </div>
+
+    <div class="content-section reveal" id="gegevens">
+      <span class="section-label">02</span>
+      <h2 class="section-h2">Welke gegevens verzamelen we?</h2>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Categorie</th><th>Gegevens</th><th>Doel</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Accountgegevens</strong></td><td>E-mailadres, wachtwoord (gehasht), weergavenaam</td><td>Accountbeheer &amp; authenticatie</td></tr>
+            <tr><td><strong>Profielgegevens</strong></td><td>Naam, voorkeursinstellingen, categoriefilters</td><td>Personalisatie</td></tr>
+            <tr><td><strong>Apparaatgegevens</strong></td><td>Apparaattype, OS-versie, push-token</td><td>Push-notificaties</td></tr>
+            <tr><td><strong>Gebruiksgegevens</strong></td><td>Bekeken producten, ingestelde alerts (anoniem)</td><td>App-verbetering</td></tr>
+            <tr><td><strong>Technische gegevens</strong></td><td>IP-adres, sessie-informatie</td><td>Beveiliging &amp; fraude-preventie</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="section-p">Tweakly vraagt <strong>geen</strong> betaalgegevens, BSN-nummers of gevoelige persoonsgegevens.</p>
+    </div>
+
+    <div class="content-section reveal" id="grondslag">
+      <span class="section-label">03</span>
+      <h2 class="section-h2">Rechtsgrondslag voor verwerking.</h2>
+      <p class="section-p">Wij verwerken uw gegevens op basis van de volgende grondslagen (AVG artikel 6):</p>
+      <ul class="section-ul">
+        <li><strong>Uitvoering van een overeenkomst</strong> &mdash; voor het leveren van de dienst na registratie</li>
+        <li><strong>Gerechtvaardigd belang</strong> &mdash; voor analytics en beveiliging</li>
+        <li><strong>Toestemming</strong> &mdash; voor push-notificaties en niet-essentiële cookies</li>
+        <li><strong>Wettelijke verplichting</strong> &mdash; bij verzoeken van bevoegde autoriteiten</li>
+      </ul>
+    </div>
+
+    <div class="content-section reveal" id="gebruik">
+      <span class="section-label">04</span>
+      <h2 class="section-h2">Hoe gebruiken we uw gegevens?</h2>
+      <ul class="section-ul">
+        <li>Het aanmaken en beheren van uw account</li>
+        <li>Het sturen van push-notificaties voor prijsalerts (alleen met uw toestemming)</li>
+        <li>Het personaliseren van uw feed en zoekresultaten</li>
+        <li>Het verbeteren van de app op basis van anoniem gebruiksonderzoek</li>
+        <li>Het voorkomen van fraude en misbruik</li>
+        <li>Communicatie over updates en wijzigingen in de service</li>
+      </ul>
+    </div>
+
+    <div class="content-section reveal" id="deling">
+      <span class="section-label">05</span>
+      <h2 class="section-h2">Gegevensdeling met derden.</h2>
+      <p class="section-p">Wij <strong>verkopen uw persoonsgegevens niet</strong>. We kunnen gegevens delen met:</p>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Partij</th><th>Doel</th><th>Locatie</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Supabase</strong></td><td>Authenticatie, database-opslag</td><td>EU (Frankfurt)</td></tr>
+            <tr><td><strong>Expo / EAS</strong></td><td>App-distributie, push-notificaties</td><td>Internationaal (SCC)</td></tr>
+            <tr><td><strong>Cloudflare Pages</strong></td><td>Hosting van de website</td><td>Internationaal (SCC)</td></tr>
+            <tr><td><strong>Daisycon</strong></td><td>Affiliate-matching en transactierapportage</td><td>EU</td></tr>
+            <tr><td><strong>Wettelijke autoriteiten</strong></td><td>Alleen bij wettelijke verplichting</td><td>NL / EU</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="section-p">Bij doorgifte buiten de EU zorgen we voor passende waarborgen (standaard contractuele clausules).</p>
+    </div>
+
+    <div class="content-section reveal" id="beveiliging">
+      <span class="section-label">06</span>
+      <h2 class="section-h2">Gegevensbeveiliging.</h2>
+      <ul class="section-ul">
+        <li>Wachtwoorden worden versleuteld opgeslagen (bcrypt)</li>
+        <li>Alle verbindingen verlopen via HTTPS/TLS</li>
+        <li>Toegang tot de database is beperkt tot geautoriseerde systemen</li>
+        <li>Row Level Security (RLS) in Supabase zorgt voor datalscheiding per gebruiker</li>
+        <li>Push-tokens worden nooit met derden gedeeld buiten de notificatiedienst</li>
+      </ul>
+    </div>
+
+    <div class="content-section reveal" id="bewaring">
+      <span class="section-label">07</span>
+      <h2 class="section-h2">Bewaartermijnen.</h2>
+      <ul class="section-ul">
+        <li>Accountgegevens: zolang u een account heeft + 30 dagen na verwijdering</li>
+        <li>Gebruiksgegevens (anoniem): maximaal 12 maanden</li>
+        <li>Technische logs: maximaal 90 dagen</li>
+        <li>Affiliate-transactiedata: conform bewaarplicht affiliate-netwerk (doorgaans 13 maanden)</li>
+      </ul>
+    </div>
+
+    <div class="content-section reveal" id="rechten">
+      <span class="section-label">08</span>
+      <h2 class="section-h2">Uw rechten onder de AVG.</h2>
+      <div class="rights-grid">
+        <div class="right-card">
+          <h4>&#128270; Recht op inzage</h4>
+          <p>U kunt een overzicht opvragen van alle persoonsgegevens die wij van u verwerken.</p>
+        </div>
+        <div class="right-card">
+          <h4>&#9999;&#65039; Recht op rectificatie</h4>
+          <p>U kunt onjuiste of onvolledige gegevens laten corrigeren.</p>
+        </div>
+        <div class="right-card">
+          <h4>&#128465;&#65039; Recht op verwijdering</h4>
+          <p>U kunt verzoeken uw gegevens te verwijderen ("recht op vergetelheid").</p>
+        </div>
+        <div class="right-card">
+          <h4>&#128274; Recht op beperking</h4>
+          <p>U kunt de verwerking van uw gegevens tijdelijk laten beperken.</p>
+        </div>
+        <div class="right-card">
+          <h4>&#128462; Recht op dataportabiliteit</h4>
+          <p>U kunt uw gegevens in een machine-leesbaar formaat ontvangen.</p>
+        </div>
+        <div class="right-card">
+          <h4>&#128683; Recht van bezwaar</h4>
+          <p>U kunt bezwaar maken tegen verwerking op basis van gerechtvaardigd belang.</p>
+        </div>
+      </div>
+      <p class="section-p" style="margin-top:1.25rem">Verzoeken kunt u sturen naar <a href="mailto:tweakly.help@hotmail.com" style="color:var(--green)">tweakly.help@hotmail.com</a>. Wij reageren binnen 30 dagen. U heeft ook het recht een klacht in te dienen bij de <a href="https://www.autoriteitpersoonsgegevens.nl" target="_blank" rel="noopener" style="color:var(--green)">Autoriteit Persoonsgegevens</a>.</p>
+    </div>
+
+    <div class="content-section reveal" id="cookies">
+      <span class="section-label">09</span>
+      <h2 class="section-h2">Cookies.</h2>
+      <p class="section-p">Tweakly gebruikt cookies en vergelijkbare technologieën. Lees ons uitgebreide <a href="cookies.html" style="color:var(--green)">Cookiebeleid</a> voor alle details over welke cookies wij gebruiken en hoe u uw voorkeuren kunt beheren.</p>
+    </div>
+
+    <div class="content-section reveal" id="daisycon">
+      <span class="section-label">10</span>
+      <h2 class="section-h2">Daisycon en affiliate matching.</h2>
+      <p class="section-p">Wanneer u via Tweakly op een affiliate-link klikt, kan Daisycon een cookie plaatsen om de klik te koppelen aan een eventuele aankoop. Dit is nodig voor de commissieverwerking. Daisycon verwerkt hiervoor klikdata onder eigen verantwoordelijkheid. Meer informatie: <a href="https://www.daisycon.com/nl/privacyverklaring/" target="_blank" rel="noopener" style="color:var(--green)">privacyverklaring Daisycon</a>.</p>
+    </div>
+
+    <div class="content-section reveal" id="kinderen">
+      <span class="section-label">11</span>
+      <h2 class="section-h2">Minderjarigen.</h2>
+      <p class="section-p">Tweakly is niet bedoeld voor kinderen jonger dan 16 jaar. Wij verzamelen niet bewust gegevens van minderjarigen. Als u vermoedt dat wij gegevens van een minderjarige hebben verzameld, neem dan contact met ons op via <a href="mailto:tweakly.help@hotmail.com" style="color:var(--green)">tweakly.help@hotmail.com</a>.</p>
+    </div>
+
+    <div class="content-section reveal" id="wijzigingen">
+      <span class="section-label">12</span>
+      <h2 class="section-h2">Wijzigingen in dit beleid.</h2>
+      <p class="section-p">Wij kunnen dit privacybeleid van tijd tot tijd bijwerken. Bij wezenlijke wijzigingen informeren wij u via de app of e-mail. De meest recente versie is altijd beschikbaar op <a href="privacy.html" style="color:var(--green)">tweakly.pages.dev/privacy.html</a>.</p>
+    </div>
+
+    <div class="content-section reveal" id="contact-privacy">
+      <span class="section-label">13</span>
+      <h2 class="section-h2">Contact over privacy.</h2>
+      <div class="contact-box">
+        <h3>Functionaris voor Gegevensbescherming</h3>
+        <p><strong>Alexander Ballet</strong> &middot; Zolder, Belgi&euml;</p>
+        <p><a href="mailto:tweakly.help@hotmail.com">tweakly.help@hotmail.com</a></p>
+        <p style="margin-top:0.85rem;font-size:0.82rem;color:var(--text-3)">Voor vragen over uw privacy, het uitoefenen van uw rechten, of het indienen van een privacyverzoek. Wij reageren binnen 30 dagen.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <div class="footer-logo"><img src="logo.png" alt="Tweakly"><span class="footer-logo-name">Tweakly</span></div>
+          <p class="footer-tagline">De slimste manier om elektronica te kopen.</p>
+          <div class="footer-contact">
+            <a href="mailto:tweakly.help@hotmail.com">tweakly.help@hotmail.com</a>
+            <span>Zolder, Belgi&euml;</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Product</div>
+          <ul><li><a href="/#features">Functies</a></li><li><a href="/#download">Download</a></li><li><a href="aanbiedingen.html">Aanbiedingen</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Bedrijf</div>
+          <ul><li><a href="over-ons.html">Over ons</a></li><li><a href="contact.html">Contact</a></li><li><a href="affiliate.html">Affiliate</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Juridisch</div>
+          <ul><li><a href="privacy.html">Privacybeleid</a></li><li><a href="cookies.html">Cookiebeleid</a></li><li><a href="voorwaarden.html">Voorwaarden</a></li></ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">&copy; 2026 Tweakly &middot; Alexander Ballet, Zolder, Belgi&euml;</p>
+        <p class="footer-aff-note">Bevat <a href="affiliate.html">affiliate-links</a> &middot; Commissies hebben geen invloed op uw prijs</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('main-nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('solid', window.scrollY > 60), { passive: true });
+    document.getElementById('menu-btn').addEventListener('click', () => document.getElementById('nav-links').classList.toggle('open'));
+    const obs = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) { x.target.classList.add('visible'); obs.unobserve(x.target); } }), { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  </script>
+</body>
+</html>
