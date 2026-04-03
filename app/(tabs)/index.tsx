@@ -9,6 +9,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Link, useRouter } from 'expo-router';
 import { Dimensions, FlatList, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { ClearLiquidGlass } from '@/components/clear-liquid-glass';
+import { LiquidScreen } from '@/components/liquid-screen';
+import { useReduceMotion } from '@/hooks/use-reduce-motion';
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { PRICE_DISCLAIMER } from '@/constants/mock-data';
@@ -230,21 +234,28 @@ function SectionHeader({
   linkLabel,
   onLink,
   colors,
+  sectionIndex = 0,
+  animationsEnabled = true,
 }: {
   title: string;
   linkLabel?: string;
   onLink?: () => void;
   colors: typeof Colors.light;
+  sectionIndex?: number;
+  animationsEnabled?: boolean;
 }) {
   return (
-    <View style={styles.sectionHeader}>
+    <Animated.View
+      entering={animationsEnabled ? FadeInDown.delay(sectionIndex * 80).springify().damping(20).stiffness(130) : undefined}
+      style={styles.sectionHeader}
+    >
       <Text style={[styles.sectionTitle, { color: colors.text }]}>{title}</Text>
       {linkLabel && onLink && (
         <Pressable onPress={onLink} hitSlop={8}>
           <Text style={[styles.seeAll, { color: colors.tint }]}>{linkLabel}</Text>
         </Pressable>
       )}
-    </View>
+    </Animated.View>
   );
 }
 
@@ -261,6 +272,7 @@ export default function HomeScreen() {
   const searchBarRef = useRef<View>(null);
   const userName = profile?.displayName?.split(' ')[0] || 'Tweakly';
 
+  const { animationsEnabled } = useReduceMotion();
   const [priceDrops, setPriceDrops] = useState<Product[]>([]);
   const [newProducts, setNewProducts] = useState<Product[]>([]);
   const [bestDeal, setBestDeal] = useState<Product | undefined>(undefined);
@@ -272,7 +284,7 @@ export default function HomeScreen() {
   }, []);
 
   return (
-    <View style={[styles.safe, { backgroundColor: colors.background }]}>
+    <LiquidScreen style={styles.safe}>
       {/* ── Header — liquid glass ── */}
       <BlurView
         intensity={isDark ? 72 : 60}
@@ -344,6 +356,12 @@ export default function HomeScreen() {
             Zoek producten, merken...
           </Text>
         </Pressable>
+        {/* Link Scanner pill */}
+        <Pressable onPress={() => router.push('/link-scanner' as any)} style={styles.scannerPill}>
+          <ClearLiquidGlass isDark={isDark} borderRadius={999} style={styles.scannerPillGlass}>
+            <Text style={styles.scannerPillText}>🔗  Plak productlink</Text>
+          </ClearLiquidGlass>
+        </Pressable>
       </BlurView>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
@@ -362,6 +380,8 @@ export default function HomeScreen() {
             linkLabel="Alle"
             onLink={() => router.push('/categorieen?mode=browse' as any)}
             colors={colors}
+            sectionIndex={0}
+            animationsEnabled={animationsEnabled}
           />
           <ScrollView
             horizontal
@@ -451,6 +471,8 @@ export default function HomeScreen() {
               linkLabel="Bekijk alle"
               onLink={() => router.push('/(tabs)/prijzen')}
               colors={colors}
+              sectionIndex={1}
+              animationsEnabled={animationsEnabled}
             />
             <FlatList
               horizontal
@@ -473,6 +495,8 @@ export default function HomeScreen() {
               linkLabel="Bekijk alle"
               onLink={() => router.push('/(tabs)/prijzen')}
               colors={colors}
+              sectionIndex={2}
+              animationsEnabled={animationsEnabled}
             />
             <FlatList
               horizontal
@@ -507,7 +531,7 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
-    </View>
+    </LiquidScreen>
   );
 }
 
@@ -515,6 +539,9 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
+  scannerPill: { marginHorizontal: Spacing.md, marginTop: Spacing.sm, marginBottom: 2 },
+  scannerPillGlass: { paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm, alignItems: 'center', justifyContent: 'center' },
+  scannerPillText: { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.75)', letterSpacing: 0.1 },
   scrollContent: { paddingBottom: Spacing.xxl + Spacing.lg },
 
   header: {
