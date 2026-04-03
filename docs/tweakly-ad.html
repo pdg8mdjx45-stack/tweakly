@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tweakly — Liquid Glass</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif}
+    body{background:#000}
+
+    #bg{position:fixed;inset:0;z-index:0;transition:background 1.4s ease}
+
+    /* ── Scene 3: ripple rings ── */
+    #ripple-bg{
+      position:fixed;inset:0;z-index:0;opacity:0;transition:opacity 0.8s;
+      background:
+        repeating-radial-gradient(circle at 50% 50%,
+          transparent 0,transparent 36px,
+          rgba(175,180,208,0.16) 36px,rgba(175,180,208,0.16) 38px),
+        linear-gradient(135deg,#eceff6 0%,#dde2ef 100%);
+    }
+    #ripple-bg.on{opacity:1}
+
+    /* ── Scene 4: swirl ── */
+    #swirl-bg{position:fixed;inset:0;z-index:0;opacity:0;transition:opacity 0.7s}
+    #swirl-bg canvas{width:100%;height:100%}
+    #swirl-bg.on{opacity:1}
+
+    /* ── Scene 7: liquid fill ── */
+    #liq{
+      position:fixed;inset:0;z-index:0;opacity:0;transition:opacity 0.6s;
+      background:linear-gradient(135deg,#0c5227 0%,#22c55e 55%,#0a4521 100%);
+      overflow:hidden
+    }
+    #liq .bl{position:absolute;border-radius:50%;filter:blur(60px);background:rgba(52,211,104,0.35)}
+    #liq .b1{width:80vw;height:80vw;left:-20vw;top:-15vw}
+    #liq .b2{width:70vw;height:70vw;right:-18vw;bottom:-12vw}
+    /* pinch shapes */
+    #liq .pl{position:absolute;width:58vw;height:130vh;left:-28vw;top:50%;transform:translateY(-50%);
+      background:radial-gradient(ellipse at 72% 50%,#1a9947,#0f5c2e);border-radius:50%;
+      box-shadow:inset -20px 0 60px rgba(255,255,255,0.12)}
+    #liq .pr{position:absolute;width:58vw;height:130vh;right:-28vw;top:50%;transform:translateY(-50%);
+      background:radial-gradient(ellipse at 28% 50%,#1a9947,#0f5c2e);border-radius:50%;
+      box-shadow:inset 20px 0 60px rgba(255,255,255,0.12)}
+    #liq::after{content:'';position:absolute;left:50%;top:0;bottom:0;width:1.5px;
+      background:linear-gradient(to bottom,transparent 0%,rgba(255,255,255,0.55) 30%,rgba(255,255,255,0.55) 70%,transparent 100%);
+      transform:translateX(-50%)}
+    #liq.on{opacity:1}
+
+    /* ── Three.js canvas ── */
+    #c{position:fixed;inset:0;z-index:1;pointer-events:none}
+
+    /* ── Text overlays ── */
+    .ov{
+      position:fixed;inset:0;z-index:10;
+      display:flex;align-items:center;justify-content:center;flex-direction:column;
+      pointer-events:none;opacity:0;transition:opacity 0.75s ease
+    }
+    .ov.on{opacity:1}
+
+    /* Scene 6: SLIM */
+    .w-gray{
+      font-size:clamp(100px,16vw,220px);font-weight:900;
+      letter-spacing:-0.06em;color:rgba(48,58,70,0.40)
+    }
+    /* Scene 7: WINKELEN */
+    .w-lgt{
+      font-size:clamp(55px,9vw,130px);font-weight:900;
+      letter-spacing:-0.04em;color:rgba(255,255,255,0.18)
+    }
+    /* Scene 8: tagline */
+    .w-tag{
+      font-size:clamp(22px,3.8vw,60px);font-weight:700;
+      letter-spacing:-0.025em;color:rgba(16,24,36,0.88)
+    }
+    /* Scene 9: logo */
+    .w-logo{
+      font-size:clamp(72px,12vw,170px);font-weight:900;
+      letter-spacing:-0.055em;color:#fff;line-height:1
+    }
+    .w-logo .g{color:#22c55e}
+    .w-sub{
+      font-size:clamp(12px,1.7vw,21px);font-weight:500;
+      letter-spacing:0.24em;text-transform:uppercase;
+      color:rgba(255,255,255,0.42);margin-top:14px
+    }
+    /* Logo reveal anim */
+    #ov-logo.on .w-logo{animation:logoUp 1.4s cubic-bezier(0.16,1,0.3,1) both}
+    #ov-logo.on .w-sub {animation:logoUp 1.2s cubic-bezier(0.16,1,0.3,1) 0.45s both}
+    @keyframes logoUp{
+      from{opacity:0;transform:scale(0.93) translateY(22px)}
+      to  {opacity:1;transform:scale(1)    translateY(0)}
+    }
+
+    #rp{
+      position:fixed;bottom:20px;right:20px;z-index:100;
+      background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.17);
+      color:#fff;font-family:inherit;font-size:13px;font-weight:700;
+      padding:8px 22px;border-radius:100px;cursor:pointer;
+      backdrop-filter:blur(10px);transition:all 0.18s
+    }
+    #rp:hover{background:rgba(255,255,255,0.20)}
+  </style>
+</head>
+<body>
+
+<div id="bg"></div>
+<div id="ripple-bg"></div>
+<div id="swirl-bg"><canvas id="swirl-c"></canvas></div>
+<div id="liq"><div class="bl b1"></div><div class="bl b2"></div><div class="pl"></div><div class="pr"></div></div>
+<canvas id="c"></canvas>
+
+<div id="ov-slim"  class="ov"><div class="w-gray">SLIM</div></div>
+<div id="ov-win"   class="ov"><div class="w-lgt">WINKELEN</div></div>
+<div id="ov-tag"   class="ov"><div class="w-tag">Slimmer winkelen,</div></div>
+<div id="ov-logo"  class="ov">
+  <div class="w-logo">TWEAK<span class="g">LY</span></div>
+  <div class="w-sub">Slimmer winkelen</div>
+</div>
+
+<button id="rp">↺ Replay</button>
+
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { RoomEnvironment }    from 'three/addons/environments/RoomEnvironment.js';
+
+// ─── RENDERER ─────────────────────────────────────────────────
+const canvas = document.getElementById('c');
+const W = () => window.innerWidth, H = () => window.innerHeight;
+const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(W(), H());
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+// ─── SCENE & CAMERA ───────────────────────────────────────────
+const scene = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(42, W() / H(), 0.1, 100);
+cam.position.set(0, 1.5, 10);
+
+// ─── ENVIRONMENT ──────────────────────────────────────────────
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+pmrem.dispose();
+
+// ─── LIGHTS ───────────────────────────────────────────────────
+const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambient);
+
+const key = new THREE.DirectionalLight(0xffffff, 5.0);
+key.position.set(3, 10, 5); key.castShadow = true;
+scene.add(key);
+
+const rim = new THREE.DirectionalLight(0x34d368, 1.5);
+rim.position.set(-5, 3, -3);
+scene.add(rim);
+
+const fill = new THREE.DirectionalLight(0xffffff, 2.5);
+fill.position.set(-4, 6, 10);
+scene.add(fill);
+
+// Extra back-light for sphere silhouette rim
+const back = new THREE.DirectionalLight(0xffffff, 1.2);
+back.position.set(0, -3, -8);
+scene.add(back);
+
+// ─── MATH ─────────────────────────────────────────────────────
+const lerp    = (a, b, t) => a + (b - a) * t;
+const clamp   = (v, a, b) => Math.max(a, Math.min(b, v));
+const smooth  = t => { t = clamp(t,0,1); return t*t*(3-2*t); };
+const easeOut = t => 1 - Math.pow(1 - clamp(t,0,1), 3);
+const easeIn  = t => Math.pow(clamp(t,0,1), 3);
+
+// ─── TEXT TEXTURE ─────────────────────────────────────────────
+function textTex(text, col = 'rgba(255,255,255,0.93)', res = 1) {
+  const w = 512 * res, h = 128 * res;
+  const cv = document.createElement('canvas');
+  cv.width = w; cv.height = h;
+  const cx = cv.getContext('2d');
+  cx.clearRect(0, 0, w, h);
+  cx.font = `700 ${50 * res}px Inter, -apple-system, sans-serif`;
+  cx.fillStyle = col;
+  cx.textAlign = 'center'; cx.textBaseline = 'middle';
+  cx.fillText(text, w / 2, h / 2);
+  return new THREE.CanvasTexture(cv);
+}
+
+// ─── MATERIALS ────────────────────────────────────────────────
+function darkGlass() {
+  return new THREE.MeshPhysicalMaterial({
+    color: 0x060810, roughness: 0.05, metalness: 0.08,
+    transmission: 0.10, thickness: 0.6, ior: 1.46,
+    clearcoat: 1.0, clearcoatRoughness: 0.0,
+    envMapIntensity: 3.5, transparent: true, opacity: 0.92,
+  });
+}
+
+function lightGlass() {
+  return new THREE.MeshPhysicalMaterial({
+    color: 0xf2f4ff, roughness: 0.0, metalness: 0.0,
+    transmission: 0.88, thickness: 1.5, ior: 1.50,
+    clearcoat: 1.0, clearcoatRoughness: 0.0,
+    envMapIntensity: 2.5, transparent: true, opacity: 0.97,
+  });
+}
+
+// ─── PILL BUILDER ─────────────────────────────────────────────
+function makePill(text, mat, textCol, textRes = 1) {
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(
+    new RoundedBoxGeometry(3.6, 1.0, 0.52, 8, 0.5),
+    mat || darkGlass()
+  );
+  body.castShadow = true;
+  g.add(body);
+  if (text) {
+    g.add(new THREE.Mesh(
+      new THREE.PlaneGeometry(3.2, 0.86),
+      new THREE.MeshBasicMaterial({
+        map: textTex(text, textCol || 'rgba(255,255,255,0.93)', textRes),
+        transparent: true, depthWrite: false, opacity: 0.96,
+      })
+    ));
+    g.children[1].position.z = 0.27;
+  }
+  return g;
+}
+
+function resetPillOpacity(group, val = 0) {
+  group.children.forEach(c => { if (c.material) c.material.opacity = val; });
+}
+
+// ─── OBJECTS ──────────────────────────────────────────────────
+
+// Gem — faceted green crystal
+const gem = new THREE.Mesh(
+  new THREE.IcosahedronGeometry(0.38, 0),
+  new THREE.MeshPhysicalMaterial({
+    color: 0x22c55e, roughness: 0.0, metalness: 0.0,
+    transmission: 0.65, thickness: 0.9, ior: 1.72,
+    clearcoat: 1.0, clearcoatRoughness: 0.0,
+    envMapIntensity: 4.5, transparent: true, opacity: 0.93,
+    emissive: 0x0d3a1a, emissiveIntensity: 0.35,
+  })
+);
+scene.add(gem);
+
+// Scene 1: single pill
+const pill0 = makePill('Vergelijk');
+pill0.visible = false;
+scene.add(pill0);
+
+// Scene 2: stacked pills in 3D perspective
+const PILL_DATA = [
+  { label: 'Prijzen',      pos: [-1.9, 1.7, -2.4], rx: 0.15, ry: -0.08 },
+  { label: 'Reviews',      pos: [ 0.9, 0.9, -1.3], rx: 0.10, ry: -0.04 },
+  { label: 'Nieuws',       pos: [ 3.4, 1.4, -1.9], rx: 0.12, ry: -0.08 },
+  { label: 'Zoeken',       pos: [-2.4, 0.1, -1.0], rx: 0.08, ry: -0.04 },
+  { label: 'Alerts',       pos: [ 2.7, 0.1, -0.6], rx: 0.06, ry: -0.03 },
+  { label: 'Aanbiedingen', pos: [-0.2,-1.0,  0.4], rx: 0.04, ry: -0.02 },
+  { label: 'Gratis',       pos: [ 1.6,-1.9,  1.5], rx: 0.02, ry: -0.01 },
+];
+const pills = PILL_DATA.map(d => {
+  const p = makePill(d.label);
+  p.position.set(...d.pos);
+  p.rotation.x = d.rx; p.rotation.y = d.ry;
+  p.visible = false;
+  scene.add(p);
+  return p;
+});
+
+// Scene 3: large light-glass close-up pill (textRes=4 for crisp text at 2.9× scale)
+const bigPill = makePill('Klaar?', lightGlass(), 'rgba(14,20,36,0.88)', 4);
+bigPill.scale.setScalar(2.9);
+// Green glass button on left side (like the ▶ in the template)
+const btnSph = new THREE.Mesh(
+  new THREE.SphereGeometry(0.26, 32, 32),
+  new THREE.MeshPhysicalMaterial({
+    color: 0x22c55e, roughness: 0.03, metalness: 0.0,
+    clearcoat: 1.0, clearcoatRoughness: 0.0,
+    envMapIntensity: 3.5, emissive: 0x0d3a1a, emissiveIntensity: 0.4,
+  })
+);
+btnSph.position.set(-1.6, 0, 0.28);
+bigPill.add(btnSph);
+bigPill.visible = false;
+scene.add(bigPill);
+
+// Scene 4: small glass marble
+const marble = new THREE.Mesh(
+  new THREE.SphereGeometry(0.46, 32, 32),
+  new THREE.MeshPhysicalMaterial({
+    color: 0xddeeff, roughness: 0.0, metalness: 0.0,
+    transmission: 0.88, thickness: 0.9, ior: 1.52,
+    clearcoat: 1.0, clearcoatRoughness: 0.0, envMapIntensity: 3.0,
+  })
+);
+marble.visible = false;
+scene.add(marble);
+
+// Scene 5: fan of glass petals
+const fan = new THREE.Group();
+fan.visible = false;
+scene.add(fan);
+const PETAL_COUNT = 14;
+for (let i = 0; i < PETAL_COUNT; i++) {
+  const sh = new THREE.Shape();
+  sh.moveTo(0, 0);
+  sh.bezierCurveTo(-0.23, 0.32, -0.19, 1.05, 0, 1.5);
+  sh.bezierCurveTo( 0.19, 1.05,  0.23, 0.32, 0, 0);
+  const hue = 0.40 - (i / PETAL_COUNT) * 0.12; // green → teal
+  const petal = new THREE.Mesh(
+    new THREE.ShapeGeometry(sh, 12),
+    new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color().setHSL(hue, 0.88, 0.50),
+      roughness: 0.04, metalness: 0.0,
+      transmission: 0.55, thickness: 0.3, ior: 1.42,
+      clearcoat: 1.0, clearcoatRoughness: 0.02,
+      transparent: true, opacity: 0.88,
+      side: THREE.DoubleSide, envMapIntensity: 2.0,
+    })
+  );
+  const angle = (i / PETAL_COUNT) * Math.PI;
+  petal.rotation.z = angle - Math.PI / 2;
+  fan.add(petal);
+}
+fan.scale.setScalar(2.4);
+fan.position.set(-1.8, 0, 0);
+
+// Scene 6: green candy-glass spheres (opaque, shiny — like the template's spheres)
+const sphereGrp = new THREE.Group();
+sphereGrp.visible = false;
+scene.add(sphereGrp);
+[
+  { r: 2.5, pos: [-2.3, -1.9, 0],    hue: 0.38 },
+  { r: 1.5, pos: [ 1.5, -0.5, 0.8],  hue: 0.36 },
+  { r: 0.9, pos: [ 3.1,  1.2, -0.4], hue: 0.37 },
+].forEach(({ r, pos, hue }) => {
+  const s = new THREE.Mesh(
+    new THREE.SphereGeometry(r, 48, 48),
+    new THREE.MeshPhysicalMaterial({
+      // Light mint-green: opaque candy/liquid-glass look (no transmission)
+      color: new THREE.Color().setHSL(hue, 0.72, 0.70),
+      roughness: 0.02, metalness: 0.0,
+      clearcoat: 1.0, clearcoatRoughness: 0.0,
+      envMapIntensity: 2.5,
+    })
+  );
+  s.position.set(...pos);
+  sphereGrp.add(s);
+});
+
+// Scene 7: glass sphere (replaces "O" in WINKELEN)
+const midSph = new THREE.Mesh(
+  new THREE.SphereGeometry(0.95, 32, 32),
+  new THREE.MeshPhysicalMaterial({
+    color: 0xffffff, roughness: 0.0, metalness: 0.0,
+    transmission: 0.88, thickness: 1.9, ior: 1.50,
+    clearcoat: 1.0, clearcoatRoughness: 0.0, envMapIntensity: 3.5,
+  })
+);
+midSph.visible = false;
+scene.add(midSph);
+
+// Scene 8: glass torus (rolling ring)
+const torus = new THREE.Mesh(
+  new THREE.TorusGeometry(1.05, 0.24, 18, 72),
+  new THREE.MeshPhysicalMaterial({
+    color: 0xdde0ee, roughness: 0.0, metalness: 0.0,
+    transmission: 0.78, thickness: 0.45, ior: 1.50,
+    clearcoat: 1.0, clearcoatRoughness: 0.0, envMapIntensity: 4.0,
+  })
+);
+torus.scale.setScalar(1.7);
+torus.visible = false;
+scene.add(torus);
+
+// ─── DOM ──────────────────────────────────────────────────────
+const bg = document.getElementById('bg');
+const rippleBg  = document.getElementById('ripple-bg');
+const swirlBg   = document.getElementById('swirl-bg');
+const liqDiv    = document.getElementById('liq');
+const ovSlim    = document.getElementById('ov-slim');
+const ovWin     = document.getElementById('ov-win');
+const ovTag     = document.getElementById('ov-tag');
+const ovLogo    = document.getElementById('ov-logo');
+
+// Swirl canvas
+const swirlC   = document.getElementById('swirl-c');
+const swirlCtx = swirlC.getContext('2d');
+function resizeSwirl() { swirlC.width = W(); swirlC.height = H(); }
+resizeSwirl();
+function drawSwirl(t) {
+  const w = swirlC.width, h = swirlC.height;
+  swirlCtx.fillStyle = '#14192a';
+  swirlCtx.fillRect(0, 0, w, h);
+  const cx = w * 0.5, cy = h * 0.5;
+  for (let r = 18; r < Math.max(w, h) * 0.85; r += 40) {
+    swirlCtx.beginPath();
+    swirlCtx.arc(cx, cy, r + Math.sin(t * 1.8 + r * 0.04) * 10, 0, Math.PI * 2);
+    const alpha = 0.13 - (r / (Math.max(w,h) * 1.2)) * 0.10;
+    swirlCtx.strokeStyle = `rgba(155,165,190,${Math.max(0,alpha)})`;
+    swirlCtx.lineWidth = 2;
+    swirlCtx.stroke();
+  }
+  // Diagonal light beam
+  const g = swirlCtx.createLinearGradient(w*0.25, 0, w*0.75, h);
+  g.addColorStop(0,    'rgba(255,255,255,0)');
+  g.addColorStop(0.44, 'rgba(255,255,255,0)');
+  g.addColorStop(0.50, 'rgba(255,255,255,0.20)');
+  g.addColorStop(0.56, 'rgba(255,255,255,0)');
+  g.addColorStop(1,    'rgba(255,255,255,0)');
+  swirlCtx.fillStyle = g;
+  swirlCtx.fillRect(0, 0, w, h);
+}
+
+// ─── SCENE HELPERS ────────────────────────────────────────────
+const ALL_BG = [rippleBg, swirlBg, liqDiv];
+const ALL_OV = [ovSlim, ovWin, ovTag, ovLogo];
+const ALL_3D = [pill0, ...pills, bigPill, marble, fan, sphereGrp, midSph, torus];
+
+function clearAll() {
+  ALL_BG.forEach(e => e.classList.remove('on'));
+  ALL_OV.forEach(e => e.classList.remove('on'));
+  ALL_3D.forEach(o => o.visible = false);
+  gem.visible = false;
+  scene.background = null; // restore transparent canvas for CSS bg visibility
+}
+
+function setBg(v) { bg.style.background = v; }
+
+// ─── SCENE INITS ──────────────────────────────────────────────
+function initS1() {
+  clearAll();
+  setBg('radial-gradient(ellipse at 58% 42%, #2b3648 0%, #17202e 100%)');
+  resetPillOpacity(pill0, 0);
+  pill0.visible = true;
+  pill0.position.set(0, 0, 0);
+  gem.visible = true;
+  gem.position.set(0, 5.5, 0.1);
+  gem.scale.setScalar(1);
+  cam.position.set(0, 1.5, 9); cam.lookAt(0, 0, 0);
+  key.intensity = 5.0; fill.intensity = 2.0; ambient.intensity = 0.5;
+}
+
+function initS2() {
+  clearAll();
+  setBg('radial-gradient(ellipse at 38% 52%, #212e42 0%, #121926 100%)');
+  pills.forEach((p, i) => {
+    p.visible = true;
+    p.position.set(PILL_DATA[i].pos[0]-2, PILL_DATA[i].pos[1]-0.8, PILL_DATA[i].pos[2]);
+    resetPillOpacity(p, 0);
+  });
+  gem.visible = true;
+  gem.position.set(0, 1.2, 0.3);
+  key.intensity = 4.5; fill.intensity = 1.5; ambient.intensity = 0.5;
+}
+
+function initS3() {
+  clearAll();
+  rippleBg.classList.add('on');
+  setBg('transparent');
+  bigPill.visible = true;
+  bigPill.position.set(0.5, 0, 0);
+  bigPill.rotation.set(0.12, -0.28, 0);
+  gem.visible = true;
+  gem.position.set(3.5, -1.2, 0.5);
+  cam.position.set(-1.5, 1.5, 7); cam.lookAt(0, 0, 0);
+  key.intensity = 5.5; fill.intensity = 3.5; ambient.intensity = 1.3;
+}
+
+function initS4() {
+  clearAll();
+  swirlBg.classList.add('on');
+  setBg('transparent');
+  marble.visible = true;
+  marble.position.set(5, 2, 0);
+  marble.scale.setScalar(0.2);
+  cam.position.set(0, 0, 7); cam.lookAt(0, 0, 0);
+  key.intensity = 3.0; fill.intensity = 1.0; ambient.intensity = 0.4;
+}
+
+function initS5() {
+  clearAll();
+  setBg('linear-gradient(180deg,#ffffff 0%,#f2fff8 100%)');
+  fan.visible = true;
+  fan.children.forEach(p => { p.rotation.z = -Math.PI / 2; p.scale.setScalar(0); });
+  fan.rotation.z = 0;
+  cam.position.set(0, 0, 7); cam.lookAt(0, 0, 0);
+  key.intensity = 4.5; fill.intensity = 2.5; ambient.intensity = 1.2;
+}
+
+function initS6() {
+  clearAll();
+  setBg('linear-gradient(180deg,#edf2f8 0%,#dce5ee 100%)');
+  ovSlim.classList.add('on');
+  sphereGrp.visible = true;
+  sphereGrp.children.forEach((s, i) => {
+    const pp = [[-2.3,-1.9,0],[1.5,-0.5,0.8],[3.1,1.2,-0.4]];
+    s.position.set(pp[i][0]-9, pp[i][1], pp[i][2]);
+  });
+  cam.position.set(0, 0.5, 9); cam.lookAt(0, 0, 0);
+  // Strong key light for specular highlight on candy-glass spheres
+  key.intensity = 6.0; fill.intensity = 2.0; ambient.intensity = 0.6;
+}
+
+function initS7() {
+  clearAll();
+  // Set THREE background green so midSph transmission refracts green = looks like glass on green
+  scene.background = new THREE.Color(0x1e8c45);
+  liqDiv.classList.add('on');
+  ovWin.classList.add('on');
+  midSph.visible = true;
+  midSph.position.set(0, 0, 2);
+  cam.position.set(0, 0, 7); cam.lookAt(0, 0, 0);
+  key.intensity = 4.0; ambient.intensity = 0.7;
+}
+
+function initS8() {
+  clearAll();
+  setBg('linear-gradient(180deg,#f7f9fd 0%,#e4eaf2 100%)');
+  ovTag.classList.add('on');
+  torus.visible = true;
+  torus.position.set(10, 0, 0);
+  torus.rotation.x = Math.PI / 2;
+  cam.position.set(0, 0, 6); cam.lookAt(0, 0, 0);
+  key.intensity = 3.0; fill.intensity = 2.0; ambient.intensity = 1.0;
+}
+
+function initS9() {
+  clearAll();
+  setBg('#000000');
+  ovLogo.classList.add('on');
+  cam.position.set(0, 0, 5); cam.lookAt(0, 0, 0);
+}
+
+// ─── ANIMATION ────────────────────────────────────────────────
+const TOTAL = 21;
+const SCENES = [
+  { st:  0.0, en:  2.5, init: initS1 },
+  { st:  2.5, en:  6.5, init: initS2 },
+  { st:  6.5, en:  9.0, init: initS3 },
+  { st:  9.0, en: 10.8, init: initS4 },
+  { st: 10.8, en: 13.0, init: initS5 },
+  { st: 13.0, en: 15.5, init: initS6 },
+  { st: 15.5, en: 17.5, init: initS7 },
+  { st: 17.5, en: 19.5, init: initS8 },
+  { st: 19.5, en: 21.0, init: initS9 },
+];
+
+let t0 = performance.now(), lastSc = -1;
+
+function tick() {
+  requestAnimationFrame(tick);
+  const t  = ((performance.now() - t0) / 1000) % TOTAL;
+  let sc = 0;
+  for (let i = 0; i < SCENES.length; i++) {
+    if (t >= SCENES[i].st && t < SCENES[i].en) { sc = i; break; }
+    if (i === SCENES.length - 1) sc = i;
+  }
+  if (sc !== lastSc) { lastSc = sc; SCENES[sc].init(); }
+
+  const p = (t - SCENES[sc].st) / (SCENES[sc].en - SCENES[sc].st);
+
+  // ── S1: Gem falls onto pill ────────────────────
+  if (sc === 0) {
+    if (p < 0.36) gem.position.y = lerp(5.5, 1.3, easeIn(p / 0.36));
+    else if (p < 0.52) gem.position.y = lerp(1.3, 1.75, Math.sin((p-.36)/.16*Math.PI));
+    else gem.position.y = lerp(1.75, 1.2, smooth((p-.52)/.48));
+    gem.rotation.y += 0.028; gem.rotation.x += 0.012;
+    const op = smooth(p / 0.48);
+    pill0.children.forEach(c => {
+      if (!c.material) return;
+      c.material.opacity = c.material.isMeshBasicMaterial ? op * 0.96 : op * 0.92;
+    });
+  }
+
+  // ── S2: Stacked pills stagger in ──────────────
+  if (sc === 1) {
+    PILL_DATA.forEach((d, i) => {
+      const pt = smooth(clamp((p - i*0.09) / 0.48, 0, 1));
+      pills[i].position.set(lerp(d.pos[0]-2,d.pos[0],pt), lerp(d.pos[1]-.8,d.pos[1],pt), d.pos[2]);
+      pills[i].children.forEach(c => {
+        if (!c.material) return;
+        c.material.opacity = c.material.isMeshBasicMaterial ? pt*.96 : pt*.92;
+      });
+    });
+    cam.position.x = lerp( 0, -1.8, smooth(p));
+    cam.position.y = lerp(1.5,  2.8, smooth(p));
+    cam.position.z = lerp( 9,   13,  smooth(p));
+    cam.lookAt(0.4, 0.2, -0.5);
+    const gp = smooth(clamp(p * 2.4, 0, 1));
+    gem.position.set(
+      lerp(0,  PILL_DATA[0].pos[0],       gp),
+      lerp(1.2, PILL_DATA[0].pos[1]+0.88, gp),
+      PILL_DATA[0].pos[2] + 0.3
+    );
+    gem.rotation.y += 0.015; gem.rotation.x += 0.005;
+  }
+
+  // ── S3: Close-up white pill, gem floats ───────
+  if (sc === 2) {
+    cam.position.set(lerp(-1.5,.3,smooth(p)), lerp(1.5,.2,smooth(p)), lerp(7,5.2,smooth(p)));
+    cam.lookAt(0, 0, 0);
+    bigPill.rotation.x = lerp( 0.12, -0.06, smooth(p));
+    bigPill.rotation.y = lerp(-0.28,  0.10, smooth(p));
+    gem.rotation.y += 0.03; gem.rotation.x += 0.012;
+    gem.position.set(3.5, -1.2 + Math.sin(p*Math.PI*2)*0.3, 0.5);
+  }
+
+  // ── S4: Marble floats on swirl bg ─────────────
+  if (sc === 3) {
+    drawSwirl(t);
+    marble.position.set(lerp(5,2.3,easeOut(p)), 1+Math.sin(p*Math.PI*2)*.3, 0);
+    marble.scale.setScalar(lerp(0.2, 1.0, easeOut(p*2)));
+    marble.rotation.y += 0.018;
+  }
+
+  // ── S5: Fan petals open ───────────────────────
+  if (sc === 4) {
+    fan.children.forEach((petal, i) => {
+      const delay = (i / PETAL_COUNT) * 0.55;
+      const pt = smooth(clamp((p - delay) / 0.55, 0, 1));
+      const angle = (i / PETAL_COUNT) * Math.PI;
+      petal.rotation.z = lerp(-Math.PI/2, angle - Math.PI/2, pt);
+      petal.scale.setScalar(pt);
+    });
+    fan.rotation.z += 0.004;
+  }
+
+  // ── S6: Spheres roll in behind SLIM ───────────
+  if (sc === 5) {
+    const tgts = [[-2.3,-1.9,0],[1.5,-0.5,.8],[3.1,1.2,-.4]];
+    sphereGrp.children.forEach((s, i) => {
+      const pt = easeOut(clamp((p - i*.18)/.65, 0, 1));
+      s.position.set(lerp(tgts[i][0]-9, tgts[i][0], pt), tgts[i][1], tgts[i][2]);
+      s.rotation.y += 0.008 * (i + 1);
+    });
+  }
+
+  // ── S7: Liquid fill, sphere pulses ────────────
+  if (sc === 6) {
+    midSph.position.set(Math.sin(p*Math.PI*1.5)*.4, Math.cos(p*Math.PI)*.3, 2);
+    midSph.rotation.y += 0.025;
+  }
+
+  // ── S8: Glass torus rolls in ──────────────────
+  if (sc === 7) {
+    torus.position.x = lerp(10, 2.6, easeOut(p));
+    torus.rotation.y += 0.044;
+    torus.rotation.z  = p * Math.PI * 1.5;
+  }
+
+  // ── S9: Logo hold (CSS animation handles reveal) ──
+  renderer.render(scene, cam);
+}
+
+// ─── RESIZE ───────────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  cam.aspect = W() / H(); cam.updateProjectionMatrix();
+  renderer.setSize(W(), H()); resizeSwirl();
+});
+
+document.getElementById('rp').addEventListener('click', () => { lastSc = -1; t0 = performance.now(); });
+
+initS1();
+gem.position.set(0, 5.5, 0.1);
+tick();
+</script>
+</body>
+</html>

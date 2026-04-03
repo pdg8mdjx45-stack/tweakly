@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<!--
+  NATURE SCENE — Integration Guide
+  =================================
+  Option A (standalone section):
+    1. Copy everything inside <div id="nature-scene"> into your page
+    2. Copy the <style> block into your CSS
+    3. Copy the <script> block before </body>
+
+  Option B (full-page hero):
+    Set #nature-scene { height: 100vh; } — already the default.
+
+  Customise:  edit CSS custom properties inside :root { } below.
+  Height:     change --scene-height (default 100vh).
+  Cycle speed: change --cycle-ms   (default 60000 = 60 s).
+-->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nature Scene</title>
+<style>
+/* ============================================================
+   ROOT TOKENS
+   ============================================================ */
+:root {
+  --scene-height : 100vh;
+  --cycle-ms     : 60000;
+
+  /* day palette */
+  --sky-day-a    : #1a5fa8;
+  --sky-day-b    : #7ec8e3;
+  /* dawn palette */
+  --sky-dawn-a   : #c0392b;
+  --sky-dawn-b   : #f39c12;
+  /* dusk palette */
+  --sky-dusk-a   : #922b21;
+  --sky-dusk-b   : #a569bd;
+  /* night palette */
+  --sky-night-a  : #030d1a;
+  --sky-night-b  : #0f1f3d;
+
+  --green-dark   : #1e3d0e;
+  --green-mid    : #2d5c1a;
+  --green-light  : #4a8c2e;
+  --green-pale   : #6aad3e;
+  --earth        : #3b2206;
+}
+
+/* ============================================================
+   RESET / BASE
+   ============================================================ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+body { background:#020d18; overflow-x:hidden; }
+
+/* ============================================================
+   SCENE WRAPPER
+   ============================================================ */
+#nature-scene {
+  position    : relative;
+  width       : 100%;
+  height      : var(--scene-height);
+  min-height  : 480px;
+  overflow    : hidden;
+  font-family : sans-serif;
+  cursor      : none;
+  isolation   : isolate;
+}
+
+/* ============================================================
+   SKY  (JS sets background via inline style each frame)
+   ============================================================ */
+#sky {
+  position         : absolute;
+  inset            : 0;
+  z-index          : 0;
+  will-change      : background;
+  transition       : background 2s linear;
+}
+
+/* ============================================================
+   STARS
+   ============================================================ */
+#stars {
+  position : absolute;
+  inset    : 0;
+  z-index  : 1;
+  pointer-events : none;
+}
+.star {
+  position      : absolute;
+  border-radius : 50%;
+  background    : #fff;
+  animation     : twinkle var(--td,2s) ease-in-out infinite var(--dl,0s);
+}
+@keyframes twinkle {
+  0%,100% { opacity:.15; transform:scale(1); }
+  50%     { opacity:1;   transform:scale(1.6); }
+}
+
+/* ============================================================
+   SUN / MOON  (position driven by JS)
+   ============================================================ */
+.celestial {
+  position      : absolute;
+  border-radius : 50%;
+  will-change   : transform, opacity;
+  pointer-events: none;
+  z-index       : 3;
+  transition    : opacity 1.5s ease;
+}
+#sun {
+  width  : 72px;
+  height : 72px;
+  background : radial-gradient(circle at 38% 38%, #fff9e6, #ffd000 45%, #ff9200);
+  box-shadow : 0 0 30px 12px rgba(255,200,0,.55),
+               0 0 70px 28px rgba(255,140,0,.28);
+}
+#moon {
+  width  : 58px;
+  height : 58px;
+  background : radial-gradient(circle at 38% 38%, #f8f8ff, #d8d8f0 55%, #b8b8cc);
+  box-shadow : 0 0 18px 6px rgba(200,200,255,.4),
+               0 0 40px 14px rgba(160,160,220,.18);
+  opacity : 0;
+}
+
+/* ============================================================
+   GOD RAYS
+   ============================================================ */
+#god-rays {
+  position       : absolute;
+  inset          : 0;
+  z-index        : 2;
+  pointer-events : none;
+  overflow       : hidden;
+}
+.ray {
+  position         : absolute;
+  top              : 0;
+  transform-origin : top center;
+  background       : linear-gradient(to bottom, rgba(255,230,120,.7) 0%, transparent 70%);
+  border-radius    : 0 0 100% 100%;
+  animation        : ray-pulse var(--rd,7s) ease-in-out infinite var(--rl,0s);
+  will-change      : opacity, transform;
+}
+@keyframes ray-pulse {
+  0%,100% { opacity:.18; transform:rotate(var(--ra,0deg)) scaleX(1); }
+  50%     { opacity:.55; transform:rotate(var(--ra,0deg)) scaleX(1.4); }
+}
+
+/* ============================================================
+   CLOUDS
+   ============================================================ */
+#clouds { position:absolute; inset:0; z-index:4; pointer-events:none; }
+.cloud {
+  position   : absolute;
+  will-change: transform;
+  animation  : cloud-drift var(--cd,70s) linear infinite var(--co,-30s);
+  filter     : drop-shadow(0 6px 10px rgba(0,0,0,.12));
+}
+@keyframes cloud-drift {
+  from { transform:translateX(-420px) translateY(var(--cy,0px)); }
+  to   { transform:translateX(calc(100vw + 420px)) translateY(var(--cy,0px)); }
+}
+
+/* ============================================================
+   MOUNTAIN / HILL LAYERS  (SVG inline, no animation — parallax via JS)
+   ============================================================ */
+.mtn { position:absolute; left:0; width:100%; pointer-events:none; will-change:transform; }
+#mtn-far   { bottom:42%; z-index:5; }
+#mtn-mid   { bottom:32%; z-index:7; }
+#mtn-near  { bottom:22%; z-index:9; }
+#hill-fore { bottom:0;   z-index:11; }
+
+/* ============================================================
+   MIST
+   ============================================================ */
+.mist {
+  position  : absolute;
+  left      : -10%;
+  width     : 120%;
+  pointer-events: none;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,255,255,.35) 25%,
+    rgba(255,255,255,.55) 50%,
+    rgba(255,255,255,.35) 75%,
+    transparent 100%);
+  filter  : blur(14px);
+  animation: mist-drift var(--md,22s) ease-in-out infinite alternate;
+  z-index : 8;
+}
+@keyframes mist-drift {
+  from { transform:translateX(0) scaleX(1); opacity:.3; }
+  to   { transform:translateX(6%) scaleX(1.06); opacity:.65; }
+}
+
+/* ============================================================
+   WATER  (canvas + ripples)
+   ============================================================ */
+#water-wrap {
+  position      : absolute;
+  z-index       : 10;
+  will-change   : transform;
+  pointer-events: none;
+}
+#water-canvas { display:block; border-radius: 50% / 30%; }
+.ripple {
+  position      : absolute;
+  border-radius : 50%;
+  border        : 1.5px solid rgba(255,255,255,.35);
+  animation     : ripple-out var(--rd,4s) ease-out infinite var(--dl,0s);
+  will-change   : transform, opacity;
+  pointer-events: none;
+}
+@keyframes ripple-out {
+  0%   { width:8px;  height:5px;  opacity:.9; transform:translate(-50%,-50%); }
+  100% { width:180px;height:60px; opacity:0;  transform:translate(-50%,-50%); }
+}
+
+/* ============================================================
+   TREES
+   ============================================================ */
+.tree-layer {
+  position      : absolute;
+  left          : 0;
+  width         : 100%;
+  pointer-events: none;
+  will-change   : transform;
+}
+#trees-back  { bottom:26%; z-index:6;  }
+#trees-mid   { bottom:16%; z-index:12; }
+#trees-front { bottom:0;   z-index:18; }
+
+.tree {
+  position         : absolute;
+  bottom           : 0;
+  transform-origin : bottom center;
+  animation        : sway var(--sw,3s) ease-in-out infinite var(--sd,0s);
+  will-change      : transform;
+}
+@keyframes sway {
+  0%,100% { transform:rotate(0deg); }
+  30%     { transform:rotate(calc(var(--sa,1) * 1.8deg)); }
+  70%     { transform:rotate(calc(var(--sa,1) * -1.2deg)); }
+}
+
+/* ============================================================
+   GRASS
+   ============================================================ */
+#grass {
+  position      : absolute;
+  bottom        : 0;
+  left          : 0;
+  width         : 100%;
+  height        : 11%;
+  z-index       : 19;
+  pointer-events: none;
+}
+.blade {
+  position         : absolute;
+  bottom           : 0;
+  border-radius    : 50% 50% 0 0;
+  transform-origin : bottom center;
+  animation        : blade-sway var(--bs,2.8s) ease-in-out infinite var(--bd,0s);
+  will-change      : transform;
+}
+@keyframes blade-sway {
+  0%,100% { transform:rotate(0deg) skewX(0); }
+  28%     { transform:rotate(9deg) skewX(4deg); }
+  72%     { transform:rotate(-6deg) skewX(-3deg); }
+}
+
+/* ============================================================
+   FLOWERS
+   ============================================================ */
+#flowers {
+  position      : absolute;
+  bottom        : 8%;
+  left          : 0;
+  width         : 100%;
+  height        : 9%;
+  z-index       : 20;
+  pointer-events: none;
+}
+.flower {
+  position         : absolute;
+  bottom           : 0;
+  transform-origin : bottom center;
+  animation        : flower-bob var(--fb,2.2s) ease-in-out infinite var(--fd,0s);
+}
+@keyframes flower-bob {
+  0%,100% { transform:rotate(0deg); }
+  50%     { transform:rotate(3.5deg); }
+}
+
+/* ============================================================
+   BIRDS
+   ============================================================ */
+#birds { position:absolute; inset:0; z-index:22; pointer-events:none; }
+.bird {
+  position   : absolute;
+  will-change: transform, opacity;
+  animation  : bird-path var(--bd2,22s) ease-in-out infinite var(--bd3,0s);
+}
+.bird-svg { animation: flap .38s ease-in-out infinite; }
+@keyframes bird-path {
+  0%   { transform:translate(-80px,  var(--by,20vh)) scale(.5); opacity:0; }
+  5%   { opacity:1; }
+  50%  { transform:translate(50vw, calc(var(--by,20vh) - 6vh)) scale(.85); opacity:1; }
+  95%  { opacity:1; }
+  100% { transform:translate(calc(100vw + 80px), var(--by,20vh)) scale(.5); opacity:0; }
+}
+@keyframes flap {
+  0%,100% { transform:scaleY(1); }
+  50%     { transform:scaleY(-.4); }
+}
+
+/* ============================================================
+   BUTTERFLIES
+   ============================================================ */
+#butterflies { position:absolute; z-index:21; pointer-events:none; }
+.butterfly {
+  position   : absolute;
+  will-change: transform;
+  animation  : bf-drift var(--bfd,9s) ease-in-out infinite var(--bfo,0s);
+}
+.bf-wings { animation: wing-flap .28s ease-in-out infinite; }
+@keyframes bf-drift {
+  0%   { transform:translate(0,0) rotate(0); }
+  20%  { transform:translate(28px,-18px) rotate(8deg); }
+  45%  { transform:translate(55px, 6px) rotate(-4deg); }
+  70%  { transform:translate(22px,-22px) rotate(6deg); }
+  100% { transform:translate(0,0) rotate(0); }
+}
+@keyframes wing-flap {
+  0%,100% { transform:scaleX(1); }
+  50%     { transform:scaleX(.25); }
+}
+
+/* ============================================================
+   FIREFLIES
+   ============================================================ */
+#fireflies {
+  position      : absolute;
+  inset         : 0;
+  z-index       : 17;
+  pointer-events: none;
+  opacity       : 0;
+  transition    : opacity 2s ease;
+}
+#fireflies.on { opacity:1; }
+.ff {
+  position      : absolute;
+  width         : 4px;
+  height        : 4px;
+  border-radius : 50%;
+  background    : #b8ff44;
+  box-shadow    : 0 0 7px 3px rgba(184,255,68,.85);
+  animation     : ff-glow var(--fg,2.8s) ease-in-out infinite var(--fd2,0s),
+                  ff-move var(--fm,7s)   ease-in-out infinite var(--fd2,0s);
+  will-change   : transform, opacity;
+}
+@keyframes ff-glow { 0%,100%{opacity:0;transform:scale(.5)} 50%{opacity:1;transform:scale(1.8)} }
+@keyframes ff-move {
+  0%   { transform:translate(0,0); }
+  33%  { transform:translate(32px,-22px); }
+  66%  { transform:translate(-18px,-12px); }
+  100% { transform:translate(0,0); }
+}
+
+/* ============================================================
+   FALLING LEAVES
+   ============================================================ */
+#leaves { position:absolute; inset:0; z-index:16; pointer-events:none; overflow:hidden; }
+.leaf {
+  position      : absolute;
+  top           : -18px;
+  border-radius : 50% 8% 50% 8%;
+  animation     : leaf-fall var(--lf,9s) ease-in-out infinite var(--ll,0s);
+  will-change   : transform, opacity;
+}
+@keyframes leaf-fall {
+  0%  { transform:translateX(0) translateY(-20px) rotate(0); opacity:1; }
+  25% { transform:translateX(45px) translateY(22vh) rotate(95deg); }
+  50% { transform:translateX(-22px) translateY(48vh) rotate(185deg); }
+  75% { transform:translateX(35px) translateY(74vh) rotate(275deg); }
+  100%{ transform:translateX(-12px) translateY(102vh) rotate(360deg); opacity:0; }
+}
+
+/* ============================================================
+   POLLEN
+   ============================================================ */
+#pollen { position:absolute; inset:0; z-index:15; pointer-events:none; overflow:hidden; }
+.pollen-dot {
+  position      : absolute;
+  width         : 3px;
+  height        : 3px;
+  border-radius : 50%;
+  background    : rgba(255,235,100,.85);
+  animation     : pollen-drift var(--pd,13s) linear infinite var(--po,0s);
+}
+@keyframes pollen-drift {
+  0%  { transform:translate(0,0); opacity:0; }
+  8%  { opacity:.85; }
+  92% { opacity:.85; }
+  100%{ transform:translate(220px,-90px); opacity:0; }
+}
+
+/* ============================================================
+   TOGGLE BUTTON
+   ============================================================ */
+#toggle {
+  position    : absolute;
+  top         : 18px;
+  right       : 18px;
+  z-index     : 99;
+  width       : 48px;
+  height      : 48px;
+  border-radius: 50%;
+  border      : 1.5px solid rgba(255,255,255,.55);
+  background  : rgba(255,255,255,.14);
+  backdrop-filter: blur(10px);
+  cursor      : pointer;
+  font-size   : 20px;
+  display     : flex;
+  align-items : center;
+  justify-content: center;
+  transition  : transform .25s, background .25s;
+  color       : white;
+  box-shadow  : 0 4px 18px rgba(0,0,0,.25);
+}
+#toggle:hover { background:rgba(255,255,255,.28); transform:scale(1.12); }
+
+/* ============================================================
+   CUSTOM CURSOR
+   ============================================================ */
+#cursor {
+  position  : fixed;
+  z-index   : 9999;
+  width     : 14px;
+  height    : 14px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.9);
+  transform : translate(-50%,-50%);
+  pointer-events: none;
+  transition: width .2s, height .2s;
+  mix-blend-mode: difference;
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+  #cursor { display:none; }
+  body { cursor:auto; }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:700px) {
+  #sun  { width:48px; height:48px; }
+  #moon { width:38px; height:38px; }
+  #toggle { top:10px; right:10px; width:40px; height:40px; font-size:16px; }
+}
+</style>
+</head>
+<body>
+
+<div id="nature-scene">
+
+  <!-- SKY -->
+  <div id="sky"></div>
+
+  <!-- STARS -->
+  <div id="stars"></div>
+
+  <!-- GOD RAYS -->
+  <div id="god-rays"></div>
+
+  <!-- CELESTIALS -->
+  <div class="celestial" id="sun"></div>
+  <div class="celestial" id="moon"></div>
+
+  <!-- CLOUDS -->
+  <div id="clouds"></div>
+
+  <!-- FAR MOUNTAINS -->
+  <div class="mtn" id="mtn-far">
+    <svg width="100%" height="100%" viewBox="0 0 1440 260" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,260 L0,190 C60,160 110,130 170,100 C230,70 280,90 340,65
+               C400,40 450,60 510,38 C570,16 620,50 680,32
+               C740,14 790,48 850,28 C910,8 960,42 1020,25
+               C1080,8 1130,50 1190,30 C1250,10 1310,48 1370,28 L1440,18 L1440,260 Z"
+            fill="#7eaac8" id="mtn-far-path"/>
+      <path d="M0,260 L0,210 C80,185 150,160 230,140 C310,120 370,145 450,125
+               C530,105 590,128 670,110 C750,92 810,118 890,100
+               C970,82 1030,108 1110,92 C1190,76 1250,105 1330,88 L1440,80 L1440,260 Z"
+            fill="#6a9ab5" opacity=".65"/>
+    </svg>
+  </div>
+
+  <!-- MIST 1 -->
+  <div class="mist" style="bottom:44%;height:55px;--md:19s;opacity:.38;"></div>
+
+  <!-- MID MOUNTAINS -->
+  <div class="mtn" id="mtn-mid">
+    <svg width="100%" height="100%" viewBox="0 0 1440 280" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,280 L0,220 C70,190 130,155 200,125 C270,95 330,120 400,95
+               C470,70 525,100 595,75 C665,50 720,80 790,55
+               C860,30 915,68 985,45 C1055,22 1110,60 1180,38
+               C1250,16 1300,55 1370,35 L1440,22 L1440,280 Z"
+            fill="#4a7c30" id="mtn-mid-path"/>
+      <path d="M0,280 L0,240 C90,215 170,195 260,175 C350,155 420,178 510,158
+               C600,138 665,162 755,145 C845,128 910,152 1000,138
+               C1090,124 1155,148 1245,133 L1440,120 L1440,280 Z"
+            fill="#3d6825" opacity=".75"/>
+    </svg>
+  </div>
+
+  <!-- MIST 2 -->
+  <div class="mist" style="bottom:33%;height:65px;--md:26s;opacity:.5;animation-direction:alternate-reverse;"></div>
+
+  <!-- TREES BACK -->
+  <div class="tree-layer" id="trees-back"></div>
+
+  <!-- WATER -->
+  <div id="water-wrap">
+    <canvas id="water-canvas"></canvas>
+    <div class="ripple" style="--rd:4.2s;--dl:0s;   left:32%;top:55%;"></div>
+    <div class="ripple" style="--rd:5.5s;--dl:1.6s; left:58%;top:42%;"></div>
+    <div class="ripple" style="--rd:3.8s;--dl:3.1s; left:45%;top:65%;"></div>
+  </div>
+
+  <!-- NEAR MOUNTAINS -->
+  <div class="mtn" id="mtn-near">
+    <svg width="100%" height="100%" viewBox="0 0 1440 260" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,260 L0,200 C80,170 150,140 240,115 C330,90 390,118 480,95
+               C570,72 630,98 720,78 C810,58 870,88 960,65
+               C1050,42 1110,72 1200,52 C1290,32 1350,65 1440,45 L1440,260 Z"
+            fill="#2d5c1a" id="mtn-near-path"/>
+    </svg>
+  </div>
+
+  <!-- MIST 3 -->
+  <div class="mist" style="bottom:23%;height:48px;--md:23s;opacity:.3;"></div>
+
+  <!-- TREES MID -->
+  <div class="tree-layer" id="trees-mid"></div>
+
+  <!-- FOREGROUND HILL -->
+  <div class="mtn" id="hill-fore">
+    <svg width="100%" height="100%" viewBox="0 0 1440 220" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,220 L0,110 Q180,75 360,88 Q540,100 720,80 Q900,62 1080,78 Q1260,94 1440,72 L1440,220 Z"
+            fill="#1e3d0e"/>
+      <path d="M0,220 L0,135 Q200,110 400,120 Q600,130 800,115 Q1000,100 1200,118 Q1320,126 1440,108 L1440,220 Z"
+            fill="#2d5c1a" opacity=".7"/>
+    </svg>
+  </div>
+
+  <!-- GRASS -->
+  <div id="grass"></div>
+
+  <!-- TREES FRONT -->
+  <div class="tree-layer" id="trees-front"></div>
+
+  <!-- FLOWERS -->
+  <div id="flowers"></div>
+
+  <!-- POLLEN -->
+  <div id="pollen"></div>
+
+  <!-- FALLING LEAVES -->
+  <div id="leaves"></div>
+
+  <!-- FIREFLIES -->
+  <div id="fireflies"></div>
+
+  <!-- BUTTERFLIES -->
+  <div id="butterflies" style="position:absolute;bottom:12%;left:0;width:70%;height:22%;z-index:21;pointer-events:none;"></div>
+
+  <!-- BIRDS -->
+  <div id="birds"></div>
+
+  <!-- TOGGLE -->
+  <button id="toggle" title="Toggle dag/nacht">☀️</button>
+
+  <!-- CURSOR -->
+  <div id="cursor"></div>
+
+</div><!-- /#nature-scene -->
+
+<script>
+(function () {
+'use strict';
+
+// ─────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const rnd  = (a, b) => Math.random() * (b - a) + a;
+const rint = (a, b) => Math.floor(rnd(a, b));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+function lerpColor(c1, c2, t) {
+  const p = (hex) => [
+    parseInt(hex.slice(1,3),16),
+    parseInt(hex.slice(3,5),16),
+    parseInt(hex.slice(5,7),16)
+  ];
+  const [r1,g1,b1] = p(c1), [r2,g2,b2] = p(c2);
+  const r = Math.round(r1+(r2-r1)*t);
+  const g = Math.round(g1+(g2-g1)*t);
+  const b = Math.round(b1+(b2-b1)*t);
+  return `rgb(${r},${g},${b})`;
+}
+
+function shade(hex, d) {
+  let r=parseInt(hex.slice(1,3),16)+d;
+  let g=parseInt(hex.slice(3,5),16)+d;
+  let b=parseInt(hex.slice(5,7),16)+d;
+  return '#'+[r,g,b].map(v=>clamp(v,0,255).toString(16).padStart(2,'0')).join('');
+}
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+const CYCLE = +getComputedStyle(document.documentElement).getPropertyValue('--cycle-ms') || 60000;
+let manualNight = false;
+let cycleT      = 0;       // ms 0..CYCLE
+let lastTS      = 0;
+let mouseNX     = 0;       // –0.5..0.5
+let mouseNY     = 0;
+let cursorPX    = -200;
+let cursorPY    = -200;
+let sceneW      = 0;
+let sceneH      = 0;
+let waterW      = 0;
+let waterH      = 0;
+
+// phase cache
+let lastSkyTop    = '';
+let lastSkyBot    = '';
+
+// ─────────────────────────────────────────────
+// PHASE KEYFRAMES  (normalised 0..1 in cycle)
+// The cycle: dawn(0) → day(0.2) → dusk(0.65) → night(0.8) → dawn(1)
+// ─────────────────────────────────────────────
+const KF = [
+  { t:0,    skyA:'#b04010', skyB:'#e8850a', sun:true,  moon:false, rays:.28, ff:false, stars:false,
+    mtnFar:'#b07050', mtnMid:'#6b5030', mtnNear:'#3d2a10', hillFore:'#2a1a06' },
+  { t:.20,  skyA:'#1a5fa8', skyB:'#7ec8e3', sun:true,  moon:false, rays:.15, ff:false, stars:false,
+    mtnFar:'#7eaac8', mtnMid:'#4a7c30', mtnNear:'#2d5c1a', hillFore:'#1e3d0e' },
+  { t:.65,  skyA:'#7a2015', skyB:'#c06030', sun:true,  moon:false, rays:.35, ff:true,  stars:false,
+    mtnFar:'#a07060', mtnMid:'#5a4020', mtnNear:'#362210', hillFore:'#201408' },
+  { t:.80,  skyA:'#030d1a', skyB:'#0f1f3d', sun:false, moon:true,  rays:0,   ff:true,  stars:true,
+    mtnFar:'#1a2a3a', mtnMid:'#0e1c0c', mtnNear:'#080f05', hillFore:'#040804' },
+  { t:1,    skyA:'#b04010', skyB:'#e8850a', sun:true,  moon:false, rays:.28, ff:false, stars:false,
+    mtnFar:'#b07050', mtnMid:'#6b5030', mtnNear:'#3d2a10', hillFore:'#2a1a06' },
+];
+
+function getBlend(norm) {
+  for (let i = 0; i < KF.length - 1; i++) {
+    const a = KF[i], b = KF[i+1];
+    if (norm >= a.t && norm <= b.t) {
+      const t = (norm - a.t) / (b.t - a.t);
+      const smooth = t * t * (3 - 2*t); // smoothstep
+      return {
+        skyA    : lerpColor(a.skyA, b.skyA, smooth),
+        skyB    : lerpColor(a.skyB, b.skyB, smooth),
+        sun     : a.sun || (b.sun && smooth > .5),
+        moon    : a.moon || (b.moon && smooth > .5),
+        sunOpacity  : a.sun  ? (b.sun  ? 1 : 1-smooth) : smooth,
+        moonOpacity : a.moon ? (b.moon ? 1 : 1-smooth) : smooth,
+        raysOpacity : a.rays + (b.rays - a.rays)*smooth,
+        ff      : a.ff || (b.ff && smooth > .5),
+        stars   : a.stars || (b.stars && smooth > .5),
+        starsOpacity: a.stars ? (b.stars ? 1 : 1-smooth) : smooth,
+        mtnFar  : lerpColor(a.mtnFar,  b.mtnFar,  smooth),
+        mtnMid  : lerpColor(a.mtnMid,  b.mtnMid,  smooth),
+        mtnNear : lerpColor(a.mtnNear, b.mtnNear, smooth),
+        hillFore: lerpColor(a.hillFore,b.hillFore,smooth),
+      };
+    }
+  }
+  return getBlend(0);
+}
+
+// ─────────────────────────────────────────────
+// BUILD: STARS
+// ─────────────────────────────────────────────
+function buildStars() {
+  const c = $('stars'), f = document.createDocumentFragment();
+  for (let i = 0; i < 160; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const sz = rnd(.4, 2.4);
+    s.style.cssText = `left:${rnd(0,100)}%;top:${rnd(0,60)}%;
+      width:${sz}px;height:${sz}px;
+      --td:${rnd(1.4,4).toFixed(1)}s;--dl:${rnd(0,5).toFixed(1)}s;`;
+    f.appendChild(s);
+  }
+  c.appendChild(f);
+}
+
+// ─────────────────────────────────────────────
+// BUILD: GOD RAYS
+// ─────────────────────────────────────────────
+function buildGodRays() {
+  const c = $('god-rays'), f = document.createDocumentFragment();
+  const defs = [
+    {left:8,  angle:-22, w:55, dur:7,  dl:0  },
+    {left:16, angle:-12, w:38, dur:9,  dl:1.5},
+    {left:25, angle:-5,  w:65, dur:6,  dl:3  },
+    {left:35, angle: 3,  w:42, dur:8,  dl:.8 },
+    {left:46, angle:10,  w:58, dur:10, dl:2  },
+    {left:57, angle:18,  w:44, dur:7,  dl:4  },
+    {left:68, angle:28,  w:36, dur:9,  dl:1  },
+    {left:78, angle:36,  w:52, dur:6,  dl:3.5},
+  ];
+  defs.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'ray';
+    el.style.cssText = `left:${d.left}%;width:${d.w}px;height:130%;
+      --ra:${d.angle}deg;--rd:${d.dur}s;--rl:${d.dl}s;`;
+    f.appendChild(el);
+  });
+  c.appendChild(f);
+}
+
+// ─────────────────────────────────────────────
+// BUILD: CLOUDS
+// ─────────────────────────────────────────────
+function mkCloudPath() {
+  // Random cloud shape
+  const shapes = [
+    `M30,70 Q10,70 10,54 Q10,38 26,36 Q22,18 42,16 Q56,4 76,14 Q90,4 108,12 Q128,2 144,18 Q168,14 172,34 Q186,38 186,54 Q186,70 166,70 Z`,
+    `M20,65 Q5,65 5,52 Q5,36 20,34 Q16,14 38,12 Q52,2 72,12 Q88,4 104,14 Q118,6 132,20 Q156,16 162,36 Q176,40 176,52 Q176,65 156,65 Z`,
+    `M25,68 Q8,68 8,55 Q8,40 22,38 Q18,16 40,14 Q56,2 78,14 Q94,4 112,16 Q124,6 140,22 Q164,18 170,38 Q184,42 184,55 Q184,68 162,68 Z`,
+  ];
+  return shapes[rint(0, shapes.length)];
+}
+
+function buildClouds() {
+  const c = $('clouds'), f = document.createDocumentFragment();
+  const rows = [
+    {y:'4%',  dur:82, delay:-5,   scale:1.3, op:.88},
+    {y:'11%', dur:62, delay:-22,  scale:.85, op:.75},
+    {y:'7%',  dur:74, delay:-44,  scale:1.05,op:.82},
+    {y:'17%', dur:52, delay:-12,  scale:.65, op:.68},
+    {y:'5%',  dur:95, delay:-58,  scale:1.45,op:.78},
+    {y:'20%', dur:57, delay:-33,  scale:.72, op:.62},
+    {y:'14%', dur:68, delay:-70,  scale:.9,  op:.7 },
+  ];
+  rows.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'cloud';
+    const path = mkCloudPath();
+    el.style.cssText = `top:${d.y};--cd:${d.dur}s;--co:${d.delay}s;
+      transform-origin:center;transform:scale(${d.scale});`;
+    el.innerHTML = `<svg width="190" height="80" viewBox="0 0 196 80" xmlns="http://www.w3.org/2000/svg">
+      <path d="${path}" fill="rgba(255,255,255,${d.op})"/>
+    </svg>`;
+    f.appendChild(el);
+  });
+  c.appendChild(f);
+}
+
+// ─────────────────────────────────────────────
+// BUILD: TREES
+// ─────────────────────────────────────────────
+function pine(h, col) {
+  const w = h * .55;
+  const trunk = shade(col, -35);
+  return `<svg width="${w}" height="${h}" viewBox="0 0 50 110" xmlns="http://www.w3.org/2000/svg">
+    <rect x="22" y="80" width="6" height="30" fill="${trunk}"/>
+    <polygon points="25,0 4,46 46,46"  fill="${col}"/>
+    <polygon points="25,22 1,68 49,68"  fill="${shade(col,-12)}"/>
+    <polygon points="25,42 0,92 50,92"  fill="${shade(col,-24)}"/>
+  </svg>`;
+}
+
+function deciduous(h, leaf, trunk) {
+  const w = h * .7;
+  return `<svg width="${w}" height="${h}" viewBox="0 0 70 120" xmlns="http://www.w3.org/2000/svg">
+    <rect x="32" y="70" width="7" height="50" fill="${trunk}"/>
+    <ellipse cx="35" cy="48" rx="33" ry="38" fill="${leaf}"/>
+    <ellipse cx="20" cy="58" rx="20" ry="26" fill="${shade(leaf,-14)}"/>
+    <ellipse cx="50" cy="55" rx="18" ry="23" fill="${shade(leaf,-9)}"/>
+    <ellipse cx="35" cy="22" rx="19" ry="20" fill="${shade(leaf,12)}"/>
+  </svg>`;
+}
+
+function placeTrees(containerId, count, hMin, hMax, leafCol, pineCol, trunkCol, pineRatio) {
+  const c = $(containerId), f = document.createDocumentFragment();
+  const positions = Array.from({length: count}, (_, i) => (i / count * 100 + rnd(-1.5,1.5)));
+  positions.forEach(x => {
+    const h = rnd(hMin, hMax);
+    const isPine = Math.random() < pineRatio;
+    const el = document.createElement('div');
+    el.className = 'tree';
+    el.style.cssText = `left:${x}%;
+      --sw:${rnd(2.2,4).toFixed(1)}s;
+      --sd:${rnd(0,3).toFixed(1)}s;
+      --sa:${Math.random()>.5?1:-1};`;
+    el.innerHTML = isPine ? pine(h, pineCol) : deciduous(h, leafCol, trunkCol);
+    f.appendChild(el);
+  });
+  c.appendChild(f);
+}
+
+// ─────────────────────────────────────────────
+// BUILD: GRASS
+// ─────────────────────────────────────────────
+function buildGrass() {
+  const c = $('grass'), f = document.createDocumentFragment();
+  const bladeColors = ['#1e3d0e','#2d5c1a','#3a6e20','#4a8c2e','#59a036'];
+  for (let i = 0; i < 220; i++) {
+    const el = document.createElement('div');
+    el.className = 'blade';
+    const h = rnd(12, 28);
+    const col = bladeColors[rint(0, bladeColors.length)];
+    el.style.cssText = `left:${rnd(0,100)}%;width:${rnd(2,4)}px;height:${h}px;
+      background:linear-gradient(to top,${shade(col,-12)},${col});
+      --bs:${rnd(2,4).toFixed(1)}s;--bd:${rnd(0,4).toFixed(1)}s;`;
+    f.appendChild(el);
+  }
+  c.appendChild(f);
+}
+
+// ─────────────────────────────────────────────
+// BUILD: FLOWERS
+// ─────────────────────────────────────────────
+function buildFlowers() {
+  const c = $('flowers'), f = document.createDocumentFragment();
+  const palette = ['#e74c3c','#e91e8c','#f39c12','#9b59b6','#e67e22','#f1c40f','#1abc9c','#ff6b9d'];
+  for (let i = 0; i < 35; i++) {
+    const col = palette[rint(0, palette.length)];
+    const sz  = rnd(8,16);
+    const el  = document.createElement('div');
+    el.className = 'flower';
+    el.style.cssText = `left:${rnd(2,96)}%;bottom:${rnd(0,22)}px;
+      --fb:${rnd(1.6,3).toFixed(1)}s;--fd:${rnd(0,3).toFixed(1)}s;`;
+    el.innerHTML = `<svg width="${sz}" height="${sz*1.35}" viewBox="0 0 18 24" xmlns="http://www.w3.org/2000/svg">
+      <line x1="9" y1="24" x2="9" y2="12" stroke="#3a6e20" stroke-width="2"/>
+      <circle cx="9" cy="10" r="2.8" fill="#f9e200"/>
+      <ellipse cx="9"  cy="4"  rx="2.8" ry="5"  fill="${col}" opacity=".9"/>
+      <ellipse cx="15" cy="9"  rx="5"  ry="2.5" fill="${col}" opacity=".9" transform="rotate(60 15 9)"/>
+      <ellipse cx="3"  cy="9"  rx="5"  ry="2.5" fill="${shade(col,-14)}" opacity=".9" transform="rotate(-60 3 9)"/>
+      <ellipse cx="13" cy="16" rx="4.5" ry="2.2" fill="${shade(col,-8)}" opacity=".9" transform="rotate(28 13 16)"/>
+      <ellipse cx="5"  cy="16" rx="4.5" ry="2.2" fill="${col}" opacity=".9" transform="rotate(-28 5 16)"/>
+    </svg>`;
+    f.appendChild(el);
+  }
+  c.appendChild(f);
+}
+
+// ─────────────────────────────────────────────
+// BUILD: BIRDS
+// ─────────────────────────────────────────────
+function buildBirds() {
+  const c = $('birds'), f = document.createDocumentFragment();
+  const cfg = [
+    {by:'15%', dur:22, dl:0,   scale:'.95'},
+    {by:'20%', dur:18, dl:-9,  scale:'.7'},
+    {by:'10%', dur:27, dl:-16, scale:'1.1'},
+  ];
+  cfg.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'bird';
+    el.style.cssText = `--by:${d.by};--bd2:${d.dur}s;--bd3:${d.dl}s;transform:scale(${d.scale});`;
+    el.innerHTML = `<svg class="bird-svg" width="34" height="14" viewBox="0 0 34 14" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17,7 Q9,0 0,3.5 Q8,5 17,7" fill="rgba(30,30,30,.85)"/>
+      <path d="M17,7 Q25,0 34,3.5 Q26,5 17,7" fill="rgba(30,30,30,.85)"/>
+    </svg>`;
+    f.appendChild(el);
+  });
+  c.appendChild(f);
+}
+
+// ─────────────────────────────────────────────
+// BUILD: BUTTERFLIES
+// ─────────────────────────────────────────────
+function buildButterflies() {
+  const c = $('butterflies'), f = document.createDocumentFragment();
+  const pairs = [
+    ['#ff8fb1','#ff6b6b'],
+    ['#ffd700','#ff9500'],
+    ['#c084fc','#a855f7'],
+    ['#6ee7b7','#10b981'],
+  ];
+  for (let i = 0; i < 4; i++) {
+    const [ca, cb] = pairs[i % pairs.length];
+    const el = document.createElement('div');
+    el.className = 'butterfly';
+    el.style.cssText = `left:${10+i*22}%;top:${15+i*12}%;
+      --bfd:${rnd(7,12).toFixed(1)}s;--bfo:${rnd(0,4).toFixed(1)}s;`;
+    el.innerHTML = `<div class="bf-wings">
+      <svg width="22" height="20" viewBox="0 0 22 20" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="5.5"  cy="7" rx="5.5" ry="7.5" fill="${ca}" opacity=".88"/>
+        <ellipse cx="16.5" cy="7" rx="5.5" ry="7.5" fill="${cb}" opacity=".88"/>
+        <ellipse cx="4.5"  cy="14.5" rx="4" ry="5" fill="${cb}" opacity=".72"/>
+        <ellipse cx="17.5" cy="14.5" rx="4" ry="5" fill="${ca}" opacity=".72"/>
+        <line x1="11" y1="1" x2="11" y2="19" stroke="#222" stroke-width="1.2"/>
+      </svg>
+    </div>`;
+    f.appendChild(el);
+  }
+  c.appendChild(f);
+}
+
+// ─────────────────────────────────────────────
+// BUILD: FIREFLIES
+// ─────────────────────────────────────────────
+function buildFireflies() {
+  const c = $('fireflies'), f = document.createDocumentFragment();
+  for (let i = 0; i < 28; i++) {
+    const el = document.createElement('div');
+    el.className = 'ff';
+    el.style.cssText = `left:${rnd(8,88)}%;top:${rnd(40,85)}%;
+      --fg:${rnd(1.6,3.5).toFixed(1)}s;
+      --fm:${rnd(6,10).toFixed(1)}s;
+      --fd2:${rnd(0,6).toFixed(1)}s;`;
+    f.appendChild(el);
+  }
+  c.appendChild(f);
+}
+
+// ─────────────────────────────────────────────
+// BUILD: FALLING LEAVES
+// ─────────────────────────────────────────────
+function buildLeaves() {
+  const c = $('leaves'), f = document.createDocumentFragment();
+  const colors = ['#c84b11','#e67e22','#f39c12','#d4a017','#8b2500','#a0522d','#e74c3c'];
+  for (let i = 0; i < 22; i++) {
+    const el = document.createElement('div');
+    el.className = 'leaf';
+    const col = colors[rint(0,colors.length)];
+    el.style.cssText = `left:${rnd(0,96)}%;background:${col};
+      width:${rnd(9,14)}px;height:${rnd(7,11)}px;
+      --lf:${rnd(7,13).toFixed(1)}s;--ll:${rnd(-12,0).toFixed(1)}s;`;
+    f.appendChild(el);
+  }
+  c.appendChild(f);
+}
+
+// ─────────────────────────────────────────────
+// BUILD: POLLEN
+// ─────────────────────────────────────────────
+function buildPollen() {
+  const c = $('pollen'), f = document.createDocumentFragment();
+  for (let i = 0; i < 32; i++) {
+    const el = document.createElement('div');
+    el.className = 'pollen-dot';
+    el.style.cssText = `left:${rnd(0,90)}%;top:${rnd(35,80)}%;
+      --pd:${rnd(10,16).toFixed(1)}s;--po:${rnd(-12,0).toFixed(1)}s;`;
+    f.appendChild(el);
+  }
+  c.appendChild(f);
+}
+
+// ─────────────────────────────────────────────
+// WATER CANVAS
+// ─────────────────────────────────────────────
+function setupWater() {
+  const scene = $('nature-scene');
+  sceneW = scene.offsetWidth;
+  sceneH = scene.offsetHeight;
+  waterW = Math.floor(sceneW * .52);
+  waterH = Math.floor(sceneH * .07);
+
+  const wrap = $('water-wrap');
+  wrap.style.cssText = `left:${sceneW*.15}px;bottom:${sceneH*.2}px;width:${waterW}px;height:${waterH}px;`;
+
+  const cv = $('water-canvas');
+  cv.width  = waterW;
+  cv.height = waterH;
+}
+
+function drawWater(blend, time) {
+  const cv = $('water-canvas');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+
+  // Base water fill (lerped with sky)
+  const waterA = lerpColor(blend.skyB, '#0d3a6e', .6);
+  const waterB = lerpColor(blend.skyA, '#051428', .7);
+
+  const grd = ctx.createLinearGradient(0,0,0,H);
+  grd.addColorStop(0, waterA);
+  grd.addColorStop(1, waterB);
+  ctx.fillStyle = grd;
+  ctx.beginPath();
+  ctx.ellipse(W/2, H/2, W/2, H/2, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // Shimmer lines
+  const t = time * .001;
+  ctx.save();
+  ctx.globalAlpha = .22;
+  ctx.strokeStyle = 'rgba(255,255,255,.7)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i < 8; i++) {
+    const y = H * (.2 + i*.09) + Math.sin(t*1.2 + i) * 3;
+    const xOff = Math.sin(t*.8 + i * 1.3) * 18;
+    ctx.beginPath();
+    ctx.moveTo(W*.05 + xOff, y);
+    ctx.bezierCurveTo(
+      W*.25 + xOff, y + Math.sin(t+i) * 2,
+      W*.75 - xOff, y - Math.sin(t+i) * 2,
+      W*.95 - xOff, y
+    );
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // Subtle mountain reflection
+  ctx.save();
+  ctx.globalAlpha = .18;
+  ctx.scale(1, -0.28);
+  ctx.translate(0, -H * .05);
+  const refGrd = ctx.createLinearGradient(0,0,W,0);
+  refGrd.addColorStop(0,   blend.mtnNear);
+  refGrd.addColorStop(.3,  blend.mtnMid);
+  refGrd.addColorStop(.7,  blend.mtnFar);
+  refGrd.addColorStop(1,   blend.mtnNear);
+  ctx.fillStyle = refGrd;
+  ctx.fillRect(0, 0, W, H * 3.5);
+  ctx.restore();
+}
+
+// ─────────────────────────────────────────────
+// SCENE RESIZE
+// ─────────────────────────────────────────────
+function onResize() {
+  const scene = $('nature-scene');
+  sceneW = scene.offsetWidth;
+  sceneH = scene.offsetHeight;
+  setupWater();
+}
+
+// ─────────────────────────────────────────────
+// MOUSE / CURSOR
+// ─────────────────────────────────────────────
+const scene = $('nature-scene');
+scene.addEventListener('mousemove', e => {
+  const r = scene.getBoundingClientRect();
+  mouseNX = (e.clientX - r.left) / r.width  - .5;
+  mouseNY = (e.clientY - r.top)  / r.height - .5;
+  cursorPX = e.clientX;
+  cursorPY = e.clientY;
+});
+document.addEventListener('mousemove', e => {
+  cursorPX = e.clientX;
+  cursorPY = e.clientY;
+});
+
+// ─────────────────────────────────────────────
+// PARALLAX
+// ─────────────────────────────────────────────
+const parallax = [
+  { el: $('sky'),        depth: .012 },
+  { el: $('stars'),      depth: .014 },
+  { el: $('mtn-far'),    depth: .04  },
+  { el: $('mtn-mid'),    depth: .07  },
+  { el: $('mtn-near'),   depth: .11  },
+  { el: $('trees-back'), depth: .09  },
+  { el: $('water-wrap'), depth: .06  },
+  { el: $('trees-mid'),  depth: .14  },
+  { el: $('hill-fore'),  depth: .17  },
+  { el: $('trees-front'),depth: .21  },
+  { el: $('grass'),      depth: .24  },
+];
+
+function updateParallax() {
+  const mx = mouseNX, my = mouseNY;
+  parallax.forEach(({ el, depth }) => {
+    if (!el) return;
+    const tx = mx * depth * -80;
+    const ty = my * depth * -50;
+    el.style.transform = `translate(${tx.toFixed(2)}px,${ty.toFixed(2)}px)`;
+  });
+}
+
+// ─────────────────────────────────────────────
+// SUN / MOON ARC
+// ─────────────────────────────────────────────
+function updateCelestials(norm) {
+  const sun  = $('sun');
+  const moon = $('moon');
+  if (!sun || !moon) return;
+
+  // Sun: arc across sky following cycle 0..1
+  // At norm=0 (dawn): left side low; norm=.4 (midday): top; norm=.7 (dusk): right side low
+  const sunNorm = clamp(norm / .75, 0, 1); // compress to dawn-dusk
+  const sunAngle = Math.PI + sunNorm * Math.PI; // PI=left, 2PI=right
+  const rx = sceneW * .48, ry = sceneH * .52;
+  const cx = sceneW * .50, cy = sceneH * .62;
+  const sx = cx + rx * Math.cos(sunAngle) - 36;
+  const sy = cy + ry * Math.sin(sunAngle) - 36;
+  sun.style.left = sx + 'px';
+  sun.style.top  = sy + 'px';
+
+  // Moon: appears night phase — arc same path with offset
+  const moonNorm = ((norm - .8 + 1) % 1) / .2; // 0..1 during night
+  const moonAngle = Math.PI + clamp(moonNorm,.0,1) * Math.PI * .8 + Math.PI * .1;
+  const mx2 = cx + rx * Math.cos(moonAngle) - 29;
+  const my2 = cy + ry * Math.sin(moonAngle) - 29;
+  moon.style.left = mx2 + 'px';
+  moon.style.top  = my2 + 'px';
+}
+
+// ─────────────────────────────────────────────
+// TOGGLE DAY/NIGHT
+// ─────────────────────────────────────────────
+$('toggle').addEventListener('click', () => {
+  manualNight = !manualNight;
+  $('toggle').textContent = manualNight ? '🌙' : '☀️';
+  if (manualNight) {
+    cycleT = CYCLE * .85; // jump to night
+  } else {
+    cycleT = CYCLE * .25; // jump to midday
+  }
+});
+
+// ─────────────────────────────────────────────
+// APPLY BLEND TO DOM
+// ─────────────────────────────────────────────
+function applyBlend(blend) {
+  // Sky gradient
+  const skyA = blend.skyA, skyB = blend.skyB;
+  if (skyA !== lastSkyTop || skyB !== lastSkyBot) {
+    $('sky').style.background = `linear-gradient(to bottom, ${skyA} 0%, ${skyB} 100%)`;
+    lastSkyTop = skyA; lastSkyBot = skyB;
+  }
+
+  // Stars
+  const sc = $('stars');
+  sc.style.opacity = blend.starsOpacity !== undefined ? blend.starsOpacity.toFixed(3) : (blend.stars ? '1' : '0');
+
+  // Fireflies
+  const ff = $('fireflies');
+  if (blend.ff) ff.classList.add('on'); else ff.classList.remove('on');
+
+  // God rays
+  $('god-rays').style.opacity = blend.raysOpacity.toFixed(3);
+
+  // Sun / moon opacity
+  $('sun').style.opacity  = (blend.sunOpacity  || 0).toFixed(3);
+  $('moon').style.opacity = (blend.moonOpacity || 0).toFixed(3);
+
+  // Mountain / hill SVG fill colors
+  const fp = (id, col) => {
+    const el = document.getElementById(id);
+    if (el) el.setAttribute('fill', col);
+  };
+  fp('mtn-far-path',  blend.mtnFar);
+  fp('mtn-mid-path',  blend.mtnMid);
+  fp('mtn-near-path', blend.mtnNear);
+}
+
+// ─────────────────────────────────────────────
+// MAIN LOOP
+// ─────────────────────────────────────────────
+function loop(ts) {
+  const dt = lastTS ? ts - lastTS : 16;
+  lastTS = ts;
+
+  cycleT = (cycleT + dt) % CYCLE;
+  const norm   = cycleT / CYCLE;
+  const blend  = getBlend(norm);
+
+  applyBlend(blend);
+  updateCelestials(norm);
+  drawWater(blend, ts);
+  updateParallax();
+
+  // cursor
+  const cur = $('cursor');
+  if (cur) { cur.style.left = cursorPX+'px'; cur.style.top = cursorPY+'px'; }
+
+  requestAnimationFrame(loop);
+}
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+function init() {
+  buildStars();
+  buildGodRays();
+  buildClouds();
+  placeTrees('trees-back',  14, 55,  85,  '#3a6b25', '#2e5518', '#5a3a1a', .55);
+  placeTrees('trees-mid',   12, 80, 120,  '#2d5c1e', '#24491a', '#4a2e12', .45);
+  placeTrees('trees-front', 13, 110,165,  '#1e3d0e', '#18300b', '#3a2410', .5);
+  buildGrass();
+  buildFlowers();
+  buildBirds();
+  buildButterflies();
+  buildFireflies();
+  buildLeaves();
+  buildPollen();
+  setupWater();
+  window.addEventListener('resize', onResize);
+  // Start at dawn
+  cycleT = CYCLE * .02;
+  requestAnimationFrame(loop);
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+
+})();
+</script>
+</body>
+</html>

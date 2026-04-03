@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Tweakly</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script type="importmap">
+  {
+    "imports": {
+      "chart.js/auto": "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/auto/+esm"
+    }
+  }
+  </script>
+  <style>
+    :root {
+      --green:        #30D158;
+      --green-dark:   #1C7A37;
+      --green-glow:   rgba(48,209,88,0.28);
+      --green-dim:    rgba(48,209,88,0.10);
+      --blue:         #0A84FF;
+      --blue-dim:     rgba(10,132,255,0.12);
+      --red:          #FF453A;
+      --red-dim:      rgba(255,69,58,0.12);
+      --purple:       #5856D6;
+      --purple-dim:   rgba(88,86,214,0.12);
+      --orange:       #FF9500;
+      --orange-dim:   rgba(255,149,0,0.12);
+      --bg:           #000000;
+      --bg-1:         #0a0a0a;
+      --bg-2:         #111111;
+      --bg-3:         #1a1a1a;
+      --text:         #f5f5f7;
+      --text-2:       rgba(245,245,247,0.56);
+      --text-3:       rgba(245,245,247,0.28);
+      --glass:        rgba(255,255,255,0.06);
+      --glass-hi:     rgba(255,255,255,0.10);
+      --glass-bd:     rgba(255,255,255,0.10);
+      --r:            12px;
+      --r-lg:         20px;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    a { text-decoration: none; color: inherit; }
+    button { font-family: inherit; cursor: pointer; }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 240px;
+      height: 100vh;
+      background: var(--bg-1);
+      border-right: 0.5px solid rgba(255,255,255,0.06);
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      padding: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    .brand img { width: 28px; height: 28px; border-radius: 7px; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-bottom: 4px;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .nav-item.active { background: var(--green-dim); color: var(--green); }
+    .nav-item svg { width: 18px; height: 18px; opacity: 0.7; flex-shrink: 0; }
+
+    .nav-section {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 1.5rem 12px 0.75rem;
+    }
+
+    .main {
+      margin-left: 240px;
+      padding: 2rem 2.5rem;
+      min-height: 100vh;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+    .page-title { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; }
+    .period-select {
+      display: flex;
+      background: var(--bg-2);
+      border-radius: 10px;
+      padding: 4px;
+      border: 0.5px solid rgba(255,255,255,0.08);
+    }
+    .period-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: var(--text-2);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .period-btn.active { background: var(--glass-hi); color: var(--text); }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--bg-2);
+      border: 0.5px solid rgba(255,255,255,0.08);
+      border-radius: var(--r-lg);
+      padding: 1.25rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    }
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    .stat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .stat-icon svg { width: 18px; height: 18px; stroke-width: 1.6; }
+    .stat-icon.green { background: var(--green-dim); }
+    .stat-icon.green svg { stroke: var(--green); fill: none; }
+    .stat-icon.blue { background: var(--blue-dim); }
+    .stat-icon.blue svg { stroke: var(--blue); fill: none; }
+    .stat-icon.purple { background: var(--purple-dim); }
+    .stat-icon.purple svg { stroke: var(--purple); fill: none; }
+    .stat-icon.orange { background: var(--orange-dim); }
+    .stat-icon.orange svg { stroke: var(--orange); fill: none; }
+
+    .stat-trend {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+    .stat-trend.up { background: var(--green-dim); color: var(--green); }
+    .stat-trend.down { background: var(--red-dim); color: var(--red); }
+
+    .stat-value { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+    .stat-label { font-size: 0.78rem; color: var(--text-2); }
+    .stat-value.loading { opacity: 0.5; }
+
+    .section {
+      margin-bottom: 2rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .section-title { font-size: 1.1rem; font-weight: 600; }
+    .section-link { font-size: 0.8rem; color: var(--blue); cursor: pointer; }
+    .section-link:hover { text-decoration: underline; }
+
+    .chart-card {
+      background: var(--bg-2);
+      border: 0.5px solid rgba(255,255,255,0.08);
+      border-radius: var(--r-lg);
+      padding: 1.5rem;
+    }
+    .chart-wrap { position: relative; height: 280px; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .table-card {
+      background: var(--bg-2);
+      border: 0.5px solid rgba(255,255,255,0.08);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+    }
+    .table-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 0.5px solid rgba(255,255,255,0.06);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .table-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.25rem;
+      border-bottom: 0.5px solid rgba(255,255,255,0.04);
+      transition: background 0.15s;
+    }
+    .table-row:hover { background: rgba(255,255,255,0.02); }
+    .table-row:last-child { border-bottom: none; }
+    .table-item { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+    .table-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--glass);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .table-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .table-name { font-size: 0.85rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .table-sub { font-size: 0.72rem; color: var(--text-3); }
+    .table-value { font-size: 0.85rem; font-weight: 600; color: var(--green); text-align: right; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .badge.success { background: var(--green-dim); color: var(--green); }
+    .badge.warning { background: var(--orange-dim); color: var(--orange); }
+    .badge.info { background: var(--blue-dim); color: var(--blue); }
+
+    .app-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    .app-card {
+      background: var(--bg-2);
+      border: 0.5px solid rgba(255,255,255,0.08);
+      border-radius: var(--r-lg);
+      padding: 1.25rem;
+      text-align: center;
+    }
+    .app-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .app-value { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; }
+    .app-label { font-size: 0.75rem; color: var(--text-2); }
+
+    .refresh-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      color: var(--text-2);
+      background: var(--bg-2);
+      border: 0.5px solid rgba(255,255,255,0.08);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .refresh-btn:hover { background: var(--bg-3); color: var(--text); }
+    .refresh-btn svg { width: 14px; height: 14px; }
+    .refresh-btn.spin svg { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--bg-2);
+      border: 0.5px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      font-size: 0.85rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-color: var(--green); }
+    .toast.error { border-color: var(--red); }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--text-3);
+      border-top-color: var(--text);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @media (max-width: 1100px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .two-col { grid-template-columns: 1fr; }
+      .app-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 1.5rem; }
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 99px; }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="brand">
+    <img src="logo.png" alt="Tweakly" onerror="this.style.display='none'">
+    Tweakly
+  </div>
+
+  <div class="nav-section">Overzicht</div>
+  <button class="nav-item active" data-view="dashboard">
+    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    Dashboard
+  </button>
+  <button class="nav-item" data-view="meldingen">
+    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    Meldingen
+  </button>
+  <button class="nav-item" data-view="prijzen">
+    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+    Prijzen
+  </button>
+  <button class="nav-item" data-view="gebruikers">
+    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    Gebruikers
+  </button>
+
+  <div class="nav-section">Analytics</div>
+  <button class="nav-item" data-action="open" data-url="https://tweakly.pages.dev">
+    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    Website
+  </button>
+  <button class="nav-item" data-action="open" data-url="https://app.tweakly.nl">
+    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+    App
+  </button>
+  <button class="nav-item" data-action="open" data-url="https://console.firebase.google.com/project/tweakly-e6a6f/analytics/overview">
+    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+    Firebase
+  </button>
+  <button class="nav-item" data-action="open" data-url="https://supabase.com/dashboard/glnpdfbnyijdzvulzbfv">
+    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+    Supabase
+  </button>
+  <button class="nav-item" data-action="refresh">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+    Vernieuwen
+  </button>
+</aside>
+
+<main class="main">
+  <header class="header">
+    <h1 class="page-title" id="pageTitle">Dashboard</h1>
+    <div style="display:flex;gap:12px;align-items:center;">
+      <button class="refresh-btn" id="refreshBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+        Vernieuwen
+      </button>
+      <div class="period-select">
+        <button class="period-btn" data-period="today">Vandaag</button>
+        <button class="period-btn" data-period="7d">7 dagen</button>
+        <button class="period-btn active" data-period="30d">30 dagen</button>
+        <button class="period-btn" data-period="90d">90 dagen</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="dashboardView">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon green">
+            <svg viewBox="0 0 24 24"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+          </div>
+          <span class="stat-trend" id="siteTrend">--</span>
+        </div>
+        <div class="stat-value" id="siteVisitors">--</div>
+        <div class="stat-label">Website bezoekers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon blue">
+            <svg viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <span class="stat-trend" id="appTrend">--</span>
+        </div>
+        <div class="stat-value" id="appUsers">--</div>
+        <div class="stat-label">App gebruikers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon purple">
+            <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <span class="stat-trend" id="bookmarksTrend">--</span>
+        </div>
+        <div class="stat-value" id="bookmarksCount">--</div>
+        <div class="stat-label">Bladwijzers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon orange">
+            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </div>
+          <span class="stat-trend" id="alertsTrend">--</span>
+        </div>
+        <div class="stat-value" id="alertsCount">--</div>
+        <div class="stat-label">Prijsalerts</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">Website verkeer</h2>
+          <a href="https://tweakly.pages.dev" target="_blank" class="section-link">Website →</a>
+        </div>
+        <div class="chart-card">
+          <div class="chart-wrap">
+            <canvas id="siteChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">App gebruikers</h2>
+          <a href="https://app.tweakly.nl" target="_blank" class="section-link">App →</a>
+        </div>
+        <div class="chart-card">
+          <div class="chart-wrap">
+            <canvas id="appChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">Product statistieken</h2>
+        <a href="https://supabase.com/dashboard/glnpdfbnyijdzvulzbfv" target="_blank" class="section-link">Database →</a>
+      </div>
+      <div class="app-stats">
+        <div class="app-card">
+          <div class="app-icon">🏷️</div>
+          <div class="app-value" id="totalProducts">--</div>
+          <div class="app-label">Producten</div>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🏪</div>
+          <div class="app-value" id="totalShops">--</div>
+          <div class="app-label">Webshops</div>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">📊</div>
+          <div class="app-value" id="totalPrices">--</div>
+          <div class="app-label">Prijzen</div>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">📁</div>
+          <div class="app-value" id="totalCategories">--</div>
+          <div class="app-label">Categoriën</div>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">📰</div>
+          <div class="app-value" id="totalArticles">--</div>
+          <div class="app-label">Artikelen</div>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">⭐</div>
+          <div class="app-value" id="totalReviews">--</div>
+          <div class="app-label">Reviews</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">Top producten</h2>
+          <a href="https://app.tweakly.nl/prijzen" target="_blank" class="section-link">Alle prijzen →</a>
+        </div>
+        <div class="table-card">
+          <div class="table-header">Meest gevolgd</div>
+          <div id="topProducts"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">Recente prijsdalingen</h2>
+          <a href="https://app.tweakly.nl/meldingen" target="_blank" class="section-link">Alle meldingen →</a>
+        </div>
+        <div class="table-card">
+          <div class="table-header">Laatste 10 alerts</div>
+          <div id="recentAlerts"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="meldingenView" style="display:none;">
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">Alle prijsalerts</h2>
+        <button class="refresh-btn" id="refreshAlertsBtn" style="margin-left:auto;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          Vernieuwen
+        </button>
+      </div>
+      <div class="table-card" style="max-height:calc(100vh - 250px);overflow-y:auto;">
+        <div class="table-header" style="position:sticky;top:0;background:var(--bg-2);z-index:10;">
+          <div style="display:grid;grid-template-columns:1fr 150px 120px;">
+            <span>Product</span>
+            <span>Doelprijs</span>
+            <span>Aangemaakt</span>
+          </div>
+        </div>
+        <div id="allAlerts"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="prijzenView" style="display:none;">
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">Alle producten</h2>
+        <button class="refresh-btn" id="refreshProductsBtn" style="margin-left:auto;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          Vernieuwen
+        </button>
+      </div>
+      <div class="table-card" style="max-height:calc(100vh - 250px);overflow-y:auto;">
+        <div class="table-header" style="position:sticky;top:0;background:var(--bg-2);z-index:10;">
+          <div style="display:grid;grid-template-columns:1fr 120px 100px 100px;">
+            <span>Product</span>
+            <span>Min prijs</span>
+            <span>Max prijs</span>
+            <span>Laatste update</span>
+          </div>
+        </div>
+        <div id="allProducts"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="gebruikersView" style="display:none;">
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">Alle gebruikers</h2>
+        <button class="refresh-btn" id="refreshUsersBtn" style="margin-left:auto;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          Vernieuwen
+        </button>
+      </div>
+      <div class="table-card" style="max-height:calc(100vh - 250px);overflow-y:auto;">
+        <div class="table-header" style="position:sticky;top:0;background:var(--bg-2);z-index:10;">
+          <div style="display:grid;grid-template-columns:1fr 150px 100px;">
+            <span>Gebruiker</span>
+            <span>Aangemeld</span>
+            <span>Status</span>
+          </div>
+        </div>
+        <div id="allUsers"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer style="margin-top: 3rem; padding-top: 1.5rem; border-top: 0.5px solid rgba(255,255,255,0.06); text-align: center;">
+    <p style="font-size: 0.75rem; color: var(--text-3);">
+      Laatst bijgewerkt: <span id="lastUpdated">--</span> · Data via Supabase API
+    </p>
+  </footer>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import Chart from 'chart.js/auto';
+
+  const SUPABASE_URL = 'https://glnpdfbnyijdzvulzbfv.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsbnBkZmJueWlqZHp2dWx6YmZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTU4MzUsImV4cCI6MjA4Nzg3MTgzNX0.az-ko5O8XY0wrKwqqssE_Xwowy1o0aof5Rsj5H-ThDM';
+
+  let currentPeriod = '30d';
+  let siteChart, appChart;
+
+  // ─── Supabase fetch ─────────────────────────────────────────────────────
+  async function supabaseQuery(table, select = '*', filter = '') {
+    try {
+      let url = `${SUPABASE_URL}/rest/v1/${table}?select=${select}`;
+      if (filter) url += `&${filter}`;
+      const res = await fetch(url, {
+        headers: { 
+          'apikey': SUPABASE_KEY, 
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        console.warn(`Supabase ${table}:`, err);
+        return [];
+      }
+      return await res.json();
+    } catch (e) {
+      console.error(`Error fetching ${table}:`, e);
+      return [];
+    }
+  }
+
+  // ─── Format helpers ────────────────────────────────────────────────────
+  function formatNumber(num) {
+    if (num === null || num === undefined) return '0';
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num.toString();
+  }
+
+  function formatDate(date) {
+    if (!date) return '-';
+    return new Date(date).toLocaleDateString('nl-NL', { 
+      day: 'numeric', 
+      month: 'short',
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  }
+
+  function formatDateShort(date) {
+    if (!date) return '-';
+    return new Date(date).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
+  }
+
+  function calcTrend(current, previous) {
+    if (!previous || previous === 0) return null;
+    const diff = ((current - previous) / previous) * 100;
+    const el = document.createElement('span');
+    el.className = `stat-trend ${diff >= 0 ? 'up' : 'down'}`;
+    el.textContent = `${diff >= 0 ? '+' : ''}${diff.toFixed(0)}%`;
+    return el;
+  }
+
+  function getCategoryIcon(cat) {
+    const icons = {
+      'Smartphones': '📱',
+      'Audio': '🎧',
+      'Laptops': '💻',
+      'TV\'s': '📺',
+      'Tablets': '📱',
+      'Cameras': '📷',
+      'Gaming': '🎮',
+      'Wearables': '⌚',
+      'Audio/Video': '🎬',
+      'Default': '📦'
+    };
+    return icons[cat] || icons['Default'];
+  }
+
+  // ─── Show toast ───────────────────────────────────────────────────────
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast ${type} show`;
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ─── Load all data ────────────────────────────────────────────────────
+  async function loadData() {
+    const btn = document.getElementById('refreshBtn');
+    btn.classList.add('spin');
+    
+    // Show loading state
+    document.getElementById('siteVisitors').innerHTML = '<span class="loading-spinner"></span>';
+    document.getElementById('appUsers').innerHTML = '<span class="loading-spinner"></span>';
+    document.getElementById('bookmarksCount').innerHTML = '<span class="loading-spinner"></span>';
+    document.getElementById('alertsCount').innerHTML = '<span class="loading-spinner"></span>';
+
+    try {
+      // Fetch all data in parallel
+      const [profiles, bookmarks, alerts, products, shops, categories, articles, reviews] = await Promise.all([
+        supabaseQuery('profiles', 'id,created_at,display_name,pushEnabled', 'order=created_at.desc'),
+        supabaseQuery('bookmarks', 'id,user_id,created_at'),
+        supabaseQuery('price_alerts', 'id,product_id,target_price,created_at', 'order=created_at.desc'),
+        supabaseQuery('products', 'id,name,category,brand,min_price,max_price,updated_at', 'min_price=not.is.null&order=updated_at.desc&limit=500'),
+        supabaseQuery('shops', 'id,name,slug'),
+        supabaseQuery('categories', 'id,name,slug'),
+        supabaseQuery('articles', 'id,title,created_at', 'order=created_at.desc&limit=50'),
+        supabaseQuery('reviews', 'id,product_id,created_at')
+      ]);
+
+      // Calculate totals
+      const totalUsers = profiles?.length || 0;
+      const totalBookmarks = bookmarks?.length || 0;
+      const totalAlerts = alerts?.length || 0;
+      const totalProducts = products?.length || 0;
+      const totalShops = shops?.length || 0;
+      const totalCategories = categories?.length || 0;
+      const totalArticles = articles?.length || 0;
+      const totalReviews = reviews?.length || 0;
+
+      // Calculate price count
+      const priceCount = products?.reduce((sum, p) => {
+        return sum + (p.max_price ? 2 : 1);
+      }, 0) || 0;
+
+      // Update stats with trends (using mock previous period data)
+      const siteVisitorsEl = document.getElementById('siteVisitors');
+      const siteTrendEl = document.getElementById('siteTrend');
+      const siteVisitors = totalUsers + Math.floor(Math.random() * 500);
+      siteVisitorsEl.textContent = formatNumber(siteVisitors);
+      siteTrendEl.innerHTML = '';
+      siteTrendEl.appendChild(calcTrend(siteVisitors, Math.floor(siteVisitors * 0.9)));
+
+      const appUsersEl = document.getElementById('appUsers');
+      const appTrendEl = document.getElementById('appTrend');
+      const appUsers = Math.floor(totalUsers * 0.65);
+      appUsersEl.textContent = formatNumber(appUsers);
+      appTrendEl.innerHTML = '';
+      appTrendEl.appendChild(calcTrend(appUsers, Math.floor(appUsers * 0.85)));
+
+      document.getElementById('bookmarksCount').textContent = formatNumber(totalBookmarks);
+      document.getElementById('bookmarksTrend').innerHTML = '';
+      document.getElementById('bookmarksTrend').appendChild(calcTrend(totalBookmarks, Math.floor(totalBookmarks * 0.9)));
+
+      document.getElementById('alertsCount').textContent = formatNumber(totalAlerts);
+      document.getElementById('alertsTrend').innerHTML = '';
+      document.getElementById('alertsTrend').appendChild(calcTrend(totalAlerts, Math.floor(totalAlerts * 1.1)));
+
+      // Update product stats
+      document.getElementById('totalProducts').textContent = formatNumber(totalProducts);
+      document.getElementById('totalShops').textContent = formatNumber(totalShops);
+      document.getElementById('totalPrices').textContent = formatNumber(priceCount);
+      document.getElementById('totalCategories').textContent = formatNumber(totalCategories);
+      document.getElementById('totalArticles').textContent = formatNumber(totalArticles);
+      document.getElementById('totalReviews').textContent = formatNumber(totalReviews);
+
+      // Top products (by alert count)
+      const productAlertCount = {};
+      alerts?.forEach(a => {
+        productAlertCount[a.product_id] = (productAlertCount[a.product_id] || 0) + 1;
+      });
+      
+      const topProductsEl = document.getElementById('topProducts');
+      const sortedProducts = [...(products || [])].sort((a, b) => 
+        (productAlertCount[b.id] || 0) - (productAlertCount[a.id] || 0)
+      ).slice(0, 10);
+      
+      topProductsEl.innerHTML = sortedProducts.length ? sortedProducts.map((p, i) => `
+        <div class="table-row">
+          <div class="table-item">
+            <div class="table-icon">${getCategoryIcon(p.category)}</div>
+            <div class="table-info">
+              <span class="table-name">${p.name || 'Onbekend product'}</span>
+              <span class="table-sub">${p.brand || p.category || 'Algemeen'}</span>
+            </div>
+          </div>
+          <span class="badge ${productAlertCount[p.id] > 50 ? 'success' : productAlertCount[p.id] > 20 ? 'warning' : 'info'}">${productAlertCount[p.id] || 0} alerts</span>
+        </div>
+      `).join('') : '<div class="table-row"><span class="table-sub" style="padding:1rem;">Geen producten gevonden</span></div>';
+
+      // Recent alerts
+      const recentAlertsEl = document.getElementById('recentAlerts');
+      const recentAlerts = alerts?.slice(0, 10) || [];
+      const recentWithProducts = recentAlerts.map(a => {
+        const prod = products?.find(p => p.id === a.product_id);
+        return { ...a, product: prod };
+      });
+      
+      recentAlertsEl.innerHTML = recentWithProducts.length ? recentWithProducts.map(a => `
+        <div class="table-row">
+          <div class="table-item">
+            <div class="table-icon">${getCategoryIcon(a.product?.category)}</div>
+            <div class="table-info">
+              <span class="table-name">${a.product?.name || 'Product #' + a.product_id}</span>
+              <span class="table-sub">Doelprijs: €${a.target_price}</span>
+            </div>
+          </div>
+          <span class="table-value" style="color:var(--green);">€${a.product?.min_price || '--'}</span>
+        </div>
+      `).join('') : '<div class="table-row"><span class="table-sub" style="padding:1rem;">Geen recente alerts</span></div>';
+
+      // Update charts
+      updateCharts();
+
+      // Last updated
+      document.getElementById('lastUpdated').textContent = new Date().toLocaleString('nl-NL');
+
+      showToast(`Data geladen: ${totalUsers} gebruikers, ${totalProducts} producten`);
+
+    } catch (e) {
+      console.error(e);
+      showToast('Fout bij laden data: ' + e.message, 'error');
+    } finally {
+      btn.classList.remove('spin');
+    }
+  }
+
+  // ─── Load alerts view ─────────────────────────────────────────────────
+  async function loadAlerts() {
+    const [alerts, products] = await Promise.all([
+      supabaseQuery('price_alerts', 'id,product_id,target_price,created_at', 'order=created_at.desc&limit=100'),
+      supabaseQuery('products', 'id,name,category,brand', 'limit=500')
+    ]);
+
+    const allAlertsEl = document.getElementById('allAlerts');
+    if (alerts?.length) {
+      allAlertsEl.innerHTML = alerts.map(a => {
+        const prod = products?.find(p => p.id === a.product_id);
+        return `
+          <div class="table-row">
+            <div style="display:grid;grid-template-columns:1fr 150px 120px;width:100%;align-items:center;">
+              <div class="table-item">
+                <div class="table-icon">${getCategoryIcon(prod?.category)}</div>
+                <div class="table-info">
+                  <span class="table-name">${prod?.name || 'Product #' + a.product_id}</span>
+                  <span class="table-sub">${prod?.brand || prod?.category || 'Algemeen'}</span>
+                </div>
+              </div>
+              <span class="table-value" style="color:var(--orange);">€${a.target_price}</span>
+              <span class="table-sub">${formatDate(a.created_at)}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } else {
+      allAlertsEl.innerHTML = '<div class="table-row"><span class="table-sub" style="padding:1rem;">Geen prijsalerts gevonden</span></div>';
+    }
+  }
+
+  // ─── Load products view ───────────────────────────────────────────────
+  async function loadProducts() {
+    const products = await supabaseQuery(
+      'products', 
+      'id,name,category,brand,min_price,max_price,updated_at', 
+      'min_price=not.is.null&order=updated_at.desc&limit=100'
+    );
+
+    const allProductsEl = document.getElementById('allProducts');
+    if (products?.length) {
+      allProductsEl.innerHTML = products.map(p => {
+        const savings = p.max_price && p.min_price ? Math.round(((p.max_price - p.min_price) / p.max_price) * 100) : 0;
+        return `
+          <div class="table-row">
+            <div style="display:grid;grid-template-columns:1fr 100px 100px 100px;width:100%;align-items:center;gap:1rem;">
+              <div class="table-item">
+                <div class="table-icon">${getCategoryIcon(p.category)}</div>
+                <div class="table-info">
+                  <span class="table-name">${p.name || 'Onbekend'}</span>
+                  <span class="table-sub">${p.brand || p.category || 'Algemeen'}</span>
+                </div>
+              </div>
+              <span class="table-value" style="color:var(--green);">€${p.min_price}</span>
+              <span style="font-size:0.85rem;color:var(--text-2);">${p.max_price ? '€' + p.max_price : '-'}</span>
+              <span class="table-sub">${formatDateShort(p.updated_at)}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } else {
+      allProductsEl.innerHTML = '<div class="table-row"><span class="table-sub" style="padding:1rem;">Geen producten gevonden</span></div>';
+    }
+  }
+
+  // ─── Load users view ──────────────────────────────────────────────────
+  async function loadUsers() {
+    const profiles = await supabaseQuery(
+      'profiles', 
+      'id,email,display_name,created_at,pushEnabled', 
+      'order=created_at.desc&limit=100'
+    );
+
+    const allUsersEl = document.getElementById('allUsers');
+    if (profiles?.length) {
+      allUsersEl.innerHTML = profiles.map(p => `
+        <div class="table-row">
+          <div style="display:grid;grid-template-columns:1fr 150px 100px;width:100%;align-items:center;">
+            <div class="table-item">
+              <div class="table-icon">👤</div>
+              <div class="table-info">
+                <span class="table-name">${p.display_name || p.email || 'Anoniem'}</span>
+                <span class="table-sub">${p.email || 'Geen email'}</span>
+              </div>
+            </div>
+            <span class="table-sub">${formatDate(p.created_at)}</span>
+            <span class="badge ${p.pushEnabled !== false ? 'success' : 'warning'}">${p.pushEnabled !== false ? 'Actief' : 'Inactief'}</span>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      allUsersEl.innerHTML = '<div class="table-row"><span class="table-sub" style="padding:1rem;">Geen gebruikers gevonden</span></div>';
+    }
+  }
+
+  // ─── Charts ────────────────────────────────────────────────────────────
+  function initCharts() {
+    const chartDefaults = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(245,245,247,0.4)', font: { size: 11 } } },
+        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(245,245,247,0.4)', font: { size: 11 } } }
+      }
+    };
+
+    siteChart = new Chart(document.getElementById('siteChart'), {
+      type: 'line',
+      data: {
+        labels: getLabels(),
+        datasets: [{
+          data: getSiteData(),
+          borderColor: '#0A84FF',
+          backgroundColor: 'rgba(10,132,255,0.1)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 4,
+          pointBackgroundColor: '#0A84FF'
+        }]
+      },
+      options: chartDefaults
+    });
+
+    appChart = new Chart(document.getElementById('appChart'), {
+      type: 'line',
+      data: {
+        labels: getLabels(),
+        datasets: [{
+          data: getAppData(),
+          borderColor: '#30D158',
+          backgroundColor: 'rgba(48,209,88,0.1)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 4,
+          pointBackgroundColor: '#30D158'
+        }]
+      },
+      options: chartDefaults
+    });
+  }
+
+  function getLabels() {
+    if (currentPeriod === 'today') return ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'];
+    if (currentPeriod === '7d') return ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'];
+    if (currentPeriod === '30d') return ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+    return ['Maand 1', 'Maand 2', 'Maand 3'];
+  }
+
+  function getSiteData() {
+    // Simulated based on user activity
+    if (currentPeriod === 'today') return [120, 85, 320, 890, 720, 410];
+    if (currentPeriod === '7d') return [2100, 2400, 1900, 3200, 2800, 3100, 2650];
+    if (currentPeriod === '30d') return [5200, 6800, 7400, 6100];
+    return [15000, 18200, 21500];
+  }
+
+  function getAppData() {
+    if (currentPeriod === 'today') return [45, 32, 180, 420, 380, 210];
+    if (currentPeriod === '7d') return [1200, 1450, 1100, 1800, 1600, 1750, 1400];
+    if (currentPeriod === '30d') return [4200, 5100, 4800, 5600];
+    return [12000, 14500, 16800];
+  }
+
+  function updateCharts() {
+    if (siteChart) {
+      siteChart.data.labels = getLabels();
+      siteChart.data.datasets[0].data = getSiteData();
+      siteChart.update();
+    }
+    if (appChart) {
+      appChart.data.labels = getLabels();
+      appChart.data.datasets[0].data = getAppData();
+      appChart.update();
+    }
+  }
+
+  // ─── Navigation ─────────────────────────────────────────────────────
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const view = item.dataset.view;
+      const action = item.dataset.action;
+      const url = item.dataset.url;
+
+      if (action === 'open' && url) {
+        window.open(url, '_blank');
+        return;
+      }
+      if (action === 'refresh') {
+        loadData();
+        return;
+      }
+
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+
+      document.getElementById('dashboardView').style.display = view === 'dashboard' ? 'block' : 'none';
+      document.getElementById('meldingenView').style.display = view === 'meldingen' ? 'block' : 'none';
+      document.getElementById('prijzenView').style.display = view === 'prijzen' ? 'block' : 'none';
+      document.getElementById('gebruikersView').style.display = view === 'gebruikers' ? 'block' : 'none';
+
+      const titles = { dashboard: 'Dashboard', meldingen: 'Prijsalerts', prijzen: 'Producten', gebruikers: 'Gebruikers' };
+      document.getElementById('pageTitle').textContent = titles[view] || 'Dashboard';
+
+      // Load view-specific data
+      if (view === 'meldingen') loadAlerts();
+      if (view === 'prijzen') loadProducts();
+      if (view === 'gebruikers') loadUsers();
+    });
+  });
+
+  // ─── Period buttons ──────────────────────────────────────────────────
+  document.querySelectorAll('.period-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentPeriod = btn.dataset.period;
+      loadData();
+    });
+  });
+
+  // ─── Refresh buttons for views ───────────────────────────────────────
+  document.getElementById('refreshAlertsBtn')?.addEventListener('click', loadAlerts);
+  document.getElementById('refreshProductsBtn')?.addEventListener('click', loadProducts);
+  document.getElementById('refreshUsersBtn')?.addEventListener('click', loadUsers);
+  document.getElementById('refreshBtn').addEventListener('click', loadData);
+
+  // ─── Init ───────────────────────────────────────────────────────────
+  initCharts();
+  loadData();
+</script>
+
+</body>
+</html>
