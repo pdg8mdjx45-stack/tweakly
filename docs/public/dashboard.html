@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Tweakly</title>
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-H44FS0WM7N"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-H44FS0WM7N');
+  </script>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script type="importmap">
+  {
+    "imports": {
+      "chart.js/auto": "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/auto/+esm"
+    }
+  }
+  </script>
+  <style>
+    :root {
+      --green:        #30D158;
+      --green-dark:   #1C7A37;
+      --green-glow:   rgba(48,209,88,0.28);
+      --green-dim:    rgba(48,209,88,0.10);
+      --blue:         #0A84FF;
+      --blue-dim:     rgba(10,132,255,0.12);
+      --red:          #FF453A;
+      --red-dim:      rgba(255,69,58,0.12);
+      --purple:       #5856D6;
+      --purple-dim:   rgba(88,86,214,0.12);
+      --orange:       #FF9500;
+      --orange-dim:   rgba(255,149,0,0.12);
+      --bg:           #000000;
+      --bg-1:         #0a0a0a;
+      --bg-2:         #111111;
+      --bg-3:         #1a1a1a;
+      --text:         #f5f5f7;
+      --text-2:       rgba(245,245,247,0.56);
+      --text-3:       rgba(245,245,247,0.28);
+      --glass:        rgba(255,255,255,0.06);
+      --glass-hi:     rgba(255,255,255,0.10);
+      --glass-bd:     rgba(255,255,255,0.10);
+      --r:            12px;
+      --r-lg:         20px;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    a { text-decoration: none; color: inherit; }
+    button { font-family: inherit; cursor: pointer; }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 240px;
+      height: 100vh;
+      background: var(--bg-1);
+      border-right: 0.5px solid rgba(255,255,255,0.06);
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      padding: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    .brand img { width: 28px; height: 28px; border-radius: 7px; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-bottom: 4px;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .nav-item.active { background: var(--green-dim); color: var(--green); }
+    .nav-item svg { width: 18px; height: 18px; opacity: 0.7; flex-shrink: 0; }
+
+    .nav-section {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 1.5rem 12px 0.75rem;
+    }
+
+    .main {
+      margin-left: 240px;
+      padding: 2rem 2.5rem;
+      min-height: 100vh;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+    .page-title { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; }
+    .period-select {
+      display: flex;
+      background: var(--bg-2);
+      border-radius: 10px;
+      padding: 4px;
+      border: 0.5px solid rgba(255,255,255,0.08);
+    }
+    .period-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: var(--text-2);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .period-btn.active { background: var(--glass-hi); color: var(--text); }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--bg-2);
+      border: 0.5px solid rgba(255,255,255,0.08);
+      border-radius: var(--r-lg);
+      padding: 1.25rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    }
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    .stat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .stat-icon svg { width: 18px; height: 18px; stroke-width: 1.6; }
+    .stat-icon.green { background: var(--green-dim); }
+    .stat-icon.green svg { stroke: var(--green); fill: none; }
+    .stat-icon.blue { background: var(--blue-dim); }
+    .stat-icon.blue svg { stroke: var(--blue); fill: none; }
+    .stat-icon.purple { background: var(--purple-dim); }
+    .stat-icon.purple svg { stroke: var(--purple); fill: none; }
+    .stat-icon.orange { background: var(--orange-dim); }
+    .stat-icon.orange svg { stroke: var(--orange); fill: none; }
+
+    .stat-trend {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+    .stat-trend.up { background: var(--green-dim); color: var(--green); }
+    .stat-trend.down { background: var(--red-dim); color: var(--red); }
+
+    .stat-value { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+    .stat-label { font-size: 0.78rem; color: var(--text-2); }
+    .stat-value.loading { opacity: 0.5; }
+
+    .section {
+      margin-bottom: 2rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .section-title { font-size: 1.1rem; font-weight: 600; }
+    .section-link { font-size: 0.8rem; color: var(--blue); cursor: pointer; }
+    .section-link:hover { text-decoration: underline; }
+
+    .chart-card {
+      background: var(--bg-2);
+      border: 0.5px solid rgba(255,255,255,0.08);
+      border-radius: var(--r-lg);
+      padding: 1.5rem;
+    }
+    .chart-wrap { position: relative; height: 280px; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .table-card {
+      background: var(--bg-2);
+      border: 0.5px solid rgba(255,255,255,0.08);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+    }
+    .table-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 0.5px solid rgba(255,255,255,0.06);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .table-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.25rem;
+      border-bottom: 0.5px solid rgba(255,255,255,0.04);
+      transition: background 0.15s;
+    }
+    .table-row:hover { background: rgba(255,255,255,0.02); }
+    .table-row:last-child { border-bottom: none; }
+    .table-item { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+    .table-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--glass);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .table-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .table-name { font-size: 0.85rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .table-sub { font-size: 0.72rem; color: var(--text-3); }
+    .table-value { font-size: 0.85rem; font-weight: 600; color: var(--green); text-align: right; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .badge.success { background: var(--green-dim); color: var(--green); }
+    .badge.warning { background: var(--orange-dim); color: var(--orange); }
+    .badge.info { background: var(--blue-dim); color: var(--blue); }
+
+    .app-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    .app-card {
+      background: var(--bg-2);
+      border: 0.5px solid rgba(255,255,255,0.08);
+      border-radius: var(--r-lg);
+      padding: 1.25rem;
+      text-align: center;
+    }
+    .app-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .app-value { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; }
+    .app-label { font-size: 0.75rem; color: var(--text-2); }
+
+    .refresh-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      color: var(--text-2);
+      background: var(--bg-2);
+      border: 0.5px solid rgba(255,255,255,0.08);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .refresh-btn:hover { background: var(--bg-3); color: var(--text); }
+    .refresh-btn svg { width: 14px; height: 14px; }
+    .refresh-btn.spin svg { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--bg-2);
+      border: 0.5px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      font-size: 0.85rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-color: var(--green); }
+    .toast.error { border-color: var(--red); }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--text-3);
+      border-top-color: var(--text);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @media (max-width: 1100px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .two-col { grid-template-columns: 1fr; }
+      .app-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 1.5rem; }
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 99px; }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="brand">
+    <img src="logo.png" alt="Tweakly" onerror="this.style.display='none'">
+    Tweakly
+  </div>
+
+  <div class="nav-section">Overzicht</div>
+  <button class="nav-item active" data-view="dashboard">
+    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    Dashboard
+  </button>
+  <button class="nav-item" data-view="meldingen">
+    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    Meldingen
+  </button>
+  <button class="nav-item" data-view="prijzen">
+    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+    Prijzen
+  </button>
+  <button class="nav-item" data-view="gebruikers">
+    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    Gebruikers
+  </button>
+
+  <div class="nav-section">Analytics</div>
+  <button class="nav-item" data-action="open" data-url="https://tweakly.netlify.app">
+    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    Website
+  </button>
+  <button class="nav-item" data-action="open" data-url="https://app.tweakly.nl">
+    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+    App
+  </button>
+  <button class="nav-item" data-action="open" data-url="https://console.firebase.google.com/project/tweakly-e6a6f/analytics/overview">
+    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+    Firebase
+  </button>
+  <button class="nav-item" data-action="open" data-url="https://supabase.com/dashboard/glnpdfbnyijdzvulzbfv">
+    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+    Supabase
+  </button>
+  <button class="nav-item" data-action="refresh">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+    Vernieuwen
+  </button>
+</aside>
+
+<main class="main">
+  <header class="header">
+    <h1 class="page-title" id="pageTitle">Dashboard</h1>
+    <div style="display:flex;gap:12px;align-items:center;">
+      <button class="refresh-btn" id="refreshBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+        Vernieuwen
+      </button>
+      <div class="period-select">
+        <button class="period-btn" data-period="today">Vandaag</button>
+        <button class="period-btn" data-period="7d">7 dagen</button>
+        <button class="period-btn active" data-period="30d">30 dagen</button>
+        <button class="period-btn" data-period="90d">90 dagen</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="dashboardView">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon green">
+            <svg viewBox="0 0 24 24"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+          </div>
+          <span class="stat-trend" id="siteTrend">--</span>
+        </div>
+        <div class="stat-value" id="siteVisitors">--</div>
+        <div class="stat-label">Website bezoekers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon blue">
+            <svg viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <span class="stat-trend" id="appTrend">--</span>
+        </div>
+        <div class="stat-value" id="appUsers">--</div>
+        <div class="stat-label">App gebruikers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon purple">
+            <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <span class="stat-trend" id="bookmarksTrend">--</span>
+        </div>
+        <div class="stat-value" id="bookmarksCount">--</div>
+        <div class="stat-label">Bladwijzers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon orange">
+            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </div>
+          <span class="stat-trend" id="alertsTrend">--</span>
+        </div>
+        <div class="stat-value" id="alertsCount">--</div>
+        <div class="stat-label">Prijsalerts</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">Website verkeer</h2>
+          <a href="https://tweakly.netlify.app" target="_blank" class="section-link">Website →</a>
+        </div>
+        <div class="chart-card">
+          <div class="chart-wrap">
+            <canvas id="siteChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">App gebruikers</h2>
+          <a href="https://app.tweakly.nl" target="_blank" class="section-link">App →</a>
+        </div>
+        <div class="chart-card">
+          <div class="chart-wrap">
+            <canvas id="appChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">Product statistieken</h2>
+        <a href="https://supabase.com/dashboard/glnpdfbnyijdzvulzbfv" target="_blank" class="section-link">Database →</a>
+      </div>
+      <div class="app-stats">
+        <div class="app-card">
+          <div class="app-icon">🏷️</div>
+          <div class="app-value" id="totalProducts">--</div>
+          <div class="app-label">Producten</div>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">🏪</div>
+          <div class="app-value" id="totalShops">--</div>
+          <div class="app-label">Webshops</div>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">📊</div>
+          <div class="app-value" id="totalPrices">--</div>
+          <div class="app-label">Prijzen</div>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">📁</div>
+          <div class="app-value" id="totalCategories">--</div>
+          <div class="app-label">Categoriën</div>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">📰</div>
+          <div class="app-value" id="totalArticles">--</div>
+          <div class="app-label">Artikelen</div>
+        </div>
+        <div class="app-card">
+          <div class="app-icon">⭐</div>
+          <div class="app-value" id="totalReviews">--</div>
+          <div class="app-label">Reviews</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">Top producten</h2>
+          <a href="https://app.tweakly.nl/prijzen" target="_blank" class="section-link">Alle prijzen →</a>
+        </div>
+        <div class="table-card">
+          <div class="table-header">Meest gevolgd</div>
+          <div id="topProducts"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">Recente prijsdalingen</h2>
+          <a href="https://app.tweakly.nl/meldingen" target="_blank" class="section-link">Alle meldingen →</a>
+        </div>
+        <div class="table-card">
+          <div class="table-header">Laatste 10 alerts</div>
+          <div id="recentAlerts"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="meldingenView" style="display:none;">
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">Alle prijsalerts</h2>
+        <button class="refresh-btn" id="refreshAlertsBtn" style="margin-left:auto;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          Vernieuwen
+        </button>
+      </div>
+      <div class="table-card" style="max-height:calc(100vh - 250px);overflow-y:auto;">
+        <div class="table-header" style="position:sticky;top:0;background:var(--bg-2);z-index:10;">
+          <div style="display:grid;grid-template-columns:1fr 150px 120px;">
+            <span>Product</span>
+            <span>Doelprijs</span>
+            <span>Aangemaakt</span>
+          </div>
+        </div>
+        <div id="allAlerts"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="prijzenView" style="display:none;">
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">Alle producten</h2>
+        <button class="refresh-btn" id="refreshProductsBtn" style="margin-left:auto;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          Vernieuwen
+        </button>
+      </div>
+      <div class="table-card" style="max-height:calc(100vh - 250px);overflow-y:auto;">
+        <div class="table-header" style="position:sticky;top:0;background:var(--bg-2);z-index:10;">
+          <div style="display:grid;grid-template-columns:1fr 120px 100px 100px;">
+            <span>Product</span>
+            <span>Min prijs</span>
+            <span>Max prijs</span>
+            <span>Laatste update</span>
+          </div>
+        </div>
+        <div id="allProducts"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="gebruikersView" style="display:none;">
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">Alle gebruikers</h2>
+        <button class="refresh-btn" id="refreshUsersBtn" style="margin-left:auto;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          Vernieuwen
+        </button>
+      </div>
+      <div class="table-card" style="max-height:calc(100vh - 250px);overflow-y:auto;">
+        <div class="table-header" style="position:sticky;top:0;background:var(--bg-2);z-index:10;">
+          <div style="display:grid;grid-template-columns:1fr 150px 100px;">
+            <span>Gebruiker</span>
+            <span>Aangemeld</span>
+            <span>Status</span>
+          </div>
+        </div>
+        <div id="allUsers"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer style="margin-top: 3rem; padding-top: 1.5rem; border-top: 0.5px solid rgba(255,255,255,0.06); text-align: center;">
+    <p style="font-size: 0.75rem; color: var(--text-3);">
+      Laatst bijgewerkt: <span id="lastUpdated">--</span> · Data via Supabase API
+    </p>
+  </footer>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import Chart from 'chart.js/auto';
+
+  // Supabase config (not used - data is mocked)
+  // To connect to real data, replace mock data in loadData, loadAlerts, loadProducts, loadUsers
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        console.warn(`Supabase ${table}:`, err);
+        return [];
+      }
+      return await res.json();
+    } catch (e) {
+      console.error(`Error fetching ${table}:`, e);
+      return [];
+    }
+  }
+
+  // ─── Format helpers ────────────────────────────────────────────────────
+  function formatNumber(num) {
+    if (num === null || num === undefined) return '0';
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num.toString();
+  }
+
+  function formatDate(date) {
+    if (!date) return '-';
+    return new Date(date).toLocaleDateString('nl-NL', { 
+      day: 'numeric', 
+      month: 'short',
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  }
+
+  function formatDateShort(date) {
+    if (!date) return '-';
+    return new Date(date).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
+  }
+
+  function calcTrend(current, previous) {
+    const el = document.createElement('span');
+    if (!previous || previous === 0) {
+      el.className = 'stat-trend';
+      el.textContent = '--';
+      return el;
+    }
+    const diff = ((current - previous) / previous) * 100;
+    el.className = `stat-trend ${diff >= 0 ? 'up' : 'down'}`;
+    el.textContent = `${diff >= 0 ? '+' : ''}${diff.toFixed(0)}%`;
+    return el;
+  }
+
+  function getCategoryIcon(cat) {
+    const icons = {
+      'Smartphones': '📱',
+      'Audio': '🎧',
+      'Laptops': '💻',
+      'TV\'s': '📺',
+      'Tablets': '📱',
+      'Cameras': '📷',
+      'Gaming': '🎮',
+      'Wearables': '⌚',
+      'Audio/Video': '🎬',
+      'Default': '📦'
+    };
+    return icons[cat] || icons['Default'];
+  }
+
+  // ─── Show toast ───────────────────────────────────────────────────────
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast ${type} show`;
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ─── Load all data ────────────────────────────────────────────────────
+  // NOTE: This dashboard shows mock data. To get real GA4 data, you would need
+  // a Google Analytics Data API key and service account. For now, showing placeholder.
+  async function loadData() {
+    const btn = document.getElementById('refreshBtn');
+    btn.classList.add('spin');
+    
+    // Show loading state
+    document.getElementById('siteVisitors').innerHTML = '<span class="loading-spinner"></span>';
+    document.getElementById('appUsers').innerHTML = '<span class="loading-spinner"></span>';
+    document.getElementById('bookmarksCount').innerHTML = '<span class="loading-spinner"></span>';
+    document.getElementById('alertsCount').innerHTML = '<span class="loading-spinner"></span>';
+
+    // Wait a moment to show loading
+    await new Promise(r => setTimeout(r, 500));
+
+    // For now, use realistic placeholder numbers that you can update manually
+    // In production, this would connect to Google Analytics Data API
+    const mockData = {
+      siteVisitors: 24350,
+      appUsers: 3200,
+      bookmarks: 1847,
+      alerts: 456,
+      products: 1250,
+      shops: 12,
+      categories: 8,
+      articles: 156,
+      reviews: 89
+    };
+
+    // Update stats
+    document.getElementById('siteVisitors').textContent = formatNumber(mockData.siteVisitors);
+    document.getElementById('siteTrend').innerHTML = '';
+    document.getElementById('siteTrend').appendChild(calcTrend(mockData.siteVisitors, Math.floor(mockData.siteVisitors * 0.92)));
+
+    document.getElementById('appUsers').textContent = formatNumber(mockData.appUsers);
+    document.getElementById('appTrend').innerHTML = '';
+    document.getElementById('appTrend').appendChild(calcTrend(mockData.appUsers, Math.floor(mockData.appUsers * 0.88)));
+
+    document.getElementById('bookmarksCount').textContent = formatNumber(mockData.bookmarks);
+    document.getElementById('bookmarksTrend').innerHTML = '';
+    document.getElementById('bookmarksTrend').appendChild(calcTrend(mockData.bookmarks, Math.floor(mockData.bookmarks * 0.95)));
+
+    document.getElementById('alertsCount').textContent = formatNumber(mockData.alerts);
+    document.getElementById('alertsTrend').innerHTML = '';
+    document.getElementById('alertsTrend').appendChild(calcTrend(mockData.alerts, Math.floor(mockData.alerts * 1.05)));
+
+    // Product stats
+    document.getElementById('totalProducts').textContent = formatNumber(mockData.products);
+    document.getElementById('totalShops').textContent = formatNumber(mockData.shops);
+    document.getElementById('totalPrices').textContent = formatNumber(mockData.products * 2);
+    document.getElementById('totalCategories').textContent = formatNumber(mockData.categories);
+    document.getElementById('totalArticles').textContent = formatNumber(mockData.articles);
+    document.getElementById('totalReviews').textContent = formatNumber(mockData.reviews);
+
+    // Update charts
+    updateCharts();
+
+    // Last updated
+    document.getElementById('lastUpdated').textContent = new Date().toLocaleString('nl-NL');
+
+    showToast('Dashboard geladen - data is placeholder');
+
+    btn.classList.remove('spin');
+  }
+
+  // ─── Load alerts view ─────────────────────────────────────────────────
+  async function loadAlerts() {
+    // Mock alerts data - replace with real data source
+    const mockAlerts = [
+      { id: 1, product_id: 101, target_price: 279, created_at: '2026-04-02T10:30:00Z' },
+      { id: 2, product_id: 102, target_price: 899, created_at: '2026-04-01T15:45:00Z' },
+      { id: 3, product_id: 103, target_price: 149, created_at: '2026-04-01T09:20:00Z' },
+      { id: 4, product_id: 104, target_price: 599, created_at: '2026-03-31T18:00:00Z' },
+      { id: 5, product_id: 105, target_price: 249, created_at: '2026-03-30T12:15:00Z' },
+    ];
+    const mockProducts = [
+      { id: 101, name: 'Sony WH-1000XM5', category: 'Audio', brand: 'Sony' },
+      { id: 102, name: 'iPhone 15 Pro', category: 'Smartphones', brand: 'Apple' },
+      { id: 103, name: 'Samsung Galaxy S24', category: 'Smartphones', brand: 'Samsung' },
+      { id: 104, name: 'MacBook Air M3', category: 'Laptops', brand: 'Apple' },
+      { id: 105, name: 'AirPods Pro 2', category: 'Audio', brand: 'Apple' },
+    ];
+
+    const allAlertsEl = document.getElementById('allAlerts');
+    allAlertsEl.innerHTML = mockAlerts.map(a => {
+      const prod = mockProducts.find(p => p.id === a.product_id);
+      return `
+        <div class="table-row">
+          <div style="display:grid;grid-template-columns:1fr 150px 120px;width:100%;align-items:center;">
+            <div class="table-item">
+              <div class="table-icon">${getCategoryIcon(prod?.category)}</div>
+              <div class="table-info">
+                <span class="table-name">${prod?.name || 'Product #' + a.product_id}</span>
+                <span class="table-sub">${prod?.brand || prod?.category || 'Algemeen'}</span>
+              </div>
+            </div>
+            <span class="table-value" style="color:var(--orange);">€${a.target_price}</span>
+            <span class="table-sub">${formatDate(a.created_at)}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ─── Load products view ───────────────────────────────────────────────
+  async function loadProducts() {
+    // Mock products data - replace with real data source
+    const mockProducts = [
+      { id: 1, name: 'Sony WH-1000XM5', category: 'Audio', brand: 'Sony', min_price: 279, max_price: 349, updated_at: '2026-04-02T10:00:00Z' },
+      { id: 2, name: 'iPhone 15 Pro 256GB', category: 'Smartphones', brand: 'Apple', min_price: 1199, max_price: 1299, updated_at: '2026-04-01T15:00:00Z' },
+      { id: 3, name: 'Samsung Galaxy S24 Ultra', category: 'Smartphones', brand: 'Samsung', min_price: 1299, max_price: 1499, updated_at: '2026-04-01T12:00:00Z' },
+      { id: 4, name: 'MacBook Air 15" M3', category: 'Laptops', brand: 'Apple', min_price: 1299, max_price: 1499, updated_at: '2026-03-31T09:00:00Z' },
+      { id: 5, name: 'AirPods Pro 2', category: 'Audio', brand: 'Apple', min_price: 229, max_price: 279, updated_at: '2026-03-30T18:00:00Z' },
+      { id: 6, name: 'LG OLED C3 55"', category: "TV's", brand: 'LG', min_price: 1099, max_price: 1499, updated_at: '2026-03-29T14:00:00Z' },
+      { id: 7, name: 'Dyson V15 Detect', category: 'Huishouden', brand: 'Dyson', min_price: 599, max_price: 749, updated_at: '2026-03-28T11:00:00Z' },
+      { id: 8, name: 'PlayStation 5', category: 'Gaming', brand: 'Sony', min_price: 499, max_price: 599, updated_at: '2026-03-27T16:00:00Z' },
+    ];
+
+    const allProductsEl = document.getElementById('allProducts');
+    allProductsEl.innerHTML = mockProducts.map(p => {
+      const savings = p.max_price && p.min_price ? Math.round(((p.max_price - p.min_price) / p.max_price) * 100) : 0;
+      return `
+        <div class="table-row">
+          <div style="display:grid;grid-template-columns:1fr 100px 100px 100px;width:100%;align-items:center;gap:1rem;">
+            <div class="table-item">
+              <div class="table-icon">${getCategoryIcon(p.category)}</div>
+              <div class="table-info">
+                <span class="table-name">${p.name}</span>
+                <span class="table-sub">${p.brand} · ${p.category}</span>
+              </div>
+            </div>
+            <span class="table-value" style="color:var(--green);">€${p.min_price}</span>
+            <span style="font-size:0.85rem;color:var(--text-2);">€${p.max_price}</span>
+            <span class="table-sub">${formatDateShort(p.updated_at)}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ─── Load users view ──────────────────────────────────────────────────
+  async function loadUsers() {
+    // Mock users data - replace with real data source
+    const mockUsers = [
+      { id: 1, display_name: 'Sander V.', email: 'sander@example.com', created_at: '2026-04-02T08:30:00Z', pushEnabled: true },
+      { id: 2, display_name: 'Laura D.', email: 'laura@example.com', created_at: '2026-04-01T14:20:00Z', pushEnabled: true },
+      { id: 3, display_name: 'Thomas K.', email: 'thomas@example.com', created_at: '2026-03-31T09:15:00Z', pushEnabled: false },
+      { id: 4, display_name: 'Emma W.', email: 'emma@example.com', created_at: '2026-03-30T16:45:00Z', pushEnabled: true },
+      { id: 5, display_name: 'Mark R.', email: 'mark@example.com', created_at: '2026-03-29T11:00:00Z', pushEnabled: true },
+    ];
+
+    const allUsersEl = document.getElementById('allUsers');
+    allUsersEl.innerHTML = mockUsers.map(p => `
+      <div class="table-row">
+        <div style="display:grid;grid-template-columns:1fr 150px 100px;width:100%;align-items:center;">
+          <div class="table-item">
+            <div class="table-icon">👤</div>
+            <div class="table-info">
+              <span class="table-name">${p.display_name}</span>
+              <span class="table-sub">${p.email}</span>
+            </div>
+          </div>
+          <span class="table-sub">${formatDate(p.created_at)}</span>
+          <span class="badge ${p.pushEnabled ? 'success' : 'warning'}">${p.pushEnabled ? 'Actief' : 'Inactief'}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+            <span class="table-sub">${formatDate(p.created_at)}</span>
+            <span class="badge ${p.pushEnabled !== false ? 'success' : 'warning'}">${p.pushEnabled !== false ? 'Actief' : 'Inactief'}</span>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      allUsersEl.innerHTML = '<div class="table-row"><span class="table-sub" style="padding:1rem;">Geen gebruikers gevonden</span></div>';
+    }
+  }
+
+  // ─── Charts ────────────────────────────────────────────────────────────
+  function initCharts() {
+    const chartDefaults = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(245,245,247,0.4)', font: { size: 11 } } },
+        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(245,245,247,0.4)', font: { size: 11 } } }
+      }
+    };
+
+    siteChart = new Chart(document.getElementById('siteChart'), {
+      type: 'line',
+      data: {
+        labels: getLabels(),
+        datasets: [{
+          data: getSiteData(),
+          borderColor: '#0A84FF',
+          backgroundColor: 'rgba(10,132,255,0.1)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 4,
+          pointBackgroundColor: '#0A84FF'
+        }]
+      },
+      options: chartDefaults
+    });
+
+    appChart = new Chart(document.getElementById('appChart'), {
+      type: 'line',
+      data: {
+        labels: getLabels(),
+        datasets: [{
+          data: getAppData(),
+          borderColor: '#30D158',
+          backgroundColor: 'rgba(48,209,88,0.1)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 4,
+          pointBackgroundColor: '#30D158'
+        }]
+      },
+      options: chartDefaults
+    });
+  }
+
+  function getLabels() {
+    if (currentPeriod === 'today') return ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'];
+    if (currentPeriod === '7d') return ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'];
+    if (currentPeriod === '30d') return ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+    return ['Maand 1', 'Maand 2', 'Maand 3'];
+  }
+
+  function getSiteData() {
+    // Simulated based on user activity
+    if (currentPeriod === 'today') return [120, 85, 320, 890, 720, 410];
+    if (currentPeriod === '7d') return [2100, 2400, 1900, 3200, 2800, 3100, 2650];
+    if (currentPeriod === '30d') return [5200, 6800, 7400, 6100];
+    return [15000, 18200, 21500];
+  }
+
+  function getAppData() {
+    if (currentPeriod === 'today') return [45, 32, 180, 420, 380, 210];
+    if (currentPeriod === '7d') return [1200, 1450, 1100, 1800, 1600, 1750, 1400];
+    if (currentPeriod === '30d') return [4200, 5100, 4800, 5600];
+    return [12000, 14500, 16800];
+  }
+
+  function updateCharts() {
+    if (siteChart) {
+      siteChart.data.labels = getLabels();
+      siteChart.data.datasets[0].data = getSiteData();
+      siteChart.update();
+    }
+    if (appChart) {
+      appChart.data.labels = getLabels();
+      appChart.data.datasets[0].data = getAppData();
+      appChart.update();
+    }
+  }
+
+  // ─── Navigation ─────────────────────────────────────────────────────
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const view = item.dataset.view;
+      const action = item.dataset.action;
+      const url = item.dataset.url;
+
+      if (action === 'open' && url) {
+        window.open(url, '_blank');
+        return;
+      }
+      if (action === 'refresh') {
+        loadData();
+        return;
+      }
+
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+
+      document.getElementById('dashboardView').style.display = view === 'dashboard' ? 'block' : 'none';
+      document.getElementById('meldingenView').style.display = view === 'meldingen' ? 'block' : 'none';
+      document.getElementById('prijzenView').style.display = view === 'prijzen' ? 'block' : 'none';
+      document.getElementById('gebruikersView').style.display = view === 'gebruikers' ? 'block' : 'none';
+
+      const titles = { dashboard: 'Dashboard', meldingen: 'Prijsalerts', prijzen: 'Producten', gebruikers: 'Gebruikers' };
+      document.getElementById('pageTitle').textContent = titles[view] || 'Dashboard';
+
+      // Load view-specific data
+      if (view === 'meldingen') loadAlerts();
+      if (view === 'prijzen') loadProducts();
+      if (view === 'gebruikers') loadUsers();
+    });
+  });
+
+  // ─── Period buttons ──────────────────────────────────────────────────
+  document.querySelectorAll('.period-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentPeriod = btn.dataset.period;
+      loadData();
+    });
+  });
+
+  // ─── Refresh buttons for views ───────────────────────────────────────
+  document.getElementById('refreshAlertsBtn')?.addEventListener('click', loadAlerts);
+  document.getElementById('refreshProductsBtn')?.addEventListener('click', loadProducts);
+  document.getElementById('refreshUsersBtn')?.addEventListener('click', loadUsers);
+  document.getElementById('refreshBtn').addEventListener('click', loadData);
+
+  // ─── Init ───────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('Dashboard initializing...');
+    try {
+      initCharts();
+      console.log('Charts initialized');
+      loadData();
+      console.log('Data loaded');
+    } catch (e) {
+      console.error('Init error:', e);
+    }
+  });
+</script>
+
+</body>
+</html>
