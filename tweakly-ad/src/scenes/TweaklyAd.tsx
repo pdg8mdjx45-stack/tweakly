@@ -1,5 +1,5 @@
 import {Circle, Img, makeScene2D, Rect, Txt} from '@motion-canvas/2d';
-import {all, createRef, createSignal, easeInOutCubic, easeOutCubic, linear, loop, waitFor} from '@motion-canvas/core';
+import {all, createRef, createSignal, easeInOutCubic, easeOutCubic, linear, loop, spawn, waitFor} from '@motion-canvas/core';
 import {Reference, ThreadGenerator} from '@motion-canvas/core';
 import logoSrc from '../assets/logo.png';
 
@@ -114,7 +114,6 @@ export default makeScene2D(function* (view) {
   const outroBg = createRef<Rect>();
 
   // ── Layout ─────────────────────────────────────────────
-  view.fill('#000000');
   view.add(
     <>
       {/* Background */}
@@ -265,13 +264,13 @@ export default makeScene2D(function* (view) {
   );
 
   // ── Comet (background, loops forever) ─────────────────
-  view.spawn(
+  spawn(
     loop(Infinity, function* () {
       yield* cometAngle(cometAngle() + 1, ORBIT_DURATION, linear);
     }),
   );
 
-  view.spawn(
+  spawn(
     loop(Infinity, function* () {
       const headIdx = Math.floor((cometAngle() % 1) * N);
       for (let i = 0; i < COMET_TAIL; i++) {

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "jsxImportSource": "@motion-canvas/2d",
+    "paths": {
+      "@motion-canvas/2d/jsx-runtime": ["./node_modules/@motion-canvas/2d/lib/jsx-runtime"],
+      "@motion-canvas/2d/jsx-dev-runtime": ["./node_modules/@motion-canvas/2d/lib/jsx-dev-runtime"]
+    },
+    "strict": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": false
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
+}
