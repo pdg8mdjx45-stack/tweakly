@@ -3,29 +3,36 @@
  * Displays all bookmarked articles with swipe-to-delete and clear-all.
  */
 
+import { ClearLiquidGlass } from '@/components/clear-liquid-glass';
+import { GlassPageHeader } from '@/components/glass-page-header';
+import { GlassShimmer } from '@/components/glass-shimmer';
+import { LiquidScreen } from '@/components/liquid-screen';
+import { ConfirmSheet } from '@/components/confirm-sheet';
+import { IconSymbol } from '@/components/ui/icon-symbol';
+import { Colors, Palette, Radius, Shadow, Spacing } from '@/constants/theme';
+import { type Bookmark, useBookmarks } from '@/hooks/use-bookmarks';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { formatRSSDate } from '@/hooks/use-rss-feed';
+import { useReduceMotion } from '@/hooks/use-reduce-motion';
+import { retrieveArticle, storeArticle } from '@/services/article-store';
+import type { Article, FeedCategory } from '@/types/rss';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import { useCallback } from 'react';
+import Animated, {
+  FadeInDown,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
+import { useCallback, useState } from 'react';
 import {
-  ActionSheetIOS,
-  Alert,
   FlatList,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-
-import { BackButton } from '@/components/back-button';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
-import { type Bookmark, useBookmarks } from '@/hooks/use-bookmarks';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { formatRSSDate } from '@/hooks/use-rss-feed';
-import { retrieveArticle, storeArticle } from '@/services/article-store';
-import type { Article, FeedCategory } from '@/types/rss';
 
 const CATEGORY_COLOR: Record<string, string> = {
   nieuws: Palette.primary,
@@ -33,14 +40,17 @@ const CATEGORY_COLOR: Record<string, string> = {
   prijzen: Palette.accent,
 };
 
-function BookmarkCard({ bookmark, onRemove }: { bookmark: Bookmark; onRemove: () => void }) {
+function BookmarkCard({ bookmark, onRemove, index, animationsEnabled }: { bookmark: Bookmark; onRemove: () => void; index: number; animationsEnabled: boolean }) {
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
+  const isDark = colorScheme === 'dark';
   const router = useRouter();
   const catColor = CATEGORY_COLOR[bookmark.category] ?? Palette.primary;
 
+  const scale = useSharedValue(1);
+  const pressStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+
   const handlePress = useCallback(() => {
-    // Reconstruct a minimal Article and store it so the detail screen can retrieve it
     const cached = retrieveArticle(bookmark.id);
     if (!cached) {
       const rebuilt: Article = {
@@ -65,46 +75,61 @@ function BookmarkCard({ bookmark, onRemove }: { bookmark: Bookmark; onRemove: ()
   }, [bookmark.url]);
 
   return (
-    <Pressable
-      onPress={handlePress}
-      style={({ pressed }) => [styles.card, { backgroundColor: colors.surface }, pressed && styles.pressed]}
+    <Animated.View
+      entering={animationsEnabled ? FadeInDown.delay(Math.min(index, 8) * 45).springify().damping(18).stiffness(110) : undefined}
+      style={pressStyle}
     >
-      {bookmark.imageUrl ? (
-        <Image source={{ uri: bookmark.imageUrl }} style={styles.cardImage} contentFit="cover" transition={200} />
-      ) : null}
-      <View style={styles.cardContent}>
-        <View style={styles.cardMeta}>
-          <View style={[styles.pill, { backgroundColor: catColor + '20' }]}>
-            <Text style={[styles.pillText, { color: catColor }]}>{bookmark.category.toUpperCase()}</Text>
+      <Pressable
+        onPress={handlePress}
+        onPressIn={() => { scale.value = withSpring(0.97, { damping: 15, stiffness: 300 }); }}
+        onPressOut={() => { scale.value = withSpring(1, { damping: 15, stiffness: 300 }); }}
+      >
+        <ClearLiquidGlass isDark={isDark} borderRadius={Radius.lg} style={styles.card}>
+          <GlassShimmer isDark={isDark} borderRadius={Radius.lg} intensity={0.6} />
+          {bookmark.imageUrl ? (
+            <Image source={{ uri: bookmark.imageUrl }} style={styles.cardImage} contentFit="cover" transition={200} />
+          ) : null}
+          <View style={styles.cardContent}>
+            <View style={styles.cardMeta}>
+              <View style={[styles.pill, { backgroundColor: catColor + '20' }]}>
+                <Text style={[styles.pillText, { color: catColor }]}>{bookmark.category.toUpperCase()}</Text>
+              </View>
+              <Text style={[styles.date, { color: colors.textSecondary }]}>
+                {formatRSSDate(bookmark.savedAt)}
+              </Text>
+            </View>
+            <Text style={[styles.title, { color: colors.text }]} numberOfLines={2}>{bookmark.title}</Text>
+            {bookmark.summary ? (
+              <Text style={[styles.summary, { color: colors.textSecondary }]} numberOfLines={2}>{bookmark.summary}</Text>
+            ) : null}
+            <View style={styles.cardActions}>
+              <Pressable onPress={handleOpenBrowser} hitSlop={8} style={styles.actionBtn}>
+                <IconSymbol name="safari" size={14} color={colors.textSecondary} />
+                <Text style={[styles.actionText, { color: colors.textSecondary }]}>Browser</Text>
+              </Pressable>
+              <Pressable onPress={onRemove} hitSlop={8} style={styles.actionBtn}>
+                <IconSymbol name="trash" size={14} color={Palette.danger} />
+                <Text style={[styles.actionText, { color: Palette.danger }]}>Verwijder</Text>
+              </Pressable>
+            </View>
           </View>
-          <Text style={[styles.date, { color: colors.textSecondary }]}>
-            {formatRSSDate(bookmark.savedAt)}
-          </Text>
-        </View>
-        <Text style={[styles.title, { color: colors.text }]} numberOfLines={2}>{bookmark.title}</Text>
-        {bookmark.summary ? (
-          <Text style={[styles.summary, { color: colors.textSecondary }]} numberOfLines={2}>{bookmark.summary}</Text>
-        ) : null}
-        <View style={styles.cardActions}>
-          <Pressable onPress={handleOpenBrowser} hitSlop={8} style={styles.actionBtn}>
-            <IconSymbol name="safari" size={14} color={colors.textSecondary} />
-            <Text style={[styles.actionText, { color: colors.textSecondary }]}>Browser</Text>
-          </Pressable>
-          <Pressable onPress={onRemove} hitSlop={8} style={styles.actionBtn}>
-            <IconSymbol name="trash" size={14} color={Palette.danger} />
-            <Text style={[styles.actionText, { color: Palette.danger }]}>Verwijder</Text>
-          </Pressable>
-        </View>
-      </View>
-    </Pressable>
+        </ClearLiquidGlass>
+      </Pressable>
+    </Animated.View>
   );
 }
 
-function EmptyBookmarks({ colors }: { colors: (typeof Colors)['light'] }) {
+function EmptyBookmarks({ colors, isDark }: { colors: (typeof Colors)['light']; isDark: boolean }) {
   return (
     <View style={styles.empty}>
-      <View style={[styles.emptyIcon, { backgroundColor: colors.surface }]}>
-        <IconSymbol name="bookmark" size={48} color={colors.tabIconDefault} />
+      <View style={[styles.emptyIconOuter, {
+        backgroundColor: isDark ? 'rgba(26,58,32,0.15)' : 'rgba(26,58,32,0.08)',
+        borderWidth: 0.5,
+        borderColor: isDark ? 'rgba(26,58,32,0.25)' : 'rgba(26,58,32,0.15)',
+      }]}>
+        <View style={[styles.emptyIcon, { backgroundColor: Palette.primary + '18' }]}>
+          <IconSymbol name="bookmark.fill" size={44} color={Palette.primary} />
+        </View>
       </View>
       <Text style={[styles.emptyTitle, { color: colors.text }]}>Geen bladwijzers</Text>
       <Text style={[styles.emptyMessage, { color: colors.textSecondary }]}>
@@ -117,130 +142,69 @@ function EmptyBookmarks({ colors }: { colors: (typeof Colors)['light'] }) {
 export default function BladwijzersScreen() {
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
+  const isDark = colorScheme === 'dark';
   const router = useRouter();
   const { bookmarks, removeBookmark, clearBookmarks } = useBookmarks();
+  const { animationsEnabled } = useReduceMotion();
+  const [confirmClearOpen, setConfirmClearOpen] = useState(false);
 
   const handleClearAll = useCallback(() => {
-    Alert.alert(
-      'Alle bladwijzers verwijderen',
-      'Weet je zeker dat je alle opgeslagen artikelen wilt verwijderen?',
-      [
-        { text: 'Annuleer', style: 'cancel' },
-        { text: 'Verwijder', style: 'destructive', onPress: clearBookmarks },
-      ],
-    );
-  }, [clearBookmarks]);
-
-  const handleMoreOptions = useCallback(() => {
-    if (Platform.OS === 'ios') {
-      ActionSheetIOS.showActionSheetWithOptions(
-        {
-          options: ['Annuleer', 'Alle bladwijzers verwijderen', 'Profiel'],
-          destructiveButtonIndex: 1,
-          cancelButtonIndex: 0,
-        },
-        (buttonIndex) => {
-          if (buttonIndex === 1) {
-            handleClearAll();
-          } else if (buttonIndex === 2) {
-            router.push('/(tabs)/profiel' as any);
-          }
-        },
-      );
-    } else {
-      Alert.alert(
-        'Opties',
-        undefined,
-        [
-          { text: 'Alle bladwijzers verwijderen', style: 'destructive', onPress: handleClearAll },
-          { text: 'Profiel', onPress: () => router.push('/(tabs)/profiel' as any) },
-          { text: 'Annuleer', style: 'cancel' },
-        ],
-      );
-    }
-  }, [handleClearAll, router]);
+    setConfirmClearOpen(true);
+  }, []);
 
   return (
-    <View style={[styles.safe, { backgroundColor: colors.background }]}>
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: colors.background }]}>
-        <BackButton color={colors.tint} />
-        <View style={styles.headerRow}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Bladwijzers</Text>
-          {bookmarks.length > 0 && (
-            <Pressable onPress={handleMoreOptions} hitSlop={12}>
-              <IconSymbol name="ellipsis" size={24} color={colors.text} />
-            </Pressable>
-          )}
-        </View>
-      </View>
-
-      {/* Count badge */}
-      {bookmarks.length > 0 && (
-        <View style={styles.countRow}>
-          <Text style={[styles.countText, { color: colors.textSecondary }]}>
-            {bookmarks.length} opgeslagen {bookmarks.length === 1 ? 'artikel' : 'artikelen'}
-          </Text>
-        </View>
-      )}
+    <LiquidScreen>
+      <GlassPageHeader
+        title="Bladwijzers"
+        subtitle={bookmarks.length > 0 ? `${bookmarks.length} opgeslagen ${bookmarks.length === 1 ? 'artikel' : 'artikelen'}` : ''}
+      />
 
       <FlatList
         data={bookmarks}
         keyExtractor={(item) => item.id}
         contentContainerStyle={bookmarks.length === 0 ? styles.emptyContainer : styles.listContent}
         showsVerticalScrollIndicator={false}
-        ListEmptyComponent={<EmptyBookmarks colors={colors} />}
-        renderItem={({ item }) => (
+        ListEmptyComponent={<EmptyBookmarks colors={colors} isDark={isDark} />}
+        renderItem={({ item, index }) => (
           <BookmarkCard
             bookmark={item}
             onRemove={() => removeBookmark(item.id)}
+            index={index}
+            animationsEnabled={animationsEnabled}
           />
         )}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
-    </View>
+
+      <ConfirmSheet
+        visible={confirmClearOpen}
+        title="Alle bladwijzers verwijderen"
+        message="Weet je zeker dat je alle opgeslagen artikelen wilt verwijderen?"
+        onClose={() => setConfirmClearOpen(false)}
+        actions={[
+          { label: 'Annuleer', style: 'cancel' },
+          { label: 'Verwijder alles', style: 'default', onPress: clearBookmarks },
+        ]}
+      />
+
+    </LiquidScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1 },
-
-  header: {
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.xl + Spacing.sm,
-    paddingBottom: Spacing.sm,
-    gap: Spacing.xs,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-  },
-  headerTitle: { fontSize: 34, fontWeight: '700', letterSpacing: 0.35 },
-  clearAll: { fontSize: 15, fontWeight: '500', paddingBottom: 4 },
-
-  countRow: { paddingHorizontal: Spacing.md, paddingBottom: Spacing.sm },
-  countText: { fontSize: 13 },
-
   listContent: {
     paddingHorizontal: Spacing.md,
-    paddingBottom: Spacing.xxl,
-    paddingTop: Spacing.xs,
+    paddingBottom: Spacing.xxl + Spacing.lg,
+    paddingTop: Spacing.xs + 2,
   },
   emptyContainer: { flex: 1 },
   separator: { height: Spacing.sm },
 
   // Bookmark card
   card: {
-    borderRadius: Radius.md,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOpacity: 0.07,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    ...Shadow.md,
   },
-  pressed: { opacity: 0.8 },
   cardImage: { width: '100%', height: 160 },
   cardContent: { padding: Spacing.md, gap: Spacing.xs },
   cardMeta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
@@ -251,11 +215,19 @@ const styles = StyleSheet.create({
   summary: { fontSize: 13, lineHeight: 18 },
   cardActions: {
     flexDirection: 'row',
-    gap: Spacing.md,
+    gap: Spacing.sm,
     marginTop: Spacing.xs,
   },
-  actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  actionText: { fontSize: 13 },
+  actionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: Radius.full,
+    backgroundColor: 'rgba(0,0,0,0.05)',
+  },
+  actionText: { fontSize: 12, fontWeight: '500' },
 
   // Empty state
   empty: {
@@ -265,13 +237,20 @@ const styles = StyleSheet.create({
     padding: Spacing.xl,
     gap: Spacing.md,
   },
-  emptyIcon: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+  emptyIconOuter: {
+    width: 120,
+    height: 120,
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  emptyTitle: { fontSize: 20, fontWeight: '600', textAlign: 'center' },
-  emptyMessage: { fontSize: 14, textAlign: 'center', lineHeight: 20 },
+  emptyIcon: {
+    width: 88,
+    height: 88,
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyTitle: { fontSize: 22, fontWeight: '700', textAlign: 'center' },
+  emptyMessage: { fontSize: 14, textAlign: 'center', lineHeight: 21, maxWidth: 260 },
 });

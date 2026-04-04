@@ -1,6 +1,7 @@
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { authErrorMessage, useAuth } from '@/hooks/use-auth';
 import { useThemeContext } from '@/hooks/use-theme-context';
+import { LiquidScreen } from '@/components/liquid-screen';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
@@ -44,8 +45,9 @@ export default function WachtwoordVergetenScreen() {
   }, [email, resetPassword]);
 
   return (
+    <LiquidScreen style={styles.root}>
     <KeyboardAvoidingView
-      style={[styles.root, { backgroundColor: colors.background }]}
+      style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={styles.content}>
@@ -129,6 +131,7 @@ export default function WachtwoordVergetenScreen() {
         )}
       </View>
     </KeyboardAvoidingView>
+    </LiquidScreen>
   );
 }
 
@@ -174,7 +177,7 @@ const styles = StyleSheet.create({
   successIconWrap: {
     width: 72,
     height: 72,
-    borderRadius: 36,
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -1,5 +1,8 @@
 
 import { AppTour } from '@/components/tour-overlay';
+import { ClearLiquidGlass } from '@/components/clear-liquid-glass';
+import { GlassShimmer } from '@/components/glass-shimmer';
+import { LiquidScreen } from '@/components/liquid-screen';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
@@ -7,10 +10,10 @@ import { useBookmarks } from '@/hooks/use-bookmarks';
 import { useReduceMotion } from '@/hooks/use-reduce-motion';
 import { useThemeContext } from '@/hooks/use-theme-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { LiquidSwitch } from '@/components/liquid-switch';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import {
   Image,
   Linking,
@@ -42,31 +45,19 @@ function getInitials(name: string): string {
 
 // ─── Sub-components ─────────────────────────────────────────────────────────
 
-function SectionLabel({ label, colors }: { label: string; colors: (typeof Colors)['light'] }) {
+function SectionLabel({ label, colors, index = 0, animationsEnabled = true }: { label: string; colors: (typeof Colors)['light']; index?: number; animationsEnabled?: boolean }) {
   return (
-    <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>{label}</Text>
+    <Animated.View entering={animationsEnabled ? FadeInDown.delay(index * 60).springify().damping(18).stiffness(110) : undefined}>
+      <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>{label}</Text>
+    </Animated.View>
   );
 }
 
 function Group({ children, isDark }: { children: React.ReactNode; isDark: boolean }) {
   return (
-    <BlurView
-      intensity={isDark ? 28 : 50}
-      tint={isDark ? 'dark' : 'light'}
-      style={[styles.group, isDark ? styles.groupDark : styles.groupLight]}
-    >
-      {/* Glass tint overlay */}
-      <View
-        style={[StyleSheet.absoluteFill, {
-          backgroundColor: isDark ? 'rgba(38,38,54,0.55)' : 'rgba(255,255,255,0.55)',
-          borderRadius: Radius.xl,
-        }]}
-        pointerEvents="none"
-      />
-      {/* Specular top highlight */}
-      <View style={[styles.groupSpecular, isDark ? styles.groupSpecularDark : styles.groupSpecularLight]} />
+    <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.group}>
       {children}
-    </BlurView>
+    </ClearLiquidGlass>
   );
 }
 
@@ -305,7 +296,7 @@ function EditProfileModal({
 
 export default function ProfielScreen() {
   const { resolvedTheme, themeMode, setThemeMode } = useThemeContext();
-  const { reduceMotion, setReduceMotion } = useReduceMotion();
+  const { reduceMotion, setReduceMotion, animationsEnabled } = useReduceMotion();
   const colors = Colors[resolvedTheme];
   const { user, signOut, profile, profileLoading, updateProfile } = useAuth();
   const { bookmarks, clearBookmarks } = useBookmarks();
@@ -375,14 +366,14 @@ export default function ProfielScreen() {
 
   if (profileLoading || !profile) {
     return (
-      <View style={[styles.safe, { backgroundColor: colors.background }]}>
-        <View style={[styles.header, { backgroundColor: colors.background }]}>
+      <LiquidScreen style={styles.safe}>
+        <View style={styles.header}>
           <Text style={[styles.pageTitle, { color: colors.text }]}>Instellingen</Text>
         </View>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <Text style={{ color: colors.textSecondary }}>Laden...</Text>
         </View>
-      </View>
+      </LiquidScreen>
     );
   }
 
@@ -390,11 +381,14 @@ export default function ProfielScreen() {
   const categoryCount = [profile?.categoryNieuws, profile?.categoryReviews, profile?.categoryPrijzen].filter(Boolean).length;
 
   return (
-    <View style={[styles.safe, { backgroundColor: colors.background }]}>
+    <LiquidScreen style={styles.safe}>
       {/* Page header */}
-      <View style={[styles.header, { backgroundColor: colors.background }]}>
+      <Animated.View
+        style={styles.header}
+        entering={animationsEnabled ? FadeInDown.springify().damping(20).stiffness(130) : undefined}
+      >
         <Text style={[styles.pageTitle, { color: colors.text }]}>Instellingen</Text>
-      </View>
+      </Animated.View>
 
       <ScrollView
         contentContainerStyle={styles.content}
@@ -402,29 +396,31 @@ export default function ProfielScreen() {
       >
 
         {/* ── PROFIEL CARD (Apple-style) ── */}
-        <Pressable
-          onPress={() => setEditModalVisible(true)}
-          style={({ pressed }) => [
-            styles.profileCard,
-            isDark ? styles.groupDark : styles.groupLight,
-            pressed && { opacity: 0.88 },
-          ]}
-        >
-          <View style={[styles.groupSpecular, isDark ? styles.groupSpecularDark : styles.groupSpecularLight]} />
-          <View style={[styles.profileAvatar, { backgroundColor: Palette.primary }]}>
-            <Text style={styles.profileAvatarText}>{initials}</Text>
-          </View>
-          <View style={styles.profileInfo}>
-            <Text style={[styles.profileName, { color: colors.text }]}>{profile?.displayName}</Text>
-            <Text style={[styles.profileEmail, { color: colors.textSecondary }]}>{user?.email}</Text>
-            <Text style={[styles.profileSub, { color: colors.tint }]}>Tweakly account</Text>
-          </View>
-          <IconSymbol name="chevron.right" size={14} color={colors.border} />
-        </Pressable>
+        <Animated.View entering={animationsEnabled ? FadeInDown.delay(30).springify().damping(18).stiffness(110) : undefined}>
+          <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.profileCard}>
+            <Pressable
+              onPress={() => setEditModalVisible(true)}
+              style={({ pressed }) => [styles.profileCardInner, pressed && { opacity: 0.85 }]}
+            >
+              <View style={styles.profileAvatarWrap}>
+                <View style={[styles.profileAvatar, { backgroundColor: Palette.primary }]}>
+                  <Text style={styles.profileAvatarText}>{initials}</Text>
+                </View>
+                <GlassShimmer isDark={isDark} intensity={0.4} borderRadius={Radius.full} />
+              </View>
+              <View style={styles.profileInfo}>
+                <Text style={[styles.profileName, { color: colors.text }]}>{profile?.displayName}</Text>
+                <Text style={[styles.profileEmail, { color: colors.textSecondary }]}>{user?.email}</Text>
+                <Text style={[styles.profileSub, { color: colors.tint }]}>Tweakly account</Text>
+              </View>
+              <IconSymbol name="chevron.right" size={14} color={colors.border} />
+            </Pressable>
+          </ClearLiquidGlass>
+        </Animated.View>
 
         {/* ── MELDINGEN ── */}
         <View style={styles.section}>
-          <SectionLabel label="MELDINGEN" colors={colors} />
+          <SectionLabel label="MELDINGEN" colors={colors} index={1} animationsEnabled={animationsEnabled} />
           <Group isDark={isDark}>
             <NavRow
               icon="bell.fill"
@@ -439,7 +435,7 @@ export default function ProfielScreen() {
 
         {/* ── CATEGORIEËN ── */}
         <View style={styles.section}>
-          <SectionLabel label="CATEGORIEËN" colors={colors} />
+          <SectionLabel label="CATEGORIEËN" colors={colors} index={2} animationsEnabled={animationsEnabled} />
           <Group isDark={isDark}>
             <NavRow
               icon="square.grid.2x2.fill"
@@ -454,7 +450,7 @@ export default function ProfielScreen() {
 
         {/* ── UITERLIJK ── */}
         <View style={styles.section}>
-          <SectionLabel label="UITERLIJK" colors={colors} />
+          <SectionLabel label="UITERLIJK" colors={colors} index={3} animationsEnabled={animationsEnabled} />
           <Group isDark={isDark}>
             <ThemeRow
               themeMode={themeMode as ThemeMode}
@@ -478,7 +474,7 @@ export default function ProfielScreen() {
 
         {/* ── OPGESLAGEN CONTENT ── */}
         <View style={styles.section}>
-          <SectionLabel label="OPGESLAGEN" colors={colors} />
+          <SectionLabel label="OPGESLAGEN" colors={colors} index={4} animationsEnabled={animationsEnabled} />
           <Group isDark={isDark}>
             <NavRow
               icon="bookmark.fill"
@@ -521,7 +517,7 @@ export default function ProfielScreen() {
 
         {/* ── ONTDEKKEN ── */}
         <View style={styles.section}>
-          <SectionLabel label="ONTDEKKEN" colors={colors} />
+          <SectionLabel label="ONTDEKKEN" colors={colors} index={5} animationsEnabled={animationsEnabled} />
           <Group isDark={isDark}>
             <NavRow
               icon="wand.and.stars"
@@ -545,7 +541,7 @@ export default function ProfielScreen() {
 
         {/* ── ACCOUNT ── */}
         <View style={styles.section}>
-          <SectionLabel label="ACCOUNT" colors={colors} />
+          <SectionLabel label="ACCOUNT" colors={colors} index={6} animationsEnabled={animationsEnabled} />
           <Group isDark={isDark}>
             <NavRow
               icon="key.fill"
@@ -588,7 +584,7 @@ export default function ProfielScreen() {
 
         {/* ── HULP & ONDERSTEUNING ── */}
         <View style={styles.section}>
-          <SectionLabel label="HULP" colors={colors} />
+          <SectionLabel label="HULP" colors={colors} index={7} animationsEnabled={animationsEnabled} />
           <Group isDark={isDark}>
             <NavRow
               icon="questionmark.circle.fill"
@@ -638,7 +634,7 @@ export default function ProfielScreen() {
 
         {/* ── JURIDISCH ── */}
         <View style={styles.section}>
-          <SectionLabel label="JURIDISCH" colors={colors} />
+          <SectionLabel label="JURIDISCH" colors={colors} index={8} animationsEnabled={animationsEnabled} />
           <Group isDark={isDark}>
             <NavRow
               icon="hand.raised.fill"
@@ -824,7 +820,7 @@ export default function ProfielScreen() {
         onClose={() => setSheetEmail(false)}
         actions={[{ label: 'OK', style: 'default' }]}
       />
-    </View>
+    </LiquidScreen>
   );
 }
 
@@ -852,14 +848,21 @@ const styles = StyleSheet.create({
 
   // Apple-style profile card
   profileCard: {
+    overflow: 'hidden',
+  },
+  profileCardInner: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
     padding: Spacing.md,
-    borderRadius: Radius.xl,
-    overflow: 'hidden',
-    borderWidth: 0.5,
+  },
+  profileAvatarWrap: {
     position: 'relative',
+    width: 64,
+    height: 64,
+    flexShrink: 0,
+    borderRadius: Radius.full,
+    overflow: 'hidden',
   },
   profileAvatar: {
     width: 64,
@@ -867,7 +870,6 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
-    flexShrink: 0,
   },
   profileAvatarText: {
     color: '#fff',

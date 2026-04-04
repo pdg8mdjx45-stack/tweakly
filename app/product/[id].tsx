@@ -1,4 +1,6 @@
 import { PriceHistoryChart } from '@/components/charts';
+import { ClearLiquidGlass } from '@/components/clear-liquid-glass';
+import { LiquidScreen } from '@/components/liquid-screen';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { PRICE_DISCLAIMER, type ProductVariant } from '@/constants/mock-data';
 import { Colors, Palette, Radius, Shadow, Spacing } from '@/constants/theme';
@@ -136,22 +138,22 @@ export default function ProductScreen() {
 
   if (loading) {
     return (
-      <View style={[styles.safe, { backgroundColor: colors.background, justifyContent: 'center', alignItems: 'center' }]}>
+      <LiquidScreen style={{ justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color={Palette.primary} />
-      </View>
+      </LiquidScreen>
     );
   }
 
   if (!product) {
     return (
-      <View style={[styles.safe, { backgroundColor: colors.background }]}>
+      <LiquidScreen>
         <View style={styles.notFound}>
           <Text style={[styles.notFoundText, { color: colors.text }]}>Product niet gevonden</Text>
           <Pressable onPress={() => router.back()}>
             <Text style={[styles.backLink, { color: colors.tint }]}>Terug</Text>
           </Pressable>
         </View>
-      </View>
+      </LiquidScreen>
     );
   }
 
@@ -205,32 +207,15 @@ export default function ProductScreen() {
       }));
 
   return (
-    <View style={[styles.safe, { backgroundColor: colors.background }]}>
+    <LiquidScreen style={styles.safe}>
       <StatusBar hidden />
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: colors.background }]}>
+      <View style={styles.header}>
         <Pressable onPress={() => router.back()} hitSlop={12} style={styles.backButton}>
           <IconSymbol name="chevron.left" size={20} color={colors.tint} />
           <Text style={[styles.backText, { color: colors.tint }]}>Terug</Text>
         </Pressable>
         <View style={styles.headerActions}>
-          <Pressable
-            onPress={() => {
-              if (product) addToCompare(product);
-              router.push('/vergelijk');
-            }}
-            hitSlop={12}
-            style={[
-              styles.compareChip,
-              {
-                backgroundColor: inCompare ? colors.tint : 'transparent',
-                borderColor: colors.tint,
-              },
-            ]}>
-            <Text style={[styles.compareChipText, { color: inCompare ? '#fff' : colors.tint }]}>
-              {inCompare ? 'Vergelijken ✓' : '+ Vergelijk'}
-            </Text>
-          </Pressable>
           <Pressable onPress={() => setSaved(!saved)} hitSlop={12}>
             <IconSymbol
               name={saved ? 'bookmark.fill' : 'bookmark'}
@@ -356,68 +341,71 @@ export default function ProductScreen() {
           )}
         </View>
 
-        {/* Price Card */}
-        <View style={[
-          styles.priceSection,
-          { backgroundColor: colors.surface },
-          !isDark && Shadow.md,
-          isDark && { borderWidth: 1, borderColor: colors.border },
-        ]}>
-          <View style={styles.priceHeaderRow}>
-            <View style={styles.priceMain}>
-              <Text style={[styles.currentPrice, { color: colors.text }]}>
-                €{displayPrice.toLocaleString('nl-NL')}
-              </Text>
-              {priceDropPct > 0 && (
-                <View style={styles.discountBadge}>
-                  <Text style={styles.discountText}>-{priceDropPct}%</Text>
-                </View>
-              )}
+        {/* Price Section — premium card */}
+        <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.priceSection}>
+          {/* Lowest price badge */}
+          {priceDropPct > 0 && (
+            <View style={styles.lowestPriceBadge}>
+              <Text style={styles.lowestPriceBadgeText}>↘ Laagste prijs in 30 dagen</Text>
             </View>
+          )}
+
+          {/* Big price */}
+          <View style={styles.priceRow}>
+            <Text style={[styles.currentPrice, { color: colors.text }]}>
+              €{displayPrice.toLocaleString('nl-NL')}
+            </Text>
+            {displayPrice < product.originalPrice && (
+              <Text style={[styles.originalPrice, { color: colors.textSecondary }]}>
+                €{product.originalPrice.toLocaleString('nl-NL')}
+              </Text>
+            )}
+          </View>
+
+          {/* CTA row: Add to Alert + Compare */}
+          <View style={styles.ctaRow}>
             <Pressable
               onPress={() => setAlertModalVisible(true)}
-              style={[styles.alertButton, { backgroundColor: existingAlert ? Palette.accent : colors.tint }]}
+              style={[styles.alertButtonLarge, { backgroundColor: existingAlert ? Palette.primaryDark : Palette.primary }]}
             >
-              <IconSymbol name={existingAlert ? 'bell.fill' : 'bell'} size={16} color="#fff" />
-              <Text style={styles.alertButtonText}>
-                {existingAlert ? 'Alert actief' : 'Prijsalert'}
+              <IconSymbol name={existingAlert ? 'bell.fill' : 'bell'} size={18} color={isDark ? '#000' : '#fff'} />
+              <Text style={[styles.alertButtonLargeText, { color: isDark ? '#000' : '#fff' }]}>
+                {existingAlert ? 'Alert actief' : 'Prijsalert instellen'}
               </Text>
             </Pressable>
+            <Pressable
+              onPress={() => {
+                if (product) addToCompare(product);
+                router.push('/vergelijk');
+              }}
+              style={[styles.compareRoundBtn, {
+                backgroundColor: inCompare ? Palette.primary : (isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'),
+                borderColor: inCompare ? 'transparent' : (isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'),
+              }]}
+            >
+              <Text style={{ fontSize: 18 }}>⚖</Text>
+            </Pressable>
           </View>
-          {displayPrice < product.originalPrice && (
-            <Text style={[styles.originalPrice, { color: colors.textSecondary }]}>
-              €{product.originalPrice.toLocaleString('nl-NL')}
-            </Text>
-          )}
+
           <View style={styles.priceMetaRow}>
             <IconSymbol name="info.circle" size={12} color={colors.textSecondary} />
             <Text style={[styles.priceNote, { color: colors.textSecondary }]}>
               Laagste prijs ooit: €{(tweakersPriceHistory?.lowestEver ?? product.lowestPrice).toLocaleString('nl-NL')}
             </Text>
           </View>
-          {tweakersOffers.length > 0 && (
-            <Text style={[styles.priceSourceTag, { color: colors.textSecondary }]}>
-              Prijs via Tweakers Pricewatch (incl. verzending)
-            </Text>
-          )}
-        </View>
+        </ClearLiquidGlass>
 
         {/* Price Chart */}
-        <View style={[
-          styles.card,
-          { backgroundColor: colors.surface },
-          !isDark && Shadow.sm,
-          isDark && { borderWidth: 1, borderColor: colors.border },
-        ]}>
+        <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.card}>
           <PriceHistoryChart
             data={realPriceHistory}
             isDark={colorScheme === 'dark'}
             title="Prijsgeschiedenis"
           />
-        </View>
+        </ClearLiquidGlass>
 
         {/* Tabs */}
-        <View style={[styles.tabs, { backgroundColor: colors.surface }, !isDark && Shadow.sm, isDark && { borderWidth: 1, borderColor: colors.border }]}>
+        <ClearLiquidGlass isDark={isDark} borderRadius={0} style={styles.tabs}>
           {(['prijzen', 'specs', 'reviews'] as const).map(tab => (
             <Pressable
               key={tab}
@@ -436,17 +424,12 @@ export default function ProductScreen() {
               </Text>
             </Pressable>
           ))}
-        </View>
+        </ClearLiquidGlass>
 
         {/* Tab Content */}
         <View style={styles.tabContent}>
           {activeTab === 'prijzen' && (
-            <View style={[
-              styles.card,
-              { backgroundColor: colors.surface },
-              !isDark && Shadow.sm,
-              isDark && { borderWidth: 1, borderColor: colors.border },
-            ]}>
+            <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.card}>
               <Text style={[styles.subTitle, { color: colors.textSecondary }]}>
                 {tweakersOffers.length > 0 ? 'WINKELPRIJZEN (LIVE)' : 'WINKELPRIJZEN'}
               </Text>
@@ -565,7 +548,7 @@ export default function ProductScreen() {
                   Vergelijk op Google Shopping
                 </Text>
               </Pressable>
-            </View>
+            </ClearLiquidGlass>
           )}
 
           {activeTab === 'specs' && (() => {
@@ -574,12 +557,7 @@ export default function ProductScreen() {
               : product.specs;
             const isIcecat = icecatData && Object.keys(icecatData.specsFlat).length > 0;
             return (
-              <View style={[
-                styles.card,
-                { backgroundColor: colors.surface },
-                !isDark && Shadow.sm,
-                isDark && { borderWidth: 1, borderColor: colors.border },
-              ]}>
+              <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.card}>
                 <Text style={[styles.subTitle, { color: colors.textSecondary }]}>SPECIFICATIES</Text>
                 {Object.keys(displaySpecs).length === 0 ? (
                   <Text style={[styles.placeholderText, { color: colors.textSecondary }]}>
@@ -605,17 +583,12 @@ export default function ProductScreen() {
                     Bron: Icecat Open Catalog
                   </Text>
                 )}
-              </View>
+              </ClearLiquidGlass>
             );
           })()}
 
           {activeTab === 'reviews' && (
-            <View style={[
-              styles.card,
-              { backgroundColor: colors.surface },
-              !isDark && Shadow.sm,
-              isDark && { borderWidth: 1, borderColor: colors.border },
-            ]}>
+            <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.card}>
               <Text style={[styles.subTitle, { color: colors.textSecondary }]}>REVIEWS</Text>
               <View style={styles.reviewSummary}>
                 <Text style={[styles.reviewBigScore, { color: colors.text }]}>{product.rating.toFixed(1)}</Text>
@@ -635,7 +608,7 @@ export default function ProductScreen() {
               <Text style={[styles.placeholderText, { color: colors.textSecondary }]}>
                 Reviews worden binnenkort beschikbaar
               </Text>
-            </View>
+            </ClearLiquidGlass>
           )}
         </View>
       </ScrollView>
@@ -721,7 +694,7 @@ export default function ProductScreen() {
           </View>
         </View>
       </Modal>
-    </View>
+    </LiquidScreen>
   );
 }
 
@@ -734,7 +707,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.md,
-paddingTop: Spacing.xxl + Spacing.xl,
+    paddingTop: Spacing.xxl + Spacing.xl,
     paddingBottom: Spacing.sm,
   },
   backButton: {
@@ -822,36 +795,59 @@ paddingTop: Spacing.xxl + Spacing.xl,
   priceSection: {
     marginHorizontal: Spacing.md,
     padding: Spacing.md + Spacing.xs,
-    borderRadius: Radius.lg,
-    gap: Spacing.xs + 2,
+    borderRadius: Radius.xl,
+    gap: Spacing.sm,
   },
-  priceMain: {
+  lowestPriceBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(74,222,128,0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(74,222,128,0.30)',
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: Radius.full,
+  },
+  lowestPriceBadgeText: {
+    color: Palette.primary,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: Spacing.sm,
+  },
+  ctaRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
+    marginTop: Spacing.xs,
   },
-  priceHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  alertButton: {
+  alertButtonLarge: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs + 2,
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 14,
     borderRadius: Radius.full,
   },
-  alertButtonText: {
-    color: '#fff',
-    fontSize: 13,
-    fontWeight: '600',
+  alertButtonLargeText: {
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  compareRoundBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
   },
   currentPrice: {
-    fontSize: 32,
-    fontWeight: '700',
-    letterSpacing: -0.5,
+    fontSize: 38,
+    fontWeight: '800',
+    letterSpacing: -1,
   },
   discountBadge: {
     backgroundColor: Palette.accentSoft,
@@ -865,8 +861,9 @@ paddingTop: Spacing.xxl + Spacing.xl,
     fontWeight: '700',
   },
   originalPrice: {
-    fontSize: 16,
+    fontSize: 18,
     textDecorationLine: 'line-through',
+    opacity: 0.5,
   },
   priceMetaRow: {
     flexDirection: 'row',

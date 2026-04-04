@@ -18,6 +18,7 @@ import {
   View,
 } from 'react-native';
 
+import { LiquidScreen } from '@/components/liquid-screen';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { useArticleBookmark } from '@/hooks/use-bookmarks';
@@ -67,14 +68,14 @@ export default function ArtikelScreen() {
 
   if (!article) {
     return (
-      <View style={[styles.safe, styles.centered, { backgroundColor: colors.background }]}>
+      <LiquidScreen style={[styles.safe, styles.centered]}>
         <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
         <IconSymbol name="exclamationmark.triangle" size={48} color={colors.textSecondary} />
         <Text style={[styles.notFoundText, { color: colors.text }]}>Artikel niet gevonden</Text>
         <Pressable onPress={() => router.back()} style={[styles.backBtn, { backgroundColor: colors.tint }]}>
           <Text style={styles.backBtnText}>Terug</Text>
         </Pressable>
-      </View>
+      </LiquidScreen>
     );
   }
 
@@ -82,11 +83,11 @@ export default function ArtikelScreen() {
   const dateStr = formatRSSDate(article.publishedAt.toISOString());
 
   return (
-    <View style={[styles.safe, { backgroundColor: colors.background }]}>
+    <LiquidScreen style={styles.safe}>
       <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
 
       {/* ── Header bar ─────────────────────────────────────────── */}
-      <View style={[styles.headerBar, { backgroundColor: colors.background }]}>
+      <View style={styles.headerBar}>
         <Pressable onPress={() => router.back()} style={styles.headerBtn} hitSlop={12}>
           <IconSymbol name="chevron.left" size={20} color={colors.tint} />
           <Text style={[styles.headerBtnText, { color: colors.tint }]}>Terug</Text>
@@ -176,7 +177,7 @@ export default function ArtikelScreen() {
           </Pressable>
         </View>
       </ScrollView>
-    </View>
+    </LiquidScreen>
   );
 }
 

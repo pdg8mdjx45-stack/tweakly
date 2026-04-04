@@ -1,8 +1,7 @@
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
-import { authErrorMessage, useAuth } from '@/hooks/use-auth';
 import { useThemeContext } from '@/hooks/use-theme-context';
 import { useRouter } from 'expo-router';
-import { FirebaseError } from 'firebase/app';
+import { LiquidScreen } from '@/components/liquid-screen';
 import { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
@@ -20,7 +19,6 @@ import {
 export default function TelefoonScreen() {
   const { resolvedTheme } = useThemeContext();
   const colors = Colors[resolvedTheme];
-  const { signInWithPhone, verifyPhoneCode } = useAuth();
   const router = useRouter();
 
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -42,49 +40,12 @@ export default function TelefoonScreen() {
   };
 
   const handleSendCode = useCallback(async () => {
-    if (!phoneNumber.trim()) {
-      setError('Vul je telefoonnummer in.');
-      return;
-    }
-
-    const formattedPhone = formatPhoneNumber(phoneNumber.trim());
-    
-    setError('');
-    setLoading(true);
-    try {
-      const result = await signInWithPhone(formattedPhone);
-      setVerificationId(result.verificationId);
-      setStep('code');
-    } catch (e) {
-      const code = e instanceof FirebaseError ? e.code : '';
-      setError(authErrorMessage(code));
-    } finally {
-      setLoading(false);
-    }
-  }, [phoneNumber, signInWithPhone]);
+    setError('Inloggen via telefoonnummer is momenteel niet beschikbaar.');
+  }, []);
 
   const handleVerifyCode = useCallback(async () => {
-    if (!verificationCode.trim()) {
-      setError('Vul de verificatiecode in.');
-      return;
-    }
-    if (!verificationId) {
-      setError('Verificatie-ID ontbreekt. Begin opnieuw.');
-      return;
-    }
-
-    setError('');
-    setLoading(true);
-    try {
-      await verifyPhoneCode(verificationId, verificationCode.trim());
-      // onAuthStateChanged in _layout.tsx handelt de redirect af
-    } catch (e) {
-      const code = e instanceof FirebaseError ? e.code : '';
-      setError(authErrorMessage(code));
-    } finally {
-      setLoading(false);
-    }
-  }, [verificationCode, verificationId, verifyPhoneCode]);
+    setError('Inloggen via telefoonnummer is momenteel niet beschikbaar.');
+  }, []);
 
   const handleResendCode = useCallback(async () => {
     setVerificationCode('');
@@ -92,8 +53,9 @@ export default function TelefoonScreen() {
   }, []);
 
   return (
+    <LiquidScreen style={styles.root}>
     <KeyboardAvoidingView
-      style={[styles.root, { backgroundColor: colors.background }]}
+      style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
@@ -213,6 +175,7 @@ export default function TelefoonScreen() {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+    </LiquidScreen>
   );
 }
 

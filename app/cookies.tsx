@@ -1,22 +1,22 @@
 import { Colors } from '@/constants/theme';
 import { useThemeContext } from '@/hooks/use-theme-context';
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router';
+import { LiquidScreen } from '@/components/liquid-screen';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function CookieScreen() {
   const { resolvedTheme } = useThemeContext();
   const colors = Colors[resolvedTheme];
+  const router = useRouter();
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <LiquidScreen style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: colors.background }]}>
-        <Link href="/" asChild>
-          <Pressable style={styles.backBtn} hitSlop={12}>
-            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
-          </Pressable>
-        </Link>
+      <View style={[styles.header, { backgroundColor: 'transparent' }]}>
+        <Pressable style={styles.backBtn} hitSlop={12} onPress={() => router.back()}>
+          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+        </Pressable>
         <Text style={[styles.headerTitle, { color: colors.text }]}>Cookiebeleid</Text>
         <View style={styles.placeholder} />
       </View>
@@ -57,11 +57,11 @@ export default function CookieScreen() {
         <Text style={[styles.heading, { color: colors.text }]}>5. Contact</Text>
         <Text style={[styles.text, { color: colors.text }]}>
           Voor vragen over dit cookiebeleid:{'\n'}
-          {'\n'}E-mail: alexander.ballet@hotmail.com{'\n'}
+          {'\n'}E-mail: tweakly.help@hotmail.com{'\n'}
           Website: https://tweakly.netlify.app/cookies.html
         </Text>
       </ScrollView>
-    </View>
+    </LiquidScreen>
   );
 }
 

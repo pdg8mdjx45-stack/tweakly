@@ -1,6 +1,7 @@
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { useThemeContext } from '@/hooks/use-theme-context';
 import { supabase } from '@/services/supabase';
+import { LiquidScreen } from '@/components/liquid-screen';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -70,7 +71,7 @@ export default function VerifyScreen() {
     Palette.primary + '18';
 
   return (
-    <View style={[styles.root, { backgroundColor: colors.background }]}>
+    <LiquidScreen style={styles.root}>
       <Pressable onPress={() => router.back()} hitSlop={12} style={styles.backBtn}>
         <Text style={[styles.backArrow, { color: colors.text }]}>‹</Text>
       </Pressable>
@@ -189,7 +190,7 @@ export default function VerifyScreen() {
           </Text>
         )}
       </View>
-    </View>
+    </LiquidScreen>
   );
 }
 
@@ -208,7 +209,7 @@ const styles = StyleSheet.create({
   iconWrap: {
     width: 80,
     height: 80,
-    borderRadius: 40,
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.sm,

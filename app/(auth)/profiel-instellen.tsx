@@ -1,6 +1,7 @@
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
 import { useThemeContext } from '@/hooks/use-theme-context';
+import { LiquidScreen } from '@/components/liquid-screen';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
@@ -56,12 +57,13 @@ export default function ProfielInstellenScreen() {
   }, [router]);
 
   return (
+    <LiquidScreen style={styles.root}>
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView
-        style={[styles.root, { backgroundColor: colors.background }]}
+        style={{ flex: 1 }}
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
@@ -141,6 +143,7 @@ export default function ProfielInstellenScreen() {
         </Pressable>
       </ScrollView>
     </KeyboardAvoidingView>
+    </LiquidScreen>
   );
 }
 
@@ -158,7 +161,7 @@ const styles = StyleSheet.create({
   iconWrap: {
     width: 80,
     height: 80,
-    borderRadius: 40,
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.sm,

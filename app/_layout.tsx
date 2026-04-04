@@ -151,6 +151,7 @@ function RootLayoutContent() {
         <Stack.Screen name="instellingen/bladwijzers" options={{ headerShown: false, animation: 'slide_from_right' }} />
         <Stack.Screen name="instellingen/prijsalerts" options={{ headerShown: false, animation: 'slide_from_right' }} />
         <Stack.Screen name="instellingen/zoeken" options={{ headerShown: false, animation: 'slide_from_right' }} />
+        <Stack.Screen name="link-scanner" options={{ headerShown: false, animation: 'slide_from_bottom' }} />
         <Stack.Screen name="privacy" options={{ headerShown: false }} />
         <Stack.Screen name="cookies" options={{ headerShown: false }} />
         <Stack.Screen name="terms" options={{ headerShown: false }} />

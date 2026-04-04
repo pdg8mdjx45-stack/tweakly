@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LiquidScreen } from '@/components/liquid-screen';
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { authErrorMessage, useAuth } from '@/hooks/use-auth';
 import { useThemeContext } from '@/hooks/use-theme-context';
@@ -53,8 +54,9 @@ export default function InloggenScreen() {
   }, [email, password, signIn]);
 
   return (
+    <LiquidScreen style={styles.root}>
     <KeyboardAvoidingView
-      style={[styles.root, { backgroundColor: colors.background }]}
+      style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
@@ -198,6 +200,7 @@ export default function InloggenScreen() {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+    </LiquidScreen>
   );
 }
 

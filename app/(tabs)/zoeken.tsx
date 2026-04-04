@@ -3,15 +3,16 @@
  * Product search with filters and sorting
  */
 
+import { LiquidScreen } from '@/components/liquid-screen';
 import { ProductCard } from '@/components/product-card';
-import { ProfileHeader } from '@/components/profile-header';
 import { SearchBar } from '@/components/search-bar';
-import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
+import { Colors, Glass, Palette, Radius, Spacing } from '@/constants/theme';
 import { getAllProducts, searchProducts, type Product } from '@/services/product-db';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 
 const SORT_OPTIONS = ['Relevantie', 'Laagste prijs', 'Hoogste prijs', 'Beste beoordeling'];
 const CATEGORIES = ['Alle', 'Smartphones', 'Laptops', 'Audio', 'Televisies', 'Gaming', 'Huishoudelijk'];
@@ -79,11 +80,18 @@ export default function ZoekenScreen() {
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [query, selectedCategory, sortBy, doSearch]);
 
+  const isDark = colorScheme === 'dark';
+
   return (
-    <View style={[styles.safe, { backgroundColor: colors.background }]}>
-      <ProfileHeader title="Zoeken" showBackButton onBackPress={() => router.back()} />
-      
-      <View style={[styles.searchHeader, { backgroundColor: colors.background }]}>
+    <LiquidScreen style={styles.safe}>
+      {/* Header — matches home screen style */}
+      <View style={[styles.header, isDark ? Glass.liquid.dark : Glass.liquid.light]}>
+        <View style={styles.titleRow}>
+          <Pressable onPress={() => router.back()} style={styles.backButton} hitSlop={8}>
+            <IconSymbol size={22} name="chevron.left" color={colors.text} />
+          </Pressable>
+          <Text style={[styles.pageTitle, { color: colors.text }]}>Zoeken</Text>
+        </View>
         <SearchBar
           value={query}
           onChangeText={setQuery}
@@ -92,7 +100,7 @@ export default function ZoekenScreen() {
         />
       </View>
 
-      <View style={[styles.filterBar, { backgroundColor: colors.background }]}>
+      <View style={styles.filterBar}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterList}>
           {CATEGORIES.map(cat => (
             <Pressable
@@ -169,15 +177,30 @@ export default function ZoekenScreen() {
           )}
         />
       )}
-    </View>
+    </LiquidScreen>
   );
 }
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
-  searchHeader: {
+  header: {
+    paddingTop: Spacing.xl + Spacing.sm,
     paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.sm,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    marginBottom: Spacing.sm,
+  },
+  backButton: {
+    padding: 2,
+  },
+  pageTitle: {
+    fontSize: 34,
+    fontWeight: '800',
+    letterSpacing: -0.5,
   },
   filterBar: {
     flexDirection: 'row',

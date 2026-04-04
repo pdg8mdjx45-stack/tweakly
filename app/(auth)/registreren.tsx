@@ -1,3 +1,4 @@
+import { LiquidScreen } from '@/components/liquid-screen';
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { authErrorMessage, useAuth } from '@/hooks/use-auth';
 import { useThemeContext } from '@/hooks/use-theme-context';
@@ -59,8 +60,9 @@ export default function RegistrerenScreen() {
   }, [email, password, confirmPassword, signUp]);
 
   return (
+    <LiquidScreen style={styles.root}>
     <KeyboardAvoidingView
-      style={[styles.root, { backgroundColor: colors.background }]}
+      style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
@@ -198,6 +200,7 @@ export default function RegistrerenScreen() {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+    </LiquidScreen>
   );
 }
 
