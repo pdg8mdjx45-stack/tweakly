@@ -114,6 +114,7 @@ export default makeScene2D(function* (view) {
   const outroBg = createRef<Rect>();
 
   // ── Layout ─────────────────────────────────────────────
+  view.fill('#000000');
   view.add(
     <>
       {/* Background */}
