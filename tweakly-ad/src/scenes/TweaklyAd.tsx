@@ -54,16 +54,16 @@ function pillPath(cx: number, cy: number, w: number, h: number, steps = 300): {x
   const straightW = w - 2 * r;
 
   // Top edge: left→right
-  for (let i = 0; i <= steps; i++) {
+  for (let i = 0; i < steps; i++) {
     pts.push({x: cx - straightW / 2 + straightW * (i / steps), y: cy - r});
   }
   // Right semicircle: top→bottom
-  for (let i = 0; i <= steps; i++) {
+  for (let i = 0; i < steps; i++) {
     const a = -Math.PI / 2 + Math.PI * (i / steps);
     pts.push({x: cx + straightW / 2 + Math.cos(a) * r, y: cy + Math.sin(a) * r});
   }
   // Bottom edge: right→left
-  for (let i = 0; i <= steps; i++) {
+  for (let i = 0; i < steps; i++) {
     pts.push({x: cx + straightW / 2 - straightW * (i / steps), y: cy + r});
   }
   // Left semicircle: bottom→top
@@ -99,6 +99,7 @@ export default makeScene2D(function* (view) {
   const path = pillPath(BOX_CX, BOX_CY, BOX_W, BOX_H, 400);
   const N = path.length;
   const tailRefs = Array.from({length: COMET_TAIL}, () => createRef<Circle>());
+  const cometContainer = createRef<Rect>();
 
   // Result card
   const resultCard  = createRef<Rect>();
@@ -167,15 +168,18 @@ export default makeScene2D(function* (view) {
       </Rect>
 
       {/* Comet tail dots */}
-      {tailRefs.map((ref, i) => (
-        <Circle
-          ref={ref}
-          size={0}
-          fill={GREEN}
-          opacity={0}
-          zIndex={1}
-        />
-      ))}
+      <Rect ref={cometContainer} width={0} height={0} x={0} y={0}>
+        {tailRefs.map((ref, i) => (
+          <Circle
+            key={i}
+            ref={ref}
+            size={0}
+            fill={GREEN}
+            opacity={0}
+            zIndex={1}
+          />
+        ))}
+      </Rect>
 
       {/* Result card */}
       <Rect
@@ -255,6 +259,7 @@ export default makeScene2D(function* (view) {
     logoImg().opacity(1, 0.8, easeInOutCubic),
     logoImg().scale(1, 0.8, easeInOutCubic),
     logoTxt().opacity(1, 0.8, easeInOutCubic),
+    logoTxt().scale(1, 0.8, easeInOutCubic),
     searchBox().opacity(1, 0.8, easeInOutCubic),
   );
 
@@ -277,8 +282,8 @@ export default makeScene2D(function* (view) {
         tailRefs[i]().size(isHead ? 22 : 6 + frac * 14);
         tailRefs[i]().opacity(isHead ? 1 : Math.pow(frac, 1.2) * 0.95);
         tailRefs[i]().fill(isHead ? '#ffffff' : i < 8 ? '#c8ffe0' : GREEN);
-        yield;
       }
+      yield; // single yield outside loop — updates all 80 nodes every frame
     }),
   );
 
@@ -316,7 +321,10 @@ export default makeScene2D(function* (view) {
   yield* waitFor(0.3);
 
   // ── Beat 8: Outro ─────────────────────────────────────
-  yield* searchBox().opacity(0, 0.6, easeInOutCubic);
+  yield* all(
+    searchBox().opacity(0, 0.6, easeInOutCubic),
+    cometContainer().opacity(0, 0.6, easeInOutCubic),
+  );
   yield* tagline().opacity(1, 0.8, easeInOutCubic);
   yield* waitFor(3.5);
   yield* outroBg().opacity(1, 2, easeInOutCubic);
