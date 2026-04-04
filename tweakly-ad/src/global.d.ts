@@ -12,72 +12,93 @@ declare module '@motion-canvas/core/jsx-runtime' {
 }
 
 declare module '@motion-canvas/2d' {
-  interface Tweenable<T = number> {
-    (value: T, duration?: number, easing?: any): any;
-  }
-  
+  type SignalProp = any;
+
   export class Rect {
     constructor(props: any);
     add(child: any): void;
-    get children(): any[];
-    get opacity(): number;
-    set opacity(v: number);
-    opacity: Tweenable;
-    get scale(): number;
-    set scale(v: number);
-    scale: Tweenable;
-    get position(): {x: number; y: number};
-    position: any;
-    get x(): number;
-    set x(v: number);
-    x: Tweenable;
-    get y(): number;
-    set y(v: number);
-    y: Tweenable;
-    width: any;
-    height: any;
-    fill: any;
-    radius: any;
+    opacity: SignalProp;
+    scale: SignalProp;
+    position: SignalProp;
+    x: SignalProp;
+    y: SignalProp;
+    width: SignalProp;
+    height: SignalProp;
+    fill: SignalProp;
+    radius: SignalProp;
   }
+
   export class Circle {
     constructor(props: any);
-    get opacity(): number;
-    set opacity(v: number);
-    opacity: Tweenable;
-    get scale(): number;
-    set scale(v: number);
-    scale: Tweenable;
-    size: any;
-    fill: any;
-    x: any;
-    y: any;
+    opacity: SignalProp;
+    scale: SignalProp;
+    position: SignalProp;
+    size: SignalProp;
+    fill: SignalProp;
+    x: SignalProp;
+    y: SignalProp;
   }
+
   export class Txt {
     constructor(props: any);
-    get opacity(): number;
-    set opacity(v: number);
-    opacity: Tweenable;
-    text: any;
-    fontSize: any;
-    fontFamily: any;
-    fontWeight: any;
-    fill: any;
-    x: any;
-    y: any;
+    opacity: SignalProp;
+    scale: SignalProp;
+    text: SignalProp;
+    fontSize: SignalProp;
+    fontFamily: SignalProp;
+    fontWeight: SignalProp;
+    fill: SignalProp;
+    x: SignalProp;
+    y: SignalProp;
   }
+
   export class View {
     add(child: any): void;
+    spawn(task: any): void;
   }
+
   export class Img {
     constructor(props: any);
-    get opacity(): number;
-    set opacity(v: number);
-    opacity: Tweenable;
-    src: any;
-    width: any;
-    height: any;
-    x: any;
-    y: any;
+    opacity: SignalProp;
+    scale: SignalProp;
+    src: SignalProp;
+    width: SignalProp;
+    height: SignalProp;
+    x: SignalProp;
+    y: SignalProp;
   }
-  export function makeScene2D(fn: (view: View) => Generator<any>): any;
+
+  export function makeScene2D(fn: (view: View) => ThreadGenerator): any;
+}
+
+declare module '@motion-canvas/core' {
+  export type ThreadGenerator = Generator<any, any, any>;
+
+  export interface Reference<T> {
+    (): T;
+  }
+
+  export type SignalValue<T> = {
+    (): T;
+    (value: T): void;
+    (value: T, duration: number, easing?: EasingFunction): ThreadGenerator;
+  };
+
+  export type EasingFunction = (t: number) => number;
+
+  export function createRef<T>(): Reference<T>;
+
+  export function createSignal<T>(initial: T): SignalValue<T>;
+
+  export function waitFor(duration: number): ThreadGenerator;
+
+  export function all(...tasks: ThreadGenerator[]): ThreadGenerator;
+
+  export function loop(count: number, task: () => ThreadGenerator): ThreadGenerator;
+
+  export function easeInOutCubic(t: number): number;
+  export function easeOutCubic(t: number): number;
+  export function linear(t: number): number;
+
+  export function makeProject(config: {scenes: any[]}): any;
 }
