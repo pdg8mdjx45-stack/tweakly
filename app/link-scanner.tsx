@@ -1,7 +1,7 @@
 /**
  * Link Scanner Screen
  * Paste any product URL to get promo codes, price history, alerts, and affiliate buy CTA.
- * UI-only mockup — no real functionality.
+ * Scans any shop URL, extracts product data, builds affiliate link, persists to Supabase.
  */
 
 import { ClearLiquidGlass } from '@/components/clear-liquid-glass';
@@ -151,7 +151,7 @@ export default function LinkScannerScreen() {
       }
 
       const price = meta.price ?? 0;
-      const shopProductId = parsed.productId || parsed.productName.toLowerCase().replace(/\s+/g, '-').slice(0, 60);
+      const shopProductId = parsed.productId || parsed.productName.toLowerCase().replace(/\s+/g, '-').slice(0, 60) || Date.now().toString();
 
       const saved = await upsertScannedProduct({
         shop_slug: parsed.shopSlug,
@@ -386,7 +386,7 @@ export default function LinkScannerScreen() {
                     />
                     <Pressable
                       style={[styles.alertConfirmBtn, { backgroundColor: Palette.primary, opacity: alertPrice.trim() ? 1 : 0.5 }]}
-                      onPress={handleSetAlert}
+                      onPress={() => { handleSetAlert().catch(() => {}); }}
                       disabled={!alertPrice.trim()}
                     >
                       <Text style={styles.alertConfirmText}>Bewaar</Text>
@@ -404,7 +404,7 @@ export default function LinkScannerScreen() {
               <Pressable
                 onPressIn={() => { ctaScale.value = withSpring(0.97, { damping: 12, stiffness: 340 }); }}
                 onPressOut={() => { ctaScale.value = withSpring(1, { damping: 12, stiffness: 340 }); }}
-                onPress={() => Linking.openURL(result.affiliateUrl)}
+                onPress={() => { Linking.openURL(result.affiliateUrl).catch(() => {}); }}
                 style={styles.ctaWrap}
               >
                 <LinearGradient
