@@ -39,32 +39,47 @@ export async function getAllProducts(): Promise<ProductType[]> {
 }
 
 export async function getPriceDrops(limit = 10): Promise<ProductType[]> {
-  // Return curated products with price drops
-  const drops = CURATED.filter(p => p.badge === 'prijsdaling');
-  if (drops.length > 0) return drops.slice(0, limit);
-  
-  // Fallback to scraped
-  const remote = await apiFetchDrops(limit);
-  return remote.length > 0 ? remote : CURATED.filter(p => p.badge === 'prijsdaling').slice(0, limit);
+  try {
+    // Return curated products with price drops
+    const drops = CURATED.filter(p => p.badge === 'prijsdaling');
+    if (drops.length > 0) return drops.slice(0, limit);
+    
+    // Fallback to scraped
+    const remote = await apiFetchDrops(limit);
+    return remote.length > 0 ? remote : CURATED.filter(p => p.badge === 'prijsdaling').slice(0, limit);
+  } catch (error) {
+    console.warn('getPriceDrops failed:', error);
+    return [];
+  }
 }
 
 export async function getNewProducts(): Promise<ProductType[]> {
-  // Return curated new products
-  const nieuw = CURATED.filter(p => p.badge === 'nieuw');
-  if (nieuw.length > 0) return nieuw;
-  
-  // Fallback
-  const remote = await apiFetchNew();
-  return remote.length > 0 ? remote : CURATED.filter(p => p.badge === 'nieuw');
+  try {
+    // Return curated new products
+    const nieuw = CURATED.filter(p => p.badge === 'nieuw');
+    if (nieuw.length > 0) return nieuw;
+    
+    // Fallback
+    const remote = await apiFetchNew();
+    return remote.length > 0 ? remote : CURATED.filter(p => p.badge === 'nieuw');
+  } catch (error) {
+    console.warn('getNewProducts failed:', error);
+    return [];
+  }
 }
 
 export async function getBestDeal(): Promise<ProductType | undefined> {
-  // Check curated first
-  const deal = CURATED.find(p => p.badge === 'deal' || p.badge === 'prijsdaling');
-  if (deal) return deal;
-  
-  // Fallback
-  return apiFetchBestDeal();
+  try {
+    // Check curated first
+    const deal = CURATED.find(p => p.badge === 'deal' || p.badge === 'prijsdaling');
+    if (deal) return deal;
+    
+    // Fallback
+    return apiFetchBestDeal();
+  } catch (error) {
+    console.warn('getBestDeal failed:', error);
+    return CURATED.find(p => p.badge === 'deal' || p.badge === 'prijsdaling');
+  }
 }
 
 export async function getProductById(id: string): Promise<ProductType | undefined> {
@@ -122,3 +137,13 @@ export const FALLBACK_PRODUCTS: ProductType[] = CURATED;
 
 // Re-export for useProductFilters hook
 export const ALL_PRODUCTS: ProductType[] = CURATED;
+
+/** Geeft alle producten terug voor een hoofdcategorie */
+export async function getProductsByMainCategory(mainCategory: string): Promise<ProductType[]> {
+  return CURATED.filter(p => p.mainCategory === mainCategory);
+}
+
+/** Geeft alle producten terug voor een subcategorie */
+export async function getProductsBySubCategory(subCategory: string): Promise<ProductType[]> {
+  return getProductsByCategory(subCategory);
+}
