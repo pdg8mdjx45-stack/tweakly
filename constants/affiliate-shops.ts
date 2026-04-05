@@ -35,6 +35,8 @@ export type AffiliateShop = {
   brandColor: string;
   /** Basis URL van de shop */
   baseUrl: string;
+  /** Hoofdcategorie-IDs die deze shop dekt. ['all'] = wildcard (alle categorieën) */
+  mainCategories: string[];
   /** Affiliate configuratie */
   affiliate: AffiliateStatus;
 };
@@ -51,6 +53,7 @@ export const AFFILIATE_SHOPS: AffiliateShop[] = [
     logoTextColor: '#000000',
     brandColor: '#FF9900',
     baseUrl: 'https://www.amazon.nl',
+    mainCategories: ['all'],
     affiliate: {
       active: true,
       network: 'Amazon Associates',
@@ -80,6 +83,7 @@ export const AFFILIATE_SHOPS: AffiliateShop[] = [
     logoTextColor: '#FFFFFF',
     brandColor: '#0090E3',
     baseUrl: 'https://www.coolblue.nl',
+    mainCategories: ['elektronica'],
     affiliate: {
       active: false,
       reason: 'Daisycon goedkeuring in behandeling',
@@ -95,6 +99,7 @@ export const AFFILIATE_SHOPS: AffiliateShop[] = [
     logoTextColor: '#FFFFFF',
     brandColor: '#0000A4',
     baseUrl: 'https://www.bol.com',
+    mainCategories: ['all'],
     affiliate: {
       active: true,
       network: 'Bol.com Partnerprogramma',
@@ -113,6 +118,7 @@ export const AFFILIATE_SHOPS: AffiliateShop[] = [
     logoTextColor: '#FFFFFF',
     brandColor: '#E3000F',
     baseUrl: 'https://www.alternate.nl',
+    mainCategories: ['elektronica'],
     affiliate: {
       active: false,
       reason: 'TradeDoubler goedkeuring in behandeling',
@@ -128,6 +134,7 @@ export const AFFILIATE_SHOPS: AffiliateShop[] = [
     logoTextColor: '#FFFFFF',
     brandColor: '#CC0000',
     baseUrl: 'https://www.mediamarkt.nl',
+    mainCategories: ['elektronica'],
     affiliate: {
       active: false,
       reason: 'Awin goedkeuring in behandeling',
@@ -143,6 +150,7 @@ export const AFFILIATE_SHOPS: AffiliateShop[] = [
     logoTextColor: '#FFFFFF',
     brandColor: '#1D1D1F',
     baseUrl: 'https://www.apple.com/nl',
+    mainCategories: ['elektronica'],
     affiliate: {
       active: false,
       reason: 'Geen affiliate programma beschikbaar',
@@ -158,6 +166,7 @@ export const AFFILIATE_SHOPS: AffiliateShop[] = [
     logoTextColor: '#FFFFFF',
     brandColor: '#FF6900',
     baseUrl: 'https://www.zalando.nl',
+    mainCategories: ['kleding', 'schoenen'],
     affiliate: {
       active: false,
       reason: 'Nog niet aangevraagd',
@@ -173,6 +182,7 @@ export const AFFILIATE_SHOPS: AffiliateShop[] = [
     logoTextColor: '#FFFFFF',
     brandColor: '#E2001A',
     baseUrl: 'https://www.wehkamp.nl',
+    mainCategories: ['kleding', 'schoenen', 'wonen', 'beauty'],
     affiliate: {
       active: false,
       reason: 'Nog niet aangevraagd',
@@ -184,13 +194,14 @@ export const AFFILIATE_SHOPS: AffiliateShop[] = [
     slug: 'zalando-lounge',
     displayName: 'Zalando Lounge',
     logoAbbr: 'ZL',
-    logoBackground: '#1A1A2E',
+    logoBackground: '#FF6900',
     logoTextColor: '#FFFFFF',
-    brandColor: '#1A1A2E',
-    baseUrl: 'https://www.lounge.zalando.nl',
+    brandColor: '#FF6900',
+    baseUrl: 'https://www.zalando-lounge.nl',
+    mainCategories: ['kleding', 'schoenen'],
     affiliate: {
       active: false,
-      reason: 'Nog niet aangevraagd',
+      reason: 'Awin goedkeuring vereist — 6% commissie beschikbaar',
     },
   },
 ];
@@ -208,4 +219,13 @@ export function getShopByName(name: string): AffiliateShop | undefined {
 /** Zoek shop op slug — voor gebruik vanuit shop-feeds integratie */
 export function getShopBySlug(slug: string): AffiliateShop | undefined {
   return AFFILIATE_SHOPS.find(s => s.slug === slug);
+}
+
+/** Geeft alle shops terug die een bepaalde hoofdcategorie ondersteunen */
+export function getShopsForCategory(mainCategoryId: string): AffiliateShop[] {
+  return AFFILIATE_SHOPS.filter(
+    shop =>
+      shop.mainCategories.includes('all') ||
+      shop.mainCategories.includes(mainCategoryId)
+  );
 }
