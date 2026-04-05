@@ -8,9 +8,13 @@ import { ClearLiquidGlass } from '@/components/clear-liquid-glass';
 import { GlassShimmer } from '@/components/glass-shimmer';
 import { LiquidScreen } from '@/components/liquid-screen';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { getShopBySlug } from '@/constants/affiliate-shops';
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useReduceMotion } from '@/hooks/use-reduce-motion';
+import { addAlert } from '@/services/alerts-store';
+import { addPricePoint, upsertScannedProduct } from '@/services/scanned-products';
+import { fetchProductMeta, parseShopUrl } from '@/services/url-parser';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import Animated, {
@@ -21,6 +25,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useState } from 'react';
 import {
+  Linking,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -29,28 +34,25 @@ import {
   View,
 } from 'react-native';
 
-const MOCK_PRODUCT = {
-  name: 'Sony WH-1000XM5',
-  brand: 'Sony',
-  image: null,
-  currentPrice: 279,
-  originalPrice: 349,
-  dropPct: 20,
-  priceHistory: [
-    { date: 'Nov', price: 349 },
-    { date: 'Dec', price: 329 },
-    { date: 'Jan', price: 299 },
-    { date: 'Feb', price: 279 },
-    { date: 'Mrt', price: 279 },
-  ],
+type ScanResult = {
+  name: string;
+  brand: string | null;
+  imageUrl: string | null;
+  currentPrice: number;
+  affiliateUrl: string;
+  shopDisplayName: string;
+  priceHistory: { date: string; price: number }[];
 };
 
-const MOCK_PROMO_CODES = [
-  { code: 'AUDIO10', discount: '10% korting', expires: 'Geldig t/m 15 apr' },
-  { code: 'TWEAKLY5', discount: '€5 korting', expires: 'Altijd geldig' },
-];
+type ScanError = 'invalid_url' | 'product_not_found' | 'network_error';
 
-function MiniChart({ data, isDark }: { data: typeof MOCK_PRODUCT['priceHistory']; isDark: boolean }) {
+const ERROR_MESSAGES: Record<ScanError, string> = {
+  invalid_url: 'We herkennen deze link niet. Probeer een link van Bol.com, Amazon, Coolblue of een andere winkel.',
+  product_not_found: 'Product niet gevonden. Controleer de link en probeer opnieuw.',
+  network_error: 'Geen verbinding. Controleer je internet en probeer opnieuw.',
+};
+
+function MiniChart({ data, isDark }: { data: { date: string; price: number }[]; isDark: boolean }) {
   const max = Math.max(...data.map(d => d.price));
   const min = Math.min(...data.map(d => d.price));
   const range = max - min || 1;
@@ -97,17 +99,104 @@ export default function LinkScannerScreen() {
   const [url, setUrl] = useState('');
   const [scanned, setScanned] = useState(false);
   const [scanning, setScanning] = useState(false);
+  const [result, setResult] = useState<ScanResult | null>(null);
+  const [scanError, setScanError] = useState<ScanError | null>(null);
+  const [alertPrice, setAlertPrice] = useState('');
+  const [alertSaved, setAlertSaved] = useState(false);
+  const [showAlertInput, setShowAlertInput] = useState(false);
+  const [alertProductId, setAlertProductId] = useState<string | null>(null);
 
   const ctaScale = useSharedValue(1);
   const ctaStyle = useAnimatedStyle(() => ({ transform: [{ scale: ctaScale.value }] }));
 
-  const handleScan = () => {
+  const handleReset = () => {
+    setUrl('');
+    setScanned(false);
+    setScanError(null);
+    setResult(null);
+    setAlertPrice('');
+    setAlertSaved(false);
+    setShowAlertInput(false);
+    setAlertProductId(null);
+  };
+
+  const handleScan = async () => {
     if (!url.trim()) return;
     setScanning(true);
-    setTimeout(() => {
-      setScanning(false);
+    setScanError(null);
+    setResult(null);
+    setScanned(false);
+
+    try {
+      const parsed = parseShopUrl(url.trim());
+      if (!parsed) {
+        setScanError('invalid_url');
+        setScanning(false);
+        return;
+      }
+
+      const meta = await fetchProductMeta(url.trim());
+
+      const name = meta.name || parsed.productName;
+      if (!name) {
+        setScanError('product_not_found');
+        setScanning(false);
+        return;
+      }
+
+      const shop = getShopBySlug(parsed.shopSlug);
+      let affiliateUrl = parsed.canonicalUrl;
+      if (shop && shop.affiliate.active) {
+        affiliateUrl = shop.affiliate.buildAffiliateUrl(parsed.canonicalUrl, parsed.productId || undefined);
+      }
+
+      const price = meta.price ?? 0;
+      const shopProductId = parsed.productId || parsed.productName.toLowerCase().replace(/\s+/g, '-').slice(0, 60);
+
+      const saved = await upsertScannedProduct({
+        shop_slug: parsed.shopSlug,
+        shop_product_id: shopProductId,
+        name,
+        brand: meta.brand,
+        image_url: meta.imageUrl,
+        current_price: price,
+        affiliate_url: affiliateUrl,
+        original_url: url.trim(),
+      });
+
+      if (saved) {
+        setAlertProductId(saved.id);
+        await addPricePoint(saved.id, price);
+      }
+
+      setResult({
+        name,
+        brand: meta.brand,
+        imageUrl: meta.imageUrl,
+        currentPrice: price,
+        affiliateUrl,
+        shopDisplayName: shop?.displayName ?? parsed.shopDisplayName,
+        priceHistory: saved ? [{ date: 'Vandaag', price }] : [],
+      });
       setScanned(true);
-    }, 1200);
+    } catch {
+      setScanError('network_error');
+    } finally {
+      setScanning(false);
+    }
+  };
+
+  const handleSetAlert = async () => {
+    const target = parseFloat(alertPrice.replace(',', '.'));
+    if (!alertProductId || isNaN(target) || target <= 0) return;
+    await addAlert({
+      productId: alertProductId,
+      productName: result?.name ?? '',
+      targetPrice: target,
+      currentPrice: result?.currentPrice ?? 0,
+    });
+    setAlertSaved(true);
+    setShowAlertInput(false);
   };
 
   return (
@@ -142,7 +231,7 @@ export default function LinkScannerScreen() {
                 keyboardType="url"
               />
               {url.length > 0 && (
-                <Pressable onPress={() => { setUrl(''); setScanned(false); }} hitSlop={8}>
+                <Pressable onPress={handleReset} hitSlop={8}>
                   <IconSymbol name="xmark.circle.fill" size={18} color={colors.textSecondary} />
                 </Pressable>
               )}
@@ -160,7 +249,7 @@ export default function LinkScannerScreen() {
         </Animated.View>
 
         {/* Hint when no URL */}
-        {!scanned && !scanning && (
+        {!scanned && !scanning && !scanError && (
           <Animated.View entering={animationsEnabled ? FadeInDown.delay(120).springify().damping(18).stiffness(110) : undefined}>
             <View style={styles.hintCard}>
               <IconSymbol name="info.circle" size={16} color={colors.textSecondary} />
@@ -189,8 +278,26 @@ export default function LinkScannerScreen() {
           </Animated.View>
         )}
 
+        {/* Error state */}
+        {scanError && (
+          <Animated.View entering={animationsEnabled ? FadeInDown.delay(0).springify().damping(18).stiffness(110) : undefined}>
+            <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.errorCard}>
+              <IconSymbol name="exclamationmark.triangle" size={24} color="#FF3B30" />
+              <Text style={[styles.errorText, { color: colors.text }]}>
+                {ERROR_MESSAGES[scanError]}
+              </Text>
+              <Pressable
+                style={[styles.retryBtn, { backgroundColor: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.07)' }]}
+                onPress={handleReset}
+              >
+                <Text style={[styles.retryText, { color: colors.tint }]}>Opnieuw proberen</Text>
+              </Pressable>
+            </ClearLiquidGlass>
+          </Animated.View>
+        )}
+
         {/* Results */}
-        {scanned && (
+        {scanned && result && (
           <>
             {/* Product Card */}
             <Animated.View entering={animationsEnabled ? FadeInDown.delay(0).springify().damping(18).stiffness(110) : undefined}>
@@ -198,83 +305,106 @@ export default function LinkScannerScreen() {
                 <GlassShimmer isDark={isDark} borderRadius={Radius.xl} intensity={0.7} />
                 <View style={styles.productHeader}>
                   <View style={[styles.productImagePlaceholder, { backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }]}>
-                    <IconSymbol name="headphones" size={36} color={colors.textSecondary} />
+                    <IconSymbol name={result.imageUrl ? 'photo' : 'cart'} size={36} color={colors.textSecondary} />
                   </View>
                   <View style={styles.productInfo}>
-                    <Text style={[styles.productBrand, { color: colors.textSecondary }]}>{MOCK_PRODUCT.brand}</Text>
-                    <Text style={[styles.productName, { color: colors.text }]}>{MOCK_PRODUCT.name}</Text>
+                    {result.brand && (
+                      <Text style={[styles.productBrand, { color: colors.textSecondary }]}>{result.brand}</Text>
+                    )}
+                    <Text style={[styles.productName, { color: colors.text }]} numberOfLines={3}>{result.name}</Text>
                     <View style={styles.priceRow}>
-                      <Text style={[styles.productPrice, { color: colors.text }]}>€{MOCK_PRODUCT.currentPrice}</Text>
-                      <Text style={[styles.productOriginalPrice, { color: colors.textSecondary }]}>€{MOCK_PRODUCT.originalPrice}</Text>
-                      <View style={styles.dropBadge}>
-                        <Text style={styles.dropBadgeText}>-{MOCK_PRODUCT.dropPct}%</Text>
-                      </View>
+                      {result.currentPrice > 0 ? (
+                        <Text style={[styles.productPrice, { color: colors.text }]}>€{result.currentPrice.toFixed(2)}</Text>
+                      ) : (
+                        <Text style={[styles.productPrice, { color: colors.textSecondary }]}>Prijs onbekend</Text>
+                      )}
                     </View>
                   </View>
                 </View>
-              </ClearLiquidGlass>
-            </Animated.View>
-
-            {/* Promo Codes */}
-            <Animated.View entering={animationsEnabled ? FadeInDown.delay(60).springify().damping(18).stiffness(110) : undefined}>
-              <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>KORTINGSCODES</Text>
-              <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.promoCard}>
-                {MOCK_PROMO_CODES.map((promo, i) => (
-                  <View key={promo.code}>
-                    {i > 0 && <View style={[styles.promoSep, { backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)' }]} />}
-                    <View style={styles.promoRow}>
-                      <View style={[styles.promoCodeBox, { backgroundColor: isDark ? 'rgba(52,199,89,0.12)' : 'rgba(52,199,89,0.10)' }]}>
-                        <Text style={[styles.promoCode, { color: Palette.accent }]}>{promo.code}</Text>
-                      </View>
-                      <View style={styles.promoInfo}>
-                        <Text style={[styles.promoDiscount, { color: colors.text }]}>{promo.discount}</Text>
-                        <Text style={[styles.promoExpiry, { color: colors.textSecondary }]}>{promo.expires}</Text>
-                      </View>
-                      <Pressable hitSlop={8}>
-                        <IconSymbol name="doc.on.doc" size={16} color={colors.tint} />
-                      </Pressable>
-                    </View>
-                  </View>
-                ))}
               </ClearLiquidGlass>
             </Animated.View>
 
             {/* Price History */}
-            <Animated.View entering={animationsEnabled ? FadeInDown.delay(120).springify().damping(18).stiffness(110) : undefined}>
-              <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>PRIJSHISTORIE</Text>
-              <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.chartCard}>
-                <View style={styles.chartHeader}>
-                  <Text style={[styles.chartLow, { color: Palette.accent }]}>Laagste: €{Math.min(...MOCK_PRODUCT.priceHistory.map(p => p.price))}</Text>
-                  <Text style={[styles.chartHigh, { color: colors.textSecondary }]}>Hoogste: €{Math.max(...MOCK_PRODUCT.priceHistory.map(p => p.price))}</Text>
-                </View>
-                <MiniChart data={MOCK_PRODUCT.priceHistory} isDark={isDark} />
-              </ClearLiquidGlass>
-            </Animated.View>
+            {result.priceHistory.length > 0 && (
+              <Animated.View entering={animationsEnabled ? FadeInDown.delay(60).springify().damping(18).stiffness(110) : undefined}>
+                <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>PRIJSHISTORIE</Text>
+                <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.chartCard}>
+                  <View style={styles.chartHeader}>
+                    <Text style={[styles.chartLow, { color: Palette.accent }]}>
+                      Laagste: €{Math.min(...result.priceHistory.map(p => p.price)).toFixed(2)}
+                    </Text>
+                    <Text style={[styles.chartHigh, { color: colors.textSecondary }]}>
+                      Hoogste: €{Math.max(...result.priceHistory.map(p => p.price)).toFixed(2)}
+                    </Text>
+                  </View>
+                  <MiniChart data={result.priceHistory} isDark={isDark} />
+                  {result.priceHistory.length === 1 && (
+                    <Text style={[styles.chartNote, { color: colors.textSecondary }]}>
+                      Eerste meting — scan opnieuw om geschiedenis op te bouwen.
+                    </Text>
+                  )}
+                </ClearLiquidGlass>
+              </Animated.View>
+            )}
 
-            {/* Price Alert Row */}
-            <Animated.View entering={animationsEnabled ? FadeInDown.delay(180).springify().damping(18).stiffness(110) : undefined}>
+            {/* Price Alert */}
+            <Animated.View entering={animationsEnabled ? FadeInDown.delay(120).springify().damping(18).stiffness(110) : undefined}>
               <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.alertRow}>
                 <View style={[styles.alertIconBox, { backgroundColor: '#FF9500' + '20' }]}>
                   <IconSymbol name="bell.badge.fill" size={20} color="#FF9500" />
                 </View>
                 <View style={styles.alertInfo}>
                   <Text style={[styles.alertTitle, { color: colors.text }]}>Prijsalert instellen</Text>
-                  <Text style={[styles.alertSub, { color: colors.textSecondary }]}>Ontvang een melding als de prijs daalt</Text>
+                  {alertSaved ? (
+                    <Text style={[styles.alertSub, { color: Palette.accent }]}>Alert opgeslagen!</Text>
+                  ) : (
+                    <Text style={[styles.alertSub, { color: colors.textSecondary }]}>Ontvang een melding als de prijs daalt</Text>
+                  )}
                 </View>
-                <Pressable style={[styles.alertToggle, { backgroundColor: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.07)' }]}>
-                  <Text style={[styles.alertToggleText, { color: colors.tint }]}>Instellen</Text>
-                </Pressable>
+                {!alertSaved && (
+                  <Pressable
+                    onPress={() => setShowAlertInput(v => !v)}
+                    style={[styles.alertToggle, { backgroundColor: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.07)' }]}
+                  >
+                    <Text style={[styles.alertToggleText, { color: colors.tint }]}>
+                      {showAlertInput ? 'Annuleer' : 'Instellen'}
+                    </Text>
+                  </Pressable>
+                )}
               </ClearLiquidGlass>
+              {showAlertInput && !alertSaved && (
+                <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.alertInputCard}>
+                  <Text style={[styles.alertInputLabel, { color: colors.textSecondary }]}>Doelprijs (€)</Text>
+                  <View style={styles.alertInputRow}>
+                    <TextInput
+                      style={[styles.alertInput, { color: colors.text, borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)' }]}
+                      placeholder={result.currentPrice > 0 ? `bijv. ${(result.currentPrice * 0.9).toFixed(0)}` : 'bijv. 150'}
+                      placeholderTextColor={colors.textSecondary}
+                      value={alertPrice}
+                      onChangeText={setAlertPrice}
+                      keyboardType="decimal-pad"
+                    />
+                    <Pressable
+                      style={[styles.alertConfirmBtn, { backgroundColor: Palette.primary, opacity: alertPrice.trim() ? 1 : 0.5 }]}
+                      onPress={handleSetAlert}
+                      disabled={!alertPrice.trim()}
+                    >
+                      <Text style={styles.alertConfirmText}>Bewaar</Text>
+                    </Pressable>
+                  </View>
+                </ClearLiquidGlass>
+              )}
             </Animated.View>
 
-            {/* Affiliate Buy CTA */}
+            {/* Buy CTA */}
             <Animated.View
-              entering={animationsEnabled ? FadeInDown.delay(240).springify().damping(18).stiffness(110) : undefined}
+              entering={animationsEnabled ? FadeInDown.delay(180).springify().damping(18).stiffness(110) : undefined}
               style={ctaStyle}
             >
               <Pressable
                 onPressIn={() => { ctaScale.value = withSpring(0.97, { damping: 12, stiffness: 340 }); }}
                 onPressOut={() => { ctaScale.value = withSpring(1, { damping: 12, stiffness: 340 }); }}
+                onPress={() => Linking.openURL(result.affiliateUrl)}
                 style={styles.ctaWrap}
               >
                 <LinearGradient
@@ -283,18 +413,17 @@ export default function LinkScannerScreen() {
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                 >
-                  {/* Specular top rim */}
                   <View style={styles.ctaSpecular} pointerEvents="none" />
-                  {/* Lens blob */}
                   <View style={styles.ctaBlob} pointerEvents="none" />
-
                   <View style={styles.ctaContent}>
                     <View>
-                      <Text style={styles.ctaLabel}>Beste prijs</Text>
+                      <Text style={styles.ctaLabel}>Kopen bij {result.shopDisplayName}</Text>
                       <Text style={styles.ctaShop}>Bekijk via Tweakly</Text>
                     </View>
                     <View style={styles.ctaRight}>
-                      <Text style={styles.ctaPrice}>€{MOCK_PRODUCT.currentPrice}</Text>
+                      {result.currentPrice > 0 && (
+                        <Text style={styles.ctaPrice}>€{result.currentPrice.toFixed(2)}</Text>
+                      )}
                       <Text style={styles.ctaArrow}>→</Text>
                     </View>
                   </View>
@@ -549,5 +678,65 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
     lineHeight: 18,
+  },
+
+  chartNote: {
+    fontSize: 11,
+    textAlign: 'center',
+    marginTop: 4,
+  },
+  alertInputCard: {
+    overflow: 'hidden',
+    padding: Spacing.md,
+    gap: Spacing.sm,
+    marginTop: 4,
+  },
+  alertInputLabel: {
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  alertInputRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    alignItems: 'center',
+  },
+  alertInput: {
+    flex: 1,
+    fontSize: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderRadius: Radius.md,
+  },
+  alertConfirmBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 9,
+    borderRadius: Radius.lg,
+  },
+  alertConfirmText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  errorCard: {
+    overflow: 'hidden',
+    padding: Spacing.md,
+    gap: Spacing.sm,
+    alignItems: 'center',
+  },
+  errorText: {
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  retryBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: Radius.full,
+    marginTop: 4,
+  },
+  retryText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
