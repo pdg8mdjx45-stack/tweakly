@@ -103,6 +103,7 @@ const SHOP_RULES: ShopRule[] = [
       return slugToName(raw.replace(/\.html$/, '').replace(/-\d{5,}$/, ''));
     },
   },
+  // zalando-lounge MUST precede zalando — the zalando pattern also matches lounge.zalando.nl
   {
     slug: 'zalando-lounge',
     displayName: 'Zalando Lounge',

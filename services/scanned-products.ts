@@ -73,7 +73,7 @@ export async function addPricePoint(
     .eq('scanned_product_id', scannedProductId)
     .order('checked_at', { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
   if (last) {
     const lastDate = (last.checked_at as string).slice(0, 10);
@@ -122,6 +122,9 @@ export async function getAllScannedProducts(): Promise<ScannedProduct[]> {
     .select('*')
     .order('updated_at', { ascending: false });
 
-  if (error) return [];
+  if (error) {
+    console.warn('getAllScannedProducts error:', error.message);
+    return [];
+  }
   return (data ?? []) as ScannedProduct[];
 }
