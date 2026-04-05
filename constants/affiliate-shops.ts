@@ -5,12 +5,15 @@
  * Bevat affiliate configuratie per shop.
  *
  * Status:
- *  ✅ Amazon Associates (tweakly08-20) — ACTIEF
- *  ⏳ Coolblue via Daisycon          — wacht op goedkeuring
- *  ⏳ Alternate via TradeDoubler      — wacht op goedkeuring
- *  ⏳ MediaMarkt via Awin             — wacht op goedkeuring
- *  ❌ Bol.com                         — nog niet aangevraagd
- *  ❌ Apple Store                     — geen affiliate programma
+ *  ✅ Amazon Associates (tweakly08-20)          — ACTIEF
+ *  ✅ Bol.com Partnerprogramma (pub 1513890)    — ACTIEF
+ *  ⏳ Coolblue via Daisycon                    — wacht op goedkeuring
+ *  ⏳ Alternate via TradeDoubler               — wacht op goedkeuring
+ *  ⏳ MediaMarkt via Awin                      — wacht op goedkeuring
+ *  ❌ Apple Store                              — geen affiliate programma
+ *  ❌ Zalando                                  — nog niet aangevraagd
+ *  ❌ Wehkamp                                  — nog niet aangevraagd
+ *  ❌ Zalando Lounge                           — nog niet aangevraagd
  */
 
 export type AffiliateStatus =
@@ -93,8 +96,11 @@ export const AFFILIATE_SHOPS: AffiliateShop[] = [
     brandColor: '#0000A4',
     baseUrl: 'https://www.bol.com',
     affiliate: {
-      active: false,
-      reason: 'Nog niet aangevraagd',
+      active: true,
+      network: 'Bol.com Partnerprogramma',
+      buildAffiliateUrl(productUrl: string) {
+        return `https://partner.bol.com/click/click?p=1&t=url&s=1513890&url=${encodeURIComponent(productUrl)}`;
+      },
     },
   },
 
@@ -142,14 +148,60 @@ export const AFFILIATE_SHOPS: AffiliateShop[] = [
       reason: 'Geen affiliate programma beschikbaar',
     },
   },
+
+  // ── Zalando ──────────────────────────────────────────────────────────────────
+  {
+    slug: 'zalando',
+    displayName: 'Zalando',
+    logoAbbr: 'ZAL',
+    logoBackground: '#FF6900',
+    logoTextColor: '#FFFFFF',
+    brandColor: '#FF6900',
+    baseUrl: 'https://www.zalando.nl',
+    affiliate: {
+      active: false,
+      reason: 'Nog niet aangevraagd',
+    },
+  },
+
+  // ── Wehkamp ───────────────────────────────────────────────────────────────────
+  {
+    slug: 'wehkamp',
+    displayName: 'Wehkamp',
+    logoAbbr: 'WHK',
+    logoBackground: '#E2001A',
+    logoTextColor: '#FFFFFF',
+    brandColor: '#E2001A',
+    baseUrl: 'https://www.wehkamp.nl',
+    affiliate: {
+      active: false,
+      reason: 'Nog niet aangevraagd',
+    },
+  },
+
+  // ── Zalando Lounge ────────────────────────────────────────────────────────────
+  {
+    slug: 'zalando-lounge',
+    displayName: 'Zalando Lounge',
+    logoAbbr: 'ZL',
+    logoBackground: '#1A1A2E',
+    logoTextColor: '#FFFFFF',
+    brandColor: '#1A1A2E',
+    baseUrl: 'https://www.lounge.zalando.nl',
+    affiliate: {
+      active: false,
+      reason: 'Nog niet aangevraagd',
+    },
+  },
 ];
 
-/** Zoek shop op displayName (case-insensitief) — voor gebruik vanuit ShopLink.name */
+/** Zoek shop op displayName, logoAbbr of slug (case-insensitief) — voor gebruik vanuit ShopLink.name */
 export function getShopByName(name: string): AffiliateShop | undefined {
   const lower = name.toLowerCase();
   return AFFILIATE_SHOPS.find(s =>
     s.displayName.toLowerCase() === lower ||
-    s.logoAbbr.toLowerCase() === lower
+    s.logoAbbr.toLowerCase() === lower ||
+    s.slug === lower
   );
 }
 
