@@ -5,7 +5,7 @@
  */
 
 import { Image } from 'expo-image';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import {
   ActivityIndicator,
@@ -16,6 +16,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
@@ -38,6 +39,7 @@ export default function RecommenderScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
   
   const config = CATEGORY_CONFIGS[categoryId];
   
@@ -49,9 +51,12 @@ export default function RecommenderScreen() {
   
   if (!config) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <Text style={{ color: colors.text }}>Category not found</Text>
-      </View>
+      <>
+        <Stack.Screen options={{ headerShown: false }} />
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+          <Text style={{ color: colors.text }}>Category not found</Text>
+        </View>
+      </>
     );
   }
   
@@ -101,152 +106,168 @@ export default function RecommenderScreen() {
   
   if (showResults) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <View style={[styles.header, { backgroundColor: colors.background }]}>
-          <Pressable onPress={handleBack} hitSlop={12}>
-            <IconSymbol name="chevron.left" size={24} color={colors.text} />
-          </Pressable>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>
-            {config.emoji} Aanbevelingen
-          </Text>
-          <View style={{ width: 24 }} />
-        </View>
-        
-        <ScrollView
-          contentContainerStyle={styles.resultsContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {recommendations.length > 0 ? (
-            <>
-              <Text style={[styles.resultsSubtitle, { color: colors.textSecondary }]}>
-                Op basis van jouw voorkeuren bevelen wij aan:
-              </Text>
-              
-              {recommendations.map((product, index) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  rank={index}
-                  colors={colors}
-                />
-              ))}
-              
-              <Pressable
-                onPress={handleRestart}
-                style={[styles.restartBtn, { borderColor: colors.border }]}
-              >
-                <IconSymbol name="arrow.counterclockwise" size={16} color={colors.textSecondary} />
-                <Text style={[styles.restartBtnText, { color: colors.textSecondary }]}>
-                  Opnieuw
+      <>
+        <Stack.Screen options={{ headerShown: false }} />
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+          <View
+            style={[
+              styles.header,
+              { backgroundColor: colors.background, paddingTop: insets.top + Spacing.sm },
+            ]}
+          >
+            <Pressable onPress={handleBack} hitSlop={12}>
+              <IconSymbol name="chevron.left" size={24} color={colors.text} />
+            </Pressable>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>
+              {config.emoji} Aanbevelingen
+            </Text>
+            <View style={{ width: 24 }} />
+          </View>
+          
+          <ScrollView
+            contentContainerStyle={styles.resultsContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {recommendations.length > 0 ? (
+              <>
+                <Text style={[styles.resultsSubtitle, { color: colors.textSecondary }]}>
+                  Op basis van jouw voorkeuren bevelen wij aan:
                 </Text>
-              </Pressable>
-            </>
-          ) : (
-            <View style={styles.noResults}>
-              <IconSymbol name="magnifyingglass" size={48} color={colors.border} />
-              <Text style={[styles.noResultsText, { color: colors.text }]}>
-                Geen producten gevonden
-              </Text>
-              <Text style={[styles.noResultsSubtext, { color: colors.textSecondary }]}>
-                Probeer andere voorkeuren
-              </Text>
-              <Pressable
-                onPress={handleRestart}
-                style={[styles.tryAgainBtn, { backgroundColor: Palette.primary }]}
-              >
-                <Text style={styles.tryAgainBtnText}>Probeer opnieuw</Text>
-              </Pressable>
-            </View>
-          )}
-        </ScrollView>
-      </View>
+                
+                {recommendations.map((product, index) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    rank={index}
+                    colors={colors}
+                  />
+                ))}
+                
+                <Pressable
+                  onPress={handleRestart}
+                  style={[styles.restartBtn, { borderColor: colors.border }]}
+                >
+                  <IconSymbol name="arrow.counterclockwise" size={16} color={colors.textSecondary} />
+                  <Text style={[styles.restartBtnText, { color: colors.textSecondary }]}>
+                    Opnieuw
+                  </Text>
+                </Pressable>
+              </>
+            ) : (
+              <View style={styles.noResults}>
+                <IconSymbol name="magnifyingglass" size={48} color={colors.border} />
+                <Text style={[styles.noResultsText, { color: colors.text }]}>
+                  Geen producten gevonden
+                </Text>
+                <Text style={[styles.noResultsSubtext, { color: colors.textSecondary }]}>
+                  Probeer andere voorkeuren
+                </Text>
+                <Pressable
+                  onPress={handleRestart}
+                  style={[styles.tryAgainBtn, { backgroundColor: Palette.primary }]}
+                >
+                  <Text style={styles.tryAgainBtnText}>Probeer opnieuw</Text>
+                </Pressable>
+              </View>
+            )}
+          </ScrollView>
+        </View>
+      </>
     );
   }
   
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: colors.background }]}>
-        <Pressable onPress={handleBack} hitSlop={12}>
-          <IconSymbol name="chevron.left" size={24} color={colors.text} />
-        </Pressable>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>
-          {config.emoji} {config.name}
-        </Text>
-        <View style={{ width: 24 }} />
-      </View>
-      
-      {/* Progress */}
-      <View style={styles.progressContainer}>
-        <View style={styles.progressRow}>
-          {questions.map((_, i) => (
-            <View
-              key={i}
-              style={[
-                styles.progressDot,
-                {
-                  backgroundColor:
-                    i < step ? Palette.primary : i === step ? Palette.primary : colors.border,
-                  opacity: i === step ? 1 : i < step ? 0.6 : 0.3,
-                },
-              ]}
-            />
-          ))}
-        </View>
-        <Text style={[styles.stepText, { color: colors.textSecondary }]}>
-          Stap {step + 1} van {questions.length}
-        </Text>
-      </View>
-      
-      {/* Question */}
-      <ScrollView
-        contentContainerStyle={styles.questionContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <Text style={[styles.questionText, { color: colors.text }]}>
-          {currentQuestion.question}
-        </Text>
-        
-        <View style={styles.optionsGrid}>
-          {currentQuestion.options.map((option) => (
-            <OptionButton
-              key={option.value}
-              label={option.label}
-              emoji={option.emoji}
-              selected={preferences[currentQuestion.id] === option.value}
-              onPress={() => handleSelect(option.value)}
-              colors={colors}
-            />
-          ))}
-        </View>
-      </ScrollView>
-      
-      {/* Bottom button */}
-      <View style={[styles.bottomBar, { backgroundColor: colors.background }]}>
-        <Pressable
-          onPress={handleNext}
-          disabled={!preferences[currentQuestion.id] || loading}
-          style={({ pressed }) => [
-            styles.nextBtn,
-            {
-              backgroundColor: preferences[currentQuestion.id] ? Palette.primary : colors.border,
-              opacity: pressed ? 0.8 : 1,
-            },
+    <>
+      <Stack.Screen options={{ headerShown: false }} />
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        {/* Header */}
+        <View
+          style={[
+            styles.header,
+            { backgroundColor: colors.background, paddingTop: insets.top + Spacing.sm },
           ]}
         >
-          {loading ? (
-            <ActivityIndicator color="#fff" size="small" />
-          ) : (
-            <>
-              <Text style={styles.nextBtnText}>
-                {isLastStep ? 'Aanbevelingen bekijken' : 'Volgende'}
-              </Text>
-              <IconSymbol name="arrow.right" size={18} color="#fff" />
-            </>
-          )}
-        </Pressable>
+          <Pressable onPress={handleBack} hitSlop={12}>
+            <IconSymbol name="chevron.left" size={24} color={colors.text} />
+          </Pressable>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>
+            {config.emoji} {config.name}
+          </Text>
+          <View style={{ width: 24 }} />
+        </View>
+        
+        {/* Progress */}
+        <View style={styles.progressContainer}>
+          <View style={styles.progressRow}>
+            {questions.map((_, i) => (
+              <View
+                key={i}
+                style={[
+                  styles.progressDot,
+                  {
+                    backgroundColor:
+                      i < step ? Palette.primary : i === step ? Palette.primary : colors.border,
+                    opacity: i === step ? 1 : i < step ? 0.6 : 0.3,
+                  },
+                ]}
+              />
+            ))}
+          </View>
+          <Text style={[styles.stepText, { color: colors.textSecondary }]}>
+            Stap {step + 1} van {questions.length}
+          </Text>
+        </View>
+        
+        {/* Question */}
+        <ScrollView
+          contentContainerStyle={styles.questionContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <Text style={[styles.questionText, { color: colors.text }]}>
+            {currentQuestion.question}
+          </Text>
+          
+          <View style={styles.optionsGrid}>
+            {currentQuestion.options.map((option) => (
+              <OptionButton
+                key={option.value}
+                label={option.label}
+                emoji={option.emoji}
+                selected={preferences[currentQuestion.id] === option.value}
+                onPress={() => handleSelect(option.value)}
+                colors={colors}
+              />
+            ))}
+          </View>
+        </ScrollView>
+        
+        {/* Bottom button */}
+        <View style={[styles.bottomBar, { backgroundColor: colors.background }]}>
+          <Pressable
+            onPress={handleNext}
+            disabled={!preferences[currentQuestion.id] || loading}
+            style={({ pressed }) => [
+              styles.nextBtn,
+              {
+                backgroundColor: preferences[currentQuestion.id] ? Palette.primary : colors.border,
+                opacity: pressed ? 0.8 : 1,
+              },
+            ]}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <>
+                <Text style={styles.nextBtnText}>
+                  {isLastStep ? 'Aanbevelingen bekijken' : 'Volgende'}
+                </Text>
+                <IconSymbol name="arrow.right" size={18} color="#fff" />
+              </>
+            )}
+          </Pressable>
+        </View>
       </View>
-    </View>
+    </>
   );
 }
 
@@ -380,20 +401,21 @@ const styles = StyleSheet.create({
   progressContainer: {
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
-    gap: Spacing.sm,
+    gap: Spacing.xs,
   },
   progressRow: {
     flexDirection: 'row',
-    gap: Spacing.xs,
+    gap: 4,
   },
   progressDot: {
     flex: 1,
-    height: 4,
-    borderRadius: 2,
+    height: 5,
+    borderRadius: 3,
   },
   stepText: {
     fontSize: 12,
     textAlign: 'center',
+    fontWeight: '500',
   },
   
   questionContent: {
@@ -401,11 +423,12 @@ const styles = StyleSheet.create({
     paddingBottom: 120,
   },
   questionText: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 22,
+    fontWeight: '800',
     marginBottom: Spacing.xl,
     textAlign: 'center',
-    lineHeight: 32,
+    lineHeight: 30,
+    letterSpacing: 0.1,
   },
   optionsGrid: {
     gap: Spacing.sm,
@@ -414,17 +437,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: Spacing.md,
-    borderRadius: Radius.md,
+    borderRadius: Radius.lg,
     borderWidth: 2,
     gap: Spacing.sm,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 1,
   },
   optionEmoji: {
-    fontSize: 24,
+    fontSize: 26,
   },
   optionLabel: {
     flex: 1,
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   
   bottomBar: {
@@ -441,14 +469,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
-    borderRadius: Radius.md,
+    paddingVertical: 17,
+    borderRadius: Radius.full,
     gap: Spacing.sm,
+    shadowColor: Palette.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 4,
   },
   nextBtnText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '800',
+    letterSpacing: 0.2,
   },
   
   // Results
@@ -466,8 +500,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: Spacing.md,
-    borderRadius: Radius.md,
+    borderRadius: Radius.lg,
     gap: Spacing.sm,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07,
+    shadowRadius: 10,
+    elevation: 2,
   },
   rankBadge: {
     width: 28,

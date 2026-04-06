@@ -3,7 +3,6 @@
  * mode=browse  → navigates to /prijzen?category=X
  * mode=select  → navigates to /recommender/X
  */
-import { ClearLiquidGlass } from '@/components/clear-liquid-glass';
 import { GlassPageHeader } from '@/components/glass-page-header';
 import { LiquidScreen } from '@/components/liquid-screen';
 import { MOCK_CATEGORIES, type Category } from '@/constants/mock-data';
@@ -33,7 +32,6 @@ function CategoryTile({
   color,
   index,
   onPress,
-  isDark,
   colors,
   animationsEnabled,
 }: {
@@ -41,7 +39,6 @@ function CategoryTile({
   color: string;
   index: number;
   onPress: () => void;
-  isDark: boolean;
   colors: typeof Colors.light;
   animationsEnabled: boolean;
 }) {
@@ -59,7 +56,7 @@ function CategoryTile({
         onPress={onPress}
         style={styles.tilePressable}
       >
-        <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.tile}>
+        <View style={[styles.tile, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <View style={[styles.tileIcon, { backgroundColor: color + '22' }]}>
             <MaterialIcons name={(category.icon ?? 'devices') as any} size={26} color={color} />
           </View>
@@ -71,7 +68,7 @@ function CategoryTile({
               {category.count} producten
             </Text>
           )}
-        </ClearLiquidGlass>
+        </View>
       </Pressable>
     </Animated.View>
   );
@@ -82,7 +79,6 @@ export default function CategorieenScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
-  const isDark = colorScheme === 'dark';
   const { animationsEnabled } = useReduceMotion();
 
   const handlePress = (id: string) => {
@@ -112,7 +108,6 @@ export default function CategorieenScreen() {
             color={CATEGORY_COLORS[index % CATEGORY_COLORS.length]}
             index={index}
             onPress={() => handlePress(item.id)}
-            isDark={isDark}
             colors={colors}
             animationsEnabled={animationsEnabled}
           />
@@ -134,6 +129,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: Spacing.sm,
+    borderRadius: Radius.xl,
+    borderWidth: StyleSheet.hairlineWidth,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 1,
   },
   tileIcon: {
     width: 50,

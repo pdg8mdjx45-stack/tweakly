@@ -4,8 +4,6 @@
  * Scans any shop URL, extracts product data, builds affiliate link, persists to Supabase.
  */
 
-import { ClearLiquidGlass } from '@/components/clear-liquid-glass';
-import { GlassShimmer } from '@/components/glass-shimmer';
 import { LiquidScreen } from '@/components/liquid-screen';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { getShopBySlug } from '@/constants/affiliate-shops';
@@ -217,7 +215,7 @@ export default function LinkScannerScreen() {
 
         {/* URL Input */}
         <Animated.View entering={animationsEnabled ? FadeInDown.delay(60).springify().damping(18).stiffness(110) : undefined}>
-          <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.inputCard}>
+          <View style={[styles.inputCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <View style={styles.inputRow}>
               <IconSymbol name="link" size={18} color={colors.textSecondary} />
               <TextInput
@@ -245,7 +243,7 @@ export default function LinkScannerScreen() {
                 {scanning ? 'Scannen...' : 'Scan link'}
               </Text>
             </Pressable>
-          </ClearLiquidGlass>
+          </View>
         </Animated.View>
 
         {/* Hint when no URL */}
@@ -263,7 +261,7 @@ export default function LinkScannerScreen() {
         {/* Scanning indicator */}
         {scanning && (
           <Animated.View entering={animationsEnabled ? FadeInDown.delay(0).springify().damping(18).stiffness(110) : undefined}>
-            <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.scanningCard}>
+            <View style={[styles.scanningCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <View style={styles.scanningRow}>
                 <View style={styles.scanningDots}>
                   <View style={[styles.dot, { backgroundColor: Palette.primary }]} />
@@ -274,14 +272,14 @@ export default function LinkScannerScreen() {
                   Product detecteren...
                 </Text>
               </View>
-            </ClearLiquidGlass>
+            </View>
           </Animated.View>
         )}
 
         {/* Error state */}
         {scanError && (
           <Animated.View entering={animationsEnabled ? FadeInDown.delay(0).springify().damping(18).stiffness(110) : undefined}>
-            <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.errorCard}>
+            <View style={[styles.errorCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <IconSymbol name="exclamationmark.triangle" size={24} color="#FF3B30" />
               <Text style={[styles.errorText, { color: colors.text }]}>
                 {ERROR_MESSAGES[scanError]}
@@ -292,7 +290,7 @@ export default function LinkScannerScreen() {
               >
                 <Text style={[styles.retryText, { color: colors.tint }]}>Opnieuw proberen</Text>
               </Pressable>
-            </ClearLiquidGlass>
+            </View>
           </Animated.View>
         )}
 
@@ -301,8 +299,7 @@ export default function LinkScannerScreen() {
           <>
             {/* Product Card */}
             <Animated.View entering={animationsEnabled ? FadeInDown.delay(0).springify().damping(18).stiffness(110) : undefined}>
-              <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.productCard}>
-                <GlassShimmer isDark={isDark} borderRadius={Radius.xl} intensity={0.7} />
+              <View style={[styles.productCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                 <View style={styles.productHeader}>
                   <View style={[styles.productImagePlaceholder, { backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }]}>
                     <IconSymbol name={result.imageUrl ? 'photo' : 'cart'} size={36} color={colors.textSecondary} />
@@ -321,14 +318,14 @@ export default function LinkScannerScreen() {
                     </View>
                   </View>
                 </View>
-              </ClearLiquidGlass>
+              </View>
             </Animated.View>
 
             {/* Price History */}
             {result.priceHistory.length > 0 && (
               <Animated.View entering={animationsEnabled ? FadeInDown.delay(60).springify().damping(18).stiffness(110) : undefined}>
                 <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>PRIJSHISTORIE</Text>
-                <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.chartCard}>
+                <View style={[styles.chartCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                   <View style={styles.chartHeader}>
                     <Text style={[styles.chartLow, { color: Palette.accent }]}>
                       Laagste: €{Math.min(...result.priceHistory.map(p => p.price)).toFixed(2)}
@@ -343,13 +340,13 @@ export default function LinkScannerScreen() {
                       Eerste meting — scan opnieuw om geschiedenis op te bouwen.
                     </Text>
                   )}
-                </ClearLiquidGlass>
+                </View>
               </Animated.View>
             )}
 
             {/* Price Alert */}
             <Animated.View entering={animationsEnabled ? FadeInDown.delay(120).springify().damping(18).stiffness(110) : undefined}>
-              <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.alertRow}>
+              <View style={[styles.alertRow, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                 <View style={[styles.alertIconBox, { backgroundColor: '#FF9500' + '20' }]}>
                   <IconSymbol name="bell.badge.fill" size={20} color="#FF9500" />
                 </View>
@@ -371,9 +368,9 @@ export default function LinkScannerScreen() {
                     </Text>
                   </Pressable>
                 )}
-              </ClearLiquidGlass>
+              </View>
               {showAlertInput && !alertSaved && (
-                <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.alertInputCard}>
+                <View style={[styles.alertInputCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                   <Text style={[styles.alertInputLabel, { color: colors.textSecondary }]}>Doelprijs (€)</Text>
                   <View style={styles.alertInputRow}>
                     <TextInput
@@ -392,7 +389,7 @@ export default function LinkScannerScreen() {
                       <Text style={styles.alertConfirmText}>Bewaar</Text>
                     </Pressable>
                   </View>
-                </ClearLiquidGlass>
+                </View>
               )}
             </Animated.View>
 
@@ -474,6 +471,13 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     padding: Spacing.md,
     gap: Spacing.sm,
+    borderRadius: Radius.xl,
+    borderWidth: StyleSheet.hairlineWidth,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 1,
   },
   inputRow: {
     flexDirection: 'row',
@@ -511,6 +515,13 @@ const styles = StyleSheet.create({
   scanningCard: {
     overflow: 'hidden',
     padding: Spacing.md,
+    borderRadius: Radius.xl,
+    borderWidth: StyleSheet.hairlineWidth,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 1,
   },
   scanningRow: {
     flexDirection: 'row',
@@ -542,6 +553,13 @@ const styles = StyleSheet.create({
   productCard: {
     overflow: 'hidden',
     padding: Spacing.md,
+    borderRadius: Radius.xl,
+    borderWidth: StyleSheet.hairlineWidth,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 1,
   },
   productHeader: {
     flexDirection: 'row',
@@ -595,6 +613,13 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     padding: Spacing.md,
     gap: Spacing.sm,
+    borderRadius: Radius.xl,
+    borderWidth: StyleSheet.hairlineWidth,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 1,
   },
   chartHeader: {
     flexDirection: 'row',
@@ -609,6 +634,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.sm,
     padding: Spacing.md,
+    borderRadius: Radius.xl,
+    borderWidth: StyleSheet.hairlineWidth,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 1,
   },
   alertIconBox: {
     width: 40,
@@ -690,6 +722,13 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     gap: Spacing.sm,
     marginTop: 4,
+    borderRadius: Radius.xl,
+    borderWidth: StyleSheet.hairlineWidth,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 1,
   },
   alertInputLabel: {
     fontSize: 13,
@@ -723,6 +762,13 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     gap: Spacing.sm,
     alignItems: 'center',
+    borderRadius: Radius.xl,
+    borderWidth: StyleSheet.hairlineWidth,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 1,
   },
   errorText: {
     fontSize: 14,
