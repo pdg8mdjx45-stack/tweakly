@@ -52,7 +52,7 @@ export default function ReviewsScreen() {
           data={[]}
           keyExtractor={(item) => item?.id || Math.random().toString()}
           renderItem={renderArticle}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={<FeedLoading height={150} />}
         />
@@ -61,7 +61,7 @@ export default function ReviewsScreen() {
           data={articles}
           keyExtractor={(item) => item?.id || Math.random().toString()}
           renderItem={renderArticle}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
           ItemSeparatorComponent={() => (
             <View style={[styles.separator, { backgroundColor: colors.border }]} />
@@ -82,10 +82,11 @@ export default function ReviewsScreen() {
 }
 
 const styles = StyleSheet.create({
-  listContent: {
-    paddingHorizontal: Spacing.md,
-    paddingBottom: Spacing.xxl + Spacing.lg,
-    paddingTop: Spacing.xs + 2,
+  list: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 120,
+    gap: 10,
   },
   articleRow: {
     marginBottom: Spacing.sm,
