@@ -4,7 +4,7 @@
 
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback } from 'react';
 import Animated, {
   FadeInDown,
   useAnimatedStyle,
@@ -14,7 +14,7 @@ import Animated, {
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
+import { Colors, Palette, Radius, Shadow, Spacing } from '@/constants/theme';
 import { useArticleBookmark } from '@/hooks/use-bookmarks';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useReduceMotion } from '@/hooks/use-reduce-motion';
@@ -55,15 +55,16 @@ export const ArticleCard = memo(function ArticleCard({ article, variant = 'defau
   const scale = useSharedValue(1);
 
   const { bookmarked, toggleBookmark } = useArticleBookmark({
-    id: article.id,
-    title: article.title,
-    summary: article.summary,
-    imageUrl: article.imageUrl,
-    url: article.url,
-    category: article.category,
+    id: article?.id ?? '',
+    title: article?.title ?? '',
+    summary: article?.summary,
+    imageUrl: article?.imageUrl,
+    url: article?.url ?? '',
+    category: article?.category ?? '',
   });
 
   const handlePress = useCallback(() => {
+    if (!article) return;
     storeArticle(article);
     router.push(`/artikel/${article.id}` as any);
   }, [article, router]);
@@ -77,6 +78,10 @@ export const ArticleCard = memo(function ArticleCard({ article, variant = 'defau
     transform: [{ scale: scale.value }],
   }));
 
+  if (!article || !article.id) {
+    return null;
+  }
+
   const handlePressIn = () => {
     if (animationsEnabled) {
       scale.value = withSpring(0.97, { damping: 15, stiffness: 300 });
@@ -89,16 +94,20 @@ export const ArticleCard = memo(function ArticleCard({ article, variant = 'defau
     }
   };
 
-  const dateStr = formatRSSDate(article.publishedAt.toISOString());
-  const catColor = getCategoryColor(article.category);
-  const catBg = getCategoryBg(article.category, isDark);
-  const catLetter = article.category.charAt(0).toUpperCase();
+  const dateStr = article.publishedAt instanceof Date 
+    ? formatRSSDate(article.publishedAt.toISOString()) 
+    : formatRSSDate(new Date().toISOString());
+  const category = article.category || 'nieuws';
+  const catColor = getCategoryColor(category);
+  const catBg = getCategoryBg(category, isDark);
+  const catLetter = category.charAt(0).toUpperCase();
+  const title = article.title || '';
 
   const enteringAnimation = animationsEnabled 
     ? FadeInDown.delay(index * 30).springify().damping(15).stiffness(100)
     : undefined;
 
-  // ── DEFAULT — Revolut transaction-row ─────────────────────────────────────
+  // ── DEFAULT — iOS 26 liquid glass row ─────────────────────────────────────
   if (variant === 'default') {
     return (
       <Animated.View entering={enteringAnimation}>
@@ -109,7 +118,7 @@ export const ArticleCard = memo(function ArticleCard({ article, variant = 'defau
         onPressOut={handlePressOut}
         style={({ pressed }) => [
           styles.row,
-          { backgroundColor: colors.surface },
+          { backgroundColor: colors.surface, borderColor: colors.border },
           pressed && styles.rowPressed,
         ]}
       >
@@ -121,7 +130,7 @@ export const ArticleCard = memo(function ArticleCard({ article, variant = 'defau
         {/* Content */}
         <View style={styles.rowContent}>
           <Text style={[styles.rowTitle, { color: colors.text }]} numberOfLines={2}>
-            {article.title}
+            {title}
           </Text>
           <Text style={[styles.rowMeta, { color: colors.textSecondary }]} numberOfLines={1}>
             {article.author ? `${article.author} · ` : ''}{article.category} · {dateStr}
@@ -163,7 +172,7 @@ export const ArticleCard = memo(function ArticleCard({ article, variant = 'defau
         onPressOut={handlePressOut}
         style={({ pressed }) => [
           styles.compactRow,
-          { backgroundColor: colors.surface },
+          { backgroundColor: colors.surface, borderColor: colors.border },
           pressed && styles.rowPressed,
         ]}
       >
@@ -172,7 +181,7 @@ export const ArticleCard = memo(function ArticleCard({ article, variant = 'defau
         </View>
         <View style={styles.compactContent}>
           <Text style={[styles.compactTitle, { color: colors.text }]} numberOfLines={2}>
-            {article.title}
+            {title}
           </Text>
           <Text style={[styles.compactMeta, { color: colors.textSecondary }]}>
             {article.author ? `${article.author} · ` : ''}{dateStr}
@@ -223,6 +232,8 @@ export const ArticleCard = memo(function ArticleCard({ article, variant = 'defau
       ) : null}
       {/* Dark gradient overlay */}
       <View style={styles.featuredOverlay} />
+      {/* Specular top edge — liquid glass highlight */}
+      <View style={styles.featuredSpecular} pointerEvents="none" />
 
       <View style={styles.featuredContent}>
         <View style={styles.featuredTop}>
@@ -238,7 +249,7 @@ export const ArticleCard = memo(function ArticleCard({ article, variant = 'defau
           </Pressable>
         </View>
         <View style={styles.featuredTitleContainer}>
-          <Text style={styles.featuredTitle} numberOfLines={3}>{article.title}</Text>
+          <Text style={styles.featuredTitle} numberOfLines={3}>{title}</Text>
         </View>
         <Text style={styles.featuredDate} numberOfLines={1}>{dateStr} · {article.source}</Text>
       </View>
@@ -258,12 +269,20 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingVertical: 13,
     paddingHorizontal: Spacing.md,
-    borderRadius: Radius.md,
+    borderRadius: Radius.lg,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.14)',
+    ...Shadow.md,
+  },
+  rowBlur: {
+    borderRadius: Radius.lg,
   },
   catCircle: {
     width: 46,
     height: 46,
-    borderRadius: 23,
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
@@ -302,11 +321,16 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: Spacing.md,
     borderRadius: Radius.md,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.16)',
+    ...Shadow.md,
   },
   catDot: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
@@ -339,6 +363,17 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     overflow: 'hidden',
     height: 220,
+  },
+  featuredSpecular: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    borderTopLeftRadius: Radius.lg,
+    borderTopRightRadius: Radius.lg,
+    zIndex: 10,
   },
   featuredImage: {
     ...StyleSheet.absoluteFillObject,
