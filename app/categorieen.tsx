@@ -3,7 +3,6 @@
  * mode=browse  → navigates to /prijzen?category=X
  * mode=select  → navigates to /recommender/X
  */
-import { GlassPageHeader } from '@/components/glass-page-header';
 import { LiquidScreen } from '@/components/liquid-screen';
 import { MOCK_CATEGORIES, type Category } from '@/constants/mock-data';
 import { Colors, Radius, Spacing } from '@/constants/theme';
@@ -11,6 +10,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useReduceMotion } from '@/hooks/use-reduce-motion';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   FadeInDown,
   useAnimatedStyle,
@@ -80,6 +80,7 @@ export default function CategorieenScreen() {
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
   const { animationsEnabled } = useReduceMotion();
+  const insets = useSafeAreaInsets();
 
   const handlePress = (id: string) => {
     if (mode === 'select') {
@@ -91,10 +92,9 @@ export default function CategorieenScreen() {
 
   return (
     <LiquidScreen>
-      <GlassPageHeader
-        title="Categorieën"
-        subtitle={mode === 'select' ? 'Kies een categorie' : 'Blader per categorie'}
-      />
+      <Text style={[styles.screenTitle, { color: colors.text, paddingTop: insets.top + 16 }]}>
+        Categorieën
+      </Text>
       <FlatList
         data={MOCK_CATEGORIES}
         keyExtractor={(item) => item.id}
@@ -118,6 +118,13 @@ export default function CategorieenScreen() {
 }
 
 const styles = StyleSheet.create({
+  screenTitle: {
+    fontSize: 34,
+    fontWeight: '800',
+    letterSpacing: -0.5,
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+  },
   list: { padding: Spacing.md, paddingBottom: 120 },
   row: { gap: Spacing.sm },
   tileWrap: { flex: 1 },
