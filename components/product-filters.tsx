@@ -413,6 +413,7 @@ export function ProductFilters({
               selected={sortOption === s.id}
               onPress={() => onSortChange(s.id)}
               colors={colors}
+              accentColor={Palette.primaryVivid}
             />
           ))}
         </ChipRow>

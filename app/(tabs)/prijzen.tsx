@@ -579,10 +579,10 @@ const styles = StyleSheet.create({
   },
 
   productGrid: {
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.sm,
-    paddingBottom: Spacing.xxl,
-    gap: Spacing.sm,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 120,
+    gap: 12,
   },
   productRow: {
     flexDirection: 'row',
