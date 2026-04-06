@@ -48,16 +48,16 @@ function getInitials(name: string): string {
 function SectionLabel({ label, colors, index = 0, animationsEnabled = true }: { label: string; colors: (typeof Colors)['light']; index?: number; animationsEnabled?: boolean }) {
   return (
     <Animated.View entering={animationsEnabled ? FadeInDown.delay(index * 60).springify().damping(18).stiffness(110) : undefined}>
-      <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>{label}</Text>
+      <Text style={[styles.sectionLabel, { color: colors.textTertiary }]}>{label}</Text>
     </Animated.View>
   );
 }
 
-function Group({ children, isDark }: { children: React.ReactNode; isDark: boolean }) {
+function Group({ children, colors }: { children: React.ReactNode; colors: (typeof Colors)['light'] }) {
   return (
-    <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.group}>
+    <View style={[styles.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       {children}
-    </ClearLiquidGlass>
+    </View>
   );
 }
 
@@ -421,7 +421,7 @@ export default function ProfielScreen() {
         {/* ── MELDINGEN ── */}
         <View style={styles.section}>
           <SectionLabel label="MELDINGEN" colors={colors} index={1} animationsEnabled={animationsEnabled} />
-          <Group isDark={isDark}>
+          <Group colors={colors}>
             <NavRow
               icon="bell.fill"
               iconColor="#FF3B30"
@@ -436,7 +436,7 @@ export default function ProfielScreen() {
         {/* ── CATEGORIEËN ── */}
         <View style={styles.section}>
           <SectionLabel label="CATEGORIEËN" colors={colors} index={2} animationsEnabled={animationsEnabled} />
-          <Group isDark={isDark}>
+          <Group colors={colors}>
             <NavRow
               icon="square.grid.2x2.fill"
               iconColor={Palette.primary}
@@ -451,7 +451,7 @@ export default function ProfielScreen() {
         {/* ── UITERLIJK ── */}
         <View style={styles.section}>
           <SectionLabel label="UITERLIJK" colors={colors} index={3} animationsEnabled={animationsEnabled} />
-          <Group isDark={isDark}>
+          <Group colors={colors}>
             <ThemeRow
               themeMode={themeMode as ThemeMode}
               setThemeMode={setThemeMode as (m: ThemeMode) => void}
@@ -475,7 +475,7 @@ export default function ProfielScreen() {
         {/* ── OPGESLAGEN CONTENT ── */}
         <View style={styles.section}>
           <SectionLabel label="OPGESLAGEN" colors={colors} index={4} animationsEnabled={animationsEnabled} />
-          <Group isDark={isDark}>
+          <Group colors={colors}>
             <NavRow
               icon="bookmark.fill"
               iconColor={Palette.primary}
@@ -518,7 +518,7 @@ export default function ProfielScreen() {
         {/* ── ONTDEKKEN ── */}
         <View style={styles.section}>
           <SectionLabel label="ONTDEKKEN" colors={colors} index={5} animationsEnabled={animationsEnabled} />
-          <Group isDark={isDark}>
+          <Group colors={colors}>
             <NavRow
               icon="wand.and.stars"
               iconColor="#FF9500"
@@ -542,7 +542,7 @@ export default function ProfielScreen() {
         {/* ── ACCOUNT ── */}
         <View style={styles.section}>
           <SectionLabel label="ACCOUNT" colors={colors} index={6} animationsEnabled={animationsEnabled} />
-          <Group isDark={isDark}>
+          <Group colors={colors}>
             <NavRow
               icon="key.fill"
               iconColor="#FF9500"
@@ -585,7 +585,7 @@ export default function ProfielScreen() {
         {/* ── HULP & ONDERSTEUNING ── */}
         <View style={styles.section}>
           <SectionLabel label="HULP" colors={colors} index={7} animationsEnabled={animationsEnabled} />
-          <Group isDark={isDark}>
+          <Group colors={colors}>
             <NavRow
               icon="questionmark.circle.fill"
               iconColor="#5856D6"
@@ -635,7 +635,7 @@ export default function ProfielScreen() {
         {/* ── JURIDISCH ── */}
         <View style={styles.section}>
           <SectionLabel label="JURIDISCH" colors={colors} index={8} animationsEnabled={animationsEnabled} />
-          <Group isDark={isDark}>
+          <Group colors={colors}>
             <NavRow
               icon="hand.raised.fill"
               iconColor="#5856D6"
@@ -898,17 +898,22 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: 13,
     fontWeight: '400',
-    letterSpacing: 0.2,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
     paddingHorizontal: Spacing.xs + 4,
     paddingBottom: 4,
   },
 
-  // Group container — iOS liquid glass
+  // Group container — iOS Settings plain surface
   group: {
     borderRadius: Radius.xl,
+    borderWidth: StyleSheet.hairlineWidth,
     overflow: 'hidden',
-    borderWidth: 0.5,
-    position: 'relative',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 1,
   },
   groupLight: {
     backgroundColor: 'rgba(255,255,255,0.62)',
