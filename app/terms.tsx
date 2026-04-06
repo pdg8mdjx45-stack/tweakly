@@ -1,7 +1,6 @@
 import { Colors } from '@/constants/theme';
 import { useThemeContext } from '@/hooks/use-theme-context';
 import { useRouter } from 'expo-router';
-import { LiquidScreen } from '@/components/liquid-screen';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -11,7 +10,7 @@ export default function TermsScreen() {
   const router = useRouter();
 
   return (
-    <LiquidScreen style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={[styles.header, { backgroundColor: 'transparent' }]}>
         <Pressable style={styles.backBtn} hitSlop={12} onPress={() => router.back()}>
@@ -92,7 +91,7 @@ export default function TermsScreen() {
           Website: https://tweakly.netlify.app/voorwaarden.html
         </Text>
       </ScrollView>
-    </LiquidScreen>
+    </View>
   );
 }
 
