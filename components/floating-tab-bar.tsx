@@ -1,8 +1,6 @@
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import * as Haptics from 'expo-haptics';
-import { LiquidGlassView, isLiquidGlassSupported } from '@callstack/liquid-glass';
-import { LinearGradient } from 'expo-linear-gradient';
-import { GlassBlur } from './glass-blur';
+import { isLiquidGlassSupported } from '@callstack/liquid-glass';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   LayoutRectangle,
@@ -51,61 +49,14 @@ const PILL_TOP_RESTING = EXTRA_TOP + PILL_INSET;
 
 const ICON_SIZE = 25;
 
-const COL_ACTIVE_L = Palette.primary;
-const COL_ACTIVE_D = '#FFFFFF';
-const COL_IDLE_L   = 'rgba(60,60,67,0.42)';
-const COL_IDLE_D   = 'rgba(255,255,255,0.40)';
+const PILL_COLOR  = Palette.primaryVivid; // #34C759 solid green
+const COL_ACTIVE  = '#FFFFFF';            // white icon on green pill
+const COL_IDLE_L  = 'rgba(60,60,67,0.50)';
+const COL_IDLE_D  = 'rgba(255,255,255,0.45)';
 
 const SP      = { damping: 26, stiffness: 340, mass: 0.75 } as const;
 const SP_DRAG = { damping: 14, stiffness: 280 } as const;
 
-// iOS 26 Liquid Glass tokens for the floating tab bar
-const GLASS = {
-  light: {
-    barBlurIntensity:  95,
-    barBlurTint:       'light' as const,
-    barTint:           'rgba(215,215,230,0.42)',
-    barSpecTop:        'rgba(255,255,255,0.92)',
-    barSpecBot:        'rgba(255,255,255,0.00)',
-    barEdgeTop:        'rgba(255,255,255,1.00)',
-    barEdgeBot:        'rgba(0,0,0,0.04)',
-    barBorder:         'rgba(255,255,255,0.70)',
-    shadowOpacity:     0.10,
-    shadowRadius:      32,
-    pillBlurIntensity: 50,
-    pillBlurTint:      'light' as const,
-    pillFill:          'rgba(255,255,255,0.35)',
-    pillRimTop:        'rgba(255,255,255,1.00)',
-    pillRimSide:       'rgba(255,255,255,0.65)',
-    pillRimBot:        'rgba(255,255,255,0.18)',
-    causticTop:        'rgba(255,255,255,0.92)',
-    causticBot:        'rgba(255,255,255,0.00)',
-    glint:             'rgba(255,255,255,1.00)',
-    reflect:           'rgba(255,255,255,0.55)',
-  },
-  dark: {
-    barBlurIntensity:  80,
-    barBlurTint:       'dark' as const,
-    barTint:           'rgba(28,28,30,0.88)',
-    barSpecTop:        'rgba(255,255,255,0.10)',
-    barSpecBot:        'rgba(255,255,255,0.00)',
-    barEdgeTop:        'rgba(255,255,255,0.14)',
-    barEdgeBot:        'rgba(0,0,0,0.38)',
-    barBorder:         'rgba(255,255,255,0.10)',
-    shadowOpacity:     0.62,
-    shadowRadius:      40,
-    pillBlurIntensity: 28,
-    pillBlurTint:      'dark' as const,
-    pillFill:          'rgba(255,255,255,0.08)',
-    pillRimTop:        'rgba(255,255,255,0.65)',
-    pillRimSide:       'rgba(255,255,255,0.28)',
-    pillRimBot:        'rgba(255,255,255,0.07)',
-    causticTop:        'rgba(255,255,255,0.38)',
-    causticBot:        'rgba(255,255,255,0.00)',
-    glint:             'rgba(255,255,255,0.70)',
-    reflect:           'rgba(255,255,255,0.15)',
-  },
-};
 
 // ─── TabIcon ──────────────────────────────────────────────────────────────────
 
@@ -132,8 +83,8 @@ function TabIcon({
   }));
 
   const color = isFocused
-    ? (isDark ? COL_ACTIVE_D : COL_ACTIVE_L)
-    : (isDark ? COL_IDLE_D   : COL_IDLE_L);
+    ? COL_ACTIVE
+    : (isDark ? COL_IDLE_D : COL_IDLE_L);
 
   return (
     <Pressable
@@ -162,7 +113,6 @@ function TabIcon({
 export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
   const cs     = useColorScheme() ?? 'light';
   const isDark = cs === 'dark';
-  const G      = isDark ? GLASS.dark : GLASS.light;
   const useNativeGlass = Platform.OS === 'ios' && isLiquidGlassSupported;
 
   const visible = useMemo(
@@ -319,20 +269,9 @@ export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
         style={[styles.wrapper, { bottom: BOTTOM_PAD, left: SIDE_PAD, right: SIDE_PAD }]}
         pointerEvents="box-none"
       >
-        {/* Bar */}
-        <LiquidGlassView
-          style={styles.nativeBar}
-          effect="regular"
-          interactive={false}
-        />
-
         {/* Pill */}
         <Animated.View style={[styles.pillShell, pillStyle]} pointerEvents="none">
-          <LiquidGlassView
-            style={StyleSheet.absoluteFill}
-            effect="regular"
-            interactive={true}
-          />
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: PILL_COLOR, borderRadius: 999 }]} />
         </Animated.View>
 
         {/* Icons on top */}
@@ -354,79 +293,14 @@ export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
     );
   }
 
-  // ── Fallback: manual glass (expo-blur + gradients) ────────────────────────
+  // ── Fallback: solid pill, transparent bar ────────────────────────────────
   return (
     <View
       style={[styles.wrapper, { bottom: BOTTOM_PAD, left: SIDE_PAD, right: SIDE_PAD }]}
       pointerEvents="box-none"
     >
-      <View style={styles.barContainer}>
-        <View style={[
-          styles.shadowShell,
-          { shadowOpacity: G.shadowOpacity, shadowRadius: G.shadowRadius },
-        ]} />
-        <GlassBlur
-          isDark={isDark}
-          blur={isDark ? 28 : 32}
-          borderRadius={999}
-          tintColor={G.barTint}
-          style={styles.barBlur}
-        >
-          <LinearGradient
-            colors={[G.barSpecTop, G.barSpecBot]}
-            style={[StyleSheet.absoluteFill, styles.fill999]}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 0.55 }}
-            pointerEvents="none"
-          />
-          <View style={[styles.edgeTop, { backgroundColor: G.barEdgeTop }]} />
-          <View style={[styles.edgeBot, { backgroundColor: G.barEdgeBot }]} />
-        </GlassBlur>
-        <View style={[styles.borderRing, { borderColor: G.barBorder }]} />
-      </View>
-
       <Animated.View style={[styles.pillShell, pillStyle]} pointerEvents="none">
-        <LinearGradient
-          colors={[G.pillRimTop, G.pillRimSide, G.pillRimSide, G.pillRimBot]}
-          locations={[0, 0.35, 0.65, 1]}
-          start={{ x: 0.5, y: 0 }}
-          end={{ x: 0.5, y: 1 }}
-          style={StyleSheet.absoluteFill}
-        />
-        <View style={styles.pillInner}>
-          <GlassBlur
-            isDark={isDark}
-            blur={isDark ? 16 : 20}
-            borderRadius={999}
-            tintColor={G.pillFill}
-            style={styles.pillBlur}
-          >
-            <LinearGradient
-              colors={[G.causticTop, G.causticBot]}
-              style={styles.caustic}
-              start={{ x: 0.5, y: 0 }}
-              end={{ x: 0.5, y: 1 }}
-            />
-            <View style={styles.glintWrap}>
-              <LinearGradient
-                colors={['transparent', G.glint, 'transparent']}
-                locations={[0, 0.35, 1]}
-                style={StyleSheet.absoluteFill}
-                start={{ x: 0, y: 0.5 }}
-                end={{ x: 1, y: 0.5 }}
-              />
-            </View>
-            <View style={styles.reflectWrap}>
-              <LinearGradient
-                colors={['transparent', G.reflect, 'transparent']}
-                locations={[0, 0.5, 1]}
-                style={StyleSheet.absoluteFill}
-                start={{ x: 0, y: 0.5 }}
-                end={{ x: 1, y: 0.5 }}
-              />
-            </View>
-          </GlassBlur>
-        </View>
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: PILL_COLOR, borderRadius: 999 }]} />
       </Animated.View>
 
       <View style={styles.iconRow} {...pan.panHandlers}>
@@ -449,129 +323,17 @@ export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const PILL_BORDER_W = 1.5;
-
 const styles = StyleSheet.create({
   wrapper: {
     position: 'absolute',
     height:   BAR_H + EXTRA_TOP,
   },
 
-  // Native glass bar (full fill of barContainer area)
-  nativeBar: {
-    position:     'absolute',
-    top:          EXTRA_TOP,
-    left:         0,
-    right:        0,
-    height:       BAR_H,
-    borderRadius: 999,
-  },
-
-  // Fallback bar
-  barContainer: {
-    position: 'absolute',
-    top:      EXTRA_TOP,
-    left:     0,
-    right:    0,
-    height:   BAR_H,
-    zIndex:   2,
-  },
-
-  shadowShell: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius:  999,
-    shadowColor:   '#000',
-    shadowOffset:  { width: 0, height: 8 },
-    shadowOpacity: 0.14,
-    shadowRadius:  26,
-    elevation:     14,
-  },
-
-  barBlur: {
-    flex:         1,
-    borderRadius: 999,
-    overflow:     'hidden',
-  },
-
-  fill999: {
-    borderRadius: 999,
-  },
-
-  edgeTop: {
-    position:           'absolute',
-    top:                0,
-    left:               0,
-    right:              0,
-    height:             1.5,
-    borderTopLeftRadius:  999,
-    borderTopRightRadius: 999,
-  },
-  edgeBot: {
-    position:              'absolute',
-    bottom:                0,
-    left:                  0,
-    right:                 0,
-    height:                1,
-    borderBottomLeftRadius:  999,
-    borderBottomRightRadius: 999,
-  },
-
-  borderRing: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: 999,
-    borderWidth:  StyleSheet.hairlineWidth,
-  },
-
-  // Pill (shared between native + fallback)
+  // Pill
   pillShell: {
     position: 'absolute',
     zIndex:   4,
     overflow: 'hidden',
-  },
-
-  pillInner: {
-    position:     'absolute',
-    top:          PILL_BORDER_W,
-    left:         PILL_BORDER_W,
-    right:        PILL_BORDER_W,
-    bottom:       PILL_BORDER_W,
-    borderRadius: 999,
-    overflow:     'hidden',
-  },
-
-  pillBlur: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: 999,
-    overflow:     'hidden',
-  },
-
-  caustic: {
-    position:     'absolute',
-    top:          0,
-    left:         0,
-    right:        0,
-    bottom:       '45%',
-    borderRadius: 999,
-  },
-
-  glintWrap: {
-    position:     'absolute',
-    top:          2,
-    left:         10,
-    right:        10,
-    height:       2.5,
-    borderRadius: 999,
-    overflow:     'hidden',
-  },
-
-  reflectWrap: {
-    position:     'absolute',
-    bottom:       2,
-    left:         16,
-    right:        16,
-    height:       1.5,
-    borderRadius: 999,
-    overflow:     'hidden',
   },
 
   iconRow: {
