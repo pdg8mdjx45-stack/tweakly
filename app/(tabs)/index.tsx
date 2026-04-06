@@ -11,6 +11,7 @@ import { Dimensions, FlatList, Platform, Pressable, ScrollView, StyleSheet, Text
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { ClearLiquidGlass } from '@/components/clear-liquid-glass';
+import { GlassCard } from '@/components/glass-card';
 import { LiquidScreen } from '@/components/liquid-screen';
 import { useReduceMotion } from '@/hooks/use-reduce-motion';
 
@@ -157,12 +158,7 @@ function ProductCard({ product, isDark, colors }: { product: Product; isDark: bo
           pressed && { opacity: 0.92, transform: [{ scale: 0.97 }] },
         ]}
       >
-        <View
-          style={[
-            styles.productCardInner,
-            { backgroundColor: colors.surface, borderColor: colors.border },
-          ]}
-        >
+        <GlassCard style={styles.productCardInner} radius={Radius.xl}>
 
           {/* Image */}
           <View style={styles.productImageWrap}>
@@ -191,7 +187,7 @@ function ProductCard({ product, isDark, colors }: { product: Product; isDark: bo
               )}
             </View>
           </View>
-        </View>
+        </GlassCard>
       </Pressable>
     </Link>
   );
@@ -897,9 +893,7 @@ const styles = StyleSheet.create({
     ...Shadow.lg,
   },
   productCardInner: {
-    borderRadius: Radius.xl,
     overflow: 'hidden',
-    borderWidth: StyleSheet.hairlineWidth,
   },
   productCardCaustic: {
     position: 'absolute',
