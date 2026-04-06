@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: Radius.full,
-    backgroundColor: 'rgba(0,0,0,0.05)',
+    backgroundColor: 'rgba(120,120,128,0.12)',
   },
   actionText: { fontSize: 12, fontWeight: '500' },
 

@@ -6,7 +6,7 @@
 import { LiquidScreen } from '@/components/liquid-screen';
 import { ProductCard } from '@/components/product-card';
 import { SearchBar } from '@/components/search-bar';
-import { Colors, Glass, Palette, Radius, Spacing } from '@/constants/theme';
+import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { getAllProducts, searchProducts, type Product } from '@/services/product-db';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -80,12 +80,10 @@ export default function ZoekenScreen() {
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [query, selectedCategory, sortBy, doSearch]);
 
-  const isDark = colorScheme === 'dark';
-
   return (
     <LiquidScreen style={styles.safe}>
       {/* Header — matches home screen style */}
-      <View style={[styles.header, isDark ? Glass.liquid.dark : Glass.liquid.light]}>
+      <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border, borderBottomWidth: StyleSheet.hairlineWidth }]}>
         <View style={styles.titleRow}>
           <Pressable onPress={() => router.back()} style={styles.backButton} hitSlop={8}>
             <IconSymbol size={22} name="chevron.left" color={colors.text} />
