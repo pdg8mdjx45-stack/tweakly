@@ -18,11 +18,13 @@ import {
   View,
 } from 'react-native';
 
+import { BackButton } from '@/components/back-button';
 import { LiquidScreen } from '@/components/liquid-screen';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { useArticleBookmark } from '@/hooks/use-bookmarks';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { formatRSSDate } from '@/hooks/use-rss-feed';
 import { retrieveArticle } from '@/services/article-store';
 
@@ -36,6 +38,7 @@ export default function ArtikelScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
   const router = useRouter();
 
   const article = retrieveArticle(id ?? '');
@@ -84,26 +87,21 @@ export default function ArtikelScreen() {
 
   return (
     <LiquidScreen style={styles.safe}>
+      <BackButton />
       <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
 
-      {/* ── Header bar ─────────────────────────────────────────── */}
-      <View style={styles.headerBar}>
-        <Pressable onPress={() => router.back()} style={styles.headerBtn} hitSlop={12}>
-          <IconSymbol name="chevron.left" size={20} color={colors.tint} />
-          <Text style={[styles.headerBtnText, { color: colors.tint }]}>Terug</Text>
+      {/* ── Actions (share + bookmark) ──────────────────────────── */}
+      <View style={[styles.headerActions, { top: insets.top + 8 }]}>
+        <Pressable onPress={handleShare} hitSlop={12} style={styles.iconBtn}>
+          <IconSymbol name="square.and.arrow.up" size={20} color={colors.icon} />
         </Pressable>
-        <View style={styles.headerActions}>
-          <Pressable onPress={handleShare} hitSlop={12} style={styles.iconBtn}>
-            <IconSymbol name="square.and.arrow.up" size={20} color={colors.icon} />
-          </Pressable>
-          <Pressable onPress={toggleBookmark} hitSlop={12} style={styles.iconBtn}>
-            <IconSymbol
-              name={bookmarked ? 'bookmark.fill' : 'bookmark'}
-              size={20}
-              color={bookmarked ? colors.tint : colors.icon}
-            />
-          </Pressable>
-        </View>
+        <Pressable onPress={toggleBookmark} hitSlop={12} style={styles.iconBtn}>
+          <IconSymbol
+            name={bookmarked ? 'bookmark.fill' : 'bookmark'}
+            size={20}
+            color={bookmarked ? colors.tint : colors.icon}
+          />
+        </Pressable>
       </View>
 
       {/* ── Scrollable content ─────────────────────────────────── */}
@@ -185,18 +183,15 @@ const styles = StyleSheet.create({
   safe: { flex: 1 },
   centered: { alignItems: 'center', justifyContent: 'center', gap: Spacing.md },
 
-  // Header
-  headerBar: {
+  // Actions
+  headerActions: {
+    position: 'absolute',
+    right: Spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.xl,
-    paddingBottom: Spacing.sm,
+    gap: Spacing.md,
+    zIndex: 100,
   },
-  headerBtn: { flexDirection: 'row', alignItems: 'center', gap: 2 },
-  headerBtnText: { fontSize: 17 },
-  headerActions: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md },
   iconBtn: { padding: 4 },
 
   // Scroll

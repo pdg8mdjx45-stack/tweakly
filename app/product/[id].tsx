@@ -1,3 +1,4 @@
+import { BackButton } from '@/components/back-button';
 import { PriceHistoryChart } from '@/components/charts';
 import { LiquidScreen } from '@/components/liquid-screen';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -20,6 +21,7 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   ActivityIndicator,
   Modal,
@@ -72,6 +74,7 @@ export default function ProductScreen() {
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
   const isDark = colorScheme === 'dark';
+  const insets = useSafeAreaInsets();
   const router = useRouter();
 
   const [product, setProduct] = useState<Product | undefined>(undefined);
@@ -207,22 +210,17 @@ export default function ProductScreen() {
 
   return (
     <LiquidScreen style={styles.safe}>
+      <BackButton />
       <StatusBar hidden />
-      {/* Header */}
-      <View style={styles.header}>
-        <Pressable onPress={() => router.back()} hitSlop={12} style={styles.backButton}>
-          <IconSymbol name="chevron.left" size={20} color={colors.tint} />
-          <Text style={[styles.backText, { color: colors.tint }]}>Terug</Text>
+      {/* Floating actions (bookmark) */}
+      <View style={[styles.headerActions, { top: insets.top + 8 }]}>
+        <Pressable onPress={() => setSaved(!saved)} hitSlop={12}>
+          <IconSymbol
+            name={saved ? 'bookmark.fill' : 'bookmark'}
+            size={22}
+            color={saved ? colors.tint : colors.icon}
+          />
         </Pressable>
-        <View style={styles.headerActions}>
-          <Pressable onPress={() => setSaved(!saved)} hitSlop={12}>
-            <IconSymbol
-              name={saved ? 'bookmark.fill' : 'bookmark'}
-              size={22}
-              color={saved ? colors.tint : colors.icon}
-            />
-          </Pressable>
-        </View>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -701,27 +699,13 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.xxl + Spacing.xl,
-    paddingBottom: Spacing.sm,
-  },
-  backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-  },
-  backText: {
-    fontSize: 17,
-    fontWeight: '400',
-  },
   headerActions: {
+    position: 'absolute',
+    right: Spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
+    zIndex: 100,
   },
   compareChip: {
     paddingHorizontal: Spacing.sm + 2,
