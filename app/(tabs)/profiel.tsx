@@ -10,6 +10,7 @@ import { useBookmarks } from '@/hooks/use-bookmarks';
 import { useReduceMotion } from '@/hooks/use-reduce-motion';
 import { useThemeContext } from '@/hooks/use-theme-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { LiquidSwitch } from '@/components/liquid-switch';
@@ -295,6 +296,7 @@ function EditProfileModal({
 // ─── Main Screen ─────────────────────────────────────────────────────────────
 
 export default function ProfielScreen() {
+  const insets = useSafeAreaInsets();
   const { resolvedTheme, themeMode, setThemeMode } = useThemeContext();
   const { reduceMotion, setReduceMotion, animationsEnabled } = useReduceMotion();
   const colors = Colors[resolvedTheme];
@@ -367,7 +369,7 @@ export default function ProfielScreen() {
   if (profileLoading || !profile) {
     return (
       <LiquidScreen style={styles.safe}>
-        <View style={styles.header}>
+        <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
           <Text style={[styles.pageTitle, { color: colors.text }]}>Instellingen</Text>
         </View>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -384,7 +386,7 @@ export default function ProfielScreen() {
     <LiquidScreen style={styles.safe}>
       {/* Page header */}
       <Animated.View
-        style={styles.header}
+        style={[styles.header, { paddingTop: insets.top + 16 }]}
         entering={animationsEnabled ? FadeInDown.springify().damping(20).stiffness(130) : undefined}
       >
         <Text style={[styles.pageTitle, { color: colors.text }]}>Instellingen</Text>
@@ -831,7 +833,6 @@ const styles = StyleSheet.create({
 
   header: {
     paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.xl + Spacing.sm,
     paddingBottom: Spacing.sm,
   },
   pageTitle: {
