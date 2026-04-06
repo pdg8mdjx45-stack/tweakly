@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Restyle Tweakly to match the iOS 26 Settings app aesthetic in both light and dark mode — airy white frosted glass on light, warm gray frosted glass on dark, grouped card sections throughout.
+**Goal:** Restyle every screen in Tweakly to match the iOS 26 Settings app aesthetic — airy white frosted glass in light mode, warm dark gray glass in dark mode, grouped card sections, liquid glass on iOS 26, Skia blur fallback on Android.
 
-**Architecture:** Design tokens in `constants/theme.ts` are updated first so every downstream component inherits the new colors automatically. Primitive glass components (`GlassBlur`, `ClearLiquidGlass`, `GlassPageHeader`, `FloatingTabBar`) are updated next. Then `LiquidScreen` (the shared screen wrapper) is updated to use the system background color. Finally every screen is audited and card/border colors replaced with `colors.surface` + `colors.border`.
+**Architecture:** Token-first: update `constants/theme.ts` once and all components/screens inherit the new palette. Then update four glass primitives. Then sweep all screens to adopt grouped-sections pattern. No new dependencies.
 
-**Tech Stack:** React Native, Expo Router, `@callstack/liquid-glass` (iOS 26), `@shopify/react-native-skia` BackdropBlur (Android), `expo-blur` (fallback), `react-native-reanimated`.
+**Tech Stack:** React Native / Expo SDK 54, `@callstack/liquid-glass` (iOS 26), `@shopify/react-native-skia` BackdropBlur (Android), `expo-blur` (web/older iOS), `react-native-reanimated`, existing theme/glass system.
 
 ---
 
@@ -14,64 +14,63 @@
 
 | File | Change |
 |---|---|
-| `constants/theme.ts` | Update `Palette.dark1–5`, `Colors.dark.*`, `Glass.*` tokens |
-| `components/liquid-screen.tsx` | Use `Colors[scheme].background` instead of hardcoded `#08080D` |
-| `components/glass-blur.tsx` | Update default tints and blur intensities for both modes |
-| `components/clear-liquid-glass.tsx` | Update tint colors for both modes |
-| `components/glass-page-header.tsx` | Update GlassBlur tints for both modes |
-| `components/floating-tab-bar.tsx` | Update `GLASS.dark` token values |
-| `components/liquid-switch.tsx` | Update dark mode OFF track color |
-| `components/article-card.tsx` | Replace hardcoded dark tints with `colors.surface` + `colors.border` |
-| `components/product-card.tsx` | Replace hardcoded dark tints with `colors.surface` + `colors.border` |
-| `app/(tabs)/index.tsx` | Update card backgrounds to use `colors.surface` |
-| `app/(tabs)/nieuws.tsx` | Remove gap wrapper, articles render directly in grouped list |
-| `app/(tabs)/reviews.tsx` | Same as nieuws |
-| `app/(tabs)/prijzen.tsx` | Update card/chip colors |
-| `app/(tabs)/profiel.tsx` | Group already uses `ClearLiquidGlass` — tokens auto-fix; update `sectionLabel` color |
-| `app/(tabs)/bladwijzers.tsx` | Update card backgrounds |
-| `app/(tabs)/zoeken.tsx` | Update card backgrounds |
-| `app/product/[id].tsx` | Update card backgrounds |
-| `app/artikel/[id].tsx` | Update card backgrounds |
-| `app/vergelijk.tsx` | Update card backgrounds |
-| `app/link-scanner.tsx` | Update card backgrounds |
-| `app/categorieen.tsx` | Update card backgrounds |
-| `app/recommender/index.tsx` | Update card backgrounds |
-| `app/pc-builder.tsx` | Update card backgrounds |
-| `app/instellingen/bladwijzers.tsx` | Update card backgrounds |
-| `app/instellingen/prijsalerts.tsx` | Update card backgrounds |
-| `app/instellingen/zoeken.tsx` | Update card backgrounds |
-| `app/instellingen/meldingen.tsx` | Update card backgrounds |
-| `app/(auth)/inloggen.tsx` | Replace hardcoded glass cards with `colors.surface` |
-| `app/(auth)/registreren.tsx` | Same as inloggen |
-| `app/(auth)/profiel-instellen.tsx` | Same as inloggen |
-| `app/(auth)/wachtwoord-vergeten.tsx` | Same as inloggen |
-| `app/(auth)/telefoon.tsx` | Same as inloggen |
-| `app/(auth)/onboarding.tsx` | Same as inloggen |
-| `app/cookies.tsx` | Update background/card colors |
-| `app/privacy.tsx` | Update background/card colors |
-| `app/terms.tsx` | Update background/card colors |
-| `app/affiliate.tsx` | Update background/card colors |
+| `constants/theme.ts` | Palette dark1–5, Colors.dark, Glass tokens |
+| `components/glass-blur.tsx` | Default tint + intensity both modes |
+| `components/clear-liquid-glass.tsx` | Tint both modes |
+| `components/glass-page-header.tsx` | GlassBlur tint both modes |
+| `components/floating-tab-bar.tsx` | GLASS.dark token object |
+| `components/liquid-switch.tsx` | Dark OFF track color |
+| `components/article-card.tsx` | Remove inline glass, use colors.surface + colors.border |
+| `components/product-card.tsx` | Same |
+| `app/(tabs)/index.tsx` | Local ProductCard inline glass → surface card |
+| `app/(tabs)/nieuws.tsx` | List padding |
+| `app/(tabs)/reviews.tsx` | List padding |
+| `app/(tabs)/prijzen.tsx` | Chip accent, grid padding |
+| `app/(tabs)/profiel.tsx` | Group → plain surface, SectionLabel color |
+| `app/(tabs)/bladwijzers.tsx` | Surface/border cleanup |
+| `app/(tabs)/zoeken.tsx` | Surface/border cleanup |
+| `app/product/[id].tsx` | Section cards → grouped surface |
+| `app/artikel/[id].tsx` | Content card surface |
+| `app/vergelijk.tsx` | Surface/border |
+| `app/link-scanner.tsx` | Surface/border |
+| `app/categorieen.tsx` | Surface/border |
+| `app/recommender/index.tsx` | Surface/border |
+| `app/pc-builder.tsx` | Surface/border |
+| `app/instellingen/bladwijzers.tsx` | Grouped sections pattern |
+| `app/instellingen/prijsalerts.tsx` | Grouped sections pattern |
+| `app/instellingen/zoeken.tsx` | Grouped sections pattern |
+| `app/instellingen/meldingen.tsx` | Grouped sections pattern |
+| `app/(auth)/inloggen.tsx` | GlassCard/GlassInput → surface |
+| `app/(auth)/registreren.tsx` | Same |
+| `app/(auth)/profiel-instellen.tsx` | Same |
+| `app/(auth)/wachtwoord-vergeten.tsx` | Same |
+| `app/(auth)/telefoon.tsx` | Same |
+| `app/(auth)/onboarding.tsx` | Same |
+| `app/cookies.tsx` | Surface/border |
+| `app/privacy.tsx` | Surface/border |
+| `app/terms.tsx` | Surface/border |
+| `app/affiliate.tsx` | Surface/border |
 
 ---
 
-## Task 1: Update Design Tokens (`constants/theme.ts`)
+## Task 1: Update design tokens (`constants/theme.ts`)
 
 **Files:**
 - Modify: `constants/theme.ts`
 
-- [ ] **Step 1: Update `Palette` dark values**
+- [ ] **Step 1: Update Palette dark values**
 
-In `constants/theme.ts`, replace the five dark palette values:
+In `constants/theme.ts`, replace the five dark Palette entries:
 
 ```ts
-// Before:
+// Old:
 dark1: '#08080D',
 dark2: '#121218',
 dark3: '#1C1C24',
 dark4: '#28283A',
 dark5: '#3C3C4A',
 
-// After:
+// New:
 dark1: '#1C1C1E',
 dark2: '#2C2C2E',
 dark3: '#3A3A3C',
@@ -79,9 +78,9 @@ dark4: '#48484A',
 dark5: '#636366',
 ```
 
-- [ ] **Step 2: Update `Colors.dark` map**
+- [ ] **Step 2: Update Colors.dark map**
 
-Replace the `dark:` block in `Colors`:
+Replace the entire `dark:` block inside `Colors`:
 
 ```ts
 dark: {
@@ -103,291 +102,258 @@ dark: {
 },
 ```
 
-- [ ] **Step 3: Add `Glass.cardDark` and update `Glass.liquid`, `Glass.chrome`, `Glass.header`, `Glass.tabBar`, `Glass.modal`, `Glass.glassmorphic`, `Glass.thin`**
+- [ ] **Step 3: Update Glass tokens**
 
-Find the `Glass` constant and apply these changes:
+Apply these changes to the `Glass` export in `constants/theme.ts`:
 
 ```ts
-// Add after Glass.cardLight:
+// After glass.card, add:
 cardDark: {
   backgroundColor: 'rgba(44,44,46,0.85)',
   borderWidth: 0.5,
   borderColor: 'rgba(255,255,255,0.10)',
 },
 
-// Glass.liquid.light — change backgroundColor:
-light: {
-  backgroundColor: 'rgba(255,255,255,0.72)',  // was 0.58
-  borderWidth: 0.5,
-  borderColor: 'rgba(255,255,255,0.95)',
-  shadowColor: 'rgba(0,0,0,0.12)',
-  shadowOffset: { width: 0, height: 4 },
-  shadowOpacity: 1,
-  shadowRadius: 20,
-  elevation: 5,
+// Update liquid:
+liquid: {
+  light: {
+    backgroundColor: 'rgba(255,255,255,0.72)',  // was 0.58
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.92)',
+    shadowColor: 'rgba(0,0,0,0.12)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 20,
+    elevation: 5,
+  },
+  dark: {
+    backgroundColor: 'rgba(44,44,46,0.82)',     // was rgba(36,36,46,0.75)
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.12)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.45,                         // was 0.50
+    shadowRadius: 28,                            // was 32
+    elevation: 12,
+  },
 },
 
-// Glass.liquid.dark:
-dark: {
-  backgroundColor: 'rgba(44,44,46,0.82)',    // was rgba(36,36,46,0.75)
-  borderWidth: 0.5,
-  borderColor: 'rgba(255,255,255,0.12)',
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 8 },
-  shadowOpacity: 0.45,                        // was 0.50
-  shadowRadius: 28,                           // was 32
-  elevation: 12,
+// Update chrome.dark:
+chrome: {
+  light: {
+    backgroundColor: 'rgba(242,242,247,0.84)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.96)',
+  },
+  dark: {
+    backgroundColor: 'rgba(28,28,30,0.90)',      // was rgba(26,26,34,0.82)
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.10)',
+  },
 },
 
-// Glass.chrome.dark backgroundColor:
-dark: {
-  backgroundColor: 'rgba(28,28,30,0.90)',    // was rgba(26,26,34,0.82)
-  borderWidth: 0.5,
-  borderColor: 'rgba(255,255,255,0.10)',
+// Update header:
+header: {
+  light: {
+    backgroundColor: 'rgba(242,242,247,0.92)',   // was 0.88
+    borderBottomWidth: 0.33,
+    borderBottomColor: 'rgba(0,0,0,0.08)',
+  },
+  dark: {
+    backgroundColor: 'rgba(28,28,30,0.92)',      // was rgba(8,8,14,0.85)
+    borderBottomWidth: 0.33,
+    borderBottomColor: 'rgba(255,255,255,0.08)', // was 0.06
+  },
 },
 
-// Glass.header.light backgroundColor:
-light: {
-  backgroundColor: 'rgba(242,242,247,0.92)', // was 0.88
-  borderBottomWidth: 0.33,
-  borderBottomColor: 'rgba(0,0,0,0.08)',
+// Update tabBar.dark only (light unchanged):
+tabBar: {
+  light: {
+    backgroundColor: 'rgba(242,242,247,0.90)',
+    borderTopWidth: 0.33,
+    borderTopColor: 'rgba(0,0,0,0.06)',
+    shadowColor: 'rgba(0,0,0,0.10)',
+    shadowOffset: { width: 0, height: -6 },
+    shadowOpacity: 1,
+    shadowRadius: 24,
+    elevation: 14,
+  },
+  dark: {
+    backgroundColor: 'rgba(28,28,30,0.90)',      // was rgba(16,16,22,0.90)
+    borderTopWidth: 0.33,
+    borderTopColor: 'rgba(255,255,255,0.09)',     // was 0.07
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -10 },
+    shadowOpacity: 0.55,
+    shadowRadius: 28,
+    elevation: 14,
+  },
 },
 
-// Glass.header.dark:
-dark: {
-  backgroundColor: 'rgba(28,28,30,0.92)',    // was rgba(8,8,14,0.85)
-  borderBottomWidth: 0.33,
-  borderBottomColor: 'rgba(255,255,255,0.08)', // was 0.06
+// Update modal.dark:
+modal: {
+  light: {
+    backgroundColor: 'rgba(242,242,247,0.97)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.75)',
+  },
+  dark: {
+    backgroundColor: 'rgba(28,28,30,0.97)',      // was rgba(26,26,34,0.97)
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.10)',
+  },
 },
 
-// Glass.tabBar.dark:
-dark: {
-  backgroundColor: 'rgba(28,28,30,0.90)',    // was rgba(16,16,22,0.90)
-  borderTopWidth: 0.33,
-  borderTopColor: 'rgba(255,255,255,0.09)',  // was 0.07
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: -10 },
-  shadowOpacity: 0.55,
-  shadowRadius: 28,
-  elevation: 14,
+// Update glassmorphic.dark:
+glassmorphic: {
+  light: {
+    backgroundColor: 'rgba(255,255,255,0.28)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.52)',
+  },
+  dark: {
+    backgroundColor: 'rgba(28,28,30,0.72)',      // was rgba(20,20,28,0.70)
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.08)',
+  },
 },
 
-// Glass.modal.dark backgroundColor:
-dark: {
-  backgroundColor: 'rgba(28,28,30,0.97)',    // was rgba(26,26,34,0.97)
-  borderWidth: 0.5,
-  borderColor: 'rgba(255,255,255,0.10)',
+// Update thin.dark:
+thin: {
+  light: {
+    backgroundColor: 'rgba(255,255,255,0.32)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.60)',
+  },
+  dark: {
+    backgroundColor: 'rgba(255,255,255,0.07)',   // was 0.06
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.10)',
+  },
 },
-
-// Glass.glassmorphic.dark backgroundColor:
-dark: {
-  backgroundColor: 'rgba(28,28,30,0.72)',    // was rgba(20,20,28,0.70)
-  borderWidth: 0.5,
-  borderColor: 'rgba(255,255,255,0.08)',
-},
-
-// Glass.thin.dark backgroundColor:
-dark: {
-  backgroundColor: 'rgba(255,255,255,0.07)', // was 0.06
-  borderWidth: 0.5,
-  borderColor: 'rgba(255,255,255,0.10)',
-},
-```
-
-- [ ] **Step 4: Verify the file compiles**
-
-```bash
-npx tsc --noEmit 2>&1 | head -20
-```
-Expected: no errors (or only pre-existing unrelated errors).
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add constants/theme.ts
-git commit -m "feat: iOS 26 Settings design tokens — dark mode to #1C1C1E family, lighter glass tints"
-```
-
----
-
-## Task 2: Update `LiquidScreen` (shared screen background)
-
-**Files:**
-- Modify: `components/liquid-screen.tsx`
-
-- [ ] **Step 1: Make `LiquidScreen` theme-aware**
-
-`LiquidScreen` currently hardcodes `backgroundColor: '#08080D'` in styles. Replace it so the background follows `Colors[scheme].background`:
-
-```ts
-// Add imports at top:
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Colors } from '@/constants/theme';
-
-// In LiquidScreen function body, before return:
-const colorScheme = useColorScheme() ?? 'light';
-
-// Replace the root View:
-<View style={[styles.root, { backgroundColor: Colors[colorScheme].background }, style]}>
-```
-
-Remove `backgroundColor` from `styles.root`:
-```ts
-root: {
-  flex: 1,
-  // backgroundColor removed — set dynamically above
-},
-```
-
-The orb gradient stays. Its colors (`rgba(255,255,255,0.012)`) are already near-invisible and look fine on both backgrounds.
-
-- [ ] **Step 2: Verify**
-
-```bash
-npx tsc --noEmit 2>&1 | head -20
-```
-
-- [ ] **Step 3: Commit**
-
-```bash
-git add components/liquid-screen.tsx
-git commit -m "feat: LiquidScreen uses Colors[scheme].background instead of hardcoded #08080D"
-```
-
----
-
-## Task 3: Update `GlassBlur` tints and intensities
-
-**Files:**
-- Modify: `components/glass-blur.tsx`
-
-- [ ] **Step 1: Update default tint and blur intensity for both modes**
-
-In `GlassBlur`, find the `resolvedTint` and `intensity` assignments:
-
-```ts
-// resolvedTint (line ~49):
-const resolvedTint = tintColor ?? (isDark
-  ? 'rgba(28,28,30,0.52)'     // was rgba(10,10,18,0.42)
-  : 'rgba(255,255,255,0.72)'); // was rgba(255,255,255,0.52)
-
-// intensity (line ~70, iOS/web branch):
-const intensity = isDark ? 62 : 80;  // was 58 : 72
-```
-
-- [ ] **Step 2: Update `AndroidGlassBlur` dark specular/caustic colors**
-
-In `AndroidGlassBlur`, the tintColor is already passed in from the resolved tint (now correct). Update the specular/caustic colors to match the lighter dark mode:
-
-```ts
-// In AndroidGlassBlur body:
-const specularColor = isDark ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.95)'; // was 0.18/0.95
-const causticColor  = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.65)'; // was 0.08/0.65
-```
-
-- [ ] **Step 3: Verify**
-
-```bash
-npx tsc --noEmit 2>&1 | head -20
 ```
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add components/glass-blur.tsx
-git commit -m "feat: GlassBlur — lighter tints for both modes, intensity 80/62"
+git add constants/theme.ts
+git commit -m "feat: iOS 26 tokens — dark palette #1C1C1E family, glass tints"
 ```
 
 ---
 
-## Task 4: Update `ClearLiquidGlass` tints
+## Task 2: Update `GlassBlur`
+
+**Files:**
+- Modify: `components/glass-blur.tsx`
+
+- [ ] **Step 1: Update default tints**
+
+```ts
+// Replace:
+const resolvedTint = tintColor ?? (isDark
+  ? 'rgba(10,10,18,0.42)'
+  : 'rgba(255,255,255,0.52)');
+
+// With:
+const resolvedTint = tintColor ?? (isDark
+  ? 'rgba(28,28,30,0.52)'
+  : 'rgba(255,255,255,0.72)');
+```
+
+- [ ] **Step 2: Update blur intensity**
+
+```ts
+// Replace:
+const intensity = isDark ? 58 : 72;
+
+// With:
+const intensity = isDark ? 62 : 80;
+```
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add components/glass-blur.tsx
+git commit -m "feat: GlassBlur — brighter light tint, warmer dark tint"
+```
+
+---
+
+## Task 3: Update `ClearLiquidGlass`
 
 **Files:**
 - Modify: `components/clear-liquid-glass.tsx`
 
-- [ ] **Step 1: Update tint colors**
-
-In the `GlassBlur` fallback branch (line ~40), update the `tintColor` prop:
+- [ ] **Step 1: Update tint**
 
 ```ts
-// Before:
+// Replace:
 tintColor={isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.18)'}
 
-// After:
+// With:
 tintColor={isDark ? 'rgba(44,44,46,0.45)' : 'rgba(255,255,255,0.32)'}
 ```
 
-- [ ] **Step 2: Verify**
-
-```bash
-npx tsc --noEmit 2>&1 | head -20
-```
-
-- [ ] **Step 3: Commit**
+- [ ] **Step 2: Commit**
 
 ```bash
 git add components/clear-liquid-glass.tsx
-git commit -m "feat: ClearLiquidGlass — warmer dark tint, more opaque light tint"
+git commit -m "feat: ClearLiquidGlass — whiter light tint, warm dark tint"
 ```
 
 ---
 
-## Task 5: Update `GlassPageHeader` tints
+## Task 4: Update `GlassPageHeader`
 
 **Files:**
 - Modify: `components/glass-page-header.tsx`
 
-- [ ] **Step 1: Update GlassBlur tintColor in the fallback branch**
+- [ ] **Step 1: Update GlassBlur tintColor**
 
-Find the `GlassBlur` element (line ~38):
+Find the `tintColor` prop on the `<GlassBlur>` in the fallback branch:
 
 ```ts
-// Before:
+// Replace:
 tintColor={isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.50)'}
 
-// After:
+// With:
 tintColor={isDark ? 'rgba(28,28,30,0.60)' : 'rgba(255,255,255,0.78)'}
 ```
 
-- [ ] **Step 2: Verify**
-
-```bash
-npx tsc --noEmit 2>&1 | head -20
-```
-
-- [ ] **Step 3: Commit**
+- [ ] **Step 2: Commit**
 
 ```bash
 git add components/glass-page-header.tsx
-git commit -m "feat: GlassPageHeader — warmer dark tint, more opaque white light tint"
+git commit -m "feat: GlassPageHeader — airy light tint, warm dark tint"
 ```
 
 ---
 
-## Task 6: Update `FloatingTabBar` dark tokens
+## Task 5: Update `FloatingTabBar`
 
 **Files:**
 - Modify: `components/floating-tab-bar.tsx`
 
-- [ ] **Step 1: Update `GLASS.dark` values**
+- [ ] **Step 1: Update GLASS.dark object**
 
-Find the `GLASS.dark` object (around line 87) and update:
+Replace the `dark:` entry inside the `GLASS` constant:
 
 ```ts
 dark: {
   barBlurIntensity:  80,
   barBlurTint:       'dark' as const,
-  barTint:           'rgba(28,28,30,0.88)',    // was rgba(10,10,18,0.52)
-  barSpecTop:        'rgba(255,255,255,0.10)', // was 0.14
+  barTint:           'rgba(28,28,30,0.88)',
+  barSpecTop:        'rgba(255,255,255,0.10)',
   barSpecBot:        'rgba(255,255,255,0.00)',
-  barEdgeTop:        'rgba(255,255,255,0.14)', // was 0.18
+  barEdgeTop:        'rgba(255,255,255,0.14)',
   barEdgeBot:        'rgba(0,0,0,0.38)',
-  barBorder:         'rgba(255,255,255,0.10)', // was 0.12
+  barBorder:         'rgba(255,255,255,0.10)',
   shadowOpacity:     0.62,
   shadowRadius:      40,
   pillBlurIntensity: 28,
   pillBlurTint:      'dark' as const,
-  pillFill:          'rgba(255,255,255,0.08)', // was 0.09
+  pillFill:          'rgba(255,255,255,0.08)',
   pillRimTop:        'rgba(255,255,255,0.65)',
   pillRimSide:       'rgba(255,255,255,0.28)',
   pillRimBot:        'rgba(255,255,255,0.07)',
@@ -398,236 +364,297 @@ dark: {
 },
 ```
 
-- [ ] **Step 2: Verify**
-
-```bash
-npx tsc --noEmit 2>&1 | head -20
-```
-
-- [ ] **Step 3: Commit**
+- [ ] **Step 2: Commit**
 
 ```bash
 git add components/floating-tab-bar.tsx
-git commit -m "feat: FloatingTabBar GLASS.dark — warmer gray tints matching #1C1C1E palette"
+git commit -m "feat: FloatingTabBar — dark glass to #1C1C1E family"
 ```
 
 ---
 
-## Task 7: Update `LiquidSwitch` dark track color
+## Task 6: Update `LiquidSwitch` and `ArticleCard`
 
 **Files:**
 - Modify: `components/liquid-switch.tsx`
+- Modify: `components/article-card.tsx`
 
-- [ ] **Step 1: Update dark OFF-state track color**
+- [ ] **Step 1: LiquidSwitch — update dark OFF track color**
 
-In `trackStyle` (line ~29), the OFF color in dark mode:
+In `liquid-switch.tsx`, find the `interpolateColor` call and update the OFF color for dark mode:
 
 ```ts
-// Before:
+// Replace:
 [isDark ? 'rgba(255,255,255,0.18)' : 'rgba(120,120,128,0.24)', 'rgb(52,199,89)']
 
-// After:
+// With:
 [isDark ? 'rgba(72,72,74,0.90)' : 'rgba(120,120,128,0.24)', 'rgb(52,199,89)']
 ```
 
-`rgba(72,72,74,0.90)` matches `dark4` (`#48484A`) which is the iOS 26 switch track OFF color.
+- [ ] **Step 2: ArticleCard default row — remove inline glass, use surface**
 
-- [ ] **Step 2: Verify**
+In `components/article-card.tsx`, in the `variant === 'default'` branch, remove the entire glass block:
 
-```bash
-npx tsc --noEmit 2>&1 | head -20
+```tsx
+// Remove this block entirely:
+{Platform.OS === 'ios' && isLiquidGlassSupported ? (
+  <LiquidGlassView style={[StyleSheet.absoluteFill, styles.rowBlur]} effect="regular" interactive={false} />
+) : (
+  <>
+    <BlurView intensity={isDark ? 62 : 75} tint={isDark ? 'dark' : 'light'} style={[StyleSheet.absoluteFill, styles.rowBlur]} />
+    <View style={[StyleSheet.absoluteFill, styles.rowBlur, { backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.52)' }]} pointerEvents="none" />
+  </>
+)}
 ```
 
-- [ ] **Step 3: Commit**
+Update the Pressable style to include surface colors inline:
+
+```tsx
+<Pressable
+  onPress={handlePress}
+  onPressIn={handlePressIn}
+  onPressOut={handlePressOut}
+  style={({ pressed }) => [
+    styles.row,
+    { backgroundColor: colors.surface, borderColor: colors.border },
+    pressed && styles.rowPressed,
+  ]}
+>
+```
+
+- [ ] **Step 3: ArticleCard compact row — same treatment**
+
+In the `variant === 'compact'` branch, remove the BlurView block and update the Pressable:
+
+```tsx
+<Pressable
+  onPress={handlePress}
+  onPressIn={handlePressIn}
+  onPressOut={handlePressOut}
+  style={({ pressed }) => [
+    styles.compactRow,
+    { backgroundColor: colors.surface, borderColor: colors.border },
+    pressed && styles.rowPressed,
+  ]}
+>
+```
+
+Remove the glass block from compact variant too.
+
+- [ ] **Step 4: Remove unused imports from article-card.tsx**
+
+Remove `LiquidGlassView`, `isLiquidGlassSupported`, and `BlurView` from the imports at the top of `article-card.tsx`.
+
+- [ ] **Step 5: Commit**
 
 ```bash
-git add components/liquid-switch.tsx
-git commit -m "feat: LiquidSwitch dark OFF track uses #48484A (iOS 26 gray)"
+git add components/liquid-switch.tsx components/article-card.tsx
+git commit -m "feat: LiquidSwitch dark track, ArticleCard surface card"
 ```
 
 ---
 
-## Task 8: Update `ArticleCard` card backgrounds
-
-**Files:**
-- Modify: `components/article-card.tsx`
-
-- [ ] **Step 1: Replace hardcoded row background with theme colors**
-
-The `row` and `compactRow` styles have hardcoded `backgroundColor: 'rgba(255,255,255,0.04)'` and `borderColor: 'rgba(255,255,255,0.14)'`. These look dark on dark mode but wrong on light mode.
-
-`ArticleCard` already receives `colorScheme` — use `colors.surface` and `colors.border`:
-
-In the `StyleSheet.create` section, `row` and `compactRow` have static `backgroundColor` and `borderColor`. Move these to inline styles on the `Pressable`.
-
-For the `default` variant Pressable (line ~119):
-```tsx
-style={({ pressed }) => [
-  styles.row,
-  {
-    backgroundColor: colors.surface,
-    borderColor: colors.border,
-  },
-  pressed && styles.rowPressed,
-]}
-```
-
-For the `compact` variant Pressable (line ~180):
-```tsx
-style={({ pressed }) => [
-  styles.compactRow,
-  {
-    backgroundColor: colors.surface,
-    borderColor: colors.border,
-  },
-  pressed && styles.rowPressed,
-]}
-```
-
-Remove `backgroundColor` and `borderColor` from `styles.row` and `styles.compactRow` in `StyleSheet.create`:
-```ts
-row: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: 12,
-  paddingVertical: 13,
-  paddingHorizontal: Spacing.md,
-  borderRadius: Radius.lg,
-  overflow: 'hidden',
-  borderWidth: 0.5,
-  ...Shadow.md,
-},
-compactRow: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: 10,
-  paddingVertical: 10,
-  paddingHorizontal: Spacing.md,
-  borderRadius: Radius.md,
-  overflow: 'hidden',
-  borderWidth: 0.5,
-  ...Shadow.md,
-},
-```
-
-Also update the `featured` card — it references `Palette.dark3` directly:
-```tsx
-// Before:
-style={({ pressed }) => [
-  styles.featured,
-  { backgroundColor: isDark ? Palette.dark3 : Palette.grey5 },
-  ...
-]}
-
-// After:
-style={({ pressed }) => [
-  styles.featured,
-  { backgroundColor: isDark ? colors.surfaceElevated : Palette.grey5 },
-  ...
-]}
-```
-
-- [ ] **Step 2: Also update the BlurView fallback tint inside the row**
-
-In the `default` variant's fallback (line ~129):
-```tsx
-<View style={[StyleSheet.absoluteFill, styles.rowBlur, {
-  backgroundColor: isDark ? 'rgba(44,44,46,0.35)' : 'rgba(255,255,255,0.55)'
-}]} pointerEvents="none" />
-```
-
-Same for `compact` variant (line ~189).
-
-- [ ] **Step 3: Verify**
-
-```bash
-npx tsc --noEmit 2>&1 | head -20
-```
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add components/article-card.tsx
-git commit -m "feat: ArticleCard uses colors.surface/border — clean white light, warm gray dark"
-```
-
----
-
-## Task 9: Update `ProductCard` card backgrounds
+## Task 7: Update `ProductCard`
 
 **Files:**
 - Modify: `components/product-card.tsx`
 
-- [ ] **Step 1: Read the current card container styles**
+- [ ] **Step 1: Read the file to locate glass layers**
 
-Search for hardcoded background colors in product-card.tsx:
+Open `components/product-card.tsx` and find the `<View style={styles.productCardInner}>` block inside the main exported `ProductCard` component.
 
-```bash
-grep -n "backgroundColor\|borderColor\|dark2\|dark3\|rgba(255,255,255,0.0" components/product-card.tsx | head -30
-```
+- [ ] **Step 2: Remove all absolute-positioned glass layers**
 
-- [ ] **Step 2: Replace hardcoded card backgrounds with `colors.surface` + `colors.border`**
+Inside `productCardInner`, remove:
+- The `LiquidGlassView` or `BlurView` backdrop
+- The tinted `View` overlay (`backgroundColor: isDark ? 'rgba(...)'`)
+- The caustic `LinearGradient`
+- The specular `View`
+- The blob `View`
+- The inner shadow `LinearGradient`
 
-`ProductCard` already uses `colorScheme` → `colors`. For every card container `View` or `Pressable` that uses a hardcoded dark background like `rgba(255,255,255,0.04)` or `Palette.dark2`:
+Keep only the image, info content, and badge children.
 
-Replace with:
+- [ ] **Step 3: Apply surface card style inline**
+
+Update the `<View style={styles.productCardInner}>` to pass colors:
+
 ```tsx
-backgroundColor: colors.surface,
-borderColor: colors.border,
+<View
+  style={[
+    styles.productCardInner,
+    { backgroundColor: colors.surface, borderColor: colors.border },
+  ]}
+>
 ```
 
-For the BlurView fallback tint overlay inside cards:
-```tsx
-backgroundColor: isDark ? 'rgba(44,44,46,0.35)' : 'rgba(255,255,255,0.55)'
-```
+Update `productCardInner` in the StyleSheet — remove any hardcoded `backgroundColor`/`borderColor` from it, keep `borderWidth: StyleSheet.hairlineWidth`, `borderRadius`, `overflow: 'hidden'`, and `...Shadow.sm`.
 
-- [ ] **Step 3: Verify**
+- [ ] **Step 4: Remove unused imports**
 
-```bash
-npx tsc --noEmit 2>&1 | head -20
-```
+Remove `LiquidGlassView`, `isLiquidGlassSupported`, `BlurView` from `product-card.tsx` imports if no longer used.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add components/product-card.tsx
-git commit -m "feat: ProductCard uses colors.surface/border for both modes"
+git commit -m "feat: ProductCard — surface card, remove glass layers"
 ```
 
 ---
 
-## Task 10: Update Tab Screens
+## Task 8: Update Home screen
 
 **Files:**
-- Modify: `app/(tabs)/index.tsx`, `app/(tabs)/nieuws.tsx`, `app/(tabs)/reviews.tsx`, `app/(tabs)/prijzen.tsx`, `app/(tabs)/profiel.tsx`, `app/(tabs)/bladwijzers.tsx`, `app/(tabs)/zoeken.tsx`
+- Modify: `app/(tabs)/index.tsx`
 
-- [ ] **Step 1: `app/(tabs)/index.tsx` — hero card and inline cards**
+- [ ] **Step 1: Update local ProductCard component**
 
-Search for hardcoded background colors:
-```bash
-grep -n "backgroundColor\|dark1\|dark2\|0x08\|rgba(255,255,255,0.0[0-9]" app/\(tabs\)/index.tsx | head -30
-```
-
-For every inline card/section `View` that has a hardcoded dark background, replace with `colors.surface` / `colors.border`. The `HeroDeal` gradient is brand green and stays unchanged. Category chips that use `color + '15'` opacity tints stay unchanged.
-
-Key pattern to find and update — any `StyleSheet` entry or inline style like:
-```ts
-// Before:
-backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.85)'
-// After:
-backgroundColor: colors.surface
-```
-
-- [ ] **Step 2: `app/(tabs)/profiel.tsx` — section label color**
-
-`SectionLabel` currently uses `colors.textSecondary`. Update to `colors.textTertiary` to match iOS 26 Settings uppercase section headers:
+`index.tsx` has its own local `function ProductCard(...)` with inline glass. Find `<View style={styles.productCardInner}>` and remove all absolute glass layers (same as Task 7 Step 2). Apply inline colors:
 
 ```tsx
-// In SectionLabel component (line ~52):
+<View
+  style={[
+    styles.productCardInner,
+    { backgroundColor: colors.surface, borderColor: colors.border },
+  ]}
+>
+```
+
+- [ ] **Step 2: Remove unused imports**
+
+Remove `BlurView` from imports at the top of `index.tsx` if it is no longer used after Step 1.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add app/\(tabs\)/index.tsx
+git commit -m "feat: Home screen — surface product cards"
+```
+
+---
+
+## Task 9: Update Nieuws and Reviews screens
+
+**Files:**
+- Modify: `app/(tabs)/nieuws.tsx`
+- Modify: `app/(tabs)/reviews.tsx`
+
+- [ ] **Step 1: Nieuws — update FlatList contentContainerStyle**
+
+In `nieuws.tsx`, find the `<FlatList>` and update (or add) its `contentContainerStyle`:
+
+```tsx
+contentContainerStyle={styles.list}
+```
+
+Add to StyleSheet:
+```ts
+list: {
+  paddingHorizontal: Spacing.md,
+  paddingTop: Spacing.sm,
+  paddingBottom: 120,
+  gap: 10,
+},
+```
+
+- [ ] **Step 2: Reviews — same change**
+
+Open `app/(tabs)/reviews.tsx`, apply the identical `contentContainerStyle={styles.list}` and StyleSheet entry.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add app/\(tabs\)/nieuws.tsx app/\(tabs\)/reviews.tsx
+git commit -m "feat: Nieuws/Reviews — list padding for grouped card look"
+```
+
+---
+
+## Task 10: Update Prijzen screen
+
+**Files:**
+- Modify: `app/(tabs)/prijzen.tsx`
+
+- [ ] **Step 1: Update product grid contentContainerStyle**
+
+Find the `FlatList` that renders `ProductCard` items. Update `contentContainerStyle`:
+
+```ts
+{
+  paddingHorizontal: Spacing.md,
+  paddingTop: Spacing.sm,
+  paddingBottom: 120,
+  gap: 12,
+}
+```
+
+- [ ] **Step 2: Active category chip accent**
+
+Find the category chip render. The active chip should use `Palette.primaryVivid` (`#34C759`) for its border/background tint. Find where `isFocused`/`selected` chip color is set and change it from any hardcoded value to `Palette.primaryVivid`.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add app/\(tabs\)/prijzen.tsx
+git commit -m "feat: Prijzen — grid padding, green active chip"
+```
+
+---
+
+## Task 11: Update Profiel screen
+
+**Files:**
+- Modify: `app/(tabs)/profiel.tsx`
+
+- [ ] **Step 1: Replace Group component**
+
+The `Group` component in `profiel.tsx` currently uses `ClearLiquidGlass`. Replace it with a plain surface view. Find:
+
+```tsx
+function Group({ children, isDark }: { children: React.ReactNode; isDark: boolean }) {
+  return (
+    <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.group}>
+      {children}
+    </ClearLiquidGlass>
+  );
+}
+```
+
+Replace with:
+```tsx
+function Group({ children, colors }: { children: React.ReactNode; colors: (typeof Colors)['light'] }) {
+  return (
+    <View style={[styles.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+      {children}
+    </View>
+  );
+}
+```
+
+Update `styles.group`:
+```ts
+group: {
+  borderRadius: Radius.xl,
+  borderWidth: StyleSheet.hairlineWidth,
+  overflow: 'hidden',
+  ...Shadow.sm,
+},
+```
+
+- [ ] **Step 2: Update all Group usages**
+
+Find every `<Group isDark={isDark}>` in the screen JSX and change to `<Group colors={colors}>`.
+
+- [ ] **Step 3: Update SectionLabel color**
+
+Find `SectionLabel` and update the text color from `colors.textSecondary` to `colors.textTertiary`:
+
+```tsx
 <Text style={[styles.sectionLabel, { color: colors.textTertiary }]}>{label}</Text>
 ```
 
-Also update `styles.sectionLabel` to match the spec:
+Update `styles.sectionLabel` to add uppercase/letterSpacing if not already present:
 ```ts
 sectionLabel: {
   fontSize: 13,
@@ -639,288 +666,281 @@ sectionLabel: {
 },
 ```
 
-`Group` already uses `ClearLiquidGlass` → tokens updated in Task 4 auto-fix this.
-
-- [ ] **Step 3: `app/(tabs)/nieuws.tsx`, `reviews.tsx` — remove hardcoded gap wrapper backgrounds if any**
-
-Check and remove any inline `backgroundColor` on wrapper Views that should be transparent:
-```bash
-grep -n "backgroundColor" app/\(tabs\)/nieuws.tsx app/\(tabs\)/reviews.tsx
-```
-Remove any that set a hardcoded dark color on wrapper containers (not cards).
-
-- [ ] **Step 4: `app/(tabs)/prijzen.tsx` — category chip and grid card colors**
-
-Search:
-```bash
-grep -n "backgroundColor\|borderColor" app/\(tabs\)/prijzen.tsx | head -30
-```
-
-Category chips that show color (e.g. `'#007AFF15'`) stay as-is — they're intentional accent tints. Any card container using a hardcoded dark background updates to `colors.surface`.
-
-- [ ] **Step 5: `app/(tabs)/bladwijzers.tsx`, `zoeken.tsx` — card backgrounds**
-
-```bash
-grep -n "rgba(255,255,255,0.0\|dark2\|dark3\|08080" app/\(tabs\)/bladwijzers.tsx app/\(tabs\)/zoeken.tsx
-```
-
-Replace with `colors.surface` / `colors.border`.
-
-- [ ] **Step 6: Verify all tabs**
-
-```bash
-npx tsc --noEmit 2>&1 | head -30
-```
-
-- [ ] **Step 7: Commit**
-
-```bash
-git add app/\(tabs\)/index.tsx app/\(tabs\)/profiel.tsx app/\(tabs\)/nieuws.tsx app/\(tabs\)/reviews.tsx app/\(tabs\)/prijzen.tsx app/\(tabs\)/bladwijzers.tsx app/\(tabs\)/zoeken.tsx
-git commit -m "feat: tab screens use colors.surface/border, sectionLabel uses textTertiary"
-```
-
----
-
-## Task 11: Update Product/Article/Feature Screens
-
-**Files:**
-- Modify: `app/product/[id].tsx`, `app/artikel/[id].tsx`, `app/vergelijk.tsx`, `app/link-scanner.tsx`, `app/categorieen.tsx`, `app/recommender/index.tsx`, `app/pc-builder.tsx`
-
-- [ ] **Step 1: Find hardcoded backgrounds in each file**
-
-```bash
-grep -rn "rgba(255,255,255,0.0[0-9]\|rgba(10,10,18\|rgba(8,8,14\|#08080D\|#121218\|#1C1C24\|dark1\|dark2\|dark3" \
-  app/product/ app/artikel/ app/vergelijk.tsx app/link-scanner.tsx app/categorieen.tsx app/recommender/ app/pc-builder.tsx
-```
-
-- [ ] **Step 2: Replace each with `colors.surface` / `colors.border`**
-
-For each file, the pattern is:
-- Card container backgrounds → `colors.surface`
-- Card borders → `colors.border` (width `StyleSheet.hairlineWidth` or `0.5`)
-- Screen-level backgrounds → remove (let `LiquidScreen` handle via Task 2)
-- BlurView fallback tint overlays inside cards → `isDark ? 'rgba(44,44,46,0.35)' : 'rgba(255,255,255,0.55)'`
-
-- [ ] **Step 3: Verify**
-
-```bash
-npx tsc --noEmit 2>&1 | head -30
-```
-
 - [ ] **Step 4: Commit**
 
 ```bash
-git add app/product/ app/artikel/ app/vergelijk.tsx app/link-scanner.tsx app/categorieen.tsx app/recommender/ app/pc-builder.tsx
-git commit -m "feat: product/artikel/feature screens use colors.surface/border"
+git add app/\(tabs\)/profiel.tsx
+git commit -m "feat: Profiel — plain surface groups, iOS 26 Settings pattern"
 ```
 
 ---
 
-## Task 12: Update Instellingen Screens
+## Task 12: Update remaining tab screens
 
 **Files:**
-- Modify: `app/instellingen/bladwijzers.tsx`, `app/instellingen/prijsalerts.tsx`, `app/instellingen/zoeken.tsx`, `app/instellingen/meldingen.tsx`
+- Modify: `app/(tabs)/bladwijzers.tsx`
+- Modify: `app/(tabs)/zoeken.tsx`
 
-- [ ] **Step 1: Find hardcoded backgrounds**
+- [ ] **Step 1: Bladwijzers**
 
-```bash
-grep -rn "rgba(255,255,255,0.0[0-9]\|rgba(10,10,18\|dark1\|dark2\|dark3\|#08080" app/instellingen/
-```
+Open `app/(tabs)/bladwijzers.tsx`. Find cards/rows with hardcoded dark glass (`rgba(255,255,255,0.04)` or similar). Replace `backgroundColor` with `colors.surface` and `borderColor` with `colors.border`, where `colors = Colors[colorScheme]`.
 
-- [ ] **Step 2: Replace with `colors.surface` / `colors.border`**
+- [ ] **Step 2: Zoeken**
 
-Same pattern as Task 11. These are settings-style screens so they should closely match the profiel tab: grouped cards with `colors.surface` background, `colors.border` border, `Radius.xl` (22px) corners, `Shadow.sm`.
+Open `app/(tabs)/zoeken.tsx`. Apply the same surface/border treatment to search result rows and any card containers.
 
-For any `ClearLiquidGlass` group wrappers — tokens from Task 4 auto-fix. For plain `View` cards, replace manually.
-
-- [ ] **Step 3: Verify**
+- [ ] **Step 3: Commit**
 
 ```bash
-npx tsc --noEmit 2>&1 | head -20
-```
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add app/instellingen/
-git commit -m "feat: instellingen screens use colors.surface/border grouped cards"
+git add app/\(tabs\)/bladwijzers.tsx app/\(tabs\)/zoeken.tsx
+git commit -m "feat: Bladwijzers/Zoeken — theme surface cards"
 ```
 
 ---
 
-## Task 13: Update Auth Screens
+## Task 13: Update product and artikel detail screens
 
 **Files:**
-- Modify: `app/(auth)/inloggen.tsx`, `app/(auth)/registreren.tsx`, `app/(auth)/profiel-instellen.tsx`, `app/(auth)/wachtwoord-vergeten.tsx`, `app/(auth)/telefoon.tsx`, `app/(auth)/onboarding.tsx`
+- Modify: `app/product/[id].tsx`
+- Modify: `app/artikel/[id].tsx`
 
-- [ ] **Step 1: Find auth-specific glass cards**
+- [ ] **Step 1: product/[id].tsx — section cards**
 
-Auth screens use local `GlassCard` and `GlassInput` helpers that wrap `LiquidGlassView` directly. On non-iOS-26 devices the fallback styles `glassCardFallback`/`glassInputFallback` have hardcoded dark backgrounds.
+Open `app/product/[id].tsx`. Find every `ClearLiquidGlass` wrapper used for info sections (specs, price, shops sections). Replace each with:
 
-```bash
-grep -rn "glassCardFallback\|glassInputFallback\|backgroundColor\|rgba(255,255,255,0.0" app/\(auth\)/
+```tsx
+<View style={[styles.sectionCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+  {/* children unchanged */}
+</View>
 ```
 
-- [ ] **Step 2: Update fallback styles to use theme colors**
-
-Auth screens already import `Colors` and use `resolvedTheme`. For each auth screen's local `GlassCard`/`GlassInput` fallback:
-
+Add to StyleSheet if not present:
 ```ts
-// Before (example from inloggen.tsx):
-glassCardFallback: {
-  backgroundColor: 'rgba(255,255,255,0.06)',
-  borderWidth: 0.5,
-  borderColor: 'rgba(255,255,255,0.14)',
-},
-glassInputFallback: {
-  backgroundColor: 'rgba(255,255,255,0.04)',
-  borderWidth: 0.5,
-  borderColor: 'rgba(255,255,255,0.10)',
+sectionCard: {
+  borderRadius: Radius.lg,
+  borderWidth: StyleSheet.hairlineWidth,
+  overflow: 'hidden',
+  marginHorizontal: Spacing.md,
+  marginBottom: Spacing.md,
+  ...Shadow.sm,
 },
 ```
 
-These styles need to be dynamic (not in `StyleSheet.create`) since they depend on theme. Move to inline styles that reference `colors.surface` and `colors.border`:
+- [ ] **Step 2: artikel/[id].tsx — content card**
 
-```tsx
-// Replace GlassCard component in each auth screen:
-function GlassCard({ children, style, isDark, colors }: {
-  children: React.ReactNode;
-  style?: object;
-  isDark: boolean;
-  colors: typeof Colors['light'];
-}) {
-  if (Platform.OS === 'ios' && isLiquidGlassSupported) {
-    return (
-      <LiquidGlassView style={[styles.glassCard, style]} effect="regular" interactive={false}>
-        {children}
-      </LiquidGlassView>
-    );
-  }
-  return (
-    <View style={[
-      styles.glassCard,
-      {
-        backgroundColor: colors.surface,
-        borderWidth: 0.5,
-        borderColor: colors.border,
-      },
-      style,
-    ]}>
-      {children}
-    </View>
-  );
-}
-```
+Open `app/artikel/[id].tsx`. Apply the same `sectionCard` pattern to the article content wrapper.
 
-Pass `isDark` and `colors` from the screen's existing `resolvedTheme` / `colors` variables.
-
-`GlassInput` similarly:
-```tsx
-function GlassInput({ children, style, colors }: {
-  children: React.ReactNode;
-  style?: object;
-  colors: typeof Colors['light'];
-}) {
-  if (Platform.OS === 'ios' && isLiquidGlassSupported) {
-    return (
-      <LiquidGlassView style={[styles.glassInput, style]} effect="thin" interactive={true}>
-        {children}
-      </LiquidGlassView>
-    );
-  }
-  return (
-    <View style={[
-      styles.glassInput,
-      {
-        backgroundColor: colors.fill,
-        borderWidth: 0.5,
-        borderColor: colors.border,
-      },
-      style,
-    ]}>
-      {children}
-    </View>
-  );
-}
-```
-
-Apply the same pattern to all 6 auth screens.
-
-- [ ] **Step 3: Verify**
+- [ ] **Step 3: Commit**
 
 ```bash
-npx tsc --noEmit 2>&1 | head -30
-```
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add app/\(auth\)/
-git commit -m "feat: auth screens GlassCard/GlassInput fallbacks use colors.surface/border"
+git add "app/product/[id].tsx" "app/artikel/[id].tsx"
+git commit -m "feat: product/artikel detail — grouped surface section cards"
 ```
 
 ---
 
-## Task 14: Update Juridisch Screens
+## Task 14: Update misc product screens
 
 **Files:**
-- Modify: `app/cookies.tsx`, `app/privacy.tsx`, `app/terms.tsx`, `app/affiliate.tsx`
+- Modify: `app/vergelijk.tsx`
+- Modify: `app/link-scanner.tsx`
+- Modify: `app/categorieen.tsx`
+- Modify: `app/recommender/index.tsx`
+- Modify: `app/pc-builder.tsx`
 
-- [ ] **Step 1: Find hardcoded backgrounds**
+- [ ] **Step 1: vergelijk.tsx**
+
+Find comparison cards. Replace hardcoded glass `backgroundColor` with `colors.surface`, `borderColor` with `colors.border`.
+
+- [ ] **Step 2: link-scanner.tsx**
+
+Find result cards. Same treatment.
+
+- [ ] **Step 3: categorieen.tsx**
+
+Find category list items. Replace any hardcoded tinted backgrounds with `colors.surface` + `colors.border`.
+
+- [ ] **Step 4: recommender/index.tsx**
+
+Find recommendation cards. Same treatment.
+
+- [ ] **Step 5: pc-builder.tsx**
+
+Find component selection cards. Same treatment.
+
+- [ ] **Step 6: Commit**
 
 ```bash
-grep -rn "backgroundColor\|rgba(255,255,255,0.0[0-9]\|dark1\|dark2\|#08080" app/cookies.tsx app/privacy.tsx app/terms.tsx app/affiliate.tsx
+git add app/vergelijk.tsx app/link-scanner.tsx app/categorieen.tsx app/recommender/index.tsx app/pc-builder.tsx
+git commit -m "feat: misc screens — theme surface cards"
 ```
 
-- [ ] **Step 2: Replace with `colors.surface` / `colors.border`**
+---
 
-These are mostly text-heavy screens. Replace any hardcoded card/section backgrounds with `colors.surface` and borders with `colors.border`. Screen background is handled by `LiquidScreen`.
+## Task 15: Update instellingen screens
 
-- [ ] **Step 3: Verify**
+**Files:**
+- Modify: `app/instellingen/bladwijzers.tsx`
+- Modify: `app/instellingen/prijsalerts.tsx`
+- Modify: `app/instellingen/zoeken.tsx`
+- Modify: `app/instellingen/meldingen.tsx`
+
+These screens should most closely mirror iOS 26 Settings.
+
+- [ ] **Step 1: Apply grouped section pattern to each screen**
+
+For each file, get `colors` via `Colors[useColorScheme() ?? 'light']`. Replace any `ClearLiquidGlass` group wrappers with:
+
+```tsx
+{/* Section label */}
+<Text style={[styles.sectionLabel, { color: colors.textTertiary }]}>
+  SECTIE NAAM
+</Text>
+
+{/* Grouped card */}
+<View style={[styles.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+  <Row ... />
+  <View style={[styles.separator, { backgroundColor: colors.border }]} />
+  <Row ... />
+</View>
+```
+
+Add to each StyleSheet:
+```ts
+sectionLabel: {
+  fontSize: 13,
+  fontWeight: '400',
+  textTransform: 'uppercase',
+  letterSpacing: 0.5,
+  marginLeft: 16,
+  marginBottom: 8,
+},
+group: {
+  borderRadius: Radius.lg,
+  borderWidth: StyleSheet.hairlineWidth,
+  overflow: 'hidden',
+  ...Shadow.sm,
+},
+separator: {
+  height: StyleSheet.hairlineWidth,
+  marginLeft: 16,
+},
+```
+
+- [ ] **Step 2: Commit**
 
 ```bash
-npx tsc --noEmit 2>&1 | head -20
+git add app/instellingen/bladwijzers.tsx app/instellingen/prijsalerts.tsx app/instellingen/zoeken.tsx app/instellingen/meldingen.tsx
+git commit -m "feat: instellingen — iOS 26 grouped sections"
 ```
 
-- [ ] **Step 4: Commit**
+---
+
+## Task 16: Update auth screens
+
+**Files:**
+- Modify: `app/(auth)/inloggen.tsx`
+- Modify: `app/(auth)/registreren.tsx`
+- Modify: `app/(auth)/profiel-instellen.tsx`
+- Modify: `app/(auth)/wachtwoord-vergeten.tsx`
+- Modify: `app/(auth)/telefoon.tsx`
+- Modify: `app/(auth)/onboarding.tsx`
+
+- [ ] **Step 1: Replace GlassCard in inloggen.tsx**
+
+`inloggen.tsx` has a local `GlassCard` wrapping `LiquidGlassView`. Replace it:
+
+```tsx
+function GlassCard({ children, style }: { children: React.ReactNode; style?: object }) {
+  const { resolvedTheme } = useThemeContext();
+  const colors = Colors[resolvedTheme];
+  return (
+    <View style={[styles.glassCard, { backgroundColor: colors.surface, borderColor: colors.border }, style]}>
+      {children}
+    </View>
+  );
+}
+```
+
+Update `styles.glassCard`:
+```ts
+glassCard: {
+  borderRadius: Radius.xxl,
+  borderWidth: StyleSheet.hairlineWidth,
+  overflow: 'hidden',
+  padding: Spacing.lg,
+  ...Shadow.md,
+},
+```
+
+Remove `glassCardFallback` style entry.
+
+- [ ] **Step 2: Replace GlassInput in inloggen.tsx**
+
+```tsx
+function GlassInput({ children, style }: { children: React.ReactNode; style?: object }) {
+  const { resolvedTheme } = useThemeContext();
+  const colors = Colors[resolvedTheme];
+  return (
+    <View style={[styles.glassInput, { backgroundColor: colors.fill, borderColor: colors.border }, style]}>
+      {children}
+    </View>
+  );
+}
+```
+
+Update `styles.glassInput`:
+```ts
+glassInput: {
+  borderRadius: Radius.lg,
+  borderWidth: StyleSheet.hairlineWidth,
+  overflow: 'hidden',
+  paddingHorizontal: Spacing.md,
+  paddingVertical: Spacing.sm + 2,
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: Spacing.sm,
+},
+```
+
+Remove `glassInputFallback` style entry.
+
+- [ ] **Step 3: Remove unused imports from inloggen.tsx**
+
+Remove `LiquidGlassView` and `isLiquidGlassSupported` from imports.
+
+- [ ] **Step 4: Apply same pattern to remaining auth screens**
+
+Open each of `registreren.tsx`, `profiel-instellen.tsx`, `wachtwoord-vergeten.tsx`, `telefoon.tsx`. Find any `LiquidGlassView`-based card or input wrappers. Replace with the same plain themed pattern: `colors.surface` + `colors.border` for cards, `colors.fill` + `colors.border` for input fields. Remove `LiquidGlassView`/`isLiquidGlassSupported` imports from each file.
+
+- [ ] **Step 5: Update onboarding.tsx**
+
+Open `app/(auth)/onboarding.tsx`. Find glass/blur wrappers. Replace with plain `View` using `colors.surface` + `colors.border`.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add "app/(auth)/inloggen.tsx" "app/(auth)/registreren.tsx" "app/(auth)/profiel-instellen.tsx" "app/(auth)/wachtwoord-vergeten.tsx" "app/(auth)/telefoon.tsx" "app/(auth)/onboarding.tsx"
+git commit -m "feat: auth screens — replace LiquidGlassView with themed surface cards"
+```
+
+---
+
+## Task 17: Update legal screens
+
+**Files:**
+- Modify: `app/cookies.tsx`
+- Modify: `app/privacy.tsx`
+- Modify: `app/terms.tsx`
+- Modify: `app/affiliate.tsx`
+
+- [ ] **Step 1: Surface/border cleanup**
+
+For each file, get `colors = Colors[colorScheme]`. Replace any hardcoded glass `backgroundColor` on content containers with `colors.background` for the screen and `colors.surface`/`colors.border` for content cards. Remove any blur layers — these are text-only screens.
+
+- [ ] **Step 2: Commit**
 
 ```bash
 git add app/cookies.tsx app/privacy.tsx app/terms.tsx app/affiliate.tsx
-git commit -m "feat: juridisch screens use colors.surface/border"
-```
-
----
-
-## Task 15: Final Verification
-
-- [ ] **Step 1: Full TypeScript check**
-
-```bash
-npx tsc --noEmit 2>&1
-```
-Expected: no new errors introduced by this work.
-
-- [ ] **Step 2: Scan for remaining hardcoded dark values**
-
-```bash
-grep -rn "#08080D\|#121218\|#1C1C24\|rgba(10,10,18\|rgba(8,8,14" \
-  app/ components/ constants/ \
-  --include="*.tsx" --include="*.ts" | grep -v "node_modules\|.git\|docs/"
-```
-Expected: no matches (these old dark values should all be gone).
-
-- [ ] **Step 3: Scan for remaining hardcoded near-transparent whites used as dark backgrounds**
-
-```bash
-grep -rn "rgba(255,255,255,0\.0[2-6])" \
-  app/ components/ \
-  --include="*.tsx" | grep -v "node_modules\|.git"
-```
-Review any matches — if they're card backgrounds they should use `colors.surface`. If they're subtle shimmer/overlay effects, leave them.
-
-- [ ] **Step 4: Final commit**
-
-```bash
-git add -A
-git commit -m "feat: iOS 26 Settings aesthetic redesign complete — light/dark both modes"
+git commit -m "feat: legal screens — theme surface, no blur"
 ```
