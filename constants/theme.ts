@@ -349,6 +349,42 @@ export const Glass = {
   },
 } as const;
 
+// ─── Organic Background Blobs ─────────────────────────────────────────────────
+// iOS 26-style ambient radial gradient orbs. Dark mode: black + green blobs.
+// Light mode: white + green blobs.
+
+export const BlobColors = {
+  dark: {
+    background: '#000000',
+    blob1: ['rgba(26,58,32,0.85)', 'rgba(26,58,32,0.00)'] as const,   // primary green, top-left
+    blob2: ['rgba(45,90,53,0.60)', 'rgba(45,90,53,0.00)'] as const,   // lighter green, bottom-right
+    blob3: ['rgba(52,199,89,0.18)', 'rgba(52,199,89,0.00)'] as const, // vivid green accent, center
+  },
+  light: {
+    background: '#FFFFFF',
+    blob1: ['rgba(26,58,32,0.22)', 'rgba(26,58,32,0.00)'] as const,
+    blob2: ['rgba(45,90,53,0.14)', 'rgba(45,90,53,0.00)'] as const,
+    blob3: ['rgba(52,199,89,0.10)', 'rgba(52,199,89,0.00)'] as const,
+  },
+} as const;
+
+// ─── Glassmorphism Card Tokens ────────────────────────────────────────────────
+
+export const GlassTokens = {
+  dark: {
+    tint: 'rgba(26,26,28,0.55)',
+    border: 'rgba(255,255,255,0.12)',
+    specular: 'rgba(255,255,255,0.18)',
+    blur: 28,
+  },
+  light: {
+    tint: 'rgba(255,255,255,0.62)',
+    border: 'rgba(255,255,255,0.85)',
+    specular: 'rgba(255,255,255,0.95)',
+    blur: 32,
+  },
+} as const;
+
 export const Fonts = Platform.select({
   ios: {
     sans: 'system-ui',
