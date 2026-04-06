@@ -157,41 +157,12 @@ function ProductCard({ product, isDark, colors }: { product: Product; isDark: bo
           pressed && { opacity: 0.92, transform: [{ scale: 0.97 }] },
         ]}
       >
-        <View style={styles.productCardInner}>
-          <BlurView
-            intensity={isDark ? 65 : 78}
-            tint={isDark ? 'dark' : 'light'}
-            style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]}
-          />
-          {/* Glass tint */}
-          <View style={[StyleSheet.absoluteFill, {
-            backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.55)',
-            borderRadius: Radius.xl,
-          }]} pointerEvents="none" />
-          {/* Caustic shimmer */}
-          <LinearGradient
-            colors={isDark ? Glass.lens.caustic.dark : Glass.lens.caustic.light}
-            style={styles.productCardCaustic}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-            pointerEvents="none"
-          />
-          {/* Specular rim */}
-          <View style={[styles.productCardSpecular, {
-            backgroundColor: isDark ? Glass.lens.rimTop.dark : Glass.lens.rimTop.light,
-          }]} pointerEvents="none" />
-          {/* Lens blob */}
-          <View style={[styles.productCardBlob, {
-            backgroundColor: isDark ? Glass.lens.blob.dark : Glass.lens.blob.light,
-          }]} pointerEvents="none" />
-          {/* Bottom inner shadow */}
-          <LinearGradient
-            colors={isDark ? Glass.lens.innerShadow.dark : Glass.lens.innerShadow.light}
-            style={styles.productCardInnerShadow}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-            pointerEvents="none"
-          />
+        <View
+          style={[
+            styles.productCardInner,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+          ]}
+        >
 
           {/* Image */}
           <View style={styles.productImageWrap}>
@@ -928,9 +899,7 @@ const styles = StyleSheet.create({
   productCardInner: {
     borderRadius: Radius.xl,
     overflow: 'hidden',
-    borderWidth: 0.5,
-    borderColor: 'rgba(255,255,255,0.18)',
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: StyleSheet.hairlineWidth,
   },
   productCardCaustic: {
     position: 'absolute',
