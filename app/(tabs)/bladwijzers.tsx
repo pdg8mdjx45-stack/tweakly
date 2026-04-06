@@ -4,7 +4,6 @@
  */
 
 import { ClearLiquidGlass } from '@/components/clear-liquid-glass';
-import { GlassPageHeader } from '@/components/glass-page-header';
 import { GlassShimmer } from '@/components/glass-shimmer';
 import { LiquidScreen } from '@/components/liquid-screen';
 import { ConfirmSheet } from '@/components/confirm-sheet';
@@ -33,6 +32,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const CATEGORY_COLOR: Record<string, string> = {
   nieuws: Palette.primary,
@@ -144,6 +144,7 @@ export default function BladwijzersScreen() {
   const colors = Colors[colorScheme];
   const isDark = colorScheme === 'dark';
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { bookmarks, removeBookmark, clearBookmarks } = useBookmarks();
   const { animationsEnabled } = useReduceMotion();
   const [confirmClearOpen, setConfirmClearOpen] = useState(false);
@@ -154,10 +155,9 @@ export default function BladwijzersScreen() {
 
   return (
     <LiquidScreen>
-      <GlassPageHeader
-        title="Bladwijzers"
-        subtitle={bookmarks.length > 0 ? `${bookmarks.length} opgeslagen ${bookmarks.length === 1 ? 'artikel' : 'artikelen'}` : ''}
-      />
+      <Text style={[styles.screenTitle, { color: colors.text, paddingTop: insets.top + Spacing.md }]}>
+        Opgeslagen
+      </Text>
 
       <FlatList
         data={bookmarks}
@@ -192,6 +192,13 @@ export default function BladwijzersScreen() {
 }
 
 const styles = StyleSheet.create({
+  screenTitle: {
+    fontSize: 34,
+    fontWeight: '800',
+    letterSpacing: -0.5,
+    paddingHorizontal: Spacing.md,
+    paddingBottom: Spacing.sm,
+  },
   listContent: {
     paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.xxl + Spacing.lg,

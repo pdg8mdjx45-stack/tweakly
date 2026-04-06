@@ -1,5 +1,4 @@
 import { ClearLiquidGlass } from '@/components/clear-liquid-glass';
-import { GlassPageHeader } from '@/components/glass-page-header';
 import { LiquidScreen } from '@/components/liquid-screen';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { MOCK_PRODUCTS } from '@/constants/mock-data';
@@ -24,6 +23,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Fragment, useCallback, useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as WebBrowser from 'expo-web-browser';
 
 const productMap = Object.fromEntries(MOCK_PRODUCTS.map(p => [p.id, p]));
@@ -162,6 +162,7 @@ export default function MeldingenScreen() {
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
   const isDark = colorScheme === 'dark';
+  const insets = useSafeAreaInsets();
   const { animationsEnabled } = useReduceMotion();
 
   const [alerts, setAlerts] = useState<PriceAlert[]>([]);
@@ -186,7 +187,9 @@ export default function MeldingenScreen() {
   if (loaded && alerts.length === 0) {
     return (
       <LiquidScreen>
-        <GlassPageHeader title="Prijsalerts" subtitle="" />
+        <Text style={[styles.screenTitle, { color: colors.text, paddingTop: insets.top + Spacing.md }]}>
+          Meldingen
+        </Text>
         <View style={styles.emptyFull}>
           <IconSymbol name="bell.badge.fill" size={56} color={isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)'} />
           <Text style={[styles.emptyFullTitle, { color: colors.text }]}>
@@ -205,10 +208,9 @@ export default function MeldingenScreen() {
 
   return (
     <LiquidScreen>
-      <GlassPageHeader
-        title="Prijsalerts"
-        subtitle={loaded ? `${alerts.length} actieve alert${alerts.length !== 1 ? 's' : ''}` : ''}
-      />
+      <Text style={[styles.screenTitle, { color: colors.text, paddingTop: insets.top + Spacing.md }]}>
+        Meldingen
+      </Text>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* Info banner */}
@@ -242,6 +244,13 @@ export default function MeldingenScreen() {
 }
 
 const styles = StyleSheet.create({
+  screenTitle: {
+    fontSize: 34,
+    fontWeight: '800',
+    letterSpacing: -0.5,
+    paddingHorizontal: Spacing.md,
+    paddingBottom: Spacing.sm,
+  },
   content: {
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.xs,

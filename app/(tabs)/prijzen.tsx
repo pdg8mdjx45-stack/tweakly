@@ -6,7 +6,6 @@
 import { AdCard } from '@/components/ad-card';
 import { ClearLiquidGlass } from '@/components/clear-liquid-glass';
 import { CompareBar } from '@/components/compare-bar';
-import { GlassPageHeader } from '@/components/glass-page-header';
 import { LiquidScreen } from '@/components/liquid-screen';
 import { MAIN_CATEGORIES, type MainCategory } from '@/constants/categories';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -20,6 +19,7 @@ import { type Product } from '@/services/product-db';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   FadeInDown,
   useAnimatedStyle,
@@ -496,10 +496,14 @@ export default function PrijzenScreen() {
     );
   }
 
+  const insets = useSafeAreaInsets();
+
   // Stap 1: hoofdcategorie grid
   return (
     <LiquidScreen style={styles.container}>
-      <GlassPageHeader title="Prijzen" subtitle="Kies een categorie" />
+      <Text style={[styles.screenTitle, { color: colors.text, paddingTop: insets.top + Spacing.md }]}>
+        Prijzen
+      </Text>
       <MainCategoryGrid isDark={isDark} onSelect={(m) => { setSelectedMain(m); setSelectedCategory(null); }} />
     </LiquidScreen>
   );
@@ -508,6 +512,13 @@ export default function PrijzenScreen() {
 // Styles
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  screenTitle: {
+    fontSize: 34,
+    fontWeight: '800',
+    letterSpacing: -0.5,
+    paddingHorizontal: Spacing.md,
+    paddingBottom: Spacing.sm,
+  },
 
 
 
