@@ -13,8 +13,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { GlassCard } from '@/components/glass-card';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors, Palette, Radius, Shadow, Spacing } from '@/constants/theme';
+import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { useArticleBookmark } from '@/hooks/use-bookmarks';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useReduceMotion } from '@/hooks/use-reduce-motion';
@@ -112,50 +113,34 @@ export const ArticleCard = memo(function ArticleCard({ article, variant = 'defau
     return (
       <Animated.View entering={enteringAnimation}>
       <Animated.View style={animatedPressStyle}>
-      <Pressable
-        onPress={handlePress}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        style={({ pressed }) => [
-          styles.row,
-          { backgroundColor: colors.surface, borderColor: colors.border },
-          pressed && styles.rowPressed,
-        ]}
-      >
-        {/* Category circle */}
-        <View style={[styles.catCircle, { backgroundColor: catBg }]}>
-          <Text style={[styles.catLetter, { color: catColor }]}>{catLetter}</Text>
-        </View>
-
-        {/* Content */}
-        <View style={styles.rowContent}>
-          <Text style={[styles.rowTitle, { color: colors.text }]} numberOfLines={2}>
-            {title}
-          </Text>
-          <Text style={[styles.rowMeta, { color: colors.textSecondary }]} numberOfLines={1}>
-            {article.author ? `${article.author} · ` : ''}{article.category} · {dateStr}
-          </Text>
-        </View>
-
-        {/* Thumbnail (only when available) */}
-        {article.imageUrl ? (
-          <Image
-            source={{ uri: article.imageUrl }}
-            style={styles.rowThumb}
-            contentFit="cover"
-            transition={200}
-          />
-        ) : null}
-
-        {/* Bookmark */}
-        <Pressable onPress={handleBookmark} hitSlop={12} style={styles.bookmarkBtn}>
-          <IconSymbol
-            name={bookmarked ? 'bookmark.fill' : 'bookmark'}
-            size={15}
-            color={bookmarked ? Palette.blue : colors.icon}
-          />
+      <GlassCard style={styles.row} radius={Radius.lg}>
+        <Pressable
+          onPress={handlePress}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          style={({ pressed }) => [
+            styles.rowInner,
+            pressed && styles.rowPressed,
+          ]}
+        >
+          {/* Category circle */}
+          <View style={[styles.catCircle, { backgroundColor: catBg }]}>
+            <Text style={[styles.catLetter, { color: catColor }]}>{catLetter}</Text>
+          </View>
+          <View style={styles.rowContent}>
+            <Text style={[styles.rowTitle, { color: colors.text }]} numberOfLines={2}>{title}</Text>
+            <Text style={[styles.rowMeta, { color: colors.textSecondary }]} numberOfLines={1}>
+              {article.author ? `${article.author} · ` : ''}{article.category} · {dateStr}
+            </Text>
+          </View>
+          {article.imageUrl ? (
+            <Image source={{ uri: article.imageUrl }} style={styles.rowThumb} contentFit="cover" transition={200} />
+          ) : null}
+          <Pressable onPress={handleBookmark} hitSlop={12} style={styles.bookmarkBtn}>
+            <IconSymbol name={bookmarked ? 'bookmark.fill' : 'bookmark'} size={15} color={bookmarked ? Palette.blue : colors.icon} />
+          </Pressable>
         </Pressable>
-      </Pressable>
+      </GlassCard>
       </Animated.View>
       </Animated.View>
     );
@@ -166,43 +151,31 @@ export const ArticleCard = memo(function ArticleCard({ article, variant = 'defau
     return (
       <Animated.View entering={enteringAnimation}>
       <Animated.View style={animatedPressStyle}>
-      <Pressable
-        onPress={handlePress}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        style={({ pressed }) => [
-          styles.compactRow,
-          { backgroundColor: colors.surface, borderColor: colors.border },
-          pressed && styles.rowPressed,
-        ]}
-      >
-        <View style={[styles.catDot, { backgroundColor: catBg }]}>
-          <Text style={[styles.catDotLetter, { color: catColor }]}>{catLetter}</Text>
-        </View>
-        <View style={styles.compactContent}>
-          <Text style={[styles.compactTitle, { color: colors.text }]} numberOfLines={2}>
-            {title}
-          </Text>
-          <Text style={[styles.compactMeta, { color: colors.textSecondary }]}>
-            {article.author ? `${article.author} · ` : ''}{dateStr}
-          </Text>
-        </View>
-        {article.imageUrl ? (
-          <Image
-            source={{ uri: article.imageUrl }}
-            style={styles.compactThumb}
-            contentFit="cover"
-            transition={200}
-          />
-        ) : null}
-        <Pressable onPress={handleBookmark} hitSlop={12}>
-          <IconSymbol
-            name={bookmarked ? 'bookmark.fill' : 'bookmark'}
-            size={14}
-            color={bookmarked ? Palette.blue : colors.icon}
-          />
+      <GlassCard style={styles.compactRow} radius={Radius.md}>
+        <Pressable
+          onPress={handlePress}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          style={({ pressed }) => [
+            styles.compactRowInner,
+            pressed && styles.rowPressed,
+          ]}
+        >
+          <View style={[styles.catDot, { backgroundColor: catBg }]}>
+            <Text style={[styles.catDotLetter, { color: catColor }]}>{catLetter}</Text>
+          </View>
+          <View style={styles.compactContent}>
+            <Text style={[styles.compactTitle, { color: colors.text }]} numberOfLines={2}>{title}</Text>
+            <Text style={[styles.compactMeta, { color: colors.textSecondary }]}>{article.author ? `${article.author} · ` : ''}{dateStr}</Text>
+          </View>
+          {article.imageUrl ? (
+            <Image source={{ uri: article.imageUrl }} style={styles.compactThumb} contentFit="cover" transition={200} />
+          ) : null}
+          <Pressable onPress={handleBookmark} hitSlop={12}>
+            <IconSymbol name={bookmarked ? 'bookmark.fill' : 'bookmark'} size={14} color={bookmarked ? Palette.blue : colors.icon} />
+          </Pressable>
         </Pressable>
-      </Pressable>
+      </GlassCard>
       </Animated.View>
       </Animated.View>
     );
@@ -264,18 +237,15 @@ const styles = StyleSheet.create({
 
   // ── Default row ──────────────────────────────────────────────────────────
   row: {
+    borderRadius: Radius.lg,
+    overflow: 'hidden',
+  },
+  rowInner: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
     paddingVertical: 13,
     paddingHorizontal: Spacing.md,
-    borderRadius: Radius.lg,
-    overflow: 'hidden',
-    borderWidth: StyleSheet.hairlineWidth,
-    ...Shadow.md,
-  },
-  rowBlur: {
-    borderRadius: Radius.lg,
   },
   catCircle: {
     width: 46,
@@ -313,15 +283,15 @@ const styles = StyleSheet.create({
 
   // ── Compact row ──────────────────────────────────────────────────────────
   compactRow: {
+    borderRadius: Radius.md,
+    overflow: 'hidden',
+  },
+  compactRowInner: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
     paddingVertical: 10,
     paddingHorizontal: Spacing.md,
-    borderRadius: Radius.md,
-    overflow: 'hidden',
-    borderWidth: StyleSheet.hairlineWidth,
-    ...Shadow.md,
   },
   catDot: {
     width: 36,
