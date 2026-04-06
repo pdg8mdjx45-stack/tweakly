@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LiquidScreen } from '@/components/liquid-screen';
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { authErrorMessage, useAuth } from '@/hooks/use-auth';
 import { useThemeContext } from '@/hooks/use-theme-context';
@@ -17,6 +16,33 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { LiquidScreen } from '@/components/liquid-screen';
+
+function GlassCard({ children, style }: { children: React.ReactNode; style?: object }) {
+  const { resolvedTheme } = useThemeContext();
+  const colors = Colors[resolvedTheme];
+  return (
+    <View style={[styles.glassCard, { backgroundColor: colors.surface, borderColor: colors.border }, style]}>
+      {children}
+    </View>
+  );
+}
+
+function GlassInput({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  style?: object;
+}) {
+  const { resolvedTheme } = useThemeContext();
+  const colors = Colors[resolvedTheme];
+  return (
+    <View style={[styles.glassInput, { backgroundColor: colors.fill, borderColor: colors.border }, style]}>
+      {children}
+    </View>
+  );
+}
 
 export default function InloggenScreen() {
   const { resolvedTheme } = useThemeContext();
@@ -55,151 +81,158 @@ export default function InloggenScreen() {
 
   return (
     <LiquidScreen style={styles.root}>
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <ScrollView
-        contentContainerStyle={styles.scroll}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        {/* Logo / header */}
-        <View style={styles.header}>
-          <Pressable onPress={() => router.back()} hitSlop={12} style={styles.backBtn}>
-            <Text style={[styles.backArrow, { color: colors.text }]}>‹</Text>
-          </Pressable>
-          <Image source={require('@/assets/images/logo-display.png')} style={styles.logoImg} resizeMode="contain" />
-          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-            Log in op je account
-          </Text>
-        </View>
-
-        {/* Form */}
-        <View style={styles.form}>
-          {/* Email */}
-          <View style={styles.fieldGroup}>
-            <Text style={[styles.label, { color: colors.textSecondary }]}>E-MAILADRES</Text>
-            <Pressable
-              style={[styles.inputWrap, { backgroundColor: colors.surface, borderColor: colors.border }]}
-            >
-              <TextInput
-                style={[styles.input, { color: colors.text }]}
-                value={email}
-                onChangeText={setEmail}
-                placeholder="jouw@email.nl"
-                placeholderTextColor={colors.textSecondary}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoComplete="email"
-                returnKeyType="next"
-              />
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Logo / header */}
+          <View style={styles.header}>
+            <Pressable onPress={() => router.back()} hitSlop={12} style={styles.backBtn}>
+              <Text style={[styles.backArrow, { color: colors.text }]}>‹</Text>
             </Pressable>
+            <Image
+              source={require('@/assets/images/logo-display.png')}
+              style={styles.logoImg}
+              resizeMode="contain"
+            />
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+              Log in op je account
+            </Text>
           </View>
 
-          {/* Wachtwoord */}
-          <View style={styles.fieldGroup}>
-            <Text style={[styles.label, { color: colors.textSecondary }]}>WACHTWOORD</Text>
-            <Pressable
-              style={[styles.inputWrap, { backgroundColor: colors.surface, borderColor: colors.border }]}
-            >
-              <TextInput
-                style={[styles.input, styles.inputFlex, { color: colors.text }]}
-                value={password}
-                onChangeText={setPassword}
-                placeholder="Wachtwoord"
-                placeholderTextColor={colors.textSecondary}
-                secureTextEntry={!showPassword}
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoComplete="password"
-                returnKeyType="done"
-                onSubmitEditing={handleLogin}
-              />
-              <Pressable onPress={() => setShowPassword((v) => !v)} hitSlop={8} style={styles.eyeBtn}>
-                <Text style={[styles.eyeText, { color: colors.textSecondary }]}>
-                  {showPassword ? 'Verberg' : 'Toon'}
+          {/* Form card */}
+          <GlassCard>
+            <View style={styles.formInner}>
+              {/* Email */}
+              <View style={styles.fieldGroup}>
+                <Text style={[styles.label, { color: colors.textSecondary }]}>E-MAILADRES</Text>
+                <GlassInput>
+                  <TextInput
+                    style={[styles.input, { color: colors.text }]}
+                    value={email}
+                    onChangeText={setEmail}
+                    placeholder="jouw@email.nl"
+                    placeholderTextColor={colors.textSecondary}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    autoComplete="email"
+                    returnKeyType="next"
+                  />
+                </GlassInput>
+              </View>
+
+              {/* Wachtwoord */}
+              <View style={styles.fieldGroup}>
+                <Text style={[styles.label, { color: colors.textSecondary }]}>WACHTWOORD</Text>
+                <GlassInput>
+                  <View style={styles.inputRow}>
+                    <TextInput
+                      style={[styles.input, styles.inputFlex, { color: colors.text }]}
+                      value={password}
+                      onChangeText={setPassword}
+                      placeholder="Wachtwoord"
+                      placeholderTextColor={colors.textSecondary}
+                      secureTextEntry={!showPassword}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      autoComplete="password"
+                      returnKeyType="done"
+                      onSubmitEditing={handleLogin}
+                    />
+                    <Pressable
+                      onPress={() => setShowPassword((v) => !v)}
+                      hitSlop={8}
+                      style={styles.eyeBtn}
+                    >
+                      <Text style={[styles.eyeText, { color: colors.textSecondary }]}>
+                        {showPassword ? 'Verberg' : 'Toon'}
+                      </Text>
+                    </Pressable>
+                  </View>
+                </GlassInput>
+              </View>
+
+              {/* Foutmelding */}
+              {error ? (
+                <View style={[styles.errorBox, { backgroundColor: Palette.danger + '18' }]}>
+                  <Text style={[styles.errorText, { color: Palette.danger }]}>{error}</Text>
+                </View>
+              ) : null}
+
+              {/* Inloggen knop */}
+              <Pressable
+                onPress={handleLogin}
+                disabled={loading}
+                style={({ pressed }) => [
+                  styles.primaryBtn,
+                  { backgroundColor: Palette.primary },
+                  pressed && styles.pressed,
+                ]}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.primaryBtnText}>Inloggen</Text>
+                )}
+              </Pressable>
+
+              {/* Wachtwoord vergeten */}
+              <Pressable
+                onPress={() => router.push('/(auth)/wachtwoord-vergeten')}
+                style={styles.linkBtn}
+              >
+                <Text style={[styles.linkText, { color: Palette.primary }]}>
+                  Wachtwoord vergeten?
                 </Text>
               </Pressable>
-            </Pressable>
-          </View>
-
-          {/* Foutmelding */}
-          {error ? (
-            <View style={[styles.errorBox, { backgroundColor: Palette.danger + '18' }]}>
-              <Text style={[styles.errorText, { color: Palette.danger }]}>{error}</Text>
             </View>
-          ) : null}
+          </GlassCard>
 
-          {/* Inloggen knop */}
-          <Pressable
-            onPress={handleLogin}
-            disabled={loading}
-            style={({ pressed }) => [
-              styles.primaryBtn,
-              { backgroundColor: Palette.primary },
-              pressed && styles.pressed,
-            ]}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.primaryBtnText}>Inloggen</Text>
-            )}
-          </Pressable>
-
-          {/* Wachtwoord vergeten */}
-          <Pressable
-            onPress={() => router.push('/(auth)/wachtwoord-vergeten')}
-            style={styles.linkBtn}
-          >
-            <Text style={[styles.linkText, { color: Palette.primary }]}>
-              Wachtwoord vergeten?
+          {/* Registreren */}
+          <View style={styles.footer}>
+            <Text style={[styles.footerText, { color: colors.textSecondary }]}>
+              Nog geen account?
             </Text>
-          </Pressable>
-        </View>
+            <Pressable
+              onPress={() => router.replace('/(auth)/registreren')}
+              style={({ pressed }) => [
+                styles.secondaryBtn,
+                { borderColor: Palette.primary },
+                pressed && styles.pressed,
+              ]}
+            >
+              <Text style={[styles.secondaryBtnText, { color: Palette.primary }]}>
+                Account aanmaken
+              </Text>
+            </Pressable>
 
-        {/* Registreren */}
-        <View style={styles.footer}>
-          <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-          <Text style={[styles.footerText, { color: colors.textSecondary }]}>
-            Nog geen account?
-          </Text>
-          <Pressable
-            onPress={() => router.replace('/(auth)/registreren')}
-            style={({ pressed }) => [
-              styles.secondaryBtn,
-              { borderColor: Palette.primary },
-              pressed && styles.pressed,
-            ]}
-          >
-            <Text style={[styles.secondaryBtnText, { color: Palette.primary }]}>
-              Account aanmaken
-            </Text>
-          </Pressable>
-
-          {/* Legal links */}
-          <View style={styles.legalLinks}>
-            <Text style={[styles.legalText, { color: colors.textSecondary }]}>
-              Door in te loggen ga je akkoord met onze{' '}
-              <Link href="/terms" asChild>
-                <Text style={[styles.legalLink, { color: Palette.primary }]}>
-                  Algemene Voorwaarden
-                </Text>
-              </Link>{' '}
-              en{' '}
-              <Link href="/privacy" asChild>
-                <Text style={[styles.legalLink, { color: Palette.primary }]}>
-                  Privacybeleid
-                </Text>
-              </Link>
-              .
-            </Text>
+            {/* Legal links */}
+            <View style={styles.legalLinks}>
+              <Text style={[styles.legalText, { color: colors.textSecondary }]}>
+                Door in te loggen ga je akkoord met onze{' '}
+                <Link href="/terms" asChild>
+                  <Text style={[styles.legalLink, { color: Palette.primary }]}>
+                    Algemene Voorwaarden
+                  </Text>
+                </Link>{' '}
+                en{' '}
+                <Link href="/privacy" asChild>
+                  <Text style={[styles.legalLink, { color: Palette.primary }]}>
+                    Privacybeleid
+                  </Text>
+                </Link>
+                .
+              </Text>
+            </View>
           </View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </LiquidScreen>
   );
 }
@@ -220,16 +253,38 @@ const styles = StyleSheet.create({
   logoImg: { width: 80, height: 80 },
   subtitle: { fontSize: 16 },
 
-  form: { gap: Spacing.md },
-  fieldGroup: { gap: Spacing.xs },
-  label: { fontSize: 12, fontWeight: '600', letterSpacing: 0.5, paddingHorizontal: 4 },
-  inputWrap: {
+  // ── Form card ────────────────────────────────────────────────────────────
+  glassCard: {
+    borderRadius: Radius.xxl,
+    borderWidth: StyleSheet.hairlineWidth,
+    overflow: 'hidden',
+    padding: Spacing.lg,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.10,
+    shadowRadius: 12,
+    elevation: 3,
+  },
+  formInner: {
+    gap: Spacing.md,
+  },
+
+  // ── Input fields ─────────────────────────────────────────────────────────
+  glassInput: {
+    borderRadius: Radius.lg,
+    borderWidth: StyleSheet.hairlineWidth,
+    overflow: 'hidden',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: Radius.md,
-    borderWidth: 1,
-    overflow: 'hidden',
+    gap: 8,
   },
+
+  fieldGroup: { gap: Spacing.xs },
+  label: { fontSize: 12, fontWeight: '600', letterSpacing: 0.5, paddingHorizontal: 4 },
+
+  inputRow: { flexDirection: 'row', alignItems: 'center' },
   input: { paddingHorizontal: Spacing.md, paddingVertical: 14, fontSize: 16 },
   inputFlex: { flex: 1 },
   eyeBtn: { paddingHorizontal: Spacing.md },
@@ -246,29 +301,12 @@ const styles = StyleSheet.create({
   },
   primaryBtnText: { color: '#fff', fontSize: 16, fontWeight: '600' },
 
-  googleBtn: {
-    borderRadius: Radius.md,
-    borderWidth: 1,
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  googleContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  googleIcon: {
-    fontSize: 20,
-  },
-  googleBtnText: { fontSize: 16, fontWeight: '500' },
-
   linkBtn: { alignItems: 'center', paddingVertical: Spacing.xs },
   linkText: { fontSize: 14, fontWeight: '500' },
 
   pressed: { opacity: 0.75 },
 
   footer: { gap: Spacing.md, alignItems: 'center' },
-  dividerLine: { width: '100%', height: StyleSheet.hairlineWidth },
   footerText: { fontSize: 14 },
   secondaryBtn: {
     width: '100%',
