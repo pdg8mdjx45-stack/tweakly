@@ -1,5 +1,4 @@
 import { PriceHistoryChart } from '@/components/charts';
-import { ClearLiquidGlass } from '@/components/clear-liquid-glass';
 import { LiquidScreen } from '@/components/liquid-screen';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { PRICE_DISCLAIMER, type ProductVariant } from '@/constants/mock-data';
@@ -342,7 +341,7 @@ export default function ProductScreen() {
         </View>
 
         {/* Price Section — premium card */}
-        <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.priceSection}>
+        <View style={[styles.sectionCard, styles.priceSection, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           {/* Lowest price badge */}
           {priceDropPct > 0 && (
             <View style={styles.lowestPriceBadge}>
@@ -393,19 +392,19 @@ export default function ProductScreen() {
               Laagste prijs ooit: €{(tweakersPriceHistory?.lowestEver ?? product.lowestPrice).toLocaleString('nl-NL')}
             </Text>
           </View>
-        </ClearLiquidGlass>
+        </View>
 
         {/* Price Chart */}
-        <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.card}>
+        <View style={[styles.sectionCard, styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <PriceHistoryChart
             data={realPriceHistory}
             isDark={colorScheme === 'dark'}
             title="Prijsgeschiedenis"
           />
-        </ClearLiquidGlass>
+        </View>
 
         {/* Tabs */}
-        <ClearLiquidGlass isDark={isDark} borderRadius={0} style={styles.tabs}>
+        <View style={[styles.tabs, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           {(['prijzen', 'specs', 'reviews'] as const).map(tab => (
             <Pressable
               key={tab}
@@ -424,12 +423,12 @@ export default function ProductScreen() {
               </Text>
             </Pressable>
           ))}
-        </ClearLiquidGlass>
+        </View>
 
         {/* Tab Content */}
         <View style={styles.tabContent}>
           {activeTab === 'prijzen' && (
-            <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.card}>
+            <View style={[styles.sectionCard, styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <Text style={[styles.subTitle, { color: colors.textSecondary }]}>
                 {tweakersOffers.length > 0 ? 'WINKELPRIJZEN (LIVE)' : 'WINKELPRIJZEN'}
               </Text>
@@ -548,7 +547,7 @@ export default function ProductScreen() {
                   Vergelijk op Google Shopping
                 </Text>
               </Pressable>
-            </ClearLiquidGlass>
+            </View>
           )}
 
           {activeTab === 'specs' && (() => {
@@ -557,7 +556,7 @@ export default function ProductScreen() {
               : product.specs;
             const isIcecat = icecatData && Object.keys(icecatData.specsFlat).length > 0;
             return (
-              <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.card}>
+              <View style={[styles.sectionCard, styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                 <Text style={[styles.subTitle, { color: colors.textSecondary }]}>SPECIFICATIES</Text>
                 {Object.keys(displaySpecs).length === 0 ? (
                   <Text style={[styles.placeholderText, { color: colors.textSecondary }]}>
@@ -583,12 +582,12 @@ export default function ProductScreen() {
                     Bron: Icecat Open Catalog
                   </Text>
                 )}
-              </ClearLiquidGlass>
+              </View>
             );
           })()}
 
           {activeTab === 'reviews' && (
-            <ClearLiquidGlass isDark={isDark} borderRadius={Radius.xl} style={styles.card}>
+            <View style={[styles.sectionCard, styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <Text style={[styles.subTitle, { color: colors.textSecondary }]}>REVIEWS</Text>
               <View style={styles.reviewSummary}>
                 <Text style={[styles.reviewBigScore, { color: colors.text }]}>{product.rating.toFixed(1)}</Text>
@@ -608,7 +607,7 @@ export default function ProductScreen() {
               <Text style={[styles.placeholderText, { color: colors.textSecondary }]}>
                 Reviews worden binnenkort beschikbaar
               </Text>
-            </ClearLiquidGlass>
+            </View>
           )}
         </View>
       </ScrollView>
@@ -880,6 +879,20 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 
+  // Section card base (iOS 26 surface)
+  sectionCard: {
+    borderRadius: Radius.lg,
+    borderWidth: StyleSheet.hairlineWidth,
+    overflow: 'hidden',
+    marginHorizontal: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+
   // Cards
   card: {
     marginHorizontal: Spacing.md,
@@ -896,6 +909,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.md,
     borderRadius: Radius.lg,
     overflow: 'hidden',
+    borderWidth: StyleSheet.hairlineWidth,
   },
   tab: {
     flex: 1,
