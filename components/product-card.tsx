@@ -9,11 +9,9 @@ import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
 import Animated, {
   FadeInDown,
-  FadeInUp,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  withTiming,
 } from 'react-native-reanimated';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -151,25 +149,23 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
     <Link href={`/product/${product.id}`} asChild>
       <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut}>
         <Animated.View entering={enteringAnimation}>
-        <Animated.View 
+        <Animated.View
           style={[
             animatedPressStyle,
             styles.card,
-            {
-              backgroundColor: colors.surface,
-              borderColor: isDark ? colors.border : 'transparent',
-              borderWidth: isDark ? 1 : 0,
-            },
-            !isDark && Shadow.md,
-          ]}>
+            Shadow.lg,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+          ]}
+        >
           {/* Image Section */}
-        <View style={[styles.imageWrapper, { backgroundColor: isDark ? Palette.dark3 : '#F5F5F7' }]}>
+        <View style={styles.imageWrapper}>
           <Image
             source={{ uri: currentImage }}
             style={styles.image}
             contentFit="contain"
             transition={200}
           />
+          {/* Badge — top left */}
           {product.badge && (
             <View style={[styles.badgeWrapper, { backgroundColor: badgeColor(product.badge) }]}>
               <Text style={styles.badgeText}>
@@ -177,6 +173,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
               </Text>
             </View>
           )}
+          {/* Compare button — top right */}
           <Pressable
             onPress={(e) => {
               e.stopPropagation();
@@ -186,12 +183,12 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
             style={[
               styles.compareBtn,
               {
-                backgroundColor: inCompare ? Palette.primary : (isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.06)'),
+                backgroundColor: inCompare ? Palette.primary : (isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.06)'),
                 borderWidth: inCompare ? 0 : 1,
-                borderColor: inCompare ? 'transparent' : (isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'),
+                borderColor: inCompare ? 'transparent' : (isDark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.08)'),
               },
             ]}>
-            <Text style={[styles.compareBtnText, { color: inCompare ? '#fff' : colors.textSecondary }]}>
+            <Text style={[styles.compareBtnText, { color: inCompare ? (isDark ? '#000' : '#fff') : colors.textSecondary }]}>
               {inCompare ? '✓' : '⚖'}
             </Text>
           </Pressable>
@@ -203,39 +200,31 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
             <Text style={[styles.brand, { color: colors.textSecondary }]} numberOfLines={1}>
               {product.brand}
             </Text>
-            <Text style={[styles.name, { color: colors.text }]} numberOfLines={2}>
-              {product.name}
-            </Text>
+            <View style={styles.nameRow}>
+              <Text style={[styles.name, { color: colors.text, flex: 1 }]} numberOfLines={2}>
+                {product.name}
+              </Text>
+              {isPriceDown && (
+                <Text style={styles.lightningIcon}>⚡</Text>
+              )}
+            </View>
 
             {/* Short description */}
             <Text style={[styles.description, { color: colors.textSecondary }]} numberOfLines={1}>
               {description}
             </Text>
 
-            {/* Variant selector dropdown */}
+            {/* Variant selector */}
             {product.variants && product.variants.length > 0 && (
-              <VariantSelector 
-                variants={product.variants} 
+              <VariantSelector
+                variants={product.variants}
                 onSelect={setSelectedVariant}
                 colorScheme={colorScheme}
               />
             )}
 
-            {/* Rating */}
-            <View style={styles.ratingRow}>
-              <View style={styles.starsRow}>
-                {[1, 2, 3, 4, 5].map(i => (
-                  <Text key={i} style={[styles.starSmall, { color: i <= Math.round(product.rating) ? Palette.star : (isDark ? Palette.dark4 : Palette.grey5) }]}>
-                    ★
-                  </Text>
-                ))}
-              </View>
-              <Text style={[styles.ratingText, { color: colors.textSecondary }]}>
-                ({product.reviewCount})
-              </Text>
-            </View>
-
-            {/* Price Row */}
+            {/* Price label + Price */}
+            <Text style={[styles.priceLabel, { color: colors.textSecondary }]}>LAAGSTE PRIJS</Text>
             <View style={styles.priceRow}>
               <Text style={[styles.price, { color: colors.text }]}>
                 €{currentPrice.toLocaleString('nl-NL')}
@@ -246,15 +235,8 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
                 </Text>
               )}
             </View>
-            {isPriceDown && (
-              <PriceChange current={currentPrice} original={product.originalPrice} />
-            )}
           </View>
 
-          {/* CTA Button - always at bottom */}
-          <View style={[styles.ctaButton, { backgroundColor: isDark ? Palette.primaryLight : Palette.primary }]}>
-            <Text style={styles.ctaText}>Bekijk product</Text>
-          </View>
         </View>
         </Animated.View>
         </Animated.View>
@@ -283,14 +265,16 @@ function badgeLabel(badge: string) {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     overflow: 'hidden',
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.sm + 2,
+    borderWidth: StyleSheet.hairlineWidth,
+    ...Shadow.sm,
   },
   imageWrapper: {
     position: 'relative',
     aspectRatio: 1,
-    padding: Spacing.md,
+    padding: Spacing.md + 2,
   },
   image: {
     width: '100%',
@@ -298,17 +282,18 @@ const styles = StyleSheet.create({
   },
   badgeWrapper: {
     position: 'absolute',
-    top: Spacing.sm,
-    left: Spacing.sm,
-    paddingHorizontal: Spacing.sm + 2,
+    top: Spacing.sm + 2,
+    left: Spacing.sm + 2,
+    paddingHorizontal: Spacing.sm + 3,
     paddingVertical: 4,
     borderRadius: Radius.full,
   },
   badgeText: {
     color: '#fff',
     fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 0.4,
+    fontWeight: '800',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
   },
   pctBadge: {
     backgroundColor: Palette.accentSoft,
@@ -327,70 +312,66 @@ const styles = StyleSheet.create({
     padding: Spacing.sm + 4,
     paddingTop: Spacing.sm + 2,
     flexDirection: 'column',
-    justifyContent: 'space-between',
-    minHeight: 180,
   },
   infoContent: {
     flex: 1,
-    gap: 2,
+    gap: 3,
   },
   brand: {
     fontSize: 10,
     fontWeight: '600',
     textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginBottom: 2,
+    letterSpacing: 0.9,
+    marginBottom: 1,
+    opacity: 0.7,
+  },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 4,
+  },
+  lightningIcon: {
+    fontSize: 14,
+    marginTop: 1,
   },
   name: {
     fontSize: 14,
     fontWeight: '700',
     lineHeight: 19,
-    letterSpacing: -0.1,
+    letterSpacing: -0.15,
   },
   description: {
     fontSize: 11,
     lineHeight: 15,
-    marginTop: 2,
-    opacity: 0.8,
+    marginTop: 3,
+    opacity: 0.6,
   },
-  ratingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginTop: 4,
-  },
-  starsRow: {
-    flexDirection: 'row',
-    gap: 1,
-  },
-  starSmall: {
-    fontSize: 10,
-  },
-  ratingText: {
-    fontSize: 10,
+  priceLabel: {
+    fontSize: 9,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.9,
+    marginTop: Spacing.sm + 2,
+    marginBottom: 3,
+    opacity: 0.5,
   },
   priceRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
     gap: Spacing.xs + 2,
-    marginTop: Spacing.sm,
   },
   price: {
-    fontSize: 20,
+    fontSize: 21,
     fontWeight: '800',
     letterSpacing: -0.5,
   },
   originalPrice: {
-    fontSize: 13,
+    fontSize: 12,
     textDecorationLine: 'line-through',
-    opacity: 0.6,
+    opacity: 0.45,
   },
   ctaButton: {
-    marginTop: 'auto',
-    paddingVertical: Spacing.sm + 2,
-    borderRadius: Radius.md,
-    alignItems: 'center',
-    minHeight: 40,
+    display: 'none',
   },
   ctaText: {
     color: '#fff',
@@ -402,7 +383,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     paddingHorizontal: 8,
     paddingVertical: 2,
-    borderRadius: 4,
+    borderRadius: Radius.xs,
     alignSelf: 'flex-start',
     backgroundColor: 'rgba(0,0,0,0.05)',
   },
@@ -412,7 +393,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   variantSelector: {
-    marginTop: 6,
+    marginTop: 8,
     gap: 4,
   },
   variantOptions: {
@@ -421,26 +402,27 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   variantOption: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    borderWidth: 1,
+    paddingHorizontal: 9,
+    paddingVertical: 5,
+    borderRadius: Radius.sm,
+    borderWidth: 0.5,
   },
   variantOptionText: {
     fontSize: 10,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   moreVariants: {
     fontSize: 10,
     marginTop: 2,
+    opacity: 0.6,
   },
   compareBtn: {
     position: 'absolute',
-    top: Spacing.sm,
-    right: Spacing.sm,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    top: Spacing.sm + 2,
+    right: Spacing.sm + 2,
+    width: 34,
+    height: 34,
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },
