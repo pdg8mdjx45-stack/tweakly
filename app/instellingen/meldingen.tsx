@@ -13,14 +13,13 @@ import { ConfirmSheet } from '@/components/confirm-sheet';
 
 function SectionLabel({ label, colors }: { label: string; colors: (typeof Colors)['light'] }) {
   return (
-    <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>{label}</Text>
+    <Text style={[styles.sectionLabel, { color: colors.textTertiary }]}>{label}</Text>
   );
 }
 
-function Group({ children, isDark }: { children: React.ReactNode; isDark: boolean }) {
+function Group({ children, colors }: { children: React.ReactNode; colors: (typeof Colors)['light'] }) {
   return (
-    <View style={[styles.group, isDark ? styles.groupDark : styles.groupLight]}>
-      <View style={[styles.groupSpecular, isDark ? styles.groupSpecularDark : styles.groupSpecularLight]} />
+    <View style={[styles.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       {children}
     </View>
   );
@@ -118,7 +117,7 @@ export default function InstellingenMeldingenScreen() {
 
         <View style={styles.section}>
           <SectionLabel label="KANALEN" colors={colors} />
-          <Group isDark={isDark}>
+          <Group colors={colors}>
             <ToggleRow
               icon="bell.fill"
               label="Push-notificaties"
@@ -153,7 +152,7 @@ export default function InstellingenMeldingenScreen() {
 
         <View style={styles.section}>
           <SectionLabel label="TYPES" colors={colors} />
-          <Group isDark={isDark}>
+          <Group colors={colors}>
             <ToggleRow
               icon="tag.fill"
               iconColor="#10B981"
@@ -249,47 +248,29 @@ const styles = StyleSheet.create({
 
   section: { gap: Spacing.xs },
   sectionLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 0.8,
-    paddingHorizontal: Spacing.xs,
+    fontSize: 13,
+    fontWeight: '400',
     textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginLeft: 16,
+    marginBottom: 8,
   },
 
   group: {
-    borderRadius: Radius.xl,
+    borderRadius: Radius.lg,
+    borderWidth: StyleSheet.hairlineWidth,
     overflow: 'hidden',
-    borderWidth: 0.5,
-    position: 'relative',
-  },
-  groupLight: {
-    backgroundColor: 'rgba(255,255,255,0.62)',
-    borderColor: 'rgba(255,255,255,0.90)',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.07,
-    shadowRadius: 18,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 1,
   },
-  groupDark: {
-    backgroundColor: 'rgba(38,38,48,0.72)',
-    borderColor: 'rgba(255,255,255,0.12)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.45,
-    shadowRadius: 24,
-    elevation: 8,
+
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: 16,
   },
-  groupSpecular: {
-    position: 'absolute',
-    top: 0,
-    left: 16,
-    right: 16,
-    height: 0.5,
-    zIndex: 1,
-  },
-  groupSpecularLight: { backgroundColor: 'rgba(255,255,255,1.0)' },
-  groupSpecularDark: { backgroundColor: 'rgba(255,255,255,0.18)' },
 
   divider: {
     height: StyleSheet.hairlineWidth,
