@@ -23,18 +23,17 @@ import { useProductImage } from '@/hooks/use-product-image';
 import { getAllProducts, getBestDeal, getNewProducts, getPriceDrops, type Product } from '@/services/product-db';
 import { useEffect, useRef, useState } from 'react';
 import { useTour } from '@/hooks/use-tour';
+import { MAIN_CATEGORIES } from '@/constants/categories';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH * 0.44;
 
-const CATEGORIES = [
-  { id: 'smartphones', label: 'Smartphones', icon: 'smartphone'     as const, color: '#007AFF' },
-  { id: 'laptops',     label: 'Laptops',      icon: 'laptop'         as const, color: '#5856D6' },
-  { id: 'audio',       label: 'Audio',         icon: 'headphones'     as const, color: '#FF2D55' },
-  { id: 'televisies',  label: "TV's",          icon: 'tv'             as const, color: '#FF9500' },
-  { id: 'gaming',      label: 'Gaming',        icon: 'sports-esports' as const, color: '#34C759' },
-  { id: 'wearables',   label: 'Wearables',     icon: 'watch'          as const, color: '#AF52DE' },
-];
+const CATEGORIES = MAIN_CATEGORIES.slice(0, 6).map(m => ({
+  id: m.id,
+  label: m.name,
+  icon: m.icon as any,
+  color: m.color,
+}));
 
 // ─── Product thumbnail ────────────────────────────────────────────────────────
 
@@ -391,7 +390,7 @@ export default function HomeScreen() {
             {CATEGORIES.map(cat => (
               <Pressable
                 key={cat.id}
-                onPress={() => router.push('/categorieen?mode=browse' as any)}
+                onPress={() => router.push(`/(tabs)/prijzen?main=${cat.id}` as any)}
                 style={({ pressed }) => [
                   styles.categoryPill,
                   { borderColor: cat.color + (isDark ? '50' : '40') },
