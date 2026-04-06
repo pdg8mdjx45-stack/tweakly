@@ -1,5 +1,6 @@
 import type { Product, ProductVariant } from '@/constants/mock-data';
-import { Colors, Palette, Radius, Shadow, Spacing } from '@/constants/theme';
+import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
+import { GlassCard } from '@/components/glass-card';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useProductImage } from '@/hooks/use-product-image';
 import { useReduceMotion } from '@/hooks/use-reduce-motion';
@@ -149,14 +150,8 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
     <Link href={`/product/${product.id}`} asChild>
       <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut}>
         <Animated.View entering={enteringAnimation}>
-        <Animated.View
-          style={[
-            animatedPressStyle,
-            styles.card,
-            Shadow.lg,
-            { backgroundColor: colors.surface, borderColor: colors.border },
-          ]}
-        >
+        <Animated.View style={[animatedPressStyle, styles.card]}>
+        <GlassCard style={styles.cardInner} radius={Radius.xl}>
           {/* Image Section */}
         <View style={styles.imageWrapper}>
           <Image
@@ -238,6 +233,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
           </View>
 
         </View>
+        </GlassCard>
         </Animated.View>
         </Animated.View>
       </Pressable>
@@ -265,11 +261,10 @@ function badgeLabel(badge: string) {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: Radius.xl,
-    overflow: 'hidden',
     marginBottom: Spacing.sm + 2,
-    borderWidth: StyleSheet.hairlineWidth,
-    ...Shadow.sm,
+  },
+  cardInner: {
+    overflow: 'hidden',
   },
   imageWrapper: {
     position: 'relative',
