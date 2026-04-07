@@ -1,86 +1,92 @@
 import { Platform } from 'react-native';
 
-// ─── iOS 26 Liquid Glass Design System ──────────────────────────────────────
-// Deeply translucent materials, vivid specular highlights, frosted chrome.
+// ─── Tweakly Design System ────────────────────────────────────────────────────
+// White-first, iOS 26 liquid glass + superellipse shape language
+// Accent: dark green (#1A3A20) — Tweakly brand
+// Background: pure white (#FFFFFF)
+// Cards: white with soft shadow, 24pt corner radius
+// Floating tab bar: white frosted pill, dark green active state
 
 export const Palette = {
-  // Primary brand: Tweakly donkergroen
-  primary: '#1A3A20',
-  primaryDark: '#0F2414',
-  primaryLight: '#2D5A35',
-  primarySoft: '#1A3A2014', // 8% opacity for subtle backgrounds
-  primaryVivid: '#34C759',  // iOS system green — for active/positive states
+  // ── Brand greens ──────────────────────────────────────────────────────────
+  primary: '#1A3A20',        // Tweakly dark green — primary accent
+  primaryDark: '#0F2414',    // Deeper green for pressed/active states
+  primaryLight: '#2D5A35',   // Mid green — hover/secondary
+  primarySoft: 'rgba(26,58,32,0.08)',  // Soft tint for pill backgrounds
+  primaryVivid: '#34C759',   // iOS system green — positive / price-drop
 
-  // Secondary: clean blue for interactive elements
+  // ── Interactive / secondary ───────────────────────────────────────────────
   secondary: '#0A84FF',
 
-  // Interactive tint — primary UI tint
+  // Alias kept for backward compat
   blue: '#1A3A20',
 
-  // Functionele kleuren (price-related)
-  accent: '#6BCB7A',       // Green — price drop / positive
-  accentSoft: '#6BCB7A18', // Soft green bg
-  warning: '#FF3B30',      // Red — price increase / warning
-  danger: '#FF3B30',       // Red — alerts / negative
-  deal: '#FF9500',         // Orange — deal badge
+  // ── Functional ────────────────────────────────────────────────────────────
+  accent: '#1A3A20',         // Green — now uses brand dark green
+  accentVivid: '#34C759',    // Vivid green for price drop badges
+  accentSoft: 'rgba(26,58,32,0.08)',
+  warning: '#FF3B30',
+  danger: '#FF3B30',
+  deal: '#FF9500',
+  star: '#FFD60A',
 
-  // Stars rating
-  star: '#FFD60A',         // iOS 26 vibrant yellow
-
-  // Neutrals
+  // ── Neutrals ──────────────────────────────────────────────────────────────
   white: '#FFFFFF',
   black: '#000000',
 
-  // Dark mode colors — deeper, more saturated for iOS 26 OLED depth
-  dark1: '#1C1C1E',        // True OLED black with blue tint
-  dark2: '#2C2C2E',        // Card background — slightly warmer
-  dark3: '#3A3A3C',        // Elevated surface
-  dark4: '#48484A',        // Borders/dividers — more contrast
-  dark5: '#636366',        // Secondary text
+  // ── Dark mode (kept for compatibility) ────────────────────────────────────
+  dark1: '#1C1C1E',
+  dark2: '#2C2C2E',
+  dark3: '#3A3A3C',
+  dark4: '#48484A',
+  dark5: '#636366',
 
-  // Light mode colors — iOS 26 uses warmer, slightly tinted whites
+  // ── Grays (iOS system) ────────────────────────────────────────────────────
   grey1: '#8E8E93',
   grey2: '#AEAEB2',
   grey3: '#C7C7CC',
   grey4: '#D1D1D6',
   grey5: '#E5E5EA',
   grey6: '#F2F2F7',
+  grey7: '#FAFAFA',
 } as const;
 
 export const Colors = {
   light: {
-    text: '#000000',
-    textSecondary: '#3C3C43',    // iOS 26 secondary label
-    textTertiary: '#6C6C70',     // Tertiary label
-    background: '#F2F2F7',       // iOS system grouped background
+    text: '#0A0A0A',
+    textSecondary: '#3C3C43',
+    textTertiary: '#8E8E93',
+    background: '#FFFFFF',          // Pure white
     surface: '#FFFFFF',
-    surfaceElevated: '#FFFFFF',
-    tint: Palette.primary,
+    surfaceElevated: '#FAFAFA',
+    surfaceGrouped: '#F2F2F7',      // Grouped lists
+    tint: Palette.primaryVivid,
     icon: '#6C6C72',
-    tabIconDefault: '#999999',
-    tabIconSelected: Palette.primary,
-    border: 'rgba(60,60,67,0.12)',  // iOS 26 separator
-    borderProminent: 'rgba(60,60,67,0.20)',
-    priceDown: Palette.accent,
+    tabIconDefault: '#AEAEB2',
+    tabIconSelected: Palette.primaryVivid,
+    border: 'rgba(0,0,0,0.06)',
+    borderProminent: 'rgba(0,0,0,0.12)',
+    priceDown: Palette.primaryVivid,
     priceUp: Palette.warning,
-    fill: 'rgba(120,120,128,0.12)', // iOS tertiary fill
+    fill: 'rgba(0,0,0,0.04)',
   },
   dark: {
     text: '#F5F5F7',
     textSecondary: '#A0A0AC',
     textTertiary: '#6E6E78',
-    background: '#1C1C1E',
-    surface: '#2C2C2E',
-    surfaceElevated: '#3A3A3C',
-    tint: Palette.blue,
+    background: '#0A0A0A',
+    surface: '#161618',
+    surfaceElevated: '#1C1C1E',
+    surfaceGrouped: '#1C1C1E',
+    tint: Palette.primaryVivid,
     icon: '#8E8E9A',
     tabIconDefault: '#6E6E78',
-    tabIconSelected: Palette.blue,
-    border: 'rgba(255,255,255,0.10)',
-    borderProminent: 'rgba(255,255,255,0.18)',
-    priceDown: Palette.accent,
+    tabIconSelected: Palette.primaryVivid,
+    border: 'rgba(255,255,255,0.08)',
+    borderProminent: 'rgba(255,255,255,0.15)',
+    priceDown: Palette.primaryVivid,
     priceUp: Palette.warning,
-    fill: 'rgba(120,120,128,0.20)',
+    fill: 'rgba(255,255,255,0.06)',
   },
 };
 
@@ -96,292 +102,289 @@ export const Spacing = {
 
 export const Radius = {
   xs: 6,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 22,    // iOS 26 uses slightly larger radii
-  xxl: 28,   // For prominent cards / modals
+  sm: 10,
+  md: 14,
+  lg: 18,
+  xl: 24,    // Primary card radius — iOS 26 superellipse
+  xxl: 30,   // Hero cards, modals
   full: 999,
 } as const;
 
-// ─── iOS 26 Shadow System ────────────────────────────────────────────────────
-// Deeper, multi-layered shadows for the liquid glass aesthetic.
+// ─── Shadow System ─────────────────────────────────────────────────────────────
+// White-background-first: softer, lighter shadows for clarity
 
 export const Shadow = {
-  sm: {
+  xs: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
     elevation: 1,
+  },
+  sm: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
   },
   md: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.10,
-    shadowRadius: 12,
-    elevation: 3,
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 4,
   },
   lg: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.16,
+    shadowOpacity: 0.10,
     shadowRadius: 24,
     elevation: 6,
   },
-  // iOS 26 "floating" shadow — for hero cards and prominent CTAs
+  // Floating pill / tab bar
   xl: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.22,
-    shadowRadius: 36,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 20,
     elevation: 10,
+  },
+  // Hero card prominent
+  hero: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.14,
+    shadowRadius: 32,
+    elevation: 14,
   },
 } as const;
 
-// ─── iOS 26 Liquid Glass Material System ─────────────────────────────────────
-// True liquid glass: deeply translucent, vivid specular highlights,
-// frosted chrome, and multi-layer depth. These materials adapt to
-// the content behind them, creating a sense of physical depth.
-//
-// Key principles:
-// - Specular highlight on the top edge (simulated via borderTopColor)
-// - Inner shadow via slightly darker bottom border
-// - Multi-layer translucency (blur + tinted fill)
-// - Prominent but soft drop shadows
+// ─── Glass Material System ─────────────────────────────────────────────────────
+// White-first: cards use white with subtle shadow instead of transparency
 
 export const Glass = {
-  // ── Card material — default for inline content cards ─────────────────────
+  // ── Card material — white with soft shadow ────────────────────────────────
   card: {
     backgroundColor: 'rgba(255,255,255,0.06)',
     borderWidth: 0.5,
     borderColor: 'rgba(255,255,255,0.13)',
   },
   cardDark: {
-    backgroundColor: 'rgba(44,44,46,0.85)',
+    backgroundColor: 'rgba(22,22,24,0.92)',
     borderWidth: 0.5,
-    borderColor: 'rgba(255,255,255,0.10)',
+    borderColor: 'rgba(255,255,255,0.08)',
   },
   cardLight: {
-    backgroundColor: 'rgba(255,255,255,0.65)',
+    backgroundColor: '#FFFFFF',
     borderWidth: 0.5,
-    borderColor: 'rgba(255,255,255,0.90)',
+    borderColor: 'rgba(0,0,0,0.06)',
   },
 
-  // ── Surface fill — flat backgrounds behind rows/cells ────────────────────
+  // ── Surface fill ──────────────────────────────────────────────────────────
   surface: {
     backgroundColor: 'rgba(255,255,255,0.04)',
     borderWidth: 0.5,
     borderColor: 'rgba(255,255,255,0.08)',
   },
   surfaceLight: {
-    backgroundColor: 'rgba(255,255,255,0.80)',
+    backgroundColor: '#FFFFFF',
     borderWidth: 0.5,
-    borderColor: 'rgba(200,200,210,0.40)',
+    borderColor: 'rgba(0,0,0,0.05)',
   },
 
-  // ── Tinted accent glass — brand-colored translucency ─────────────────────
+  // ── Tinted accent glass ───────────────────────────────────────────────────
   accent: {
-    backgroundColor: 'rgba(26,58,32,0.10)',
+    backgroundColor: 'rgba(26,58,32,0.06)',
     borderWidth: 0.5,
-    borderColor: 'rgba(26,58,32,0.18)',
+    borderColor: 'rgba(26,58,32,0.12)',
   },
 
-  // ── Primary liquid glass — grouped settings, prominent cards ─────────────
+  // ── Liquid glass ──────────────────────────────────────────────────────────
   liquid: {
     light: {
-      backgroundColor: 'rgba(255,255,255,0.72)',
+      backgroundColor: 'rgba(255,255,255,0.85)',
       borderWidth: 0.5,
-      borderColor: 'rgba(255,255,255,0.92)',
-      shadowColor: 'rgba(0,0,0,0.12)',
+      borderColor: 'rgba(255,255,255,0.95)',
+      shadowColor: 'rgba(0,0,0,0.08)',
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 1,
-      shadowRadius: 20,
-      elevation: 5,
+      shadowRadius: 16,
+      elevation: 4,
     },
     dark: {
-      backgroundColor: 'rgba(44,44,46,0.82)',
+      backgroundColor: 'rgba(22,22,24,0.90)',
       borderWidth: 0.5,
-      borderColor: 'rgba(255,255,255,0.12)',
+      borderColor: 'rgba(255,255,255,0.10)',
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.45,
-      shadowRadius: 28,
-      elevation: 12,
+      shadowOpacity: 0.40,
+      shadowRadius: 24,
+      elevation: 10,
     },
   },
 
-  // ── Thin glass — ultra-translucent overlay (iOS 26 widget / sidebar) ─────
+  // ── Thin glass ────────────────────────────────────────────────────────────
   thin: {
     light: {
-      backgroundColor: 'rgba(255,255,255,0.32)',
+      backgroundColor: 'rgba(255,255,255,0.70)',
       borderWidth: 0.5,
-      borderColor: 'rgba(255,255,255,0.60)',
+      borderColor: 'rgba(255,255,255,0.85)',
     },
     dark: {
-      backgroundColor: 'rgba(255,255,255,0.07)',
+      backgroundColor: 'rgba(255,255,255,0.06)',
       borderWidth: 0.5,
-      borderColor: 'rgba(255,255,255,0.10)',
+      borderColor: 'rgba(255,255,255,0.09)',
     },
   },
 
-  // ── Frosted chrome — sidebar / sheet material ────────────────────────────
+  // ── Chrome ────────────────────────────────────────────────────────────────
   chrome: {
     light: {
-      backgroundColor: 'rgba(242,242,247,0.84)',
+      backgroundColor: 'rgba(255,255,255,0.92)',
       borderWidth: 0.5,
-      borderColor: 'rgba(255,255,255,0.96)',
+      borderColor: 'rgba(255,255,255,0.98)',
     },
     dark: {
-      backgroundColor: 'rgba(28,28,30,0.90)',
+      backgroundColor: 'rgba(18,18,20,0.92)',
       borderWidth: 0.5,
-      borderColor: 'rgba(255,255,255,0.10)',
+      borderColor: 'rgba(255,255,255,0.09)',
     },
   },
 
-  // ── Glassmorphic — overlays / modals background ──────────────────────────
+  // ── Glassmorphic overlays ─────────────────────────────────────────────────
   glassmorphic: {
     light: {
-      backgroundColor: 'rgba(255,255,255,0.28)',
+      backgroundColor: 'rgba(255,255,255,0.75)',
       borderWidth: 0.5,
-      borderColor: 'rgba(255,255,255,0.52)',
+      borderColor: 'rgba(255,255,255,0.90)',
     },
     dark: {
-      backgroundColor: 'rgba(28,28,30,0.72)',
+      backgroundColor: 'rgba(18,18,20,0.80)',
       borderWidth: 0.5,
       borderColor: 'rgba(255,255,255,0.08)',
     },
   },
 
-  // ── Navigation header — blurred, sits above scroll content ───────────────
+  // ── Navigation header ─────────────────────────────────────────────────────
   header: {
     light: {
-      backgroundColor: 'rgba(242,242,247,0.92)',
+      backgroundColor: 'rgba(255,255,255,0.92)',
       borderBottomWidth: 0.33,
-      borderBottomColor: 'rgba(0,0,0,0.08)',
+      borderBottomColor: 'rgba(0,0,0,0.06)',
     },
     dark: {
-      backgroundColor: 'rgba(28,28,30,0.92)',
+      backgroundColor: 'rgba(10,10,10,0.92)',
       borderBottomWidth: 0.33,
-      borderBottomColor: 'rgba(255,255,255,0.08)',
+      borderBottomColor: 'rgba(255,255,255,0.06)',
     },
   },
 
-  // ── Tab bar — floating glass ─────────────────────────────────────────────
+  // ── Tab bar — floating white pill ─────────────────────────────────────────
   tabBar: {
     light: {
-      backgroundColor: 'rgba(242,242,247,0.90)',
-      borderTopWidth: 0.33,
-      borderTopColor: 'rgba(0,0,0,0.06)',
-      shadowColor: 'rgba(0,0,0,0.10)',
-      shadowOffset: { width: 0, height: -6 },
-      shadowOpacity: 1,
-      shadowRadius: 24,
-      elevation: 14,
+      backgroundColor: 'rgba(255,255,255,0.92)',
+      borderTopWidth: 0,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.08,
+      shadowRadius: 20,
+      elevation: 12,
     },
     dark: {
-      backgroundColor: 'rgba(28,28,30,0.90)',
-      borderTopWidth: 0.33,
-      borderTopColor: 'rgba(255,255,255,0.09)',
+      backgroundColor: 'rgba(18,18,20,0.92)',
+      borderTopWidth: 0,
       shadowColor: '#000',
-      shadowOffset: { width: 0, height: -10 },
-      shadowOpacity: 0.55,
-      shadowRadius: 28,
-      elevation: 14,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.45,
+      shadowRadius: 20,
+      elevation: 12,
     },
   },
 
-  // ── Sheet / modal — prominent, nearly opaque ─────────────────────────────
+  // ── Modal / sheet ─────────────────────────────────────────────────────────
   modal: {
     light: {
-      backgroundColor: 'rgba(242,242,247,0.97)',
+      backgroundColor: 'rgba(255,255,255,0.98)',
       borderWidth: 0.5,
-      borderColor: 'rgba(255,255,255,0.75)',
+      borderColor: 'rgba(0,0,0,0.06)',
     },
     dark: {
-      backgroundColor: 'rgba(28,28,30,0.97)',
+      backgroundColor: 'rgba(18,18,20,0.98)',
       borderWidth: 0.5,
-      borderColor: 'rgba(255,255,255,0.10)',
+      borderColor: 'rgba(255,255,255,0.09)',
     },
   },
 
-  // ── Specular constants — for top-edge highlights ─────────────────────────
+  // ── Specular rim ──────────────────────────────────────────────────────────
   specular: {
-    light: 'rgba(255,255,255,0.90)',
-    dark: 'rgba(255,255,255,0.12)',
+    light: 'rgba(255,255,255,0.95)',
+    dark: 'rgba(255,255,255,0.10)',
     height: 0.5,
   },
 
-  // ── Lens — full layered liquid glass anatomy ──────────────────────────────
-  // Top specular rim → caustic shimmer → lens blob → inner shadow (dark base)
-  // Each layer stacks to simulate refraction like real water/glass.
+  // ── Lens anatomy (kept for compatibility) ─────────────────────────────────
   lens: {
-    // The bright top-edge specular rim (widest highlight)
     rimTop: {
       light: 'rgba(255,255,255,1.00)',
-      dark:  'rgba(255,255,255,0.70)',
+      dark:  'rgba(255,255,255,0.60)',
     },
-    // Secondary caustic shimmer just below the rim
     caustic: {
-      light: ['rgba(255,255,255,0.95)', 'rgba(255,255,255,0.55)', 'rgba(255,255,255,0.00)'] as const,
-      dark:  ['rgba(255,255,255,0.40)', 'rgba(255,255,255,0.12)', 'rgba(255,255,255,0.00)'] as const,
+      light: ['rgba(255,255,255,0.90)', 'rgba(255,255,255,0.40)', 'rgba(255,255,255,0.00)'] as const,
+      dark:  ['rgba(255,255,255,0.30)', 'rgba(255,255,255,0.08)', 'rgba(255,255,255,0.00)'] as const,
     },
-    // Inner light blob (the floating bright oval in the upper-left of a glass lens)
     blob: {
-      light: 'rgba(255,255,255,0.45)',
-      dark:  'rgba(255,255,255,0.14)',
+      light: 'rgba(255,255,255,0.40)',
+      dark:  'rgba(255,255,255,0.12)',
     },
-    // Bottom inner shadow — the dark concave depth at the base of the lens
     innerShadow: {
-      light: ['rgba(0,0,0,0.00)', 'rgba(0,0,0,0.06)'] as const,
-      dark:  ['rgba(0,0,0,0.00)', 'rgba(0,0,0,0.28)'] as const,
+      light: ['rgba(0,0,0,0.00)', 'rgba(0,0,0,0.04)'] as const,
+      dark:  ['rgba(0,0,0,0.00)', 'rgba(0,0,0,0.24)'] as const,
     },
-    // Side-edge refraction darkening (left/right inner shadow)
     edgeShadow: {
-      light: 'rgba(0,0,0,0.04)',
-      dark:  'rgba(0,0,0,0.22)',
+      light: 'rgba(0,0,0,0.03)',
+      dark:  'rgba(0,0,0,0.20)',
     },
-    // Horizontal glint — the thin bright band across the mid-belly of the lens
     glint: {
-      light: ['rgba(255,255,255,0.00)', 'rgba(255,255,255,0.60)', 'rgba(255,255,255,0.00)'] as const,
-      dark:  ['rgba(255,255,255,0.00)', 'rgba(255,255,255,0.22)', 'rgba(255,255,255,0.00)'] as const,
+      light: ['rgba(255,255,255,0.00)', 'rgba(255,255,255,0.50)', 'rgba(255,255,255,0.00)'] as const,
+      dark:  ['rgba(255,255,255,0.00)', 'rgba(255,255,255,0.18)', 'rgba(255,255,255,0.00)'] as const,
     },
   },
 } as const;
 
 // ─── Organic Background Blobs ─────────────────────────────────────────────────
-// iOS 26-style ambient radial gradient orbs. Dark mode: black + green blobs.
-// Light mode: white + green blobs.
+// Light: pure white bg + very subtle green blobs
+// Dark: near-black bg + green blobs
 
 export const BlobColors = {
   dark: {
-    background: '#000000',
-    blob1: ['rgba(26,58,32,0.85)', 'rgba(26,58,32,0.00)'] as const,   // primary green, top-left
-    blob2: ['rgba(45,90,53,0.60)', 'rgba(45,90,53,0.00)'] as const,   // lighter green, bottom-right
-    blob3: ['rgba(52,199,89,0.18)', 'rgba(52,199,89,0.00)'] as const, // vivid green accent, center
+    background: '#0A0A0A',
+    blob1: ['rgba(26,58,32,0.70)', 'rgba(26,58,32,0.00)'] as const,
+    blob2: ['rgba(45,90,53,0.50)', 'rgba(45,90,53,0.00)'] as const,
+    blob3: ['rgba(52,199,89,0.14)', 'rgba(52,199,89,0.00)'] as const,
   },
   light: {
     background: '#FFFFFF',
-    blob1: ['rgba(26,58,32,0.22)', 'rgba(26,58,32,0.00)'] as const,
-    blob2: ['rgba(45,90,53,0.14)', 'rgba(45,90,53,0.00)'] as const,
-    blob3: ['rgba(52,199,89,0.10)', 'rgba(52,199,89,0.00)'] as const,
+    blob1: ['rgba(26,58,32,0.06)', 'rgba(26,58,32,0.00)'] as const,
+    blob2: ['rgba(45,90,53,0.04)', 'rgba(45,90,53,0.00)'] as const,
+    blob3: ['rgba(52,199,89,0.05)', 'rgba(52,199,89,0.00)'] as const,
   },
 } as const;
 
-// ─── Glassmorphism Card Tokens ────────────────────────────────────────────────
+// ─── Glass Tokens ──────────────────────────────────────────────────────────────
 
 export const GlassTokens = {
   dark: {
-    tint: 'rgba(26,26,28,0.55)',
-    border: 'rgba(255,255,255,0.12)',
-    specular: 'rgba(255,255,255,0.18)',
-    blur: 28,
+    tint: 'rgba(18,18,20,0.60)',
+    border: 'rgba(255,255,255,0.10)',
+    specular: 'rgba(255,255,255,0.14)',
+    blur: 24,
   },
   light: {
-    tint: 'rgba(255,255,255,0.62)',
-    border: 'rgba(255,255,255,0.85)',
-    specular: 'rgba(255,255,255,0.95)',
-    blur: 32,
+    tint: 'rgba(255,255,255,0.75)',
+    border: 'rgba(0,0,0,0.05)',
+    specular: 'rgba(255,255,255,0.98)',
+    blur: 28,
   },
 } as const;
 
