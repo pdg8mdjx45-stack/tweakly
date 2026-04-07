@@ -1,4 +1,5 @@
 import { BackButton } from '@/components/back-button';
+import { ScrollAwareHeader } from '@/components/scroll-aware-header';
 import { PriceHistoryChart } from '@/components/charts';
 import { LiquidScreen } from '@/components/liquid-screen';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -21,10 +22,13 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
+import { useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   ActivityIndicator,
   Modal,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
   Pressable,
   ScrollView,
   StatusBar,
@@ -92,6 +96,11 @@ export default function ProductScreen() {
   const [alertModalVisible, setAlertModalVisible] = useState(false);
   const [targetPrice, setTargetPrice] = useState('');
   const [existingAlert, setExistingAlert] = useState<PriceAlert | null>(null);
+
+  const scrollY = useSharedValue(0);
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    scrollY.value = e.nativeEvent.contentOffset.y;
+  };
 
   const bestImageUrl = selectedVariant?.imageUrl || tweakersInfo?.imageUrl || icecatData?.imageUrl || product?.imageUrl || '';
   const productImage = useProductImage(product?.name ?? '', bestImageUrl);
@@ -212,6 +221,12 @@ export default function ProductScreen() {
     <LiquidScreen style={styles.safe}>
       <BackButton />
       <StatusBar hidden />
+      <ScrollAwareHeader
+        title={product?.name ?? ''}
+        scrollY={scrollY}
+        insetTop={insets.top}
+        isDark={isDark}
+      />
       {/* Floating actions (bookmark) */}
       <View style={[styles.headerActions, { top: insets.top + 8 }]}>
         <Pressable onPress={() => setSaved(!saved)} hitSlop={12}>
@@ -223,9 +238,9 @@ export default function ProductScreen() {
         </Pressable>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} onScroll={handleScroll} scrollEventThrottle={16}>
         {/* Product Image */}
-        <View style={[styles.imageWrapper, { backgroundColor: isDark ? Palette.dark2 : '#F5F5F7' }]}>
+        <View style={[styles.imageWrapper, { backgroundColor: isDark ? Palette.dark2 : '#FAFAFA' }]}>
           <Image
             source={{ uri: productImage }}
             style={styles.productImage}
@@ -349,7 +364,7 @@ export default function ProductScreen() {
 
           {/* Big price */}
           <View style={styles.priceRow}>
-            <Text style={[styles.currentPrice, { color: colors.text }]}>
+            <Text style={[styles.currentPrice, { color: isDark ? colors.text : Palette.primary }]}>
               €{displayPrice.toLocaleString('nl-NL')}
             </Text>
             {displayPrice < product.originalPrice && (
@@ -376,8 +391,8 @@ export default function ProductScreen() {
                 router.push('/vergelijk');
               }}
               style={[styles.compareRoundBtn, {
-                backgroundColor: inCompare ? Palette.primary : (isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'),
-                borderColor: inCompare ? 'transparent' : (isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'),
+                backgroundColor: (inCompare || !isDark) ? Palette.primary : 'rgba(255,255,255,0.1)',
+                borderColor: (inCompare || !isDark) ? 'transparent' : 'rgba(255,255,255,0.15)',
               }]}
             >
               <Text style={{ fontSize: 18 }}>⚖</Text>
@@ -427,7 +442,7 @@ export default function ProductScreen() {
         <View style={styles.tabContent}>
           {activeTab === 'prijzen' && (
             <View style={[styles.sectionCard, styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-              <Text style={[styles.subTitle, { color: colors.textSecondary }]}>
+              <Text style={[styles.subTitle, { color: isDark ? colors.textSecondary : Palette.primary }]}>
                 {tweakersOffers.length > 0 ? 'WINKELPRIJZEN (LIVE)' : 'WINKELPRIJZEN'}
               </Text>
               {tweakersOffers.length === 0 && (
@@ -485,7 +500,7 @@ export default function ProductScreen() {
                     <View key={`${shop.name}-${index}`}>
                       <View style={styles.shopRow}>
                         {/* Shop Logo */}
-                        <View style={[styles.shopLogo, { backgroundColor: isDark ? Palette.dark3 : Palette.grey6 }]}>
+                        <View style={[styles.shopLogo, { backgroundColor: isDark ? Palette.dark3 : '#F0F0F5' }]}>
                           <Text style={[styles.shopLogoText, { color: colors.text }]}>{shop.logo}</Text>
                         </View>
 
@@ -494,7 +509,7 @@ export default function ProductScreen() {
                           <View style={styles.shopNameRow}>
                             <Text style={[styles.shopName, { color: colors.text }]}>{shop.name}</Text>
                             {linkLabel && (
-                              <View style={[styles.unverifiedBadge, { backgroundColor: isDark ? Palette.dark4 : Palette.grey5 }]}>
+                              <View style={[styles.unverifiedBadge, { backgroundColor: isDark ? Palette.dark4 : 'rgba(0,0,0,0.05)' }]}>
                                 <Text style={[styles.unverifiedText, { color: colors.textSecondary }]}>{linkLabel}</Text>
                               </View>
                             )}
@@ -507,7 +522,7 @@ export default function ProductScreen() {
                         </View>
 
                         {/* Price */}
-                        <Text style={[styles.shopPrice, { color: colors.text }]}>
+                        <Text style={[styles.shopPrice, { color: isDark ? colors.text : Palette.primary }]}>
                           €{shop.price.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </Text>
 
@@ -515,7 +530,7 @@ export default function ProductScreen() {
                         <Pressable
                           style={({ pressed }) => [
                             styles.shopButton,
-                            { backgroundColor: Palette.primary },
+                            { backgroundColor: Palette.primaryVivid },
                             pressed && { opacity: 0.85 },
                           ]}
                           onPress={() => shopUrl && shopUrl !== '#' && WebBrowser.openBrowserAsync(shopUrl, { toolbarColor: Palette.primary })}>
@@ -524,7 +539,7 @@ export default function ProductScreen() {
 
                       </View>
                       {index < arr.length - 1 && (
-                        <View style={[styles.shopSep, { backgroundColor: isDark ? Palette.dark4 : Palette.grey5 }]} />
+                        <View style={[styles.shopSep, { backgroundColor: isDark ? Palette.dark4 : 'rgba(0,0,0,0.06)' }]} />
                       )}
                     </View>
                   );
@@ -541,7 +556,7 @@ export default function ProductScreen() {
                   const q = encodeURIComponent(product.name);
                   WebBrowser.openBrowserAsync(`https://www.google.com/search?tbm=shop&q=${q}`, { toolbarColor: Palette.primary });
                 }}>
-                <Text style={[styles.googleShoppingText, { color: colors.tint }]}>
+                <Text style={[styles.googleShoppingText, { color: Palette.primaryVivid }]}>
                   Vergelijk op Google Shopping
                 </Text>
               </Pressable>
@@ -555,7 +570,7 @@ export default function ProductScreen() {
             const isIcecat = icecatData && Object.keys(icecatData.specsFlat).length > 0;
             return (
               <View style={[styles.sectionCard, styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                <Text style={[styles.subTitle, { color: colors.textSecondary }]}>SPECIFICATIES</Text>
+                <Text style={[styles.subTitle, { color: isDark ? colors.textSecondary : Palette.primary }]}>SPECIFICATIES</Text>
                 {Object.keys(displaySpecs).length === 0 ? (
                   <Text style={[styles.placeholderText, { color: colors.textSecondary }]}>
                     Geen specificaties beschikbaar
@@ -569,7 +584,7 @@ export default function ProductScreen() {
                           <Text style={[styles.specValue, { color: colors.text }]}>{value}</Text>
                         </View>
                         {index < arr.length - 1 && (
-                          <View style={[styles.specSep, { backgroundColor: isDark ? Palette.dark4 : Palette.grey5 }]} />
+                          <View style={[styles.specSep, { backgroundColor: isDark ? Palette.dark4 : 'rgba(0,0,0,0.06)' }]} />
                         )}
                       </View>
                     ))}
@@ -586,7 +601,7 @@ export default function ProductScreen() {
 
           {activeTab === 'reviews' && (
             <View style={[styles.sectionCard, styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-              <Text style={[styles.subTitle, { color: colors.textSecondary }]}>REVIEWS</Text>
+              <Text style={[styles.subTitle, { color: isDark ? colors.textSecondary : Palette.primary }]}>REVIEWS</Text>
               <View style={styles.reviewSummary}>
                 <Text style={[styles.reviewBigScore, { color: colors.text }]}>{product.rating.toFixed(1)}</Text>
                 <View>
@@ -1029,6 +1044,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: Radius.md,
     borderWidth: 1,
+    backgroundColor: 'rgba(52,199,89,0.06)',
     alignItems: 'center',
   },
   googleShoppingText: {

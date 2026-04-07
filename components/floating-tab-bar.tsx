@@ -16,6 +16,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
+import { BlurView } from 'expo-blur';
 import { IconSymbol } from './ui/icon-symbol';
 import { useColorScheme } from '../hooks/use-color-scheme';
 import { Palette } from '../constants/theme';
@@ -49,9 +50,9 @@ const PILL_TOP_RESTING = EXTRA_TOP + PILL_INSET;
 
 const ICON_SIZE = 25;
 
-const PILL_COLOR  = Palette.primaryVivid; // #34C759 solid green
+const PILL_COLOR  = Palette.primaryVivid; // #34C759 iOS green pill
 const COL_ACTIVE  = '#FFFFFF';            // white icon on green pill
-const COL_IDLE_L  = 'rgba(60,60,67,0.50)';
+const COL_IDLE_L  = 'rgba(0,0,0,0.40)';  // readable on frosted light bg
 const COL_IDLE_D  = 'rgba(255,255,255,0.45)';
 
 const SP      = { damping: 26, stiffness: 340, mass: 0.75 } as const;
@@ -262,6 +263,14 @@ export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
     })
   ).current;
 
+  const barShell = (
+    <View style={[styles.barShell, isDark && styles.barShellDark]} pointerEvents="none">
+      {Platform.OS === 'ios' && !isDark && (
+        <BlurView intensity={20} tint="light" style={StyleSheet.absoluteFill} />
+      )}
+    </View>
+  );
+
   // ── Native liquid glass (@callstack/liquid-glass) ─────────────────────────
   if (useNativeGlass) {
     return (
@@ -269,6 +278,7 @@ export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
         style={[styles.wrapper, { bottom: BOTTOM_PAD, left: SIDE_PAD, right: SIDE_PAD }]}
         pointerEvents="box-none"
       >
+        {barShell}
         {/* Pill */}
         <Animated.View style={[styles.pillShell, pillStyle]} pointerEvents="none">
           <View style={[StyleSheet.absoluteFill, { backgroundColor: PILL_COLOR, borderRadius: 999 }]} />
@@ -299,6 +309,7 @@ export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
       style={[styles.wrapper, { bottom: BOTTOM_PAD, left: SIDE_PAD, right: SIDE_PAD }]}
       pointerEvents="box-none"
     >
+      {barShell}
       <Animated.View style={[styles.pillShell, pillStyle]} pointerEvents="none">
         <View style={[StyleSheet.absoluteFill, { backgroundColor: PILL_COLOR, borderRadius: 999 }]} />
       </Animated.View>
@@ -327,6 +338,25 @@ const styles = StyleSheet.create({
   wrapper: {
     position: 'absolute',
     height:   BAR_H + EXTRA_TOP,
+  },
+
+  barShell: {
+    position: 'absolute',
+    top: EXTRA_TOP,
+    left: 0,
+    right: 0,
+    height: BAR_H,
+    borderRadius: 34,
+    backgroundColor: 'rgba(242,242,247,0.88)',
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.09,
+    shadowRadius: 24,
+    elevation: 12,
+  },
+  barShellDark: {
+    backgroundColor: 'rgba(28,28,30,0.88)',
   },
 
   // Pill

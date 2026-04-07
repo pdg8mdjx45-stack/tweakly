@@ -1,7 +1,5 @@
-import { LiquidScreen } from '@/components/liquid-screen';
-import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
-import { authErrorMessage, useAuth } from '@/hooks/use-auth';
-import { useThemeContext } from '@/hooks/use-theme-context';
+import { Palette, Spacing } from '@/constants/theme';
+import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
@@ -18,8 +16,6 @@ import {
 } from 'react-native';
 
 export default function RegistrerenScreen() {
-  const { resolvedTheme } = useThemeContext();
-  const colors = Colors[resolvedTheme];
   const { signUp } = useAuth();
   const router = useRouter();
 
@@ -60,7 +56,7 @@ export default function RegistrerenScreen() {
   }, [email, password, confirmPassword, signUp]);
 
   return (
-    <LiquidScreen style={styles.root}>
+    <View style={styles.root}>
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -73,45 +69,47 @@ export default function RegistrerenScreen() {
         {/* Header */}
         <View style={styles.header}>
           <Pressable onPress={() => router.back()} hitSlop={12} style={styles.backBtn}>
-            <Text style={[styles.backArrow, { color: colors.text }]}>‹</Text>
+            <Text style={styles.backArrow}>‹</Text>
           </Pressable>
-          <Image source={require('@/assets/images/logo-display.png')} style={styles.logoImg} resizeMode="contain" />
-          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-            Maak een nieuw account aan
-          </Text>
+          <Image
+            source={require('@/assets/images/logo-display.png')}
+            style={styles.logoImg}
+            resizeMode="contain"
+            tintColor={Palette.primary}
+          />
+          <Text style={styles.title}>Account aanmaken</Text>
+          <Text style={styles.subtitle}>Maak een nieuw account aan</Text>
         </View>
 
         {/* Form */}
         <View style={styles.form}>
           {/* Email */}
           <View style={styles.fieldGroup}>
-            <Text style={[styles.label, { color: colors.textSecondary }]}>E-MAILADRES</Text>
-            <Pressable style={[styles.inputWrap, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-              <TextInput
-                style={[styles.input, { color: colors.text }]}
-                value={email}
-                onChangeText={setEmail}
-                placeholder="jouw@email.nl"
-                placeholderTextColor={colors.textSecondary}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoComplete="email"
-                returnKeyType="next"
-              />
-            </Pressable>
+            <Text style={styles.label}>E-MAILADRES</Text>
+            <TextInput
+              style={styles.input}
+              value={email}
+              onChangeText={setEmail}
+              placeholder="jouw@email.nl"
+              placeholderTextColor="#8E8E93"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="email"
+              returnKeyType="next"
+            />
           </View>
 
           {/* Wachtwoord */}
           <View style={styles.fieldGroup}>
-            <Text style={[styles.label, { color: colors.textSecondary }]}>WACHTWOORD</Text>
-            <Pressable style={[styles.inputWrap, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Text style={styles.label}>WACHTWOORD</Text>
+            <View style={styles.inputRow}>
               <TextInput
-                style={[styles.input, styles.inputFlex, { color: colors.text }]}
+                style={[styles.input, styles.inputFlex]}
                 value={password}
                 onChangeText={setPassword}
                 placeholder="Minimaal 6 tekens"
-                placeholderTextColor={colors.textSecondary}
+                placeholderTextColor="#8E8E93"
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -119,23 +117,21 @@ export default function RegistrerenScreen() {
                 returnKeyType="next"
               />
               <Pressable onPress={() => setShowPassword((v) => !v)} hitSlop={8} style={styles.eyeBtn}>
-                <Text style={[styles.eyeText, { color: colors.textSecondary }]}>
-                  {showPassword ? 'Verberg' : 'Toon'}
-                </Text>
+                <Text style={styles.eyeText}>{showPassword ? 'Verberg' : 'Toon'}</Text>
               </Pressable>
-            </Pressable>
+            </View>
           </View>
 
           {/* Wachtwoord bevestigen */}
           <View style={styles.fieldGroup}>
-            <Text style={[styles.label, { color: colors.textSecondary }]}>WACHTWOORD BEVESTIGEN</Text>
-            <Pressable style={[styles.inputWrap, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Text style={styles.label}>WACHTWOORD BEVESTIGEN</Text>
+            <View style={styles.inputRow}>
               <TextInput
-                style={[styles.input, styles.inputFlex, { color: colors.text }]}
+                style={[styles.input, styles.inputFlex]}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 placeholder="Herhaal je wachtwoord"
-                placeholderTextColor={colors.textSecondary}
+                placeholderTextColor="#8E8E93"
                 secureTextEntry={!showConfirmPassword}
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -144,29 +140,21 @@ export default function RegistrerenScreen() {
                 onSubmitEditing={handleRegister}
               />
               <Pressable onPress={() => setShowConfirmPassword((v) => !v)} hitSlop={8} style={styles.eyeBtn}>
-                <Text style={[styles.eyeText, { color: colors.textSecondary }]}>
-                  {showConfirmPassword ? 'Verberg' : 'Toon'}
-                </Text>
+                <Text style={styles.eyeText}>{showConfirmPassword ? 'Verberg' : 'Toon'}</Text>
               </Pressable>
-            </Pressable>
+            </View>
           </View>
 
           {/* Foutmelding */}
           {error ? (
-            <View style={[styles.errorBox, { backgroundColor: Palette.danger + '18' }]}>
-              <Text style={[styles.errorText, { color: Palette.danger }]}>{error}</Text>
-            </View>
+            <Text style={styles.errorText}>{error}</Text>
           ) : null}
 
           {/* Registreer knop */}
           <Pressable
             onPress={handleRegister}
             disabled={loading}
-            style={({ pressed }) => [
-              styles.primaryBtn,
-              { backgroundColor: Palette.primary },
-              pressed && styles.pressed,
-            ]}
+            style={({ pressed }) => [styles.primaryBtn, pressed && styles.pressed]}
           >
             {loading ? (
               <ActivityIndicator color="#fff" />
@@ -175,7 +163,7 @@ export default function RegistrerenScreen() {
             )}
           </Pressable>
 
-          <Text style={[styles.disclaimer, { color: colors.textSecondary }]}>
+          <Text style={styles.disclaimer}>
             Na registratie ontvang je een verificatiemail. Klik op de link om je account te
             activeren.
           </Text>
@@ -183,29 +171,23 @@ export default function RegistrerenScreen() {
 
         {/* Inloggen */}
         <View style={styles.footer}>
-          <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-          <Text style={[styles.footerText, { color: colors.textSecondary }]}>
-            Al een account?
-          </Text>
+          <View style={styles.dividerLine} />
+          <Text style={styles.footerText}>Al een account?</Text>
           <Pressable
             onPress={() => router.replace('/(auth)/inloggen')}
-            style={({ pressed }) => [
-              styles.secondaryBtn,
-              { borderColor: Palette.primary },
-              pressed && styles.pressed,
-            ]}
+            style={({ pressed }) => [styles.secondaryBtn, pressed && styles.pressed]}
           >
-            <Text style={[styles.secondaryBtnText, { color: Palette.primary }]}>Inloggen</Text>
+            <Text style={styles.secondaryBtnText}>Inloggen</Text>
           </Pressable>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
-    </LiquidScreen>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1 },
+  root: { flex: 1, backgroundColor: '#FFFFFF' },
   scroll: {
     flexGrow: 1,
     paddingHorizontal: Spacing.md,
@@ -216,65 +198,63 @@ const styles = StyleSheet.create({
 
   header: { alignItems: 'center', gap: Spacing.sm },
   backBtn: { position: 'absolute', left: 0, top: 30, zIndex: 10 },
-  backArrow: { fontSize: 32, fontWeight: '300' },
+  backArrow: { fontSize: 32, fontWeight: '300', color: '#1C1C1E' },
   logoImg: { width: 80, height: 80 },
-  subtitle: { fontSize: 16 },
+  title: { fontSize: 26, fontWeight: '800', color: '#1C1C1E', letterSpacing: -0.5 },
+  subtitle: { fontSize: 16, color: '#8E8E93' },
 
   form: { gap: Spacing.md },
   fieldGroup: { gap: Spacing.xs },
-  label: { fontSize: 12, fontWeight: '600', letterSpacing: 0.5, paddingHorizontal: 4 },
-  inputWrap: {
+  label: { fontSize: 12, fontWeight: '600', letterSpacing: 0.5, paddingHorizontal: 4, color: '#8E8E93' },
+  inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: Radius.md,
-    borderWidth: 1,
-    overflow: 'hidden',
+    backgroundColor: '#F2F2F7',
+    borderRadius: 14,
   },
-  input: { paddingHorizontal: Spacing.md, paddingVertical: 14, fontSize: 16 },
-  inputFlex: { flex: 1 },
+  input: {
+    backgroundColor: '#F2F2F7',
+    borderRadius: 14,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 14,
+    fontSize: 16,
+    color: '#1C1C1E',
+  },
+  inputFlex: { flex: 1, backgroundColor: 'transparent' },
   eyeBtn: { paddingHorizontal: Spacing.md },
-  eyeText: { fontSize: 13, fontWeight: '500' },
+  eyeText: { fontSize: 13, fontWeight: '500', color: '#8E8E93' },
 
-  errorBox: { borderRadius: Radius.sm, padding: Spacing.sm + 2 },
-  errorText: { fontSize: 14, textAlign: 'center' },
+  errorText: { fontSize: 14, textAlign: 'center', color: '#FF3B30' },
 
   primaryBtn: {
-    borderRadius: Radius.md,
+    borderRadius: 999,
     paddingVertical: 16,
     alignItems: 'center',
     marginTop: Spacing.xs,
+    backgroundColor: Palette.primaryVivid,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.10,
+    shadowRadius: 12,
+    elevation: 4,
   },
   primaryBtnText: { color: '#fff', fontSize: 16, fontWeight: '600' },
 
-  googleBtn: {
-    borderRadius: Radius.md,
-    borderWidth: 1,
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  googleContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  googleIcon: {
-    fontSize: 20,
-  },
-  googleBtnText: { fontSize: 16, fontWeight: '500' },
-
   pressed: { opacity: 0.75 },
 
-  disclaimer: { fontSize: 12, textAlign: 'center', lineHeight: 18 },
+  disclaimer: { fontSize: 12, textAlign: 'center', lineHeight: 18, color: '#8E8E93' },
 
   footer: { gap: Spacing.md, alignItems: 'center' },
-  dividerLine: { width: '100%', height: StyleSheet.hairlineWidth },
-  footerText: { fontSize: 14 },
+  dividerLine: { width: '100%', height: StyleSheet.hairlineWidth, backgroundColor: 'rgba(0,0,0,0.08)' },
+  footerText: { fontSize: 14, color: '#8E8E93' },
   secondaryBtn: {
     width: '100%',
-    borderRadius: Radius.md,
+    borderRadius: 999,
     borderWidth: 1.5,
+    borderColor: Palette.primary,
+    backgroundColor: '#FFFFFF',
     paddingVertical: 14,
     alignItems: 'center',
   },
-  secondaryBtnText: { fontSize: 16, fontWeight: '600' },
+  secondaryBtnText: { fontSize: 16, fontWeight: '600', color: Palette.primary },
 });

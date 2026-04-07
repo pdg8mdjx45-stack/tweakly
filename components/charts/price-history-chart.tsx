@@ -16,8 +16,7 @@ interface PriceHistoryChartProps {
 }
 
 const screenWidth = Dimensions.get('window').width;
-// Full container width for centered chart
-const chartWidth = (screenWidth - Spacing.md * 2) * 0.85;
+const chartWidth = screenWidth - Spacing.md * 2; // full width minus 32pt margins
 
 export function PriceHistoryChart({
   data,
@@ -78,12 +77,8 @@ export function PriceHistoryChart({
     backgroundGradientFrom: 'transparent',
     backgroundGradientTo: 'transparent',
     decimalPlaces: 0,
-    color: (opacity = 1) => isDark 
-      ? `rgba(255, 255, 255, ${opacity})` 
-      : `rgba(0, 0, 0, ${opacity})`,
-    labelColor: (opacity = 1) => isDark 
-      ? `rgba(255, 255, 255, ${opacity})` 
-      : `rgba(0, 0, 0, ${opacity})`,
+    color: (opacity = 1) => `rgba(52,199,89,${opacity})`,
+    labelColor: (opacity = 1) => `rgba(142,142,147,${opacity})`,
     style: {
       borderRadius: Radius.md,
     },
@@ -96,8 +91,9 @@ export function PriceHistoryChart({
       stroke: isDark ? '#38383A' : '#E5E5EA',
       strokeWidth: 1,
     },
-    // Add padding to show Y-axis labels outside the chart area
-    paddingLeft: 50,
+    fillShadowGradient: Palette.primaryVivid,
+    fillShadowGradientOpacity: 0.18,
+    paddingLeft: 40,
     paddingBottom: 20,
   };
 
@@ -156,8 +152,8 @@ export function PriceHistoryChart({
     datasets: [
       {
         data: sampledData.prices,
-        color: (opacity = 1) => Palette.primary,
-        strokeWidth: 2,
+        color: (opacity = 1) => Palette.primaryVivid,
+        strokeWidth: 2.5,
       },
     ],
   };
@@ -241,7 +237,7 @@ export function PriceHistoryChart({
         <LineChart
           data={chartData}
           width={chartWidth}
-          height={180}
+          height={220}
           chartConfig={chartConfig}
           bezier
           style={styles.chart}
@@ -400,7 +396,9 @@ const styles = StyleSheet.create({
   },
   chartContainer: {
     marginVertical: Spacing.sm,
-    alignSelf: 'flex-end',
+    alignSelf: 'stretch',
+    overflow: 'hidden',
+    borderRadius: Radius.md,
   },
   chart: {
     marginVertical: 8,
