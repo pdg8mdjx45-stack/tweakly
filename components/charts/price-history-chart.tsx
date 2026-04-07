@@ -1,4 +1,5 @@
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
+import { GlassCard } from '@/components/glass-card';
 import { useState } from 'react';
 import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
@@ -28,12 +29,12 @@ export function PriceHistoryChart({
   // Guard against empty data to prevent Infinity/NaN in SVG paths
   if (!data || data.length === 0) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.surface }]}>
+      <GlassCard radius={Radius.xl} style={styles.container}>
         <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
         <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
           Geen prijsgegevens beschikbaar
         </Text>
-      </View>
+      </GlassCard>
     );
   }
 
@@ -41,12 +42,12 @@ export function PriceHistoryChart({
   const validData = data.filter((d) => Number.isFinite(d.price) && d.price >= 0);
   if (validData.length === 0) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.surface }]}>
+      <GlassCard radius={Radius.xl} style={styles.container}>
         <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
         <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
           Geen geldige prijsgegevens beschikbaar
         </Text>
-      </View>
+      </GlassCard>
     );
   }
 
@@ -73,9 +74,9 @@ export function PriceHistoryChart({
   const yMax = Math.ceil(maxPrice + pricePadding);
 
   const chartConfig = {
-    backgroundColor: colors.surface,
-    backgroundGradientFrom: colors.surface,
-    backgroundGradientTo: colors.surface,
+    backgroundColor: 'transparent',
+    backgroundGradientFrom: 'transparent',
+    backgroundGradientTo: 'transparent',
     decimalPlaces: 0,
     color: (opacity = 1) => isDark 
       ? `rgba(255, 255, 255, ${opacity})` 
@@ -177,7 +178,7 @@ export function PriceHistoryChart({
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.surface }]}>
+    <GlassCard radius={Radius.xl} style={styles.container}>
       {/* Header with title */}
       <View style={styles.header}>
         <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
@@ -320,13 +321,12 @@ export function PriceHistoryChart({
           })}
         </View>
       </View>
-    </View>
+    </GlassCard>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: Radius.md,
     padding: Spacing.md,
     marginVertical: Spacing.sm,
   },

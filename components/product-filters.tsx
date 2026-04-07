@@ -6,6 +6,7 @@
 
 import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { GlassCard } from '@/components/glass-card';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import {
   BADGE_FILTERS,
@@ -195,16 +196,18 @@ function CategoryDropdown({
       </Text>
       
       {/* Dropdown Button */}
-      <Pressable
-        style={[styles.dropdownButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
-        onPress={() => setModalVisible(true)}
-      >
-        <IconSymbol name={selectedOption.icon} size={20} color={Palette.primary} />
-        <Text style={[styles.dropdownText, { color: colors.text }]}>
-          {selectedOption.name}
-        </Text>
-        <IconSymbol name="chevron.down" size={14} color={colors.textSecondary} />
-      </Pressable>
+      <GlassCard radius={Radius.md} style={styles.dropdownButtonGlass}>
+        <Pressable
+          style={styles.dropdownButton}
+          onPress={() => setModalVisible(true)}
+        >
+          <IconSymbol name={selectedOption.icon} size={20} color={Palette.primary} />
+          <Text style={[styles.dropdownText, { color: colors.text }]}>
+            {selectedOption.name}
+          </Text>
+          <IconSymbol name="chevron.down" size={14} color={colors.textSecondary} />
+        </Pressable>
+      </GlassCard>
 
       {/* Modal Picker */}
       <Modal
@@ -467,8 +470,9 @@ export function ProductFilters({
 
       {/* Expandable filter panel with confirm button - NOW SCROLLABLE */}
       {expanded && (
-        <ScrollView 
-          style={[styles.filterPanel, { backgroundColor: colors.surface }]}
+        <GlassCard radius={Radius.lg} style={styles.filterPanel}>
+        <ScrollView
+          style={styles.filterPanelScroll}
           contentContainerStyle={styles.filterPanelContent}
           showsVerticalScrollIndicator={true}
           nestedScrollEnabled={true}
@@ -549,6 +553,7 @@ export function ProductFilters({
             </Pressable>
           </View>
         </ScrollView>
+        </GlassCard>
       )}
     </View>
   );
@@ -609,6 +614,9 @@ const styles = StyleSheet.create({
     maxHeight: 400,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: 'rgba(128,128,128,0.15)',
+  },
+  filterPanelScroll: {
+    maxHeight: 400,
   },
   filterPanelContent: {
     paddingBottom: Spacing.md,
@@ -700,13 +708,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     marginBottom: Spacing.sm,
   },
+  dropdownButtonGlass: {
+    // GlassCard wrapper — handles background, border, and radius
+  },
   dropdownButton: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm + 2,
-    borderRadius: Radius.md,
-    borderWidth: 1,
     gap: Spacing.sm,
   },
   dropdownText: {
