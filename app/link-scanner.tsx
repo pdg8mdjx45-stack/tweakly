@@ -5,14 +5,14 @@
  */
 
 import { LiquidScreen } from '@/components/liquid-screen';
+import { BackButton } from '@/components/back-button';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { getShopBySlug } from '@/constants/affiliate-shops';
-import { Colors, Palette, Radius, Spacing } from '@/constants/theme';
+import { Palette, Radius, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useReduceMotion } from '@/hooks/use-reduce-motion';
 import { addAlert } from '@/services/alerts-store';
 import { addPricePoint, upsertScannedProduct } from '@/services/scanned-products';
-import { fetchProductMeta, parseShopUrl } from '@/services/url-parser';
+import { supabase } from '@/services/supabase';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import Animated, {
@@ -32,6 +32,56 @@ import {
   View,
 } from 'react-native';
 
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? 'https://glnpdfbnyijdzvulzbfv.supabase.co';
+
+interface ScraperPromoCode {
+  code: string;
+  discount: string;
+  expiresAt: string | null;
+  source: 'page' | 'aggregator';
+}
+
+interface ScraperShopLink {
+  name: string;
+  price: number | null;
+  url: string;
+}
+
+interface ScraperResponse {
+  affiliateUrl: string;
+  name: string;
+  brand: string | null;
+  imageUrl: string | null;
+  price: number | null;
+  shopDisplayName: string;
+  shopSlug: string;
+  promoCodes: ScraperPromoCode[];
+  category: string | null;
+  specs: Record<string, string> | null;
+  shopLinks: ScraperShopLink[];
+}
+
+async function callScraper(productUrl: string): Promise<ScraperResponse> {
+  const { data: { session } } = await supabase.auth.getSession();
+  const jwt = session?.access_token;
+
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/scan-product`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(jwt ? { Authorization: `Bearer ${jwt}` } : {}),
+    },
+    body: JSON.stringify({ url: productUrl }),
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw Object.assign(new Error(body.error ?? 'scraper_error'), { status: res.status, scraperError: body.error });
+  }
+
+  return res.json() as Promise<ScraperResponse>;
+}
+
 type ScanResult = {
   name: string;
   brand: string | null;
@@ -40,14 +90,19 @@ type ScanResult = {
   affiliateUrl: string;
   shopDisplayName: string;
   priceHistory: { date: string; price: number }[];
+  promoCodes: ScraperPromoCode[];
+  category: string | null;
+  specs: Record<string, string> | null;
+  shopLinks: ScraperShopLink[];
 };
 
-type ScanError = 'invalid_url' | 'product_not_found' | 'network_error';
+type ScanError = 'invalid_url' | 'product_not_found' | 'network_error' | 'blocked_content';
 
 const ERROR_MESSAGES: Record<ScanError, string> = {
   invalid_url: 'We herkennen deze link niet. Probeer een link van Bol.com, Amazon, Coolblue of een andere winkel.',
   product_not_found: 'Product niet gevonden. Controleer de link en probeer opnieuw.',
   network_error: 'Geen verbinding. Controleer je internet en probeer opnieuw.',
+  blocked_content: 'Dit product kan niet worden toegevoegd aan Tweakly.',
 };
 
 function MiniChart({ data, isDark }: { data: { date: string; price: number }[]; isDark: boolean }) {
@@ -89,7 +144,6 @@ function MiniChart({ data, isDark }: { data: { date: string; price: number }[]; 
 
 export default function LinkScannerScreen() {
   const colorScheme = useColorScheme() ?? 'light';
-  const colors = Colors[colorScheme];
   const isDark = colorScheme === 'dark';
   const router = useRouter();
   const { animationsEnabled } = useReduceMotion();
@@ -126,39 +180,44 @@ export default function LinkScannerScreen() {
     setScanned(false);
 
     try {
-      const parsed = parseShopUrl(url.trim());
-      if (!parsed) {
-        setScanError('invalid_url');
+      let data: ScraperResponse;
+      try {
+        data = await callScraper(url.trim());
+      } catch (err: unknown) {
+        const e = err as { scraperError?: string; status?: number };
+        if (e?.scraperError === 'invalid_url') {
+          setScanError('invalid_url');
+        } else if (e?.scraperError === 'product_not_found') {
+          setScanError('product_not_found');
+        } else if (e?.scraperError === 'blocked_content' || e?.status === 403) {
+          setScanError('blocked_content');
+        } else {
+          setScanError('network_error');
+        }
         setScanning(false);
         return;
       }
 
-      const meta = await fetchProductMeta(url.trim());
-
-      const name = meta.name || parsed.productName;
-      if (!name) {
+      if (!data.name) {
         setScanError('product_not_found');
         setScanning(false);
         return;
       }
 
-      const shop = getShopBySlug(parsed.shopSlug);
-      let affiliateUrl = parsed.canonicalUrl;
-      if (shop && shop.affiliate.active) {
-        affiliateUrl = shop.affiliate.buildAffiliateUrl(parsed.canonicalUrl, parsed.productId || undefined);
-      }
-
-      const price = meta.price ?? 0;
-      const shopProductId = parsed.productId || parsed.productName.toLowerCase().replace(/\s+/g, '-').slice(0, 60) || Date.now().toString();
+      const price = data.price ?? 0;
+      const shopProductId =
+        data.affiliateUrl.split('/').pop()?.slice(0, 60) ||
+        data.name.toLowerCase().replace(/\s+/g, '-').slice(0, 60) ||
+        Date.now().toString();
 
       const saved = await upsertScannedProduct({
-        shop_slug: parsed.shopSlug,
+        shop_slug: data.shopSlug,
         shop_product_id: shopProductId,
-        name,
-        brand: meta.brand,
-        image_url: meta.imageUrl,
+        name: data.name,
+        brand: data.brand,
+        image_url: data.imageUrl,
         current_price: price,
-        affiliate_url: affiliateUrl,
+        affiliate_url: data.affiliateUrl,
         original_url: url.trim(),
       });
 
@@ -168,13 +227,17 @@ export default function LinkScannerScreen() {
       }
 
       setResult({
-        name,
-        brand: meta.brand,
-        imageUrl: meta.imageUrl,
+        name: data.name,
+        brand: data.brand,
+        imageUrl: data.imageUrl,
         currentPrice: price,
-        affiliateUrl,
-        shopDisplayName: shop?.displayName ?? parsed.shopDisplayName,
+        affiliateUrl: data.affiliateUrl,
+        shopDisplayName: data.shopDisplayName,
         priceHistory: saved ? [{ date: 'Vandaag', price }] : [],
+        promoCodes: data.promoCodes,
+        category: data.category ?? null,
+        specs: data.specs ?? null,
+        shopLinks: data.shopLinks ?? [],
       });
       setScanned(true);
     } catch {
@@ -204,24 +267,21 @@ export default function LinkScannerScreen() {
         style={styles.header}
         entering={animationsEnabled ? FadeInDown.springify().damping(20).stiffness(130) : undefined}
       >
-        <Pressable onPress={() => router.back()} hitSlop={12} style={styles.backBtn}>
-          <IconSymbol name="chevron.left" size={20} color={colors.tint} />
-          <Text style={[styles.backText, { color: colors.tint }]}>Terug</Text>
-        </Pressable>
-        <Text style={[styles.pageTitle, { color: colors.text }]}>Link Scanner</Text>
+        <BackButton inline />
+        <Text style={[styles.pageTitle, { color: '#1C1C1E' }]}>Link Scanner</Text>
       </Animated.View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
 
         {/* URL Input */}
         <Animated.View entering={animationsEnabled ? FadeInDown.delay(60).springify().damping(18).stiffness(110) : undefined}>
-          <View style={[styles.inputCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View style={[styles.inputCard, { backgroundColor: '#F2F2F7', borderColor: 'rgba(0,0,0,0.08)' }]}>
             <View style={styles.inputRow}>
-              <IconSymbol name="link" size={18} color={colors.textSecondary} />
+              <IconSymbol name="link" size={18} color="rgba(0,0,0,0.4)" />
               <TextInput
-                style={[styles.input, { color: colors.text }]}
+                style={[styles.input, { color: '#1C1C1E' }]}
                 placeholder="Plak productlink hier..."
-                placeholderTextColor={colors.textSecondary}
+                placeholderTextColor="rgba(0,0,0,0.35)"
                 value={url}
                 onChangeText={setUrl}
                 autoCapitalize="none"
@@ -230,7 +290,7 @@ export default function LinkScannerScreen() {
               />
               {url.length > 0 && (
                 <Pressable onPress={handleReset} hitSlop={8}>
-                  <IconSymbol name="xmark.circle.fill" size={18} color={colors.textSecondary} />
+                  <IconSymbol name="xmark.circle.fill" size={18} color="rgba(0,0,0,0.4)" />
                 </Pressable>
               )}
             </View>
@@ -250,8 +310,8 @@ export default function LinkScannerScreen() {
         {!scanned && !scanning && !scanError && (
           <Animated.View entering={animationsEnabled ? FadeInDown.delay(120).springify().damping(18).stiffness(110) : undefined}>
             <View style={styles.hintCard}>
-              <IconSymbol name="info.circle" size={16} color={colors.textSecondary} />
-              <Text style={[styles.hintText, { color: colors.textSecondary }]}>
+              <IconSymbol name="info.circle" size={16} color="rgba(0,0,0,0.4)" />
+              <Text style={[styles.hintText, { color: 'rgba(0,0,0,0.5)' }]}>
                 Plak een productlink van Bol, Coolblue, MediaMarkt of een andere winkel. Tweakly toont automatisch kortingscodes, prijshistorie en de beste aanbieding.
               </Text>
             </View>
@@ -261,14 +321,14 @@ export default function LinkScannerScreen() {
         {/* Scanning indicator */}
         {scanning && (
           <Animated.View entering={animationsEnabled ? FadeInDown.delay(0).springify().damping(18).stiffness(110) : undefined}>
-            <View style={[styles.scanningCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <View style={[styles.scanningCard, { backgroundColor: '#F2F2F7', borderColor: 'rgba(0,0,0,0.08)' }]}>
               <View style={styles.scanningRow}>
                 <View style={styles.scanningDots}>
                   <View style={[styles.dot, { backgroundColor: Palette.primary }]} />
                   <View style={[styles.dot, { backgroundColor: Palette.primary, opacity: 0.6 }]} />
                   <View style={[styles.dot, { backgroundColor: Palette.primary, opacity: 0.3 }]} />
                 </View>
-                <Text style={[styles.scanningText, { color: colors.textSecondary }]}>
+                <Text style={[styles.scanningText, { color: 'rgba(0,0,0,0.5)' }]}>
                   Product detecteren...
                 </Text>
               </View>
@@ -279,16 +339,16 @@ export default function LinkScannerScreen() {
         {/* Error state */}
         {scanError && (
           <Animated.View entering={animationsEnabled ? FadeInDown.delay(0).springify().damping(18).stiffness(110) : undefined}>
-            <View style={[styles.errorCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <View style={[styles.errorCard, { backgroundColor: '#F2F2F7', borderColor: 'rgba(0,0,0,0.08)' }]}>
               <IconSymbol name="exclamationmark.triangle" size={24} color="#FF3B30" />
-              <Text style={[styles.errorText, { color: colors.text }]}>
+              <Text style={[styles.errorText, { color: '#1C1C1E' }]}>
                 {ERROR_MESSAGES[scanError]}
               </Text>
               <Pressable
-                style={[styles.retryBtn, { backgroundColor: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.07)' }]}
+                style={[styles.retryBtn, { backgroundColor: 'rgba(0,0,0,0.06)' }]}
                 onPress={handleReset}
               >
-                <Text style={[styles.retryText, { color: colors.tint }]}>Opnieuw proberen</Text>
+                <Text style={[styles.retryText, { color: Palette.primary }]}>Opnieuw proberen</Text>
               </Pressable>
             </View>
           </Animated.View>
@@ -299,21 +359,21 @@ export default function LinkScannerScreen() {
           <>
             {/* Product Card */}
             <Animated.View entering={animationsEnabled ? FadeInDown.delay(0).springify().damping(18).stiffness(110) : undefined}>
-              <View style={[styles.productCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <View style={[styles.productCard, { backgroundColor: '#FFFFFF', borderColor: 'rgba(0,0,0,0.10)' }]}>
                 <View style={styles.productHeader}>
-                  <View style={[styles.productImagePlaceholder, { backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }]}>
-                    <IconSymbol name={result.imageUrl ? 'photo' : 'cart'} size={36} color={colors.textSecondary} />
+                  <View style={[styles.productImagePlaceholder, { backgroundColor: 'rgba(0,0,0,0.05)' }]}>
+                    <IconSymbol name={result.imageUrl ? 'photo' : 'cart'} size={36} color="rgba(0,0,0,0.35)" />
                   </View>
                   <View style={styles.productInfo}>
                     {result.brand && (
-                      <Text style={[styles.productBrand, { color: colors.textSecondary }]}>{result.brand}</Text>
+                      <Text style={[styles.productBrand, { color: 'rgba(0,0,0,0.5)' }]}>{result.brand}</Text>
                     )}
-                    <Text style={[styles.productName, { color: colors.text }]} numberOfLines={3}>{result.name}</Text>
+                    <Text style={[styles.productName, { color: '#1C1C1E' }]} numberOfLines={3}>{result.name}</Text>
                     <View style={styles.priceRow}>
                       {result.currentPrice > 0 ? (
-                        <Text style={[styles.productPrice, { color: colors.text }]}>€{result.currentPrice.toFixed(2)}</Text>
+                        <Text style={[styles.productPrice, { color: '#1C1C1E' }]}>€{result.currentPrice.toFixed(2)}</Text>
                       ) : (
-                        <Text style={[styles.productPrice, { color: colors.textSecondary }]}>Prijs onbekend</Text>
+                        <Text style={[styles.productPrice, { color: 'rgba(0,0,0,0.4)' }]}>Prijs onbekend</Text>
                       )}
                     </View>
                   </View>
@@ -324,19 +384,19 @@ export default function LinkScannerScreen() {
             {/* Price History */}
             {result.priceHistory.length > 0 && (
               <Animated.View entering={animationsEnabled ? FadeInDown.delay(60).springify().damping(18).stiffness(110) : undefined}>
-                <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>PRIJSHISTORIE</Text>
-                <View style={[styles.chartCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <Text style={[styles.sectionLabel, { color: 'rgba(0,0,0,0.45)' }]}>PRIJSHISTORIE</Text>
+                <View style={[styles.chartCard, { backgroundColor: '#FFFFFF', borderColor: 'rgba(0,0,0,0.10)' }]}>
                   <View style={styles.chartHeader}>
                     <Text style={[styles.chartLow, { color: Palette.accent }]}>
                       Laagste: €{Math.min(...result.priceHistory.map(p => p.price)).toFixed(2)}
                     </Text>
-                    <Text style={[styles.chartHigh, { color: colors.textSecondary }]}>
+                    <Text style={[styles.chartHigh, { color: 'rgba(0,0,0,0.45)' }]}>
                       Hoogste: €{Math.max(...result.priceHistory.map(p => p.price)).toFixed(2)}
                     </Text>
                   </View>
                   <MiniChart data={result.priceHistory} isDark={isDark} />
                   {result.priceHistory.length === 1 && (
-                    <Text style={[styles.chartNote, { color: colors.textSecondary }]}>
+                    <Text style={[styles.chartNote, { color: 'rgba(0,0,0,0.45)' }]}>
                       Eerste meting — scan opnieuw om geschiedenis op te bouwen.
                     </Text>
                   )}
@@ -346,37 +406,37 @@ export default function LinkScannerScreen() {
 
             {/* Price Alert */}
             <Animated.View entering={animationsEnabled ? FadeInDown.delay(120).springify().damping(18).stiffness(110) : undefined}>
-              <View style={[styles.alertRow, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <View style={[styles.alertRow, { backgroundColor: '#FFFFFF', borderColor: 'rgba(0,0,0,0.10)' }]}>
                 <View style={[styles.alertIconBox, { backgroundColor: '#FF9500' + '20' }]}>
                   <IconSymbol name="bell.badge.fill" size={20} color="#FF9500" />
                 </View>
                 <View style={styles.alertInfo}>
-                  <Text style={[styles.alertTitle, { color: colors.text }]}>Prijsalert instellen</Text>
+                  <Text style={[styles.alertTitle, { color: '#1C1C1E' }]}>Prijsalert instellen</Text>
                   {alertSaved ? (
                     <Text style={[styles.alertSub, { color: Palette.accent }]}>Alert opgeslagen!</Text>
                   ) : (
-                    <Text style={[styles.alertSub, { color: colors.textSecondary }]}>Ontvang een melding als de prijs daalt</Text>
+                    <Text style={[styles.alertSub, { color: 'rgba(0,0,0,0.45)' }]}>Ontvang een melding als de prijs daalt</Text>
                   )}
                 </View>
                 {!alertSaved && (
                   <Pressable
                     onPress={() => setShowAlertInput(v => !v)}
-                    style={[styles.alertToggle, { backgroundColor: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.07)' }]}
+                    style={[styles.alertToggle, { backgroundColor: 'rgba(0,0,0,0.06)' }]}
                   >
-                    <Text style={[styles.alertToggleText, { color: colors.tint }]}>
+                    <Text style={[styles.alertToggleText, { color: Palette.primary }]}>
                       {showAlertInput ? 'Annuleer' : 'Instellen'}
                     </Text>
                   </Pressable>
                 )}
               </View>
               {showAlertInput && !alertSaved && (
-                <View style={[styles.alertInputCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                  <Text style={[styles.alertInputLabel, { color: colors.textSecondary }]}>Doelprijs (€)</Text>
+                <View style={[styles.alertInputCard, { backgroundColor: '#F2F2F7', borderColor: 'rgba(0,0,0,0.08)' }]}>
+                  <Text style={[styles.alertInputLabel, { color: 'rgba(0,0,0,0.5)' }]}>Doelprijs (€)</Text>
                   <View style={styles.alertInputRow}>
                     <TextInput
-                      style={[styles.alertInput, { color: colors.text, borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)' }]}
+                      style={[styles.alertInput, { color: '#1C1C1E', borderColor: 'rgba(0,0,0,0.12)', backgroundColor: '#F2F2F7' }]}
                       placeholder={result.currentPrice > 0 ? `bijv. ${(result.currentPrice * 0.9).toFixed(0)}` : 'bijv. 150'}
-                      placeholderTextColor={colors.textSecondary}
+                      placeholderTextColor="rgba(0,0,0,0.35)"
                       value={alertPrice}
                       onChangeText={setAlertPrice}
                       keyboardType="decimal-pad"
@@ -391,6 +451,90 @@ export default function LinkScannerScreen() {
                   </View>
                 </View>
               )}
+            </Animated.View>
+
+            {/* Promo Codes */}
+            {result.promoCodes.length > 0 && (
+              <Animated.View entering={animationsEnabled ? FadeInDown.delay(150).springify().damping(18).stiffness(110) : undefined}>
+                <Text style={[styles.sectionLabel, { color: 'rgba(0,0,0,0.45)' }]}>KORTINGSCODES</Text>
+                <View style={[styles.promoCard, { backgroundColor: '#FFFFFF', borderColor: 'rgba(0,0,0,0.10)', borderWidth: StyleSheet.hairlineWidth, borderRadius: Radius.xl, overflow: 'hidden' }]}>
+                  {result.promoCodes.map((promo, i) => (
+                    <View key={promo.code}>
+                      {i > 0 && <View style={[styles.promoSep, { backgroundColor: 'rgba(0,0,0,0.06)' }]} />}
+                      <View style={styles.promoRow}>
+                        <View style={[styles.promoCodeBox, { backgroundColor: Palette.primary + '18' }]}>
+                          <Text style={[styles.promoCode, { color: Palette.primary }]}>{promo.code}</Text>
+                        </View>
+                        <View style={styles.promoInfo}>
+                          <Text style={[styles.promoDiscount, { color: '#1C1C1E' }]} numberOfLines={1}>{promo.discount}</Text>
+                          {promo.expiresAt && (
+                            <Text style={[styles.promoExpiry, { color: 'rgba(0,0,0,0.4)' }]}>Geldig t/m {promo.expiresAt}</Text>
+                          )}
+                        </View>
+                        <IconSymbol
+                          name={promo.source === 'page' ? 'checkmark.seal.fill' : 'tag.fill'}
+                          size={16}
+                          color={promo.source === 'page' ? Palette.accent : 'rgba(0,0,0,0.3)'}
+                        />
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              </Animated.View>
+            )}
+
+            {/* Specs */}
+            <Animated.View entering={animationsEnabled ? FadeInDown.delay(160).springify().damping(18).stiffness(110) : undefined}>
+              <Text style={[styles.sectionLabel, { color: 'rgba(0,0,0,0.45)' }]}>SPECIFICATIES</Text>
+              <View style={[styles.specsCard, { backgroundColor: '#FFFFFF', borderColor: 'rgba(0,0,0,0.10)' }]}>
+                {result.specs && Object.keys(result.specs).length > 0 ? (
+                  Object.entries(result.specs).map(([key, val], i, arr) => (
+                    <View key={key}>
+                      {i > 0 && <View style={[styles.specsSep, { backgroundColor: 'rgba(0,0,0,0.06)' }]} />}
+                      <View style={styles.specsRow}>
+                        <Text style={[styles.specsKey, { color: 'rgba(0,0,0,0.5)' }]} numberOfLines={2}>{key}</Text>
+                        <Text style={[styles.specsVal, { color: '#1C1C1E' }]} numberOfLines={2}>{val}</Text>
+                      </View>
+                    </View>
+                  ))
+                ) : (
+                  <View style={styles.specsRow}>
+                    <Text style={[styles.specsUnavailable, { color: 'rgba(0,0,0,0.4)' }]}>Niet beschikbaar</Text>
+                  </View>
+                )}
+              </View>
+            </Animated.View>
+
+            {/* Shop Links */}
+            <Animated.View entering={animationsEnabled ? FadeInDown.delay(170).springify().damping(18).stiffness(110) : undefined}>
+              <Text style={[styles.sectionLabel, { color: 'rgba(0,0,0,0.45)' }]}>ANDERE AANBIEDERS</Text>
+              <View style={[styles.shopLinksCard, { backgroundColor: '#FFFFFF', borderColor: 'rgba(0,0,0,0.10)', borderWidth: StyleSheet.hairlineWidth, borderRadius: Radius.xl, overflow: 'hidden' }]}>
+                {result.shopLinks.length > 1 ? (
+                  result.shopLinks.map((link, i) => (
+                    <View key={`${link.name}-${i}`}>
+                      {i > 0 && <View style={[styles.promoSep, { backgroundColor: 'rgba(0,0,0,0.06)' }]} />}
+                      <Pressable
+                        style={styles.shopLinkRow}
+                        onPress={() => { Linking.openURL(link.url).catch(() => {}); }}
+                      >
+                        <View style={styles.shopLinkInfo}>
+                          <Text style={[styles.shopLinkName, { color: '#1C1C1E' }]} numberOfLines={1}>{link.name}</Text>
+                          {link.price != null ? (
+                            <Text style={[styles.shopLinkPrice, { color: Palette.accent }]}>€{link.price.toFixed(2)}</Text>
+                          ) : (
+                            <Text style={[styles.shopLinkPrice, { color: 'rgba(0,0,0,0.4)' }]}>Prijs onbekend</Text>
+                          )}
+                        </View>
+                        <IconSymbol name="chevron.right" size={14} color="rgba(0,0,0,0.3)" />
+                      </Pressable>
+                    </View>
+                  ))
+                ) : (
+                  <View style={styles.shopLinkRow}>
+                    <Text style={[styles.specsUnavailable, { color: 'rgba(0,0,0,0.4)' }]}>Niet beschikbaar</Text>
+                  </View>
+                )}
+              </View>
             </Animated.View>
 
             {/* Buy CTA */}
@@ -428,7 +572,7 @@ export default function LinkScannerScreen() {
               </Pressable>
             </Animated.View>
 
-            <Text style={[styles.affiliateNote, { color: colors.textSecondary }]}>
+            <Text style={[styles.affiliateNote, { color: 'rgba(0,0,0,0.4)' }]}>
               Tweakly gebruikt affiliate links. Je betaalt nooit meer.
             </Text>
           </>
@@ -444,15 +588,6 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.xxl + Spacing.lg,
     paddingBottom: Spacing.sm,
     gap: 4,
-  },
-  backBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-    marginBottom: Spacing.xs,
-  },
-  backText: {
-    fontSize: 17,
   },
   pageTitle: {
     fontSize: 34,
@@ -491,7 +626,7 @@ const styles = StyleSheet.create({
   },
   scanButton: {
     paddingVertical: 13,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.full,
     alignItems: 'center',
   },
   scanButtonText: {
@@ -784,5 +919,67 @@ const styles = StyleSheet.create({
   retryText: {
     fontSize: 14,
     fontWeight: '600',
+  },
+
+  // Specs
+  specsCard: {
+    overflow: 'hidden',
+    borderRadius: Radius.xl,
+    borderWidth: StyleSheet.hairlineWidth,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  specsRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 10,
+    gap: Spacing.sm,
+  },
+  specsSep: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: Spacing.md,
+  },
+  specsKey: {
+    flex: 1,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  specsVal: {
+    flex: 1.2,
+    fontSize: 13,
+    fontWeight: '600',
+    lineHeight: 18,
+    textAlign: 'right',
+  },
+  specsUnavailable: {
+    fontSize: 13,
+    fontStyle: 'italic',
+  },
+
+  // Shop links
+  shopLinksCard: {},
+  shopLinkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 13,
+    gap: Spacing.sm,
+  },
+  shopLinkInfo: {
+    flex: 1,
+    gap: 2,
+  },
+  shopLinkName: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  shopLinkPrice: {
+    fontSize: 13,
+    fontWeight: '700',
   },
 });

@@ -2,6 +2,7 @@
  * Product Database — unified async API.
  *
  * Prioritizes curated MOCK_PRODUCTS (real products with verified links).
+ * Merges in user-scanned products from Supabase per category.
  * Falls back to scraped data when needed.
  */
 
@@ -14,6 +15,34 @@ import {
   searchProducts as apiSearch,
   fetchCategoryProducts,
 } from './product-api';
+import { getScannedProductsByCategory, type ScannedProduct } from './scanned-products';
+
+/** Maps a ScannedProduct row to the app-wide Product type. */
+function scannedToProduct(p: ScannedProduct): ProductType {
+  return {
+    id: `scanned-${p.id}`,
+    name: p.name,
+    brand: p.brand ?? '',
+    mainCategory: '',
+    category: p.category ?? 'Overig',
+    imageUrl: p.image_url ?? '',
+    currentPrice: p.current_price,
+    originalPrice: p.current_price,
+    lowestPrice: p.current_price,
+    rating: 0,
+    reviewCount: 0,
+    priceHistory: [{ date: p.updated_at.slice(0, 10), price: p.current_price }],
+    shops: (p.shop_links ?? []).map(l => ({
+      name: l.name,
+      price: l.price ?? p.current_price,
+      url: l.url,
+      logo: '',
+      verified: false,
+    })),
+    specs: p.specs ?? {},
+    badge: undefined,
+  };
+}
 
 export type { Product } from '@/constants/mock-data';
 export { fetchManifest } from './product-api';
@@ -29,7 +58,20 @@ function getCuratedByCategory(category: string): ProductType[] {
 
 export const getProductsByCategory = async (category: string): Promise<ProductType[]> => {
   const curated = getCuratedByCategory(category);
-  if (curated.length > 0) return curated;
+
+  // Always merge scanned products from Supabase so community-scanned items appear
+  const [scanned] = await Promise.allSettled([getScannedProductsByCategory(category)]);
+  const scannedProducts = scanned.status === 'fulfilled'
+    ? scanned.value.map(scannedToProduct)
+    : [];
+
+  // Deduplicate: skip scanned items already present in curated (by name match)
+  const curatedNames = new Set(curated.map(p => p.name.toLowerCase()));
+  const uniqueScanned = scannedProducts.filter(p => !curatedNames.has(p.name.toLowerCase()));
+
+  if (curated.length > 0 || uniqueScanned.length > 0) {
+    return [...curated, ...uniqueScanned];
+  }
   return fetchCategoryProducts(category);
 };
 

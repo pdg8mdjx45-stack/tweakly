@@ -6,6 +6,12 @@
 
 import { supabase } from './supabase';
 
+export interface ShopLink {
+  name: string;
+  price: number | null;
+  url: string;
+}
+
 export interface ScannedProduct {
   id: string;
   shop_slug: string;
@@ -16,6 +22,9 @@ export interface ScannedProduct {
   current_price: number;
   affiliate_url: string;
   original_url: string;
+  category: string | null;
+  specs: Record<string, string> | null;
+  shop_links: ShopLink[] | null;
   created_at: string;
   updated_at: string;
 }
@@ -42,6 +51,9 @@ export async function upsertScannedProduct(data: {
   current_price: number;
   affiliate_url: string;
   original_url: string;
+  category?: string | null;
+  specs?: Record<string, string> | null;
+  shop_links?: ShopLink[] | null;
 }): Promise<ScannedProduct | null> {
   const { data: row, error } = await supabase
     .from('scanned_products')
@@ -65,8 +77,7 @@ export async function addPricePoint(
   scannedProductId: string,
   price: number
 ): Promise<void> {
-  // Dedup: skip if last point today has the same price
-  const today = new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
+  const today = new Date().toISOString().slice(0, 10);
   const { data: last } = await supabase
     .from('scanned_price_history')
     .select('price, checked_at')
@@ -124,6 +135,20 @@ export async function getAllScannedProducts(): Promise<ScannedProduct[]> {
 
   if (error) {
     console.warn('getAllScannedProducts error:', error.message);
+    return [];
+  }
+  return (data ?? []) as ScannedProduct[];
+}
+
+export async function getScannedProductsByCategory(category: string): Promise<ScannedProduct[]> {
+  const { data, error } = await supabase
+    .from('scanned_products')
+    .select('*')
+    .eq('category', category)
+    .order('updated_at', { ascending: false });
+
+  if (error) {
+    console.warn('getScannedProductsByCategory error:', error.message);
     return [];
   }
   return (data ?? []) as ScannedProduct[];
