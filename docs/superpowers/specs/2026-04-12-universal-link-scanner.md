@@ -41,7 +41,17 @@ Each entry targets known JSON patterns for that shop:
 | `hm` | `__NEXT_DATA__` | `props.pageProps.product` → `name`, `whitePrice.price`, `images[0].url` |
 | `asos` | `__NEXT_DATA__` | `props.initialData.product` |
 | `decathlon` | `__NEXT_DATA__` | `props.pageProps.product` |
-| `zara` | `__NEXT_DATA__` | `props.pageProps.product` |
+| `zara` / `zara-home` | `__NEXT_DATA__` | `props.pageProps.product` |
+| `about-you` | `__NEXT_DATA__` | `props.pageProps.product` → `name`, `brand.name`, `priceRange.min`, `images[0]` |
+| `shein` | `window.gbProductDetailInfo` or `__NEXT_DATA__` | `detail.goods_name`, `detail.retailPrice.amount`, `detail.goods_imgs.main_image.origin_image` |
+| `ikea` | `window.__IKEA_REDUX_STATE__` or JSON-LD | `catalog.product.name`, `pricing.price`, `images[0]` — IKEA also publishes good JSON-LD so Layer 3 is strong fallback |
+| `adidas` | `__NEXT_DATA__` | `props.pageProps.componentProps.product` → `name`, `brand`, `price.salesPrice.value`, `image.src` |
+| `puma` | `__NEXT_DATA__` | `props.pageProps.product` → `name`, `price.formattedValue`, `images[0]` |
+| `new-balance` / `vans` / `converse` | `__NEXT_DATA__` | `props.pageProps.product` generic paths |
+| `omoda` | `__NEXT_DATA__` | `props.pageProps.product` or `props.pageProps.initialData` |
+| `douglas` / `ici-paris` | `__NEXT_DATA__` | `props.pageProps.product` → `name`, `brand`, `price.value`, `images[0].url` |
+| `hema` | `__NEXT_DATA__` | `props.pageProps.product` |
+| `kruidvat` | `__NEXT_DATA__` | `props.pageProps.product` or `props.pageProps.productDetails` |
 
 ---
 
@@ -68,17 +78,72 @@ This single function catches the majority of modern shops without shop-specific 
 
 ## New shops in `SHOP_RULES`
 
+All new shops use `buildAffiliateUrl: canonical → canonical` (no affiliate program yet).  
+Promo code search terms added for all new shops in `SHOP_SEARCH_TERMS`.
+
+### Fashion & clothing
 | Shop | Slug | Host pattern | Product ID extraction |
 |------|------|-------------|----------------------|
-| Nike | `nike` | `nike\.com` | `/t/*/` → last path segment before query |
+| Nike | `nike` | `nike\.com` | `/t/*/` → last path segment |
 | H&M | `hm` | `hm\.com` | `/productpage\.(\d+)\.html` |
 | ASOS | `asos` | `asos\.com` | `/prd/(\d+)` |
-| Decathlon | `decathlon` | `decathlon\.nl` | last numeric path segment |
 | Zara | `zara` | `zara\.com` | last numeric path segment |
+| About You | `about-you` | `aboutyou\.nl` | last numeric path segment |
+| Shein | `shein` | `shein\.com` | `/-p-(\d+)\.html` |
+| Mango | `mango` | `mango\.com` | last path segment (slug-id) |
+| Pull&Bear | `pull-bear` | `pullandbear\.com` | last numeric path segment |
+| Uniqlo | `uniqlo` | `uniqlo\.com` | `/products/(\w+)` |
 
-All new shops use `buildAffiliateUrl: canonical → canonical` (no affiliate program yet).
+### Sports & shoes
+| Shop | Slug | Host pattern | Product ID extraction |
+|------|------|-------------|----------------------|
+| Decathlon | `decathlon` | `decathlon\.nl` | last numeric path segment |
+| Intersport | `intersport` | `intersport\.nl` | last numeric path segment |
+| JD Sports | `jd-sports` | `jdsports\.nl` | last numeric path segment |
+| Foot Locker | `foot-locker` | `footlocker\.nl` | last numeric path segment |
+| Schuurman Schoenen | `schuurman` | `schuurman\.nl` | last numeric path segment |
+| Nelson | `nelson` | `nelson\.nl` | last numeric path segment |
+| Omoda | `omoda` | `omoda\.nl` | last path segment (slug) |
+| Van Haren | `van-haren` | `vanharen\.nl` | last numeric path segment |
+| Scapino | `scapino` | `scapino\.nl` | last numeric path segment |
+| Torfs | `torfs` | `torfs\.be` | last numeric path segment |
+| Sacha | `sacha` | `sacha\.nl` | last numeric path segment |
+| Adidas | `adidas` | `adidas\.nl` | `/([A-Z0-9]{6})\.html` (product code) |
+| Puma | `puma` | `puma\.com` | `/pd/[^/]+/(\d+)` |
+| New Balance | `new-balance` | `newbalance\.nl` | last path segment |
+| Vans | `vans` | `vans\.nl` | last path segment |
+| Converse | `converse` | `converse\.nl` | last path segment |
 
-Promo code search terms added for all new shops in `SHOP_SEARCH_TERMS`.
+### Electronics & home improvement
+| Shop | Slug | Host pattern | Product ID extraction |
+|------|------|-------------|----------------------|
+| Praxis | `praxis` | `praxis\.nl` | last numeric path segment |
+| Krefel | `krefel` | `krefel\.be` | last numeric path segment |
+| BCC | `bcc` | `bcc\.nl` | last numeric path segment |
+| Fnac | `fnac` | `fnac\.be` | last numeric path segment |
+
+### General & department stores
+| Shop | Slug | Host pattern | Product ID extraction |
+|------|------|-------------|----------------------|
+| HEMA | `hema` | `hema\.nl` | last path segment |
+| Blokker | `blokker` | `blokker\.nl` | last numeric path segment |
+| Action | `action` | `action\.com` | last numeric path segment |
+| Lidl | `lidl` | `lidl\.nl` | last numeric path segment |
+| Kruidvat | `kruidvat` | `kruidvat\.nl` | last numeric path segment |
+
+### Beauty & fragrance
+| Shop | Slug | Host pattern | Product ID extraction |
+|------|------|-------------|----------------------|
+| ICI Paris XL | `ici-paris` | `iciparisxl\.nl` | last numeric path segment |
+| Douglas | `douglas` | `douglas\.nl` | last numeric path segment |
+| Etos | `etos` | `etos\.nl` | last numeric path segment |
+| Parfumerie Douglas | — | covered by `douglas` above | — |
+
+### Furniture & home
+| Shop | Slug | Host pattern | Product ID extraction |
+|------|------|-------------|----------------------|
+| IKEA | `ikea` | `ikea\.com` | `/p/.*-(\d+)` |
+| Zara Home | `zara-home` | `zarahome\.com` | last numeric path segment |
 
 ---
 
