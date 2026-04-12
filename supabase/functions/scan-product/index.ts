@@ -293,6 +293,458 @@ const SHOP_RULES: ShopRule[] = [
     },
     buildAffiliateUrl(canonical) { return canonical; },
   },
+
+  // ── Fashion ──────────────────────────────────────────────────────────────────
+  {
+    slug: 'nike',
+    displayName: 'Nike',
+    hostPatterns: [/nike\.com$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      return segments[segments.length - 1] ?? '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'hm',
+    displayName: 'H&M',
+    hostPatterns: [/hm\.com$/],
+    extractProductId(url) {
+      const m = url.pathname.match(/productpage\.(\d+)\.html/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'asos',
+    displayName: 'ASOS',
+    hostPatterns: [/asos\.com$/],
+    extractProductId(url) {
+      const m = url.pathname.match(/\/prd\/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'zara',
+    displayName: 'Zara',
+    hostPatterns: [/zara\.com$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d{5,})/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'zara-home',
+    displayName: 'Zara Home',
+    hostPatterns: [/zarahome\.com$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d{5,})/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'about-you',
+    displayName: 'About You',
+    hostPatterns: [/aboutyou\.(nl|be|de|com)$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)$/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'shein',
+    displayName: 'Shein',
+    hostPatterns: [/shein\.(com|nl)$/],
+    extractProductId(url) {
+      const m = url.pathname.match(/-p-(\d+)\.html/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'mango',
+    displayName: 'Mango',
+    hostPatterns: [/mango\.com$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      return segments[segments.length - 1] ?? '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'pull-bear',
+    displayName: 'Pull&Bear',
+    hostPatterns: [/pullandbear\.com$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d{5,})/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'uniqlo',
+    displayName: 'Uniqlo',
+    hostPatterns: [/uniqlo\.com$/],
+    extractProductId(url) {
+      const m = url.pathname.match(/\/products\/(\w+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+
+  // ── Sports & shoes ────────────────────────────────────────────────────────────
+  {
+    slug: 'decathlon',
+    displayName: 'Decathlon',
+    hostPatterns: [/decathlon\.(nl|be)$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'intersport',
+    displayName: 'Intersport',
+    hostPatterns: [/intersport\.nl$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'jd-sports',
+    displayName: 'JD Sports',
+    hostPatterns: [/jdsports\.(nl|be)$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'foot-locker',
+    displayName: 'Foot Locker',
+    hostPatterns: [/footlocker\.(nl|be)$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\w{5,})/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'adidas',
+    displayName: 'Adidas',
+    hostPatterns: [/adidas\.(nl|com)$/],
+    extractProductId(url) {
+      const m = url.pathname.match(/\/([A-Z0-9]{6})(?:\.html)?$/i);
+      return m ? m[1].toUpperCase() : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'puma',
+    displayName: 'Puma',
+    hostPatterns: [/puma\.com$/],
+    extractProductId(url) {
+      const m = url.pathname.match(/\/pd\/[^/]+\/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'new-balance',
+    displayName: 'New Balance',
+    hostPatterns: [/newbalance\.nl$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      return segments[segments.length - 1] ?? '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'vans',
+    displayName: 'Vans',
+    hostPatterns: [/vans\.nl$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      return segments[segments.length - 1] ?? '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'converse',
+    displayName: 'Converse',
+    hostPatterns: [/converse\.nl$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      return segments[segments.length - 1] ?? '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'omoda',
+    displayName: 'Omoda',
+    hostPatterns: [/omoda\.nl$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      return segments[segments.length - 1] ?? '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'van-haren',
+    displayName: 'Van Haren',
+    hostPatterns: [/vanharen\.nl$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'scapino',
+    displayName: 'Scapino',
+    hostPatterns: [/scapino\.nl$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'torfs',
+    displayName: 'Torfs',
+    hostPatterns: [/torfs\.be$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'sacha',
+    displayName: 'Sacha',
+    hostPatterns: [/sacha\.nl$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'schuurman',
+    displayName: 'Schuurman Schoenen',
+    hostPatterns: [/schuurman\.nl$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'nelson',
+    displayName: 'Nelson',
+    hostPatterns: [/nelson\.nl$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+
+  // ── Electronics & home improvement ───────────────────────────────────────────
+  {
+    slug: 'praxis',
+    displayName: 'Praxis',
+    hostPatterns: [/praxis\.nl$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'krefel',
+    displayName: 'Krefel',
+    hostPatterns: [/krefel\.be$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'bcc',
+    displayName: 'BCC',
+    hostPatterns: [/bcc\.nl$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'fnac',
+    displayName: 'Fnac',
+    hostPatterns: [/fnac\.(be|nl)$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+
+  // ── General & department stores ───────────────────────────────────────────────
+  {
+    slug: 'hema',
+    displayName: 'HEMA',
+    hostPatterns: [/hema\.nl$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      return segments[segments.length - 1] ?? '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'blokker',
+    displayName: 'Blokker',
+    hostPatterns: [/blokker\.nl$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'action',
+    displayName: 'Action',
+    hostPatterns: [/action\.com$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'lidl',
+    displayName: 'Lidl',
+    hostPatterns: [/lidl\.nl$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'kruidvat',
+    displayName: 'Kruidvat',
+    hostPatterns: [/kruidvat\.nl$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+
+  // ── Beauty & fragrance ────────────────────────────────────────────────────────
+  {
+    slug: 'ici-paris',
+    displayName: 'ICI PARIS XL',
+    hostPatterns: [/iciparisxl\.nl$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'douglas',
+    displayName: 'Douglas',
+    hostPatterns: [/douglas\.nl$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+  {
+    slug: 'etos',
+    displayName: 'Etos',
+    hostPatterns: [/etos\.nl$/],
+    extractProductId(url) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const last = segments[segments.length - 1];
+      const m = last?.match(/(\d+)/);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
+
+  // ── Furniture & home ──────────────────────────────────────────────────────────
+  {
+    slug: 'ikea',
+    displayName: 'IKEA',
+    hostPatterns: [/ikea\.com$/],
+    extractProductId(url) {
+      const m = url.pathname.match(/\/p\/.*-(\d{8,})/i);
+      return m ? m[1] : '';
+    },
+    buildAffiliateUrl(canonical) { return canonical; },
+  },
 ];
 
 interface ParsedUrl {
@@ -329,6 +781,346 @@ function parseShopUrl(rawUrl: string): ParsedUrl | null {
     canonicalUrl: canonical,
     affiliateUrl: canonical,
   };
+}
+
+// ─── Layer 1: Shop-specific embedded JSON extractors ─────────────────────────
+
+/** Safely walk a nested object by dot-path, e.g. "props.pageProps.product" */
+function dig(obj: unknown, path: string): unknown {
+  return path.split('.').reduce<unknown>((cur, key) => {
+    if (cur == null || typeof cur !== 'object') return undefined;
+    return (cur as Record<string, unknown>)[key];
+  }, obj);
+}
+
+/** Pick the first truthy value from multiple paths */
+function pickPath(obj: unknown, ...paths: string[]): unknown {
+  for (const p of paths) {
+    const v = dig(obj, p);
+    if (v != null && v !== '') return v;
+  }
+  return undefined;
+}
+
+function safeParseJson(raw: string): unknown {
+  try { return JSON.parse(raw); } catch { return null; }
+}
+
+/** Parse the __NEXT_DATA__ script block and return its JSON */
+function parseNextData(html: string): unknown {
+  const m = html.match(/<script[^>]+id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/i);
+  if (!m) return null;
+  return safeParseJson(m[1]);
+}
+
+type BaseProduct = Omit<ProductData, 'specs' | 'shopLinks'>;
+
+/** Coerce a raw value to a price number or null */
+function toPrice(raw: unknown): number | null {
+  if (raw == null) return null;
+  if (typeof raw === 'number') return isNaN(raw) ? null : raw;
+  return parsePrice(raw);
+}
+
+/** Build a BaseProduct from loose key candidates on a plain object */
+function resolveProductFields(obj: unknown): BaseProduct | null {
+  if (!obj || typeof obj !== 'object') return null;
+  const o = obj as Record<string, unknown>;
+
+  const name = String(
+    o['name'] ?? o['title'] ?? o['displayName'] ?? o['productName'] ?? o['product_name'] ?? ''
+  ).trim();
+  if (!name) return null;
+
+  const brand = o['brand']
+    ? (typeof o['brand'] === 'object'
+        ? String((o['brand'] as Record<string, unknown>)['name'] ?? '')
+        : String(o['brand']))
+    : null;
+
+  const rawPrice =
+    o['price'] ?? o['currentPrice'] ?? o['salePrice'] ?? o['finalPrice'] ??
+    (o['pricing'] as Record<string, unknown> | undefined)?.['price'] ??
+    (o['priceRange'] as Record<string, unknown> | undefined)?.['min'] ??
+    (o['price_range'] as Record<string, unknown> | undefined)?.['minimum_price'] ??
+    null;
+  const price = toPrice(rawPrice);
+
+  const rawImage =
+    o['image'] ?? o['imageUrl'] ?? o['image_url'] ?? o['thumbnail'] ??
+    (Array.isArray(o['images']) ? (o['images'] as unknown[])[0] : undefined) ??
+    null;
+  const imageUrl = typeof rawImage === 'string'
+    ? rawImage
+    : (rawImage && typeof rawImage === 'object'
+        ? String((rawImage as Record<string, unknown>)['url'] ?? (rawImage as Record<string, unknown>)['src'] ?? '')
+        : null);
+
+  return {
+    name,
+    brand: brand?.trim() || null,
+    imageUrl: imageUrl?.trim() || null,
+    price,
+  };
+}
+
+function extractFromShopScript(html: string, shopSlug: string): BaseProduct | null {
+  const nd = parseNextData(html);
+
+  switch (shopSlug) {
+    case 'zalando':
+    case 'zalando-lounge': {
+      if (nd) {
+        const article = dig(nd, 'props.pageProps.article') as Record<string, unknown> | null;
+        if (article) {
+          const name = String(article['displayName'] ?? article['name'] ?? '').trim();
+          if (name) {
+            const brand = (article['brand'] as Record<string, unknown> | undefined)?.['name'];
+            const displayPrice = article['displayPrice'] as Record<string, unknown> | undefined;
+            const rawPrice = displayPrice?.['originalPrice'] ?? displayPrice?.['price'] ?? article['price'];
+            const price = toPrice(rawPrice);
+            const media = article['media'] as Record<string, unknown>[] | undefined;
+            const imgPath = media?.[0]?.['path'] as string | undefined;
+            const imageUrl = imgPath
+              ? (imgPath.startsWith('http') ? imgPath : `https://img01.ztat.net/article/${imgPath}`)
+              : null;
+            return { name, brand: brand ? String(brand) : null, imageUrl: imageUrl ?? null, price };
+          }
+        }
+      }
+      break;
+    }
+
+    case 'nike': {
+      if (nd) {
+        const state = dig(nd, 'props.pageProps.initialState') as Record<string, unknown> | null;
+        if (state) {
+          const wall = dig(state, 'Wall.products') as unknown[] | undefined;
+          const prod = (wall?.[0] ?? dig(state, 'productDetail.product')) as Record<string, unknown> | undefined;
+          if (prod) {
+            const name = String(prod['title'] ?? prod['fullTitle'] ?? prod['name'] ?? '').trim();
+            if (name) {
+              const price = toPrice((prod['price'] as Record<string, unknown> | undefined)?.['currentPrice'] ?? prod['price']);
+              const nodes = prod['nodes'] as Record<string, unknown>[] | undefined;
+              const imageUrl = String(nodes?.[0]?.['properties']?.['squarishURL'] ?? prod['image'] ?? '').trim() || null;
+              return { name, brand: 'Nike', imageUrl, price };
+            }
+          }
+        }
+        // fallback: try generic next data paths
+        const product = (dig(nd, 'props.pageProps.product') ?? dig(nd, 'props.pageProps.model')) as Record<string, unknown> | undefined;
+        if (product) return resolveProductFields(product);
+      }
+      break;
+    }
+
+    case 'hm': {
+      if (nd) {
+        const product = dig(nd, 'props.pageProps.product') as Record<string, unknown> | null;
+        if (product) {
+          const name = String(product['name'] ?? '').trim();
+          if (name) {
+            const whitePrice = product['whitePrice'] as Record<string, unknown> | undefined;
+            const price = toPrice(whitePrice?.['price'] ?? whitePrice?.['value'] ?? product['price']);
+            const images = product['images'] as Record<string, unknown>[] | undefined;
+            const imageUrl = images?.[0]?.['url'] as string | undefined ?? null;
+            return { name, brand: 'H&M', imageUrl: imageUrl ?? null, price };
+          }
+        }
+      }
+      break;
+    }
+
+    case 'asos': {
+      if (nd) {
+        const product =
+          (dig(nd, 'props.pageProps.initialData.product') ??
+           dig(nd, 'props.pageProps.product')) as Record<string, unknown> | null;
+        if (product) return resolveProductFields(product);
+      }
+      break;
+    }
+
+    case 'zara':
+    case 'zara-home': {
+      if (nd) {
+        const product = dig(nd, 'props.pageProps.product') as Record<string, unknown> | null;
+        if (product) return resolveProductFields(product);
+      }
+      break;
+    }
+
+    case 'about-you': {
+      if (nd) {
+        const product = dig(nd, 'props.pageProps.product') as Record<string, unknown> | null;
+        if (product) {
+          const name = String(product['name'] ?? '').trim();
+          if (name) {
+            const brandObj = product['brand'] as Record<string, unknown> | undefined;
+            const brand = brandObj?.['name'] ? String(brandObj['name']) : null;
+            const priceRange = product['priceRange'] as Record<string, unknown> | undefined;
+            const price = toPrice(priceRange?.['min'] ?? product['price']);
+            const images = product['images'] as unknown[] | undefined;
+            const firstImg = images?.[0];
+            const imageUrl = typeof firstImg === 'string'
+              ? firstImg
+              : (firstImg as Record<string, unknown> | undefined)?.['url'] as string | undefined ?? null;
+            return { name, brand, imageUrl: imageUrl ?? null, price };
+          }
+        }
+      }
+      break;
+    }
+
+    case 'shein': {
+      // Shein embeds in window.gbProductDetailInfo or __NEXT_DATA__
+      const sheinMatch = html.match(/window\.gbProductDetailInfo\s*=\s*(\{[\s\S]*?\});?\s*(?:window\.|<\/script>)/);
+      if (sheinMatch) {
+        const data = safeParseJson(sheinMatch[1]) as Record<string, unknown> | null;
+        if (data) {
+          const detail = data['detail'] as Record<string, unknown> | undefined ?? data;
+          const name = String(detail['goods_name'] ?? detail['name'] ?? '').trim();
+          if (name) {
+            const retailPrice = detail['retailPrice'] as Record<string, unknown> | undefined;
+            const price = toPrice(retailPrice?.['amount'] ?? retailPrice?.['price'] ?? detail['price']);
+            const mainImg = (detail['goods_imgs'] as Record<string, unknown> | undefined)?.['main_image'];
+            const imageUrl = typeof mainImg === 'object' && mainImg !== null
+              ? String((mainImg as Record<string, unknown>)['origin_image'] ?? '')
+              : typeof mainImg === 'string' ? mainImg : null;
+            return { name, brand: 'Shein', imageUrl: imageUrl || null, price };
+          }
+        }
+      }
+      if (nd) {
+        const product = dig(nd, 'props.pageProps.product') as Record<string, unknown> | null;
+        if (product) return resolveProductFields(product);
+      }
+      break;
+    }
+
+    case 'adidas': {
+      if (nd) {
+        const product =
+          (dig(nd, 'props.pageProps.componentProps.product') ??
+           dig(nd, 'props.pageProps.product')) as Record<string, unknown> | null;
+        if (product) {
+          const name = String(product['name'] ?? '').trim();
+          if (name) {
+            const salesPrice = (product['price'] as Record<string, unknown> | undefined)?.['salesPrice'];
+            const price = toPrice(
+              typeof salesPrice === 'object' && salesPrice !== null
+                ? (salesPrice as Record<string, unknown>)['value']
+                : salesPrice ?? product['price']
+            );
+            const image = product['image'] as Record<string, unknown> | undefined;
+            const imageUrl = String(image?.['src'] ?? image?.['url'] ?? product['imageUrl'] ?? '').trim() || null;
+            return { name, brand: 'Adidas', imageUrl, price };
+          }
+        }
+      }
+      break;
+    }
+
+    case 'puma': {
+      if (nd) {
+        const product = dig(nd, 'props.pageProps.product') as Record<string, unknown> | null;
+        if (product) {
+          const name = String(product['name'] ?? '').trim();
+          if (name) {
+            const fv = product['formattedValue'] as string | undefined;
+            const price = fv ? parsePrice(fv.replace(/[^\d.,]/g, '')) : toPrice(product['price']);
+            const images = product['images'] as unknown[] | undefined;
+            const firstImg = images?.[0];
+            const imageUrl = typeof firstImg === 'string' ? firstImg
+              : (firstImg as Record<string, unknown> | undefined)?.['url'] as string ?? null;
+            return { name, brand: 'Puma', imageUrl: imageUrl ?? null, price };
+          }
+        }
+      }
+      break;
+    }
+
+    case 'ikea': {
+      // IKEA uses a Redux state blob
+      const ikeaMatch = html.match(/window\.__IKEA_REDUX_STATE__\s*=\s*(\{[\s\S]*?\});?\s*(?:window\.|<\/script>)/);
+      if (ikeaMatch) {
+        const state = safeParseJson(ikeaMatch[1]) as Record<string, unknown> | null;
+        if (state) {
+          const product =
+            (dig(state, 'catalog.product') ?? dig(state, 'product.mainProduct')) as Record<string, unknown> | null;
+          if (product) return resolveProductFields(product);
+        }
+      }
+      // IKEA also has good JSON-LD, Layer 3 will catch it
+      break;
+    }
+
+    case 'douglas':
+    case 'ici-paris': {
+      if (nd) {
+        const product =
+          (dig(nd, 'props.pageProps.product') ??
+           dig(nd, 'props.pageProps.productDetail')) as Record<string, unknown> | null;
+        if (product) return resolveProductFields(product);
+      }
+      break;
+    }
+
+    case 'hema':
+    case 'kruidvat':
+    case 'blokker':
+    case 'etos': {
+      if (nd) {
+        const product =
+          (dig(nd, 'props.pageProps.product') ??
+           dig(nd, 'props.pageProps.productDetails') ??
+           dig(nd, 'props.pageProps.initialData.product')) as Record<string, unknown> | null;
+        if (product) return resolveProductFields(product);
+      }
+      break;
+    }
+  }
+
+  return null;
+}
+
+// ─── Layer 2: Generic __NEXT_DATA__ extractor ─────────────────────────────────
+
+function extractFromNextData(html: string): BaseProduct | null {
+  const nd = parseNextData(html);
+  if (!nd) return null;
+
+  // Common paths used across many Next.js shops
+  const PATHS = [
+    'props.pageProps.product',
+    'props.pageProps.model',
+    'props.pageProps.article',
+    'props.pageProps.initialData.product',
+    'props.pageProps.data.product',
+    'props.pageProps.componentProps.product',
+    'props.pageProps.productDetail',
+    'props.pageProps.productData',
+    'props.pageProps.item',
+  ];
+
+  for (const path of PATHS) {
+    const candidate = dig(nd, path);
+    if (!candidate || typeof candidate !== 'object') continue;
+    const result = resolveProductFields(candidate);
+    if (result) return result;
+  }
+
+  // Try props.pageProps.productsById — take first value
+  const byId = dig(nd, 'props.pageProps.productsById') as Record<string, unknown> | null;
+  if (byId && typeof byId === 'object') {
+    const first = Object.values(byId)[0];
+    if (first) {
+      const result = resolveProductFields(first);
+      if (result) return result;
+    }
+  }
+
+  return null;
 }
 
 // ─── JSON-LD product extraction ───────────────────────────────────────────────
@@ -518,8 +1310,17 @@ async function fetchProductData(
       if (!res.ok) return null;
       html = await res.text();
 
-      const fromJsonLd = extractFromJsonLd(html);
-      base = fromJsonLd ?? extractFromOgTags(html);
+      // Layer 1: shop-specific embedded JSON
+      base = extractFromShopScript(html, shopSlug);
+
+      // Layer 2: generic __NEXT_DATA__
+      if (!base) base = extractFromNextData(html);
+
+      // Layer 3: JSON-LD structured data
+      if (!base) base = extractFromJsonLd(html);
+
+      // Layer 4: OG meta tags
+      if (!base) base = extractFromOgTags(html);
 
       if (base && base.price === null) {
         const fallbackPrice = extractPriceFromHtml(html, shopSlug);
@@ -568,6 +1369,51 @@ const SHOP_SEARCH_TERMS: Record<string, string> = {
   'zalando': 'zalando',
   'zalando-lounge': 'zalando-lounge',
   'wehkamp': 'wehkamp',
+  // Fashion
+  'nike': 'nike',
+  'hm': 'h&m',
+  'asos': 'asos',
+  'zara': 'zara',
+  'zara-home': 'zara-home',
+  'about-you': 'about-you',
+  'shein': 'shein',
+  'mango': 'mango',
+  'pull-bear': 'pull-and-bear',
+  'uniqlo': 'uniqlo',
+  // Sports & shoes
+  'decathlon': 'decathlon',
+  'intersport': 'intersport',
+  'jd-sports': 'jd-sports',
+  'foot-locker': 'foot-locker',
+  'adidas': 'adidas',
+  'puma': 'puma',
+  'new-balance': 'new-balance',
+  'vans': 'vans',
+  'converse': 'converse',
+  'omoda': 'omoda',
+  'van-haren': 'van-haren',
+  'scapino': 'scapino',
+  'torfs': 'torfs',
+  'sacha': 'sacha',
+  'schuurman': 'schuurman',
+  'nelson': 'nelson',
+  // Electronics
+  'praxis': 'praxis',
+  'krefel': 'krefel',
+  'bcc': 'bcc',
+  'fnac': 'fnac',
+  // General
+  'hema': 'hema',
+  'blokker': 'blokker',
+  'action': 'action',
+  'lidl': 'lidl',
+  'kruidvat': 'kruidvat',
+  // Beauty
+  'ici-paris': 'ici-paris-xl',
+  'douglas': 'douglas',
+  'etos': 'etos',
+  // Furniture
+  'ikea': 'ikea',
 };
 
 function cleanCode(raw: string): string {

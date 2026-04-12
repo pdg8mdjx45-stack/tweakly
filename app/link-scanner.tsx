@@ -99,7 +99,7 @@ type ScanResult = {
 type ScanError = 'invalid_url' | 'product_not_found' | 'network_error' | 'blocked_content';
 
 const ERROR_MESSAGES: Record<ScanError, string> = {
-  invalid_url: 'We herkennen deze link niet. Probeer een link van Bol.com, Amazon, Coolblue of een andere winkel.',
+  invalid_url: 'We konden dit product niet uitlezen. Probeer een directe productpagina van een webshop.',
   product_not_found: 'Product niet gevonden. Controleer de link en probeer opnieuw.',
   network_error: 'Geen verbinding. Controleer je internet en probeer opnieuw.',
   blocked_content: 'Dit product kan niet worden toegevoegd aan Tweakly.',
