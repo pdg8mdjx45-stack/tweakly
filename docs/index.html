@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tweakly — Altijd de beste prijs</title>
-  <meta name="description" content="Vergelijk prijzen, volg producten en ontvang meldingen zodra de prijs daalt. Tweakly houdt alle deals bij — jij hoeft niets te doen.">
+  <title>Tracr — Altijd de beste prijs</title>
+  <meta name="description" content="Vergelijk prijzen, volg producten en ontvang meldingen zodra de prijs daalt. Tracr houdt alle deals bij — jij hoeft niets te doen.">
+  <meta name="e7fe051fb748f47" content="6d8e0aeb674d648844135db5f5e6e595" />
   <link rel="icon" href="logo.png" type="image/png">
   
   <!-- Google Analytics 4 -->
@@ -268,19 +269,29 @@
 
     /* ─── hero 3d logo ───────────────────────────────────────── */
     .hero-model-wrap {
-      width: min(320px, 72vw);
+      width: min(460px, 90vw);
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: clamp(0.9rem, 2vw, 1.15rem);
+      border-radius: 32px;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(48,209,88,0.18) 0%, rgba(48,209,88,0.05) 34%, rgba(0,0,0,0) 70%),
+        rgba(255,255,255,0.03);
+      border: 0.5px solid rgba(255,255,255,0.08);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.06),
+        0 24px 70px rgba(0,0,0,0.45),
+        0 0 80px rgba(48,209,88,0.10);
     }
     #hero-canvas {
       width: 100%;
       aspect-ratio: 1 / 1;
       display: block;
       pointer-events: none;
-      border-radius: 50%;
-      filter: drop-shadow(0 0 60px rgba(48,209,88,0.18));
+      border-radius: 24px;
+      filter: drop-shadow(0 0 80px rgba(48,209,88,0.22));
     }
 
     /* ─── stats ──────────────────────────────────────────────── */
@@ -309,6 +320,18 @@
     }
     .stat-num.g { color: var(--green); }
     .stat-label { font-size: 0.72rem; color: var(--text-3); font-weight: 400; text-align: center; }
+
+    @media (max-width: 700px) {
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1px;
+      }
+      .stat {
+        border-right: none;
+        min-width: 0;
+      }
+    }
 
     /* ─── section headings ───────────────────────────────────── */
     .section-eyebrow {
@@ -503,25 +526,26 @@
     }
 
     /* ─── footer ─────────────────────────────────────────────── */
-    footer {
-      padding: 2.5rem clamp(1.5rem, 4vw, 3rem);
-      border-top: 0.5px solid rgba(255,255,255,0.06);
-    }
-    .footer-inner {
-      max-width: 980px; margin: 0 auto;
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 1rem;
-    }
-    .footer-brand {
-      font-size: 0.88rem; font-weight: 600; color: var(--text-2);
-    }
-    .footer-links { display: flex; gap: 1.2rem; flex-wrap: wrap; }
-    .footer-links a {
-      font-size: 0.74rem; color: var(--text-3);
-      transition: color 0.15s;
-    }
-    .footer-links a:hover { color: var(--text-2); }
-    .footer-copy { font-size: 0.70rem; color: var(--text-3); font-weight: 300; }
+    .site-footer { background: var(--bg); border-top: 0.5px solid rgba(255,255,255,0.07); padding: 4rem 24px 2rem; }
+    .footer-inner { max-width: 1100px; margin: 0 auto; }
+    .footer-top { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 2.5rem; margin-bottom: 3rem; }
+    @media (max-width: 900px) { .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; } }
+    @media (max-width: 500px) { .footer-top { grid-template-columns: 1fr; } }
+    .footer-logo { display: flex; align-items: center; gap: 8px; margin-bottom: 0.75rem; }
+    .footer-logo img { width: 28px; height: 28px; object-fit: contain; }
+    .footer-logo-name { font-size: 1rem; font-weight: 800; color: var(--text); letter-spacing: -0.025em; }
+    .footer-tagline { font-size: 0.8rem; color: var(--text-3); line-height: 1.55; max-width: 210px; margin-bottom: 1.25rem; }
+    .footer-contact a { display: block; font-size: 0.78rem; color: var(--text-3); margin-bottom: 0.25rem; transition: color 0.15s; }
+    .footer-contact a:hover { color: var(--text-2); }
+    .footer-contact span { display: block; font-size: 0.78rem; color: var(--text-3); }
+    .footer-col-title { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 1rem; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+    .footer-col a { font-size: 0.82rem; color: var(--text-2); transition: color 0.15s; }
+    .footer-col a:hover { color: var(--text); }
+    .footer-bottom { border-top: 0.5px solid rgba(255,255,255,0.06); padding-top: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .footer-copy { font-size: 0.74rem; color: var(--text-3); }
+    .footer-aff-note { font-size: 0.72rem; color: var(--text-3); }
+    .footer-aff-note a { color: var(--text-3); text-decoration: underline; text-underline-offset: 2px; }
 
     /* ─── custom scrollbar ───────────────────────────────────── */
     ::-webkit-scrollbar { width: 5px; }
@@ -538,8 +562,8 @@
 <div class="nav-wrap">
   <nav id="main-nav">
     <a href="/" class="nav-brand">
-      <img src="logo.png" alt="Tweakly" onerror="this.style.display='none'">
-      Tweakly
+      <img src="logo.png" alt="Tracr" onerror="this.style.display='none'">
+      Tracr
     </a>
     <ul class="nav-links">
       <li><a href="#features">Functies</a></li>
@@ -631,7 +655,7 @@
       <div class="section-head">
         <p class="section-eyebrow">Functies</p>
         <h2 class="section-title">Alles wat je nodig hebt<br>om slim te kopen.</h2>
-        <p class="section-sub">Van realtimeprijzen tot slimme meldingen — Tweakly doet het zware werk.</p>
+        <p class="section-sub">Van realtimeprijzen tot slimme meldingen — Tracr doet het zware werk.</p>
       </div>
       <div class="features-grid">
         <div class="feat-card">
@@ -806,7 +830,7 @@
           <div class="section-head">
             <p class="section-eyebrow">Meldingen</p>
             <h2 class="section-title">Nooit meer<br>een deal missen.</h2>
-            <p class="section-sub">Tweakly waakt terwijl jij iets anders doet. Zodra de prijs zakt, ben jij als eerste op de hoogte.</p>
+            <p class="section-sub">Tracr waakt terwijl jij iets anders doet. Zodra de prijs zakt, ben jij als eerste op de hoogte.</p>
           </div>
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
             <a href="#download" class="btn btn-primary">Download gratis</a>
@@ -865,12 +889,12 @@
       <div class="testimonials-grid">
         <div class="glass testi-card">
           <div class="testi-stars">★★★★★</div>
-          <p class="testi-text">"Tweakly heeft me al meer dan €200 bespaard. De meldingen werken feilloos en de interface is prachtig."</p>
+          <p class="testi-text">"Tracr heeft me al meer dan €200 bespaard. De meldingen werken feilloos en de interface is prachtig."</p>
           <div class="testi-author">
             <div class="testi-avatar">👨</div>
             <div>
               <div class="testi-name">Sander V.</div>
-              <div class="testi-role">Gebruikt Tweakly 6 maanden</div>
+              <div class="testi-role">Gebruikt Tracr 6 maanden</div>
             </div>
           </div>
         </div>
@@ -921,17 +945,34 @@
   </section>
 
   <!-- ── footer ─────────────────────────────────────────────────── -->
-  <footer>
+  <footer class="site-footer">
     <div class="footer-inner">
-      <span class="footer-brand">Tweakly</span>
-      <div class="footer-links">
-        <a href="privacy.html">Privacy</a>
-        <a href="voorwaarden.html">Voorwaarden</a>
-        <a href="cookies.html">Cookies</a>
-        <a href="affiliate.html">Affiliate</a>
-        <a href="contact.html">Contact</a>
+      <div class="footer-top">
+        <div>
+          <div class="footer-logo"><img src="logo.png" alt="Tracr"><span class="footer-logo-name">Tracr</span></div>
+          <p class="footer-tagline">De slimste manier om elektronica te kopen.</p>
+          <div class="footer-contact">
+            <a href="mailto:tracr.help@hotmail.com">Tracr support</a>
+            <span>Zolder, Belgi&euml;</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Product</div>
+          <ul><li><a href="#features">Functies</a></li><li><a href="#download">Download</a></li><li><a href="aanbiedingen.html">Aanbiedingen</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Bedrijf</div>
+          <ul><li><a href="over-ons.html">Over ons</a></li><li><a href="contact.html">Contact</a></li><li><a href="affiliate.html">Affiliate</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Juridisch</div>
+          <ul><li><a href="privacy.html">Privacybeleid</a></li><li><a href="cookies.html">Cookiebeleid</a></li><li><a href="voorwaarden.html">Voorwaarden</a></li></ul>
+        </div>
       </div>
-      <span class="footer-copy">© 2026 Tweakly</span>
+      <div class="footer-bottom">
+        <p class="footer-copy">&copy; 2026 Tracr &middot; Alexander Ballet, Zolder, Belgi&euml;</p>
+        <p class="footer-aff-note">Bevat <a href="affiliate.html">affiliate-links</a> &middot; Commissies hebben geen invloed op uw prijs</p>
+      </div>
     </div>
   </footer>
 
@@ -945,23 +986,24 @@
 
   const canvas = document.getElementById('hero-canvas');
   if (canvas) {
-    function setSize() {
-      const w = canvas.clientWidth;
-      canvas.width  = w * devicePixelRatio;
-      canvas.height = w * devicePixelRatio;
-    }
-    setSize();
-
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    renderer.setPixelRatio(devicePixelRatio);
-    renderer.setSize(canvas.clientWidth, canvas.clientWidth);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.4;
 
+    function resizeRenderer() {
+      const w = canvas.parentElement.clientWidth;
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(w, w, false);
+      canvas.style.width  = w + 'px';
+      canvas.style.height = w + 'px';
+    }
+    resizeRenderer();
+
     const scene  = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
-    camera.position.set(0, 0.4, 5.5);
+    camera.position.set(0, 0, 5.5);
+    camera.lookAt(0, 0, 0);
 
     /* ── lighting ── */
     scene.add(new THREE.AmbientLight(0xffffff, 0.25));
@@ -999,8 +1041,9 @@
       const box    = new THREE.Box3().setFromObject(gltf.scene);
       const center = box.getCenter(new THREE.Vector3());
       const size   = box.getSize(new THREE.Vector3()).length();
+      const targetSize = window.matchMedia('(max-width: 700px)').matches ? 3.0 : 3.2;
       gltf.scene.position.sub(center);
-      gltf.scene.scale.setScalar(3.2 / size);
+      gltf.scene.scale.setScalar(targetSize / size);
       scene.add(gltf.scene);
       model = gltf.scene;
     }, undefined, (err) => {
@@ -1021,9 +1064,7 @@
     animate();
 
     window.addEventListener('resize', () => {
-      setSize();
-      const w = canvas.clientWidth;
-      renderer.setSize(w, w);
+      resizeRenderer();
       camera.updateProjectionMatrix();
     });
   }
