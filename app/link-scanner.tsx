@@ -1,18 +1,15 @@
 /**
  * Link Scanner Screen
  * Paste any product URL to get promo codes, price history, alerts, and affiliate buy CTA.
- * Scans any shop URL, extracts product data, builds affiliate link, persists to Supabase.
  */
 
-import { LiquidScreen } from '@/components/liquid-screen';
 import { BackButton } from '@/components/back-button';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Palette, Radius, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useReduceMotion } from '@/hooks/use-reduce-motion';
 import { addAlert } from '@/services/alerts-store';
-import { addPricePoint, upsertScannedProduct } from '@/services/scanned-products';
-import { supabase } from '@/services/supabase';
+import { supabase, supabaseAnonKey } from '@/services/supabase';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import Animated, {
@@ -21,7 +18,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import {
   Linking,
   Pressable,
@@ -31,8 +28,26 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { LiquidScreen } from '@/components/liquid-screen';
 
-const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? 'https://glnpdfbnyijdzvulzbfv.supabase.co';
+const SUPABASE_URL = 'https://glnpdfbnyijdzvulzbfv.supabase.co';
+
+// Canonical color name → display hex for the color swatch dot
+const COLOR_HEX: Record<string, string> = {
+  black: '#1C1C1E',
+  white: '#F5F5F0',
+  blue: '#2979FF',
+  green: '#34C759',
+  gray: '#8E8E93',
+  silver: '#C0C0C0',
+  gold: '#FFD700',
+  pink: '#FF2D55',
+  purple: '#AF52DE',
+  red: '#FF3B30',
+  titanium: '#8A8A8E',
+  natural: '#C8A97E',
+  desert: '#D2A679',
+};
 
 interface ScraperPromoCode {
   code: string;
@@ -47,7 +62,16 @@ interface ScraperShopLink {
   url: string;
 }
 
+interface ScraperColorVariant {
+  color: string;
+  storage: string;
+  imageUrl: string | null;
+  affiliateUrl: string;
+  shopLinks: ScraperShopLink[];
+}
+
 interface ScraperResponse {
+  productId: string | null;
   affiliateUrl: string;
   name: string;
   brand: string | null;
@@ -59,24 +83,48 @@ interface ScraperResponse {
   category: string | null;
   specs: Record<string, string> | null;
   shopLinks: ScraperShopLink[];
+  colorVariants: ScraperColorVariant[];
+  scannedColor: string;
+  scannedStorage: string;
 }
 
 async function callScraper(productUrl: string): Promise<ScraperResponse> {
-  const { data: { session } } = await supabase.auth.getSession();
-  const jwt = session?.access_token;
+  // Get user session if available; the gateway accepts requests with only
+  // the apikey header (anon key) when no user JWT is present.
+  let jwt: string | null = null;
+  try {
+    const { data } = await supabase.auth.getSession();
+    const session = data.session;
+    if (session) {
+      const nowSec = Math.floor(Date.now() / 1000);
+      if ((session.expires_at ?? 0) - nowSec > 60) {
+        jwt = session.access_token;
+      } else {
+        const { data: refreshData } = await supabase.auth.refreshSession();
+        if (refreshData.session) jwt = refreshData.session.access_token;
+      }
+    }
+  } catch {
+    // No session — proceed without user JWT
+  }
 
   const res = await fetch(`${SUPABASE_URL}/functions/v1/scan-product`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      ...(jwt ? { Authorization: `Bearer ${jwt}` } : {}),
+      'apikey': supabaseAnonKey,
+      ...(jwt ? { 'Authorization': `Bearer ${jwt}` } : {}),
     },
     body: JSON.stringify({ url: productUrl }),
   });
 
   if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw Object.assign(new Error(body.error ?? 'scraper_error'), { status: res.status, scraperError: body.error });
+    const text = await res.text().catch(() => '');
+    let body: Record<string, string> = {};
+    try { body = JSON.parse(text); } catch { /* plain-text error */ }
+    console.warn('[scan-product] error', res.status, text.slice(0, 300));
+    const errCode = body.error ?? body.message ?? 'scraper_error';
+    throw Object.assign(new Error(errCode), { status: res.status, scraperError: body.error, gatewayMessage: body.message });
   }
 
   return res.json() as Promise<ScraperResponse>;
@@ -94,16 +142,47 @@ type ScanResult = {
   category: string | null;
   specs: Record<string, string> | null;
   shopLinks: ScraperShopLink[];
+  colorVariants: ScraperColorVariant[];
+  selectedColor: string;
+  selectedStorage: string;
 };
 
-type ScanError = 'invalid_url' | 'product_not_found' | 'network_error' | 'blocked_content';
+type ScanError =
+  | 'invalid_url'
+  | 'product_not_found'
+  | 'network_error'
+  | 'blocked_content'
+  | 'shop_blocked'
+  | 'auth_required'
+  | 'scanner_unavailable';
 
 const ERROR_MESSAGES: Record<ScanError, string> = {
   invalid_url: 'We konden dit product niet uitlezen. Probeer een directe productpagina van een webshop.',
-  product_not_found: 'Product niet gevonden. Controleer de link en probeer opnieuw.',
+  product_not_found: 'Product niet gevonden. Probeer een andere link of winkel.',
   network_error: 'Geen verbinding. Controleer je internet en probeer opnieuw.',
-  blocked_content: 'Dit product kan niet worden toegevoegd aan Tweakly.',
+  blocked_content: 'Dit product kan niet worden toegevoegd aan Tracr.',
+  shop_blocked: 'Deze winkel staat automatisch scannen helaas niet toe. Zoek hetzelfde product op Coolblue, Amazon of een andere winkel en plak die link.',
+  auth_required: 'Je sessie is verlopen. Log opnieuw in en probeer het daarna nog eens.',
+  scanner_unavailable: 'De linkscanner is tijdelijk niet beschikbaar. Probeer het zo opnieuw.',
 };
+
+function resolveScanError(err: unknown): ScanError {
+  const e = err as { scraperError?: string; gatewayMessage?: string; status?: number; message?: string };
+  const message = e?.message?.toLowerCase() ?? '';
+  const gateway = e?.gatewayMessage?.toLowerCase() ?? '';
+
+  if (e?.scraperError === 'invalid_url') return 'invalid_url';
+  if (e?.scraperError === 'product_not_found') return 'product_not_found';
+  if (e?.scraperError === 'shop_blocked') return 'shop_blocked';
+  if (e?.scraperError === 'blocked_content' || e?.status === 403) return 'blocked_content';
+  if (e?.scraperError === 'unauthorized') return 'auth_required';
+  // Gateway JWT errors (expired/invalid token from Supabase) are infra issues, not user auth issues
+  if (e?.status === 401 && /jwt|token/.test(gateway)) return 'scanner_unavailable';
+  if (e?.status === 401) return 'auth_required';
+  if (/network request failed|failed to fetch|load failed/.test(message)) return 'network_error';
+  if (typeof e?.status === 'number') return 'scanner_unavailable';
+  return 'network_error';
+}
 
 function MiniChart({ data, isDark }: { data: { date: string; price: number }[]; isDark: boolean }) {
   const max = Math.max(...data.map(d => d.price));
@@ -115,12 +194,10 @@ function MiniChart({ data, isDark }: { data: { date: string; price: number }[]; 
     x: (i / (data.length - 1)) * W,
     y: H - ((d.price - min) / range) * (H - 8) - 4,
   }));
-  const path = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
 
   return (
     <View style={{ height: H + 8, width: '100%', alignItems: 'center' }}>
       <View style={{ width: W, height: H + 8, position: 'relative' }}>
-        {/* Y axis labels */}
         {data.map((d, i) => (
           <Text
             key={i}
@@ -143,26 +220,28 @@ function MiniChart({ data, isDark }: { data: { date: string; price: number }[]; 
 }
 
 export default function LinkScannerScreen() {
+  const router = useRouter();
   const colorScheme = useColorScheme() ?? 'light';
   const isDark = colorScheme === 'dark';
-  const router = useRouter();
   const { animationsEnabled } = useReduceMotion();
 
   const [url, setUrl] = useState('');
-  const [scanned, setScanned] = useState(false);
   const [scanning, setScanning] = useState(false);
+  const [scanned, setScanned] = useState(false);
   const [result, setResult] = useState<ScanResult | null>(null);
   const [scanError, setScanError] = useState<ScanError | null>(null);
   const [alertPrice, setAlertPrice] = useState('');
   const [alertSaved, setAlertSaved] = useState(false);
   const [showAlertInput, setShowAlertInput] = useState(false);
   const [alertProductId, setAlertProductId] = useState<string | null>(null);
+  const [colorDropdownOpen, setColorDropdownOpen] = useState(false);
 
   const ctaScale = useSharedValue(1);
   const ctaStyle = useAnimatedStyle(() => ({ transform: [{ scale: ctaScale.value }] }));
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setUrl('');
+    setScanning(false);
     setScanned(false);
     setScanError(null);
     setResult(null);
@@ -170,10 +249,51 @@ export default function LinkScannerScreen() {
     setAlertSaved(false);
     setShowAlertInput(false);
     setAlertProductId(null);
+    setColorDropdownOpen(false);
+  }, []);
+
+  const finishScan = async (data: ScraperResponse) => {
+    const price = data.price ?? 0;
+    setAlertProductId(data.productId);
+
+    setResult({
+      name: data.name,
+      brand: data.brand,
+      imageUrl: data.imageUrl,
+      currentPrice: price,
+      affiliateUrl: data.affiliateUrl,
+      shopDisplayName: data.shopDisplayName,
+      priceHistory: data.productId ? [{ date: 'Vandaag', price }] : [],
+      promoCodes: data.promoCodes,
+      category: data.category ?? null,
+      specs: data.specs ?? null,
+      shopLinks: data.shopLinks ?? [],
+      colorVariants: data.colorVariants ?? [],
+      selectedColor: data.scannedColor ?? '',
+      selectedStorage: data.scannedStorage ?? '',
+    });
+    setScanned(true);
+  };
+
+  // When user picks a variant, swap the active shop links / affiliate URL
+  const handleSelectVariant = (variant: ScraperColorVariant) => {
+    if (!result) return;
+    const cheapest = [...variant.shopLinks].filter(l => l.price != null).sort((a, b) => (a.price ?? 0) - (b.price ?? 0))[0];
+    setResult(prev => prev ? {
+      ...prev,
+      selectedColor: variant.color,
+      selectedStorage: variant.storage,
+      affiliateUrl: variant.affiliateUrl,
+      imageUrl: variant.imageUrl ?? prev.imageUrl,
+      shopLinks: variant.shopLinks.length > 0 ? variant.shopLinks : prev.shopLinks,
+      currentPrice: cheapest?.price ?? prev.currentPrice,
+    } : null);
+    setColorDropdownOpen(false);
   };
 
   const handleScan = async () => {
-    if (!url.trim()) return;
+    const raw = url.trim();
+    if (!raw) return;
     setScanning(true);
     setScanError(null);
     setResult(null);
@@ -182,66 +302,15 @@ export default function LinkScannerScreen() {
     try {
       let data: ScraperResponse;
       try {
-        data = await callScraper(url.trim());
+        data = await callScraper(raw);
       } catch (err: unknown) {
-        const e = err as { scraperError?: string; status?: number };
-        if (e?.scraperError === 'invalid_url') {
-          setScanError('invalid_url');
-        } else if (e?.scraperError === 'product_not_found') {
-          setScanError('product_not_found');
-        } else if (e?.scraperError === 'blocked_content' || e?.status === 403) {
-          setScanError('blocked_content');
-        } else {
-          setScanError('network_error');
-        }
-        setScanning(false);
+        setScanError(resolveScanError(err));
         return;
       }
-
-      if (!data.name) {
-        setScanError('product_not_found');
-        setScanning(false);
-        return;
-      }
-
-      const price = data.price ?? 0;
-      const shopProductId =
-        data.affiliateUrl.split('/').pop()?.slice(0, 60) ||
-        data.name.toLowerCase().replace(/\s+/g, '-').slice(0, 60) ||
-        Date.now().toString();
-
-      const saved = await upsertScannedProduct({
-        shop_slug: data.shopSlug,
-        shop_product_id: shopProductId,
-        name: data.name,
-        brand: data.brand,
-        image_url: data.imageUrl,
-        current_price: price,
-        affiliate_url: data.affiliateUrl,
-        original_url: url.trim(),
-      });
-
-      if (saved) {
-        setAlertProductId(saved.id);
-        await addPricePoint(saved.id, price);
-      }
-
-      setResult({
-        name: data.name,
-        brand: data.brand,
-        imageUrl: data.imageUrl,
-        currentPrice: price,
-        affiliateUrl: data.affiliateUrl,
-        shopDisplayName: data.shopDisplayName,
-        priceHistory: saved ? [{ date: 'Vandaag', price }] : [],
-        promoCodes: data.promoCodes,
-        category: data.category ?? null,
-        specs: data.specs ?? null,
-        shopLinks: data.shopLinks ?? [],
-      });
-      setScanned(true);
-    } catch {
-      setScanError('network_error');
+      if (!data.name) { setScanError('product_not_found'); return; }
+      await finishScan(data);
+    } catch (err: unknown) {
+      setScanError(resolveScanError(err));
     } finally {
       setScanning(false);
     }
@@ -262,7 +331,6 @@ export default function LinkScannerScreen() {
 
   return (
     <LiquidScreen>
-      {/* Header */}
       <Animated.View
         style={styles.header}
         entering={animationsEnabled ? FadeInDown.springify().damping(20).stiffness(130) : undefined}
@@ -271,8 +339,11 @@ export default function LinkScannerScreen() {
         <Text style={[styles.pageTitle, { color: '#1C1C1E' }]}>Link Scanner</Text>
       </Animated.View>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         {/* URL Input */}
         <Animated.View entering={animationsEnabled ? FadeInDown.delay(60).springify().damping(18).stiffness(110) : undefined}>
           <View style={[styles.inputCard, { backgroundColor: '#F2F2F7', borderColor: 'rgba(0,0,0,0.08)' }]}>
@@ -287,6 +358,8 @@ export default function LinkScannerScreen() {
                 autoCapitalize="none"
                 autoCorrect={false}
                 keyboardType="url"
+                returnKeyType="go"
+                onSubmitEditing={handleScan}
               />
               {url.length > 0 && (
                 <Pressable onPress={handleReset} hitSlop={8}>
@@ -306,13 +379,13 @@ export default function LinkScannerScreen() {
           </View>
         </Animated.View>
 
-        {/* Hint when no URL */}
+        {/* Hint */}
         {!scanned && !scanning && !scanError && (
           <Animated.View entering={animationsEnabled ? FadeInDown.delay(120).springify().damping(18).stiffness(110) : undefined}>
             <View style={styles.hintCard}>
               <IconSymbol name="info.circle" size={16} color="rgba(0,0,0,0.4)" />
               <Text style={[styles.hintText, { color: 'rgba(0,0,0,0.5)' }]}>
-                Plak een productlink van Bol, Coolblue, MediaMarkt of een andere winkel. Tweakly toont automatisch kortingscodes, prijshistorie en de beste aanbieding.
+                Plak een productlink van Coolblue, MediaMarkt, Amazon of een andere winkel. Tracr toont automatisch kortingscodes, prijshistorie en de beste aanbieding.
               </Text>
             </View>
           </Animated.View>
@@ -320,7 +393,7 @@ export default function LinkScannerScreen() {
 
         {/* Scanning indicator */}
         {scanning && (
-          <Animated.View entering={animationsEnabled ? FadeInDown.delay(0).springify().damping(18).stiffness(110) : undefined}>
+          <Animated.View entering={animationsEnabled ? FadeInDown.springify().damping(18).stiffness(110) : undefined}>
             <View style={[styles.scanningCard, { backgroundColor: '#F2F2F7', borderColor: 'rgba(0,0,0,0.08)' }]}>
               <View style={styles.scanningRow}>
                 <View style={styles.scanningDots}>
@@ -328,27 +401,31 @@ export default function LinkScannerScreen() {
                   <View style={[styles.dot, { backgroundColor: Palette.primary, opacity: 0.6 }]} />
                   <View style={[styles.dot, { backgroundColor: Palette.primary, opacity: 0.3 }]} />
                 </View>
-                <Text style={[styles.scanningText, { color: 'rgba(0,0,0,0.5)' }]}>
-                  Product detecteren...
-                </Text>
+                <Text style={[styles.scanningText, { color: 'rgba(0,0,0,0.5)' }]}>Product detecteren...</Text>
               </View>
             </View>
           </Animated.View>
         )}
 
-        {/* Error state */}
+        {/* Error */}
         {scanError && (
-          <Animated.View entering={animationsEnabled ? FadeInDown.delay(0).springify().damping(18).stiffness(110) : undefined}>
+          <Animated.View entering={animationsEnabled ? FadeInDown.springify().damping(18).stiffness(110) : undefined}>
             <View style={[styles.errorCard, { backgroundColor: '#F2F2F7', borderColor: 'rgba(0,0,0,0.08)' }]}>
               <IconSymbol name="exclamationmark.triangle" size={24} color="#FF3B30" />
-              <Text style={[styles.errorText, { color: '#1C1C1E' }]}>
-                {ERROR_MESSAGES[scanError]}
-              </Text>
+              <Text style={[styles.errorText, { color: '#1C1C1E' }]}>{ERROR_MESSAGES[scanError]}</Text>
               <Pressable
                 style={[styles.retryBtn, { backgroundColor: 'rgba(0,0,0,0.06)' }]}
-                onPress={handleReset}
+                onPress={() => {
+                  if (scanError === 'auth_required') {
+                    router.replace('/(auth)/inloggen');
+                    return;
+                  }
+                  handleReset();
+                }}
               >
-                <Text style={[styles.retryText, { color: Palette.primary }]}>Opnieuw proberen</Text>
+                <Text style={[styles.retryText, { color: Palette.primary }]}>
+                  {scanError === 'auth_required' ? 'Opnieuw inloggen' : 'Opnieuw proberen'}
+                </Text>
               </Pressable>
             </View>
           </Animated.View>
@@ -358,7 +435,7 @@ export default function LinkScannerScreen() {
         {scanned && result && (
           <>
             {/* Product Card */}
-            <Animated.View entering={animationsEnabled ? FadeInDown.delay(0).springify().damping(18).stiffness(110) : undefined}>
+            <Animated.View entering={animationsEnabled ? FadeInDown.springify().damping(18).stiffness(110) : undefined}>
               <View style={[styles.productCard, { backgroundColor: '#FFFFFF', borderColor: 'rgba(0,0,0,0.10)' }]}>
                 <View style={styles.productHeader}>
                   <View style={[styles.productImagePlaceholder, { backgroundColor: 'rgba(0,0,0,0.05)' }]}>
@@ -370,12 +447,71 @@ export default function LinkScannerScreen() {
                     )}
                     <Text style={[styles.productName, { color: '#1C1C1E' }]} numberOfLines={3}>{result.name}</Text>
                     <View style={styles.priceRow}>
-                      {result.currentPrice > 0 ? (
-                        <Text style={[styles.productPrice, { color: '#1C1C1E' }]}>€{result.currentPrice.toFixed(2)}</Text>
-                      ) : (
-                        <Text style={[styles.productPrice, { color: 'rgba(0,0,0,0.4)' }]}>Prijs onbekend</Text>
-                      )}
+                      {result.currentPrice > 0
+                        ? <Text style={[styles.productPrice, { color: '#1C1C1E' }]}>€{result.currentPrice.toFixed(2)}</Text>
+                        : <Text style={[styles.productPrice, { color: 'rgba(0,0,0,0.4)' }]}>Prijs onbekend</Text>
+                      }
                     </View>
+
+                    {/* Variant picker (color + storage) */}
+                    {result.colorVariants.length > 1 && (
+                      <View style={{ marginTop: 8 }}>
+                        <Pressable
+                          style={[styles.colorDropdownBtn, { backgroundColor: 'rgba(0,0,0,0.06)' }]}
+                          onPress={() => setColorDropdownOpen(v => !v)}
+                        >
+                          {result.selectedColor ? (
+                            <View style={[styles.colorDot, { backgroundColor: COLOR_HEX[result.selectedColor] ?? '#888' }]} />
+                          ) : null}
+                          <Text style={[styles.colorDropdownLabel, { color: '#1C1C1E' }]}>
+                            {[
+                              result.selectedStorage ? result.selectedStorage.toUpperCase() : '',
+                              result.selectedColor ? result.selectedColor.charAt(0).toUpperCase() + result.selectedColor.slice(1) : '',
+                            ].filter(Boolean).join(' · ') || 'Variant kiezen'}
+                          </Text>
+                          <IconSymbol
+                            name={colorDropdownOpen ? 'chevron.up' : 'chevron.down'}
+                            size={12}
+                            color="rgba(0,0,0,0.45)"
+                          />
+                        </Pressable>
+                        {colorDropdownOpen && (
+                          <View style={[styles.colorDropdownList, { backgroundColor: '#fff', borderColor: 'rgba(0,0,0,0.10)' }]}>
+                            {result.colorVariants.map((variant, i) => {
+                              const isActive = variant.color === result.selectedColor && variant.storage === result.selectedStorage;
+                              const label = [
+                                variant.storage ? variant.storage.toUpperCase() : '',
+                                variant.color ? variant.color.charAt(0).toUpperCase() + variant.color.slice(1) : '',
+                              ].filter(Boolean).join(' · ') || 'Standaard';
+                              const cheapest = [...variant.shopLinks].filter(l => l.price != null).sort((a, b) => (a.price ?? 0) - (b.price ?? 0))[0];
+                              return (
+                                <View key={`${variant.color}-${variant.storage}`}>
+                                  {i > 0 && <View style={[styles.promoSep, { backgroundColor: 'rgba(0,0,0,0.06)' }]} />}
+                                  <Pressable
+                                    style={styles.colorOptionRow}
+                                    onPress={() => handleSelectVariant(variant)}
+                                  >
+                                    {variant.color ? (
+                                      <View style={[styles.colorDot, { backgroundColor: COLOR_HEX[variant.color] ?? '#888' }]} />
+                                    ) : null}
+                                    <Text style={[styles.colorOptionLabel, { color: '#1C1C1E' }]}>{label}</Text>
+                                    {cheapest?.price != null && (
+                                      <Text style={[styles.colorOptionPrice, { color: isActive ? Palette.accent : 'rgba(0,0,0,0.5)' }]}>
+                                        €{cheapest.price.toFixed(2)}
+                                      </Text>
+                                    )}
+                                    {isActive && (
+                                      <IconSymbol name="checkmark" size={13} color={Palette.primary} />
+                                    )}
+                                  </Pressable>
+                                </View>
+                              );
+                            })}
+                          </View>
+                        )}
+                      </View>
+                    )}
+
                   </View>
                 </View>
               </View>
@@ -412,11 +548,10 @@ export default function LinkScannerScreen() {
                 </View>
                 <View style={styles.alertInfo}>
                   <Text style={[styles.alertTitle, { color: '#1C1C1E' }]}>Prijsalert instellen</Text>
-                  {alertSaved ? (
-                    <Text style={[styles.alertSub, { color: Palette.accent }]}>Alert opgeslagen!</Text>
-                  ) : (
-                    <Text style={[styles.alertSub, { color: 'rgba(0,0,0,0.45)' }]}>Ontvang een melding als de prijs daalt</Text>
-                  )}
+                  {alertSaved
+                    ? <Text style={[styles.alertSub, { color: Palette.accent }]}>Alert opgeslagen!</Text>
+                    : <Text style={[styles.alertSub, { color: 'rgba(0,0,0,0.45)' }]}>Ontvang een melding als de prijs daalt</Text>
+                  }
                 </View>
                 {!alertSaved && (
                   <Pressable
@@ -487,8 +622,8 @@ export default function LinkScannerScreen() {
             <Animated.View entering={animationsEnabled ? FadeInDown.delay(160).springify().damping(18).stiffness(110) : undefined}>
               <Text style={[styles.sectionLabel, { color: 'rgba(0,0,0,0.45)' }]}>SPECIFICATIES</Text>
               <View style={[styles.specsCard, { backgroundColor: '#FFFFFF', borderColor: 'rgba(0,0,0,0.10)' }]}>
-                {result.specs && Object.keys(result.specs).length > 0 ? (
-                  Object.entries(result.specs).map(([key, val], i, arr) => (
+                {result.specs && Object.keys(result.specs).length > 0
+                  ? Object.entries(result.specs).map(([key, val], i) => (
                     <View key={key}>
                       {i > 0 && <View style={[styles.specsSep, { backgroundColor: 'rgba(0,0,0,0.06)' }]} />}
                       <View style={styles.specsRow}>
@@ -497,11 +632,12 @@ export default function LinkScannerScreen() {
                       </View>
                     </View>
                   ))
-                ) : (
-                  <View style={styles.specsRow}>
-                    <Text style={[styles.specsUnavailable, { color: 'rgba(0,0,0,0.4)' }]}>Niet beschikbaar</Text>
-                  </View>
-                )}
+                  : (
+                    <View style={styles.specsRow}>
+                      <Text style={[styles.specsUnavailable, { color: 'rgba(0,0,0,0.4)' }]}>Niet beschikbaar</Text>
+                    </View>
+                  )
+                }
               </View>
             </Animated.View>
 
@@ -509,31 +645,45 @@ export default function LinkScannerScreen() {
             <Animated.View entering={animationsEnabled ? FadeInDown.delay(170).springify().damping(18).stiffness(110) : undefined}>
               <Text style={[styles.sectionLabel, { color: 'rgba(0,0,0,0.45)' }]}>ANDERE AANBIEDERS</Text>
               <View style={[styles.shopLinksCard, { backgroundColor: '#FFFFFF', borderColor: 'rgba(0,0,0,0.10)', borderWidth: StyleSheet.hairlineWidth, borderRadius: Radius.xl, overflow: 'hidden' }]}>
-                {result.shopLinks.length > 1 ? (
-                  result.shopLinks.map((link, i) => (
-                    <View key={`${link.name}-${i}`}>
-                      {i > 0 && <View style={[styles.promoSep, { backgroundColor: 'rgba(0,0,0,0.06)' }]} />}
-                      <Pressable
-                        style={styles.shopLinkRow}
-                        onPress={() => { Linking.openURL(link.url).catch(() => {}); }}
-                      >
-                        <View style={styles.shopLinkInfo}>
-                          <Text style={[styles.shopLinkName, { color: '#1C1C1E' }]} numberOfLines={1}>{link.name}</Text>
-                          {link.price != null ? (
-                            <Text style={[styles.shopLinkPrice, { color: Palette.accent }]}>€{link.price.toFixed(2)}</Text>
-                          ) : (
-                            <Text style={[styles.shopLinkPrice, { color: 'rgba(0,0,0,0.4)' }]}>Prijs onbekend</Text>
-                          )}
-                        </View>
-                        <IconSymbol name="chevron.right" size={14} color="rgba(0,0,0,0.3)" />
-                      </Pressable>
+                {result.shopLinks.length > 1
+                  ? (() => {
+                    const cheapestIdx = result.shopLinks.reduce((best, link, i) => {
+                      if (link.price == null) return best;
+                      if (best === -1) return i;
+                      return link.price < (result.shopLinks[best].price ?? Infinity) ? i : best;
+                    }, -1);
+                    return result.shopLinks.map((link, i) => (
+                      <View key={`${link.name}-${i}`}>
+                        {i > 0 && <View style={[styles.promoSep, { backgroundColor: 'rgba(0,0,0,0.06)' }]} />}
+                        <Pressable
+                          style={styles.shopLinkRow}
+                          onPress={() => { Linking.openURL(link.url).catch(() => {}); }}
+                        >
+                          <View style={styles.shopLinkInfo}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                              <Text style={[styles.shopLinkName, { color: '#1C1C1E' }]} numberOfLines={1}>{link.name}</Text>
+                              {i === cheapestIdx && (
+                                <View style={styles.cheapestBadge}>
+                                  <Text style={styles.cheapestBadgeText}>Goedkoopste</Text>
+                                </View>
+                              )}
+                            </View>
+                            {link.price != null
+                              ? <Text style={[styles.shopLinkPrice, { color: i === cheapestIdx ? Palette.accent : 'rgba(0,0,0,0.55)' }]}>€{link.price.toFixed(2)}</Text>
+                              : <Text style={[styles.shopLinkPrice, { color: 'rgba(0,0,0,0.4)' }]}>Prijs onbekend</Text>
+                            }
+                          </View>
+                          <IconSymbol name="chevron.right" size={14} color="rgba(0,0,0,0.3)" />
+                        </Pressable>
+                      </View>
+                    ));
+                  })()
+                  : (
+                    <View style={styles.shopLinkRow}>
+                      <Text style={[styles.specsUnavailable, { color: 'rgba(0,0,0,0.4)' }]}>Niet beschikbaar</Text>
                     </View>
-                  ))
-                ) : (
-                  <View style={styles.shopLinkRow}>
-                    <Text style={[styles.specsUnavailable, { color: 'rgba(0,0,0,0.4)' }]}>Niet beschikbaar</Text>
-                  </View>
-                )}
+                  )
+                }
               </View>
             </Animated.View>
 
@@ -559,7 +709,7 @@ export default function LinkScannerScreen() {
                   <View style={styles.ctaContent}>
                     <View>
                       <Text style={styles.ctaLabel}>Kopen bij {result.shopDisplayName}</Text>
-                      <Text style={styles.ctaShop}>Bekijk via Tweakly</Text>
+                      <Text style={styles.ctaShop}>Bekijk via Tracr</Text>
                     </View>
                     <View style={styles.ctaRight}>
                       {result.currentPrice > 0 && (
@@ -573,7 +723,7 @@ export default function LinkScannerScreen() {
             </Animated.View>
 
             <Text style={[styles.affiliateNote, { color: 'rgba(0,0,0,0.4)' }]}>
-              Tweakly gebruikt affiliate links. Je betaalt nooit meer.
+              Tracr gebruikt affiliate links. Je betaalt nooit meer.
             </Text>
           </>
         )}
@@ -594,7 +744,6 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     letterSpacing: -0.5,
   },
-
   content: {
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.xs,
@@ -714,35 +863,6 @@ const styles = StyleSheet.create({
   productName: { fontSize: 16, fontWeight: '700', lineHeight: 20 },
   priceRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, marginTop: 2 },
   productPrice: { fontSize: 20, fontWeight: '800' },
-  productOriginalPrice: { fontSize: 14, textDecorationLine: 'line-through' },
-  dropBadge: {
-    backgroundColor: 'rgba(52,199,89,0.15)',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: Radius.full,
-  },
-  dropBadgeText: { fontSize: 11, fontWeight: '700', color: Palette.accent },
-
-  promoCard: {
-    overflow: 'hidden',
-  },
-  promoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: 12,
-  },
-  promoSep: { height: StyleSheet.hairlineWidth, marginLeft: Spacing.md },
-  promoCodeBox: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: Radius.sm,
-  },
-  promoCode: { fontSize: 14, fontWeight: '800', letterSpacing: 0.5 },
-  promoInfo: { flex: 1 },
-  promoDiscount: { fontSize: 14, fontWeight: '600' },
-  promoExpiry: { fontSize: 11 },
 
   chartCard: {
     overflow: 'hidden',
@@ -762,6 +882,11 @@ const styles = StyleSheet.create({
   },
   chartLow: { fontSize: 13, fontWeight: '600' },
   chartHigh: { fontSize: 13 },
+  chartNote: {
+    fontSize: 11,
+    textAlign: 'center',
+    marginTop: 4,
+  },
 
   alertRow: {
     overflow: 'hidden',
@@ -794,64 +919,6 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
   },
   alertToggleText: { fontSize: 13, fontWeight: '600' },
-
-  ctaWrap: {
-    borderRadius: Radius.xl,
-    overflow: 'hidden',
-    shadowColor: '#34C759',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.35,
-    shadowRadius: 20,
-    elevation: 10,
-  },
-  ctaGradient: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md + 4,
-    borderRadius: Radius.xl,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  ctaSpecular: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 1,
-    backgroundColor: 'rgba(255,255,255,0.45)',
-    zIndex: 10,
-  },
-  ctaBlob: {
-    position: 'absolute',
-    top: 6,
-    left: 24,
-    width: 80,
-    height: 10,
-    borderRadius: 999,
-    backgroundColor: 'rgba(255,255,255,0.28)',
-    zIndex: 5,
-  },
-  ctaContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  ctaLabel: { color: 'rgba(255,255,255,0.82)', fontSize: 13 },
-  ctaShop: { color: '#fff', fontSize: 18, fontWeight: '800' },
-  ctaRight: { alignItems: 'flex-end' },
-  ctaPrice: { color: '#fff', fontSize: 24, fontWeight: '900' },
-  ctaArrow: { color: 'rgba(255,255,255,0.75)', fontSize: 18, marginTop: 2 },
-
-  affiliateNote: {
-    fontSize: 12,
-    textAlign: 'center',
-    lineHeight: 18,
-  },
-
-  chartNote: {
-    fontSize: 11,
-    textAlign: 'center',
-    marginTop: 4,
-  },
   alertInputCard: {
     overflow: 'hidden',
     padding: Spacing.md,
@@ -892,6 +959,168 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
   },
+
+  promoCard: { overflow: 'hidden' },
+  promoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 12,
+  },
+  promoSep: { height: StyleSheet.hairlineWidth, marginLeft: Spacing.md },
+  promoCodeBox: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: Radius.sm,
+  },
+  promoCode: { fontSize: 14, fontWeight: '800', letterSpacing: 0.5 },
+  promoInfo: { flex: 1 },
+  promoDiscount: { fontSize: 14, fontWeight: '600' },
+  promoExpiry: { fontSize: 11 },
+
+  specsCard: {
+    overflow: 'hidden',
+    borderRadius: Radius.xl,
+    borderWidth: StyleSheet.hairlineWidth,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  specsRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 10,
+    gap: Spacing.sm,
+  },
+  specsSep: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: Spacing.md,
+  },
+  specsKey: { flex: 1, fontSize: 13, lineHeight: 18 },
+  specsVal: { flex: 1.2, fontSize: 13, fontWeight: '600', lineHeight: 18, textAlign: 'right' },
+  specsUnavailable: { fontSize: 13, fontStyle: 'italic' },
+
+  shopLinksCard: {},
+  shopLinkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 13,
+    gap: Spacing.sm,
+  },
+  shopLinkInfo: { flex: 1, gap: 2 },
+  shopLinkName: { fontSize: 14, fontWeight: '600' },
+  shopLinkPrice: { fontSize: 13, fontWeight: '700' },
+  cheapestBadge: {
+    backgroundColor: 'rgba(52,199,89,0.15)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: Radius.full,
+  },
+  cheapestBadgeText: { fontSize: 10, fontWeight: '700', color: Palette.accent },
+
+  colorDropdownBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: Radius.full,
+  },
+  colorDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.12)',
+  },
+  colorDropdownLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  colorDropdownList: {
+    marginTop: 6,
+    borderRadius: Radius.lg,
+    borderWidth: StyleSheet.hairlineWidth,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  colorOptionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+  },
+  colorOptionLabel: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  colorOptionPrice: {
+    fontSize: 13,
+    fontWeight: '700',
+    marginRight: 4,
+  },
+
+  ctaWrap: {
+    borderRadius: Radius.xl,
+    overflow: 'hidden',
+    shadowColor: '#34C759',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.35,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  ctaGradient: {
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md + 4,
+    borderRadius: Radius.xl,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  ctaSpecular: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0,
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.45)',
+    zIndex: 10,
+  },
+  ctaBlob: {
+    position: 'absolute',
+    top: 6, left: 24,
+    width: 80, height: 10,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.28)',
+    zIndex: 5,
+  },
+  ctaContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  ctaLabel: { color: 'rgba(255,255,255,0.82)', fontSize: 13 },
+  ctaShop: { color: '#fff', fontSize: 18, fontWeight: '800' },
+  ctaRight: { alignItems: 'flex-end' },
+  ctaPrice: { color: '#fff', fontSize: 24, fontWeight: '900' },
+  ctaArrow: { color: 'rgba(255,255,255,0.75)', fontSize: 18, marginTop: 2 },
+
+  affiliateNote: {
+    fontSize: 12,
+    textAlign: 'center',
+    lineHeight: 18,
+  },
+
   errorCard: {
     overflow: 'hidden',
     padding: Spacing.md,
@@ -919,67 +1148,5 @@ const styles = StyleSheet.create({
   retryText: {
     fontSize: 14,
     fontWeight: '600',
-  },
-
-  // Specs
-  specsCard: {
-    overflow: 'hidden',
-    borderRadius: Radius.xl,
-    borderWidth: StyleSheet.hairlineWidth,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
-    elevation: 1,
-  },
-  specsRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: 10,
-    gap: Spacing.sm,
-  },
-  specsSep: {
-    height: StyleSheet.hairlineWidth,
-    marginLeft: Spacing.md,
-  },
-  specsKey: {
-    flex: 1,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  specsVal: {
-    flex: 1.2,
-    fontSize: 13,
-    fontWeight: '600',
-    lineHeight: 18,
-    textAlign: 'right',
-  },
-  specsUnavailable: {
-    fontSize: 13,
-    fontStyle: 'italic',
-  },
-
-  // Shop links
-  shopLinksCard: {},
-  shopLinkRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: 13,
-    gap: Spacing.sm,
-  },
-  shopLinkInfo: {
-    flex: 1,
-    gap: 2,
-  },
-  shopLinkName: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  shopLinkPrice: {
-    fontSize: 13,
-    fontWeight: '700',
   },
 });

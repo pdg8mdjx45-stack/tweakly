@@ -1,0 +1,8 @@
+name = "tracr-analytics"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+account_id = "ca3ab6a60381024e591a2190c2468495"
+
+[vars]
+CF_ACCOUNT_ID = "ca3ab6a60381024e591a2190c2468495"
+CF_SITE_TAG = "4e91086d893242f895a79fe7d254e016"
